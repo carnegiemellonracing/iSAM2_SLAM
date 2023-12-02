@@ -1,0 +1,379 @@
+[0.000000] (-) TimerEvent: {}
+[0.003631] (eufs_msgs) JobQueued: {'identifier': 'eufs_msgs', 'dependencies': OrderedDict()}
+[0.003745] (planning) JobQueued: {'identifier': 'planning', 'dependencies': OrderedDict([('eufs_msgs', '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs')])}
+[0.003805] (eufs_msgs) JobStarted: {'identifier': 'eufs_msgs'}
+[0.092100] (-) TimerEvent: {}
+[0.197594] (-) TimerEvent: {}
+[0.298578] (-) TimerEvent: {}
+[0.399570] (-) TimerEvent: {}
+[0.526504] (-) TimerEvent: {}
+[0.642476] (-) TimerEvent: {}
+[0.762032] (-) TimerEvent: {}
+[0.862832] (-) TimerEvent: {}
+[0.961091] (eufs_msgs) JobProgress: {'identifier': 'eufs_msgs', 'progress': 'cmake'}
+[0.962974] (eufs_msgs) Command: {'cmd': ['/usr/bin/cmake', '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs', '-DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'andrewwhong'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/home/andrewwhong'), ('OLDPWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src'), ('TERM_PROGRAM_VERSION', '1.84.2'), ('VSCODE_IPC_HOOK_CLI', '/tmp/vscode-ipc-6d7de5cd-4fe9-4a6b-968f-2d17c7833c4f.sock'), ('ROS_PYTHON_VERSION', '3'), ('GOROOT', '/home/andrewwhong/go/go'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu-20.04'), ('ROS_DISTRO', 'foxy'), ('LOGNAME', 'andrewwhong'), ('NAME', 'DESKTOP-NJ9IVDT'), ('WSL_INTEROP', '/run/WSL/4602_interop'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/home/andrewwhong/.vscode-server/bin/1a5daa3a0231a0fbba4f14db7ec463cf99d7768e/bin/remote-cli:/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin'), ('DISPLAY', '172.27.80.1:0.0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/tmp/vscode-git-5118adeae3.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/foxy'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'VSCODE_WSL_EXT_LOCATION/up:VSCODE_SERVER_TAR/up'), ('CMAKE_PREFIX_PATH', '/opt/ros/foxy')]), 'shell': False}
+[0.966051] (-) TimerEvent: {}
+[1.067225] (-) TimerEvent: {}
+[1.104682] (eufs_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[1.167339] (-) TimerEvent: {}
+[1.268089] (-) TimerEvent: {}
+[1.305313] (eufs_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.11.6", minimum required is "3") \n'}
+[1.305756] (eufs_msgs) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/local/bin/python3\n'}
+[1.368335] (-) TimerEvent: {}
+[1.469159] (-) TimerEvent: {}
+[1.569623] (-) TimerEvent: {}
+[1.670313] (-) TimerEvent: {}
+[1.770748] (-) TimerEvent: {}
+[1.871289] (-) TimerEvent: {}
+[1.971730] (-) TimerEvent: {}
+[2.072323] (-) TimerEvent: {}
+[2.173005] (-) TimerEvent: {}
+[2.273443] (-) TimerEvent: {}
+[2.374294] (-) TimerEvent: {}
+[2.474760] (-) TimerEvent: {}
+[2.575907] (-) TimerEvent: {}
+[2.676455] (-) TimerEvent: {}
+[2.776895] (-) TimerEvent: {}
+[2.877406] (-) TimerEvent: {}
+[2.969434] (eufs_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)\n'}
+[2.977557] (-) TimerEvent: {}
+[2.991807] (eufs_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[3.057111] (eufs_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)\n'}
+[3.077841] (-) TimerEvent: {}
+[3.178282] (-) TimerEvent: {}
+[3.278743] (-) TimerEvent: {}
+[3.381481] (-) TimerEvent: {}
+[3.482454] (-) TimerEvent: {}
+[3.582978] (-) TimerEvent: {}
+[3.683934] (-) TimerEvent: {}
+[3.784416] (-) TimerEvent: {}
+[3.884916] (-) TimerEvent: {}
+[3.985398] (-) TimerEvent: {}
+[4.085941] (-) TimerEvent: {}
+[4.186376] (-) TimerEvent: {}
+[4.286824] (-) TimerEvent: {}
+[4.387263] (-) TimerEvent: {}
+[4.487672] (-) TimerEvent: {}
+[4.588078] (-) TimerEvent: {}
+[4.696504] (-) TimerEvent: {}
+[4.796941] (-) TimerEvent: {}
+[4.897404] (-) TimerEvent: {}
+[4.997811] (-) TimerEvent: {}
+[5.098328] (-) TimerEvent: {}
+[5.198889] (-) TimerEvent: {}
+[5.299447] (-) TimerEvent: {}
+[5.399880] (-) TimerEvent: {}
+[5.500313] (-) TimerEvent: {}
+[5.600748] (-) TimerEvent: {}
+[5.701191] (-) TimerEvent: {}
+[5.801605] (-) TimerEvent: {}
+[5.902092] (-) TimerEvent: {}
+[6.002486] (-) TimerEvent: {}
+[6.103220] (-) TimerEvent: {}
+[6.203803] (-) TimerEvent: {}
+[6.304308] (-) TimerEvent: {}
+[6.404973] (-) TimerEvent: {}
+[6.505425] (-) TimerEvent: {}
+[6.605932] (-) TimerEvent: {}
+[6.706626] (-) TimerEvent: {}
+[6.807172] (-) TimerEvent: {}
+[6.908102] (-) TimerEvent: {}
+[7.008584] (-) TimerEvent: {}
+[7.109025] (-) TimerEvent: {}
+[7.209562] (-) TimerEvent: {}
+[7.310041] (-) TimerEvent: {}
+[7.410451] (-) TimerEvent: {}
+[7.511185] (-) TimerEvent: {}
+[7.611736] (-) TimerEvent: {}
+[7.712153] (-) TimerEvent: {}
+[7.812600] (-) TimerEvent: {}
+[7.913055] (-) TimerEvent: {}
+[8.013603] (-) TimerEvent: {}
+[8.114111] (-) TimerEvent: {}
+[8.215018] (-) TimerEvent: {}
+[8.315667] (-) TimerEvent: {}
+[8.416090] (-) TimerEvent: {}
+[8.516561] (-) TimerEvent: {}
+[8.616997] (-) TimerEvent: {}
+[8.717506] (-) TimerEvent: {}
+[8.826591] (-) TimerEvent: {}
+[8.927194] (-) TimerEvent: {}
+[9.036525] (-) TimerEvent: {}
+[9.137025] (-) TimerEvent: {}
+[9.237456] (-) TimerEvent: {}
+[9.337901] (-) TimerEvent: {}
+[9.438357] (-) TimerEvent: {}
+[9.538802] (-) TimerEvent: {}
+[9.639242] (-) TimerEvent: {}
+[9.739660] (-) TimerEvent: {}
+[9.840127] (-) TimerEvent: {}
+[9.940557] (-) TimerEvent: {}
+[10.041076] (-) TimerEvent: {}
+[10.141520] (-) TimerEvent: {}
+[10.241960] (-) TimerEvent: {}
+[10.342435] (-) TimerEvent: {}
+[10.442923] (-) TimerEvent: {}
+[10.543417] (-) TimerEvent: {}
+[10.643877] (-) TimerEvent: {}
+[10.744411] (-) TimerEvent: {}
+[10.844890] (-) TimerEvent: {}
+[10.945322] (-) TimerEvent: {}
+[11.045851] (-) TimerEvent: {}
+[11.146379] (-) TimerEvent: {}
+[11.246932] (-) TimerEvent: {}
+[11.347423] (-) TimerEvent: {}
+[11.447850] (-) TimerEvent: {}
+[11.548347] (-) TimerEvent: {}
+[11.655117] (-) TimerEvent: {}
+[11.755568] (-) TimerEvent: {}
+[11.856017] (-) TimerEvent: {}
+[11.956702] (-) TimerEvent: {}
+[12.057389] (-) TimerEvent: {}
+[12.163373] (-) TimerEvent: {}
+[12.264806] (-) TimerEvent: {}
+[12.365364] (-) TimerEvent: {}
+[12.465781] (-) TimerEvent: {}
+[12.566220] (-) TimerEvent: {}
+[12.666648] (-) TimerEvent: {}
+[12.767096] (-) TimerEvent: {}
+[12.867545] (-) TimerEvent: {}
+[12.968216] (-) TimerEvent: {}
+[13.068687] (-) TimerEvent: {}
+[13.169152] (-) TimerEvent: {}
+[13.269628] (-) TimerEvent: {}
+[13.386490] (-) TimerEvent: {}
+[13.486971] (-) TimerEvent: {}
+[13.596495] (-) TimerEvent: {}
+[13.696979] (-) TimerEvent: {}
+[13.797482] (-) TimerEvent: {}
+[13.897934] (-) TimerEvent: {}
+[13.998487] (-) TimerEvent: {}
+[14.108864] (-) TimerEvent: {}
+[14.210410] (-) TimerEvent: {}
+[14.310858] (-) TimerEvent: {}
+[14.411378] (-) TimerEvent: {}
+[14.511806] (-) TimerEvent: {}
+[14.612379] (-) TimerEvent: {}
+[14.712787] (-) TimerEvent: {}
+[14.813234] (-) TimerEvent: {}
+[14.913682] (-) TimerEvent: {}
+[15.014187] (-) TimerEvent: {}
+[15.114647] (-) TimerEvent: {}
+[15.215079] (-) TimerEvent: {}
+[15.315501] (-) TimerEvent: {}
+[15.415998] (-) TimerEvent: {}
+[15.516425] (-) TimerEvent: {}
+[15.616923] (-) TimerEvent: {}
+[15.717370] (-) TimerEvent: {}
+[15.817915] (-) TimerEvent: {}
+[15.918596] (-) TimerEvent: {}
+[16.019075] (-) TimerEvent: {}
+[16.119514] (-) TimerEvent: {}
+[16.220394] (-) TimerEvent: {}
+[16.320884] (-) TimerEvent: {}
+[16.421356] (-) TimerEvent: {}
+[16.521819] (-) TimerEvent: {}
+[16.622394] (-) TimerEvent: {}
+[16.722903] (-) TimerEvent: {}
+[16.823486] (-) TimerEvent: {}
+[16.924060] (-) TimerEvent: {}
+[17.025118] (-) TimerEvent: {}
+[17.125830] (-) TimerEvent: {}
+[17.226363] (-) TimerEvent: {}
+[17.326942] (-) TimerEvent: {}
+[17.427649] (-) TimerEvent: {}
+[17.528248] (-) TimerEvent: {}
+[17.628691] (-) TimerEvent: {}
+[17.729137] (-) TimerEvent: {}
+[17.834236] (-) TimerEvent: {}
+[17.934722] (-) TimerEvent: {}
+[18.036661] (-) TimerEvent: {}
+[18.137345] (-) TimerEvent: {}
+[18.237817] (-) TimerEvent: {}
+[18.338844] (-) TimerEvent: {}
+[18.439975] (-) TimerEvent: {}
+[18.542151] (-) TimerEvent: {}
+[18.642733] (-) TimerEvent: {}
+[18.743146] (-) TimerEvent: {}
+[18.843622] (-) TimerEvent: {}
+[18.944162] (-) TimerEvent: {}
+[19.044583] (-) TimerEvent: {}
+[19.145049] (-) TimerEvent: {}
+[19.245902] (-) TimerEvent: {}
+[19.346465] (-) TimerEvent: {}
+[19.448781] (-) TimerEvent: {}
+[19.549227] (-) TimerEvent: {}
+[19.649656] (-) TimerEvent: {}
+[19.750167] (-) TimerEvent: {}
+[19.851249] (-) TimerEvent: {}
+[19.953566] (-) TimerEvent: {}
+[20.054149] (-) TimerEvent: {}
+[20.154615] (-) TimerEvent: {}
+[20.255083] (-) TimerEvent: {}
+[20.355919] (-) TimerEvent: {}
+[20.456355] (-) TimerEvent: {}
+[20.557804] (-) TimerEvent: {}
+[20.658538] (-) TimerEvent: {}
+[20.758996] (-) TimerEvent: {}
+[20.859477] (-) TimerEvent: {}
+[20.959951] (-) TimerEvent: {}
+[21.060658] (-) TimerEvent: {}
+[21.161199] (-) TimerEvent: {}
+[21.261606] (-) TimerEvent: {}
+[21.362078] (-) TimerEvent: {}
+[21.462723] (-) TimerEvent: {}
+[21.563190] (-) TimerEvent: {}
+[21.663921] (-) TimerEvent: {}
+[21.764372] (-) TimerEvent: {}
+[21.864782] (-) TimerEvent: {}
+[21.965225] (-) TimerEvent: {}
+[22.065623] (-) TimerEvent: {}
+[22.166087] (-) TimerEvent: {}
+[22.266595] (-) TimerEvent: {}
+[22.367005] (-) TimerEvent: {}
+[22.468213] (-) TimerEvent: {}
+[22.568732] (-) TimerEvent: {}
+[22.670248] (-) TimerEvent: {}
+[22.770775] (-) TimerEvent: {}
+[22.871266] (-) TimerEvent: {}
+[22.971812] (-) TimerEvent: {}
+[23.072490] (-) TimerEvent: {}
+[23.172987] (-) TimerEvent: {}
+[23.273623] (-) TimerEvent: {}
+[23.374096] (-) TimerEvent: {}
+[23.486579] (-) TimerEvent: {}
+[23.587079] (-) TimerEvent: {}
+[23.687712] (-) TimerEvent: {}
+[23.788272] (-) TimerEvent: {}
+[23.888690] (-) TimerEvent: {}
+[23.996543] (-) TimerEvent: {}
+[24.096990] (-) TimerEvent: {}
+[24.197453] (-) TimerEvent: {}
+[24.297880] (-) TimerEvent: {}
+[24.398399] (-) TimerEvent: {}
+[24.498871] (-) TimerEvent: {}
+[24.599285] (-) TimerEvent: {}
+[24.699778] (-) TimerEvent: {}
+[24.800208] (-) TimerEvent: {}
+[24.906549] (-) TimerEvent: {}
+[25.007021] (-) TimerEvent: {}
+[25.107568] (-) TimerEvent: {}
+[25.207985] (-) TimerEvent: {}
+[25.308470] (-) TimerEvent: {}
+[25.409127] (-) TimerEvent: {}
+[25.509613] (-) TimerEvent: {}
+[25.610114] (-) TimerEvent: {}
+[25.710547] (-) TimerEvent: {}
+[25.810961] (-) TimerEvent: {}
+[25.911558] (-) TimerEvent: {}
+[26.012120] (-) TimerEvent: {}
+[26.112586] (-) TimerEvent: {}
+[26.212997] (-) TimerEvent: {}
+[26.313421] (-) TimerEvent: {}
+[26.414022] (-) TimerEvent: {}
+[26.514438] (-) TimerEvent: {}
+[26.615330] (-) TimerEvent: {}
+[26.715779] (-) TimerEvent: {}
+[26.816217] (-) TimerEvent: {}
+[26.916718] (-) TimerEvent: {}
+[27.017221] (-) TimerEvent: {}
+[27.117991] (-) TimerEvent: {}
+[27.218457] (-) TimerEvent: {}
+[27.319222] (-) TimerEvent: {}
+[27.419762] (-) TimerEvent: {}
+[27.520192] (-) TimerEvent: {}
+[27.566918] (eufs_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[27.620333] (-) TimerEvent: {}
+[27.720829] (-) TimerEvent: {}
+[27.721326] (eufs_msgs) StdoutLine: {'line': b'-- Found std_msgs: 2.0.5 (/opt/ros/foxy/share/std_msgs/cmake)\n'}
+[27.821085] (-) TimerEvent: {}
+[27.921586] (-) TimerEvent: {}
+[27.935641] (eufs_msgs) StdoutLine: {'line': b'-- Found geometry_msgs: 2.0.5 (/opt/ros/foxy/share/geometry_msgs/cmake)\n'}
+[28.021714] (-) TimerEvent: {}
+[28.114137] (eufs_msgs) StdoutLine: {'line': b'-- Found sensor_msgs: 2.0.5 (/opt/ros/foxy/share/sensor_msgs/cmake)\n'}
+[28.121845] (-) TimerEvent: {}
+[28.222273] (-) TimerEvent: {}
+[28.322706] (-) TimerEvent: {}
+[28.423171] (-) TimerEvent: {}
+[28.523593] (-) TimerEvent: {}
+[28.624090] (-) TimerEvent: {}
+[28.724645] (-) TimerEvent: {}
+[28.824546] (eufs_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/local/bin/python3 (found version "3.11.6") \n'}
+[28.825102] (-) TimerEvent: {}
+[28.925526] (-) TimerEvent: {}
+[29.026092] (-) TimerEvent: {}
+[29.126847] (-) TimerEvent: {}
+[29.145942] (eufs_msgs) StderrLine: {'line': b'CMake Error at /opt/ros/foxy/share/rosidl_adapter/cmake/rosidl_adapt_interfaces.cmake:60 (message):\n'}
+[29.146382] (eufs_msgs) StderrLine: {'line': b'  execute_process(/usr/local/bin/python3 -m rosidl_adapter --package-name\n'}
+[29.146713] (eufs_msgs) StderrLine: {'line': b'  eufs_msgs --arguments-file\n'}
+[29.146925] (eufs_msgs) StderrLine: {'line': b'  /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_adapter__arguments__eufs_msgs.json\n'}
+[29.147104] (eufs_msgs) StderrLine: {'line': b'  --output-dir\n'}
+[29.147275] (eufs_msgs) StderrLine: {'line': b'  /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_adapter/eufs_msgs\n'}
+[29.147452] (eufs_msgs) StderrLine: {'line': b'  --output-file\n'}
+[29.147633] (eufs_msgs) StderrLine: {'line': b'  /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_adapter/eufs_msgs.idls)\n'}
+[29.147852] (eufs_msgs) StderrLine: {'line': b'  returned error code 1:\n'}
+[29.148015] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.148174] (eufs_msgs) StderrLine: {'line': b"  AttributeError processing template 'msg.idl.em'\n"}
+[29.148349] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.148522] (eufs_msgs) StderrLine: {'line': b'  Traceback (most recent call last):\n'}
+[29.148745] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.148917] (eufs_msgs) StderrLine: {'line': b'    File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/resource/__init__.py", line 48, in evaluate_template\n'}
+[29.149096] (eufs_msgs) StderrLine: {'line': b'      _interpreter = em.Interpreter(\n'}
+[29.149262] (eufs_msgs) StderrLine: {'line': b'                     ^^^^^^^^^^^^^^\n'}
+[29.149421] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.149615] (eufs_msgs) StderrLine: {'line': b"  AttributeError: module 'em' has no attribute 'Interpreter'\n"}
+[29.149797] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.149933] (eufs_msgs) StderrLine: {'line': b'  \n'}
+[29.150101] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.150504] (eufs_msgs) StderrLine: {'line': b'  During handling of the above exception, another exception occurred:\n'}
+[29.150734] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.150943] (eufs_msgs) StderrLine: {'line': b'  \n'}
+[29.151137] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.151321] (eufs_msgs) StderrLine: {'line': b'  Traceback (most recent call last):\n'}
+[29.152025] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.152251] (eufs_msgs) StderrLine: {'line': b'    File "<frozen runpy>", line 198, in _run_module_as_main\n'}
+[29.152403] (eufs_msgs) StderrLine: {'line': b'    File "<frozen runpy>", line 88, in _run_code\n'}
+[29.152623] (eufs_msgs) StderrLine: {'line': b'    File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/__main__.py", line 19, in <module>\n'}
+[29.152774] (eufs_msgs) StderrLine: {'line': b'      sys.exit(main())\n'}
+[29.152905] (eufs_msgs) StderrLine: {'line': b'               ^^^^^^\n'}
+[29.153032] (eufs_msgs) StderrLine: {'line': b'    File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/main.py", line 53, in main\n'}
+[29.153158] (eufs_msgs) StderrLine: {'line': b'      abs_idl_file = convert_to_idl(\n'}
+[29.153281] (eufs_msgs) StderrLine: {'line': b'                     ^^^^^^^^^^^^^^^\n'}
+[29.153427] (eufs_msgs) StderrLine: {'line': b'    File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/__init__.py", line 19, in convert_to_idl\n'}
+[29.153602] (eufs_msgs) StderrLine: {'line': b'      return convert_msg_to_idl(\n'}
+[29.153734] (eufs_msgs) StderrLine: {'line': b'             ^^^^^^^^^^^^^^^^^^^\n'}
+[29.153856] (eufs_msgs) StderrLine: {'line': b'    File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/msg/__init__.py", line 39, in convert_msg_to_idl\n'}
+[29.153980] (eufs_msgs) StderrLine: {'line': b"      expand_template('msg.idl.em', data, output_file, encoding='iso-8859-1')\n"}
+[29.154134] (eufs_msgs) StderrLine: {'line': b'    File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/resource/__init__.py", line 23, in expand_template\n'}
+[29.154261] (eufs_msgs) StderrLine: {'line': b'      content = evaluate_template(template_name, data)\n'}
+[29.154382] (eufs_msgs) StderrLine: {'line': b'                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'}
+[29.154538] (eufs_msgs) StderrLine: {'line': b'    File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/resource/__init__.py", line 69, in evaluate_template\n'}
+[29.154695] (eufs_msgs) StderrLine: {'line': b'      _interpreter.shutdown()\n'}
+[29.154819] (eufs_msgs) StderrLine: {'line': b'      ^^^^^^^^^^^^^^^^^^^^^\n'}
+[29.155084] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.155212] (eufs_msgs) StderrLine: {'line': b"  AttributeError: 'NoneType' object has no attribute 'shutdown'\n"}
+[29.155331] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.155490] (eufs_msgs) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[29.155647] (eufs_msgs) StderrLine: {'line': b'  /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:130 (rosidl_adapt_interfaces)\n'}
+[29.155771] (eufs_msgs) StderrLine: {'line': b'  CMakeLists.txt:82 (rosidl_generate_interfaces)\n'}
+[29.155890] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.166929] (eufs_msgs) StderrLine: {'line': b'\n'}
+[29.169191] (eufs_msgs) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[29.169486] (eufs_msgs) StdoutLine: {'line': b'See also "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/CMakeFiles/CMakeOutput.log".\n'}
+[29.225628] (eufs_msgs) CommandEnded: {'returncode': 1}
+[29.228735] (-) TimerEvent: {}
+[29.331031] (-) TimerEvent: {}
+[29.431822] (-) TimerEvent: {}
+[29.532381] (-) TimerEvent: {}
+[29.633000] (-) TimerEvent: {}
+[29.733370] (-) TimerEvent: {}
+[29.833979] (-) TimerEvent: {}
+[29.934769] (-) TimerEvent: {}
+[30.035311] (-) TimerEvent: {}
+[30.135848] (-) TimerEvent: {}
+[30.256671] (-) TimerEvent: {}
+[30.357133] (-) TimerEvent: {}
+[30.457497] (-) TimerEvent: {}
+[30.529587] (eufs_msgs) JobEnded: {'identifier': 'eufs_msgs', 'rc': 1}
+[30.549291] (planning) JobSkipped: {'identifier': 'planning'}
+[30.549409] (-) EventReactorShutdown: {}

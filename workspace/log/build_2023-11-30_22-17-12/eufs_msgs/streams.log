@@ -1,0 +1,70 @@
+[0.076s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs': CMAKE_PREFIX_PATH=/opt/ros/foxy WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs
+[0.125s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.188s] -- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.11.6", minimum required is "3") 
+[0.188s] -- Using PYTHON_EXECUTABLE: /usr/local/bin/python3
+[0.593s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.599s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.610s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[14.880s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[14.925s] -- Found std_msgs: 2.0.5 (/opt/ros/foxy/share/std_msgs/cmake)
+[14.982s] -- Found geometry_msgs: 2.0.5 (/opt/ros/foxy/share/geometry_msgs/cmake)
+[15.042s] -- Found sensor_msgs: 2.0.5 (/opt/ros/foxy/share/sensor_msgs/cmake)
+[15.215s] -- Found PythonInterp: /usr/local/bin/python3 (found version "3.11.6") 
+[15.300s] CMake Error at /opt/ros/foxy/share/rosidl_adapter/cmake/rosidl_adapt_interfaces.cmake:60 (message):
+[15.300s]   execute_process(/usr/local/bin/python3 -m rosidl_adapter --package-name
+[15.301s]   eufs_msgs --arguments-file
+[15.301s]   /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_adapter__arguments__eufs_msgs.json
+[15.301s]   --output-dir
+[15.301s]   /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_adapter/eufs_msgs
+[15.301s]   --output-file
+[15.301s]   /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_adapter/eufs_msgs.idls)
+[15.301s]   returned error code 1:
+[15.301s] 
+[15.302s]   AttributeError processing template 'msg.idl.em'
+[15.302s] 
+[15.302s]   Traceback (most recent call last):
+[15.303s] 
+[15.303s]     File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/resource/__init__.py", line 48, in evaluate_template
+[15.303s]       _interpreter = em.Interpreter(
+[15.303s]                      ^^^^^^^^^^^^^^
+[15.303s] 
+[15.304s]   AttributeError: module 'em' has no attribute 'Interpreter'
+[15.304s] 
+[15.304s]   
+[15.304s] 
+[15.304s]   During handling of the above exception, another exception occurred:
+[15.304s] 
+[15.304s]   
+[15.304s] 
+[15.304s]   Traceback (most recent call last):
+[15.305s] 
+[15.305s]     File "<frozen runpy>", line 198, in _run_module_as_main
+[15.305s]     File "<frozen runpy>", line 88, in _run_code
+[15.305s]     File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/__main__.py", line 19, in <module>
+[15.305s]       sys.exit(main())
+[15.305s]                ^^^^^^
+[15.305s]     File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/main.py", line 53, in main
+[15.305s]       abs_idl_file = convert_to_idl(
+[15.305s]                      ^^^^^^^^^^^^^^^
+[15.305s]     File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/__init__.py", line 19, in convert_to_idl
+[15.305s]       return convert_msg_to_idl(
+[15.306s]              ^^^^^^^^^^^^^^^^^^^
+[15.306s]     File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/msg/__init__.py", line 39, in convert_msg_to_idl
+[15.306s]       expand_template('msg.idl.em', data, output_file, encoding='iso-8859-1')
+[15.306s]     File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/resource/__init__.py", line 23, in expand_template
+[15.306s]       content = evaluate_template(template_name, data)
+[15.306s]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[15.306s]     File "/opt/ros/foxy/lib/python3.8/site-packages/rosidl_adapter/resource/__init__.py", line 69, in evaluate_template
+[15.306s]       _interpreter.shutdown()
+[15.306s]       ^^^^^^^^^^^^^^^^^^^^^
+[15.306s] 
+[15.306s]   AttributeError: 'NoneType' object has no attribute 'shutdown'
+[15.307s] 
+[15.307s] Call Stack (most recent call first):
+[15.307s]   /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:130 (rosidl_adapt_interfaces)
+[15.307s]   CMakeLists.txt:82 (rosidl_generate_interfaces)
+[15.307s] 
+[15.307s] 
+[15.307s] -- Configuring incomplete, errors occurred!
+[15.307s] See also "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/CMakeFiles/CMakeOutput.log".
+[15.312s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs' returned '1': CMAKE_PREFIX_PATH=/opt/ros/foxy WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs

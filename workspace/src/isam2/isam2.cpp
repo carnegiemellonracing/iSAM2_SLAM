@@ -35,7 +35,7 @@ using namespace gtsam;
 
 
 static const float DT = 0.1;
-static const float SIM_TIME = 50.0;
+static const float SIM_TIME = 50.0;mk
 static const float MAX_RANGE = 10.0;
 static const int M_DIST_TH = 1;
 static const int LM_SIZE = 2;
@@ -76,7 +76,7 @@ private:
     }
 
     gtsam::Symbol L(int cone_pose_id) {
-        return Symbol('x', cone_pose_id);
+        return Symbol('L', cone_pose_id);
     }
 
 public:
@@ -97,15 +97,19 @@ public:
         robot_est = gtsam::Pose2(0, 0, 0);
         landmark_est = std::vector<gtsam::Point2>();
 
+
+        isam2.joint1(1,2);
+
     }
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
 
         Pose2 prev_robot_est;
 
-        if (x==0) {
+        if (x==0) {//if this is the first pose, add your inital pose to the factor graph
             noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(Vector(0, 0, 0));
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
+            //add prior
             graph.add(prior_factor);
             values.insert(X(0), global_odom);
             prev_robot_est = Pose2(0, 0, 0);
@@ -113,6 +117,7 @@ public:
         else {
             noiseModel::Diagonal::shared_ptr odom_model = noiseModel::Diagonal::Sigmas(Eigen::VectorXd(0, 0, 0));
             Pose2 prev_pos = isam2.calculateEstimate(X(x - 1)).cast<Pose2>();
+            //create a factor between current and previous robot pose
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(x - 1), X(x), Pose2(global_odom.x() - prev_pos.x(), global_odom.y() - prev_pos.y(), global_odom.theta() - prev_pos.theta()), odom_model);
             graph.add(odom_factor);
             values.insert(X(x), global_odom);
@@ -124,24 +129,77 @@ public:
         values.clear();
         Pose2 robot_est = isam2.calculateEstimate(X(x)).cast<Pose2>();
 
+
+
         // DATA ASSOCIATION BEGIN
-        for (Point2 cone : cone_obs) {
-            Point2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y());
+        for (Point2 cone : cone_obs) { // go through each observed cone
+
+            Point2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y()); //calculate global position of the cone
             const enumLm enum_cone{lm_id: n_landmarks, lm_pos: global_cone};
-            if (observed.find(enum_cone) == observed.end()) {
+
+            //we need to do actual data association
+
+            //for the current cone, we want to compare againt all other cones for data association
+            //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
+            for(int i = 0; i < n_landmarks; i++){
+                //calculate joint marginal covariance between landmarks
+
+                gtsam::Matrix jointMarginal = isam2.jointMarginalCovariance() 
+
+
+            //calculate mahalanobis distance from new landmark and other landmarks using covariance
+
+
+            //Calculate the most likely cone against a threshold for data association
+
+            }
+
+
+
+            //If it is a new cone:
+
+
+    
+            if (new cone) { //if you can't find it in the list of landmarks
+                //add cone to list
                 observed.insert(enum_cone);
                 
+                //add factor between pose and landmark
                 double range = std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
                 double bearing = std::atan2(cone.y(), cone.x()) - global_odom.theta();
-                graph.add(BearingRangeFactor<Pose2, Pose2, double, double>(X(x), L(n_landmarks), bearing, range, noiseModel::Diagonal::Sigmas(Eigen::VectorXd(0, 0, 0))));
+                graph.add(BearingRangeFactor<Pose2, Pose2, double, double>(X(x), L(n_landmarks), bearing, range, noiseModel::Diagonal::Sigmas(Eigen::VectorXd(0, 0, 0)))); 
+                //this is how we model noise for the environmant
                 values.insert(L(n_landmarks), global_cone);
                 n_landmarks++;
             } else {
-                int associated_id = (*(observed.find(enum_cone))).lm_id;
+
+                //Add a factor to the associated landmark
+                int associated_id = =1;
                 double range = std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
                 double bearing = std::atan2(cone.y(), cone.x()) - global_odom.theta();
                 graph.add(BearingRangeFactor<Pose2, Pose2, double, double>(X(x), L(associated_id), bearing, range, noiseModel::Diagonal::Sigmas(Eigen::VectorXd(0, 0, 0))));
             }
+
+
+
+
+            //If it is an associated cone:
+
+
+            // if (observed.find(enum_cone) == observed.end()) { //if you can't find it in the list of landmarks
+            //     observed.insert(enum_cone);
+                
+            //     double range = std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+            //     double bearing = std::atan2(cone.y(), cone.x()) - global_odom.theta();
+            //     graph.add(BearingRangeFactor<Pose2, Pose2, double, double>(X(x), L(n_landmarks), bearing, range, noiseModel::Diagonal::Sigmas(Eigen::VectorXd(0, 0, 0))));
+            //     values.insert(L(n_landmarks), global_cone);
+            //     n_landmarks++;
+            // } else {
+            //     int associated_id = (*(observed.find(enum_cone))).lm_id;
+            //     double range = std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+            //     double bearing = std::atan2(cone.y(), cone.x()) - global_odom.theta();
+            //     graph.add(BearingRangeFactor<Pose2, Pose2, double, double>(X(x), L(associated_id), bearing, range, noiseModel::Diagonal::Sigmas(Eigen::VectorXd(0, 0, 0))));
+            // }
         }
         // DATA ASSOCIATION END
 
@@ -149,6 +207,7 @@ public:
         graph.resize(0);
         values.clear();
 
+        //calculate estimate of robot state
         robot_est = isam2.calculateEstimate(X(x)).cast<gtsam::Pose2>();
         x++;
 
