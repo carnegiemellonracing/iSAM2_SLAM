@@ -1,0 +1,33 @@
+[0.387s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 -- -j12 -l12
+[0.412s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.436s] -- Using PYTHON_EXECUTABLE: /usr/local/bin/python3
+[0.668s] -- Found rclcpp: 2.4.3 (/opt/ros/foxy/share/rclcpp/cmake)
+[1.024s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.028s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[11.715s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[11.769s] -- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[11.770s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[11.921s] -- Found message_filters: 3.2.7 (/opt/ros/foxy/share/message_filters/cmake)
+[11.923s] -- Found eufs_msgs: 2.0.0 (/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/share/eufs_msgs/cmake)
+[14.559s] CMake Error at CMakeLists.txt:29 (find_package):
+[14.559s]   By not providing "Findgtsam.cmake" in CMAKE_MODULE_PATH this project has
+[14.559s]   asked CMake to find a package configuration file provided by "gtsam", but
+[14.559s]   CMake did not find one.
+[14.559s] 
+[14.559s]   Could not find a package configuration file provided by "gtsam" with any of
+[14.560s]   the following names:
+[14.560s] 
+[14.560s]     gtsamConfig.cmake
+[14.560s]     gtsam-config.cmake
+[14.560s] 
+[14.560s]   Add the installation prefix of "gtsam" to CMAKE_PREFIX_PATH or set
+[14.560s]   "gtsam_DIR" to a directory containing one of the above files.  If "gtsam"
+[14.560s]   provides a separate development package or SDK, be sure it has been
+[14.561s]   installed.
+[14.561s] 
+[14.561s] 
+[14.561s] -- Configuring incomplete, errors occurred!
+[14.561s] See also "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/CMakeOutput.log".
+[14.561s] See also "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/CMakeError.log".
+[14.568s] make: *** [Makefile:266: cmake_check_build_system] Error 1
+[14.573s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2' returned '2': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 -- -j12 -l12

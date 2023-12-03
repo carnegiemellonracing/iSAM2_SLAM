@@ -38,6 +38,7 @@ struct VehiclePosition{
   double dy;
   double dyaw;
 };
+
 class SLAMValidation : public rclcpp::Node
 {
   public:
@@ -52,15 +53,15 @@ class SLAMValidation : public rclcpp::Node
     void cone_callback(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data){
         RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
         cones.clear();
-        for(int i = 0; i < cone_data->blue_cones.size(); i++){
+        for(uint i = 0; i < cone_data->blue_cones.size(); i++){
             gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->blue_cones[i].point.x, cone_data->blue_cones[i].point.y));
             cones.push_back(to_add);
         }
-        for(int i = 0; i < cone_data->yellow_cones.size(); i++){
+        for(uint i = 0; i < cone_data->yellow_cones.size(); i++){
             gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->yellow_cones[i].point.x, cone_data->yellow_cones[i].point.y));
             cones.push_back(to_add);
         }
-        for(int i = 0; i < cone_data->orange_cones.size(); i++){
+        for(uint i = 0; i < cone_data->orange_cones.size(); i++){
             gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->orange_cones[i].point.x, cone_data->orange_cones[i].point.y));
             cones.push_back(to_add);
         }

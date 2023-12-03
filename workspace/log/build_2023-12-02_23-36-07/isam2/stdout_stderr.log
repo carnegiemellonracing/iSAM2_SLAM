@@ -1,0 +1,8 @@
+CMake Error at CMakeLists.txt:19 (ament_package):
+  Unknown CMake command "ament_package".
+
+
+-- Configuring incomplete, errors occurred!
+See also "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/CMakeOutput.log".
+See also "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/CMakeError.log".
+make: *** [Makefile:266: cmake_check_build_system] Error 1
