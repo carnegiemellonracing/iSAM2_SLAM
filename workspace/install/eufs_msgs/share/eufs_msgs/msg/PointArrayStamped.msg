@@ -1,1 +1,4 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/PointArrayStamped.msg
+std_msgs/Header header
+
+# Simple msg for array of points
+geometry_msgs/Point[] points

@@ -125,7 +125,7 @@ public:
         return min_id;
     }
 
-    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
+    void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
         // Eigen::VectorXd temp(3); 
         // temp << 0,0,0;
         // Vector noiseModel = temp;
@@ -137,6 +137,7 @@ public:
 
         Pose2 prev_robot_est;
         if (x==0) {//if this is the first pose, add your inital pose to the factor graph
+            RCLCPP_INFO(logger, "FIRST POSE");
 
             noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(noiseModel);
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
@@ -146,6 +147,7 @@ public:
             prev_robot_est = Pose2(0, 0, 0);
         }
         else {
+            RCLCPP_INFO(logger, "NOT FIRST POSE: %i",x);
             noiseModel::Diagonal::shared_ptr odom_model = noiseModel::Diagonal::Sigmas(noiseModel);
             Pose2 prev_pos = isam2.calculateEstimate(X(x - 1)).cast<Pose2>();
             //create a factor between current and previous robot pose
@@ -160,8 +162,11 @@ public:
         values.clear();
         Pose2 robot_est = isam2.calculateEstimate(X(x)).cast<Pose2>();
 
+
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
+            RCLCPP_INFO(logger, "observed cone: (%f,%f)",cone.x(),cone.y());
+
 
             Pose2 conePose(cone.x(),cone.y(),0);
   
@@ -213,5 +218,7 @@ public:
         for (int i = 0; i < n_landmarks; i++) {
             landmark_est.push_back(isam2.calculateEstimate(L(i)).cast<gtsam::Point2>());
         }
+        RCLCPP_INFO(logger, "finished");
+
     }
 };

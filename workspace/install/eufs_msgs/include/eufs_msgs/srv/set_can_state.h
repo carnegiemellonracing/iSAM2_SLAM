@@ -1,1 +1,12 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_generator_c/eufs_msgs/srv/set_can_state.h
+// generated from rosidl_generator_c/resource/idl.h.em
+// with input from eufs_msgs:srv/SetCanState.idl
+// generated code does not contain a copyright notice
+
+#ifndef EUFS_MSGS__SRV__SET_CAN_STATE_H_
+#define EUFS_MSGS__SRV__SET_CAN_STATE_H_
+
+#include "eufs_msgs/srv/detail/set_can_state__struct.h"
+#include "eufs_msgs/srv/detail/set_can_state__functions.h"
+#include "eufs_msgs/srv/detail/set_can_state__type_support.h"
+
+#endif  // EUFS_MSGS__SRV__SET_CAN_STATE_H_

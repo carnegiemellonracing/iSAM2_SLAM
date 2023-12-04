@@ -1,1 +1,2 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_cmake/srv/Register_Request.msg
+string node_name
+uint8 severity

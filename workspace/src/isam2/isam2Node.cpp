@@ -18,7 +18,7 @@
 #include <cmath>
 #include <chrono>
 
-#define CONE_DATA_TOPIC "/cones"
+#define CONE_DATA_TOPIC "/ground_truth/cones"
 #define VEHICLE_DATA_TOPIC "/ground_truth/state"
 
 using namespace std;
@@ -44,9 +44,9 @@ class SLAMValidation : public rclcpp::Node
   public:
     SLAMValidation(): Node("slam_validation"){
       cone_sub = this->create_subscription<eufs_msgs::msg::ConeArrayWithCovariance>(
-      "/cones", 10, std::bind(&SLAMValidation::cone_callback, this, _1));
+      CONE_DATA_TOPIC, 10, std::bind(&SLAMValidation::cone_callback, this, _1));
       vehicle_state_sub = this->create_subscription<eufs_msgs::msg::CarState>(
-      "/ground_truth/state", 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
+      VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
       timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
     }
   private:
@@ -67,7 +67,7 @@ class SLAMValidation : public rclcpp::Node
         }
     }
     void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr vehicle_state_data){
-        // RCLCPP_INFO(this->get_logger(), "vehicle state\n");
+        RCLCPP_INFO(this->get_logger(), "vehicle state\n");
         double q1 = vehicle_state_data->pose.pose.orientation.x;
         double q2 = vehicle_state_data->pose.pose.orientation.y;
         double q3 = vehicle_state_data->pose.pose.orientation.z;
@@ -81,7 +81,7 @@ class SLAMValidation : public rclcpp::Node
     }
 
     void run_slam(){
-        slam_instance.step(global_odom, cones);
+        slam_instance.step(this->get_logger(),global_odom, cones);
         RCLCPP_INFO(this->get_logger(), "got output\n");
         RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
 
@@ -103,5 +103,6 @@ class SLAMValidation : public rclcpp::Node
 int main(int argc, char * argv[]){
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<SLAMValidation>());
+  rclcpp::shutdown();
   return 0;
 }

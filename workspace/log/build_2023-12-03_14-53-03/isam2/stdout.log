@@ -1,0 +1,37 @@
+-- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Using PYTHON_EXECUTABLE: /home/dale/miniconda3/bin/python3
+-- Found rclcpp: 2.4.3 (/opt/ros/foxy/share/rclcpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found message_filters: 3.2.7 (/opt/ros/foxy/share/message_filters/cmake)
+-- Found eufs_msgs: 2.0.0 (/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/share/eufs_msgs/cmake)
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake (found suitable version "1.71.0", minimum required is "1.65") found components: serialization system filesystem thread program_options date_time timer chrono regex 
+-- GTSAM include directory:  /usr/local/lib/cmake/GTSAM/../../../include
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2
+[ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+[100%] [32m[1mLinking CXX executable isam_test[0m
+[100%] Built target isam_test
+-- Install configuration: ""
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test
+-- Set runtime path of "/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test" to ""
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/package_run_dependencies/isam2
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/parent_prefix_path/isam2
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.sh
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.dsv
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.sh
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.dsv
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.bash
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.sh
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.zsh
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.dsv
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.dsv
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/packages/isam2
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config.cmake
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config-version.cmake
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.xml

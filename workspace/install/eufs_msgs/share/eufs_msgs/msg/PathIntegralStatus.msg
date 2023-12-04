@@ -1,1 +1,4 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/PathIntegralStatus.msg
+std_msgs/Header header
+
+string info
+int32 status

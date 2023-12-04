@@ -1,0 +1,39 @@
+[0.029s] Invoking command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2:/home/dale/driverless/driverless_ws/install/ros2_numpy_dv:/home/dale/driverless/driverless_ws/install/ros2_numpy:/home/dale/driverless/driverless_ws/install/planning:/home/dale/driverless/driverless_ws/install/interfaces:/home/dale/driverless/driverless_ws/install/eufs_msgs:/home/dale/driverless/driverless_ws/install/controls:/home/dale/driverless/driverless_ws/install/common:/home/dale/driverless/driverless_ws/install/collection:/home/dale/driverless/driverless_ws/install/actuators:/home/dale/driverless/driverless_ws/install/perceptions:/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) /home/dale/miniconda3/bin/cmake --build /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2 -- -j24 -l24
+[0.057s] [ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+[0.164s] In file included from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+[0.165s]                  from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[0.165s] [01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+[0.165s]    18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+[0.165s]       |  [01;35m[K^~~~~~~[m[K
+[1.966s] In file included from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[1.966s] [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:128:15:[m[K [01;35m[Kwarning: [m[Kuse of ‘[01m[Kauto[m[K’ in parameter declaration only available with ‘[01m[K-fconcepts[m[K’
+[1.966s]   128 |     void step([01;35m[Kauto[m[K logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
+[1.966s]       |               [01;35m[K^~~~[m[K
+[2.018s] In file included from [01m[K/opt/ros/foxy/include/rclcpp/client.hpp:40[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/callback_group.hpp:23[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/any_executable.hpp:20[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/memory_strategy.hpp:24[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/memory_strategies.hpp:18[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/executor_options.hpp:20[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/executor.hpp:33[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/executors/multi_threaded_executor.hpp:26[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/executors.hpp:21[m[K,
+[2.018s]                  from [01m[K/opt/ros/foxy/include/rclcpp/rclcpp.hpp:146[m[K,
+[2.018s]                  from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:3[m[K:
+[2.018s] [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:[m[K In member function ‘[01m[Kvoid SLAMValidation::vehicle_state_callback(eufs_msgs::msg::CarState_<std::allocator<void> >::SharedPtr)[m[K’:
+[2.018s] [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:70:49:[m[K [01;31m[Kerror: [m[Kexpected ‘[01m[K)[m[K’ before string constant
+[2.018s]    70 |         RCLCPP_INFO(this->get_logger(), run_slam[01;31m[K"vehicle state\n"[m[K);
+[2.018s]       |                                                 [01;31m[K^~~~~~~~~~~~~~~~~[m[K
+[2.018s] [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:70:9:[m[K [01;36m[Knote: [m[Kto match this ‘[01m[K([m[K’
+[2.018s]    70 |         [01;36m[KRCLCPP_INFO[m[K(this->get_logger(), run_slam"vehicle state\n");
+[2.018s]       |         [01;36m[K^~~~~~~~~~~[m[K
+[2.018s] [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:70:41:[m[K [01;31m[Kerror: [m[Kinvalid use of non-static member function ‘[01m[Kvoid SLAMValidation::run_slam()[m[K’
+[2.018s]    70 |         RCLCPP_INFO(this->get_logger(), [01;31m[Krun_slam[m[K"vehicle state\n");
+[2.019s]       |                                         [01;31m[K^~~~~~~~[m[K
+[2.019s] [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:83:10:[m[K [01;36m[Knote: [m[Kdeclared here
+[2.019s]    83 |     void [01;36m[Krun_slam[m[K(){
+[2.019s]       |          [01;36m[K^~~~~~~~[m[K
+[4.474s] make[2]: *** [CMakeFiles/isam_test.dir/build.make:76: CMakeFiles/isam_test.dir/isam2Node.cpp.o] Error 1
+[4.474s] make[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/isam_test.dir/all] Error 2
+[4.474s] make: *** [Makefile:146: all] Error 2
+[4.476s] Invoked command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2' returned '2': CMAKE_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2:/home/dale/driverless/driverless_ws/install/ros2_numpy_dv:/home/dale/driverless/driverless_ws/install/ros2_numpy:/home/dale/driverless/driverless_ws/install/planning:/home/dale/driverless/driverless_ws/install/interfaces:/home/dale/driverless/driverless_ws/install/eufs_msgs:/home/dale/driverless/driverless_ws/install/controls:/home/dale/driverless/driverless_ws/install/common:/home/dale/driverless/driverless_ws/install/collection:/home/dale/driverless/driverless_ws/install/actuators:/home/dale/driverless/driverless_ws/install/perceptions:/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) /home/dale/miniconda3/bin/cmake --build /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2 -- -j24 -l24

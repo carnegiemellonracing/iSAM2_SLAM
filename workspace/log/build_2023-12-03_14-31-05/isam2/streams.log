@@ -1,0 +1,43 @@
+[0.018s] Invoking command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) /home/dale/miniconda3/bin/cmake /home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_INSTALL_PREFIX=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2
+[0.033s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.034s] [33mCMake Warning (dev) at /opt/ros/foxy/share/ament_cmake_core/cmake/core/python.cmake:22 (find_package):
+[0.034s]   Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+[0.034s]   are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+[0.034s]   the cmake_policy command to set the policy and suppress this warning.
+[0.034s] 
+[0.034s] Call Stack (most recent call first):
+[0.034s]   /opt/ros/foxy/share/ament_cmake_core/cmake/core/all.cmake:53 (include)
+[0.034s]   /opt/ros/foxy/share/ament_cmake_core/cmake/ament_cmake_core-extras.cmake:17 (include)
+[0.034s]   /opt/ros/foxy/share/ament_cmake_core/cmake/ament_cmake_coreConfig.cmake:41 (include)
+[0.034s]   /opt/ros/foxy/share/ament_cmake/cmake/ament_cmake_export_dependencies-extras.cmake:15 (find_package)
+[0.034s]   /opt/ros/foxy/share/ament_cmake/cmake/ament_cmakeConfig.cmake:41 (include)
+[0.034s]   CMakeLists.txt:25 (find_package)
+[0.034s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.034s] [0m
+[0.044s] -- Using PYTHON_EXECUTABLE: /home/dale/miniconda3/bin/python3
+[0.106s] -- Found rclcpp: 2.4.3 (/opt/ros/foxy/share/rclcpp/cmake)
+[0.122s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.124s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.180s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.203s] -- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[0.203s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.266s] -- Found message_filters: 3.2.7 (/opt/ros/foxy/share/message_filters/cmake)
+[0.272s] [31mCMake Error at CMakeLists.txt:28 (find_package):
+[0.272s]   By not providing "Findeufs_msgs.cmake" in CMAKE_MODULE_PATH this project
+[0.272s]   has asked CMake to find a package configuration file provided by
+[0.272s]   "eufs_msgs", but CMake did not find one.
+[0.272s] 
+[0.272s]   Could not find a package configuration file provided by "eufs_msgs" with
+[0.272s]   any of the following names:
+[0.272s] 
+[0.272s]     eufs_msgsConfig.cmake
+[0.272s]     eufs_msgs-config.cmake
+[0.272s] 
+[0.272s]   Add the installation prefix of "eufs_msgs" to CMAKE_PREFIX_PATH or set
+[0.272s]   "eufs_msgs_DIR" to a directory containing one of the above files.  If
+[0.272s]   "eufs_msgs" provides a separate development package or SDK, be sure it has
+[0.272s]   been installed.
+[0.272s] 
+[0.272s] [0m
+[0.272s] -- Configuring incomplete, errors occurred!
+[0.275s] Invoked command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2' returned '1': CMAKE_PREFIX_PATH=/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) /home/dale/miniconda3/bin/cmake /home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_INSTALL_PREFIX=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2

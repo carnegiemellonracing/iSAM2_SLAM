@@ -1,1 +1,3 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/SystemStatus.msg
+std_msgs/Header header
+
+TopicStatus[] topic_statuses
