@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
   "CMakeFiles/isam_test.dir/isam2Node.cpp.o"
-  "CMakeFiles/isam_test.dir/isam2Node.cpp.o.d"
   "isam_test"
   "isam_test.pdb"
 )

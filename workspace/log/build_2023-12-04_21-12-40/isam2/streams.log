@@ -1,0 +1,79 @@
+[0.506s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2
+[1.004s] -- The C compiler identification is GNU 9.4.0
+[1.710s] -- The CXX compiler identification is GNU 9.4.0
+[2.138s] -- Check for working C compiler: /usr/bin/cc
+[2.496s] -- Check for working C compiler: /usr/bin/cc -- works
+[2.503s] -- Detecting C compiler ABI info
+[2.863s] -- Detecting C compiler ABI info - done
+[2.886s] -- Detecting C compile features
+[2.886s] -- Detecting C compile features - done
+[2.891s] -- Check for working CXX compiler: /usr/bin/c++
+[3.233s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[3.233s] -- Detecting CXX compiler ABI info
+[3.597s] -- Detecting CXX compiler ABI info - done
+[3.614s] -- Detecting CXX compile features
+[3.614s] -- Detecting CXX compile features - done
+[3.624s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[3.666s] -- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+[3.666s] -- Using PYTHON_EXECUTABLE: /usr/local/bin/python3
+[4.003s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[4.057s] -- Found rclcpp: 2.4.3 (/opt/ros/foxy/share/rclcpp/cmake)
+[4.525s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[4.537s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[7.940s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+[11.172s] -- Found FastRTPS: /opt/ros/foxy/include  
+[17.106s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[17.215s] -- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[17.219s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[17.223s] -- Looking for pthread.h
+[17.592s] -- Looking for pthread.h - found
+[17.592s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[17.943s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+[17.944s] -- Looking for pthread_create in pthreads
+[18.294s] -- Looking for pthread_create in pthreads - not found
+[18.294s] -- Looking for pthread_create in pthread
+[18.649s] -- Looking for pthread_create in pthread - found
+[18.650s] -- Found Threads: TRUE  
+[18.909s] -- Found message_filters: 3.2.7 (/opt/ros/foxy/share/message_filters/cmake)
+[18.914s] -- Found eufs_msgs: 2.0.0 (/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/share/eufs_msgs/cmake)
+[19.565s] -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake (found suitable version "1.71.0", minimum required is "1.65") found components: serialization system filesystem thread program_options date_time timer chrono regex 
+[19.582s] -- GTSAM include directory:  /usr/local/lib/cmake/GTSAM/../../../include
+[19.779s] -- Configuring done
+[19.810s] -- Generating done
+[19.812s] -- Build files have been written to: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2
+[19.824s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2' returned '0': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2
+[19.829s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 -- -j12 -l12
+[19.880s] [35m[1mScanning dependencies of target isam_test[0m
+[20.146s] [ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+[20.600s] In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+[20.600s]                  from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[20.600s] [01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+[20.600s]    18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+[20.600s]       |  [01;35m[K^~~~~~~[m[K
+[28.317s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:[m[K In member function ‘[01m[Kvoid SLAMValidation::vehicle_state_callback(eufs_msgs::msg::CarState_<std::allocator<void> >::SharedPtr)[m[K’:
+[28.317s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:70:1:[m[K [01;31m[Kerror: [m[Kversion control conflict marker in file
+[28.317s]    70 | [01;31m[K<<<<<<<[m[K HEAD
+[28.317s]       | [01;31m[K^~~~~~~[m[K
+[28.317s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:72:1:[m[K [01;31m[Kerror: [m[Kversion control conflict marker in file
+[28.317s]    72 | [01;31m[K=======[m[K
+[28.318s]       | [01;31m[K^~~~~~~[m[K
+[28.318s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:74:1:[m[K [01;31m[Kerror: [m[Kversion control conflict marker in file
+[28.318s]    74 | [01;31m[K>>>>>>>[m[K c34fc460366d28be4e2f9205c3348654e09a0ea9
+[28.318s]       | [01;31m[K^~~~~~~[m[K
+[28.320s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:79:37:[m[K [01;31m[Kerror: [m[K‘[01m[Kq1[m[K’ was not declared in this scope; did you mean ‘[01m[Ky1[m[K’?
+[28.320s]    79 |         double yaw = atan2(2*(q0*q3+[01;31m[Kq1[m[K*q2), pow(q0, 2)+pow(q1, 2)-pow(q2, 2)-pow(q3, 2));
+[28.320s]       |                                     [01;31m[K^~[m[K
+[28.321s]       |                                     [32m[Ky1[m[K
+[28.321s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:[m[K In member function ‘[01m[Kvoid SLAMValidation::run_slam()[m[K’:
+[28.321s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:88:65:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[KslamISAM::step(rclcpp::Logger, gtsam::Pose2&, std::vector<Eigen::Matrix<double, 2, 1> >&)[m[K’
+[28.321s]    88 |         slam_instance.step(this->get_logger(),global_odom, cones[01;31m[K)[m[K;
+[28.321s]       |                                                                 [01;31m[K^[m[K
+[28.322s] In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[28.322s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:139:10:[m[K [01;36m[Knote: [m[Kcandidate: ‘[01m[Kvoid slamISAM::step(gtsam::Pose2, std::vector<Eigen::Matrix<double, 2, 1> >&)[m[K’
+[28.322s]   139 |     void [01;36m[Kstep[m[K(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
+[28.322s]       |          [01;36m[K^~~~[m[K
+[28.322s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:139:10:[m[K [01;36m[Knote: [m[K  candidate expects 2 arguments, 3 provided
+[38.412s] make[2]: *** [CMakeFiles/isam_test.dir/build.make:63: CMakeFiles/isam_test.dir/isam2Node.cpp.o] Error 1
+[38.412s] make[1]: *** [CMakeFiles/Makefile2:78: CMakeFiles/isam_test.dir/all] Error 2
+[38.412s] make: *** [Makefile:141: all] Error 2
+[38.454s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2' returned '2': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 -- -j12 -l12

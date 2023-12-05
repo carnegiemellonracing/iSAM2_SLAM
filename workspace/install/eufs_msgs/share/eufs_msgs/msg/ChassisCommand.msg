@@ -1,6 +1,1 @@
-std_msgs/Header header
-
-string sender
-float64 throttle
-float64 steering
-float64 front_brake
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/ChassisCommand.msg

@@ -1,3 +1,1 @@
-
-bool success
-string message
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_cmake/srv/SetString_Response.msg

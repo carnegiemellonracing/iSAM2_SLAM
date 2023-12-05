@@ -1,0 +1,19 @@
+[35m[1mScanning dependencies of target isam_test[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+                 from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+   18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+      |  [01;35m[K^~~~~~~[m[K
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:[m[K In member function ‘[01m[Kvoid SLAMValidation::run_slam()[m[K’:
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:84:65:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[KslamISAM::step(rclcpp::Logger, gtsam::Pose2&, std::vector<Eigen::Matrix<double, 2, 1> >&)[m[K’
+   84 |         slam_instance.step(this->get_logger(),global_odom, cones[01;31m[K)[m[K;
+      |                                                                 [01;31m[K^[m[K
+In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:139:10:[m[K [01;36m[Knote: [m[Kcandidate: ‘[01m[Kvoid slamISAM::step(gtsam::Pose2, std::vector<Eigen::Matrix<double, 2, 1> >&)[m[K’
+  139 |     void [01;36m[Kstep[m[K(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
+      |          [01;36m[K^~~~[m[K
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:139:10:[m[K [01;36m[Knote: [m[K  candidate expects 2 arguments, 3 provided
+make[2]: *** [CMakeFiles/isam_test.dir/build.make:63: CMakeFiles/isam_test.dir/isam2Node.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:78: CMakeFiles/isam_test.dir/all] Error 2
+make: *** [Makefile:141: all] Error 2

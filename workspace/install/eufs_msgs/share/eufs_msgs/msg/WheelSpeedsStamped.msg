@@ -1,2 +1,1 @@
-std_msgs/Header header
-eufs_msgs/WheelSpeeds speeds
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/WheelSpeedsStamped.msg

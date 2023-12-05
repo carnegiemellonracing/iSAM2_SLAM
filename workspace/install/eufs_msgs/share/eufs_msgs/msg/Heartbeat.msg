@@ -1,2 +1,1 @@
-uint8 id
-uint8 data
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/Heartbeat.msg

@@ -1,2 +1,1 @@
-# Simple msg for array of points
-geometry_msgs/Point[] points
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/PointArray.msg

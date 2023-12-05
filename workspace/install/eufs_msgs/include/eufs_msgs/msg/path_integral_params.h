@@ -1,12 +1,1 @@
-// generated from rosidl_generator_c/resource/idl.h.em
-// with input from eufs_msgs:msg/PathIntegralParams.idl
-// generated code does not contain a copyright notice
-
-#ifndef EUFS_MSGS__MSG__PATH_INTEGRAL_PARAMS_H_
-#define EUFS_MSGS__MSG__PATH_INTEGRAL_PARAMS_H_
-
-#include "eufs_msgs/msg/detail/path_integral_params__struct.h"
-#include "eufs_msgs/msg/detail/path_integral_params__functions.h"
-#include "eufs_msgs/msg/detail/path_integral_params__type_support.h"
-
-#endif  // EUFS_MSGS__MSG__PATH_INTEGRAL_PARAMS_H_
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_generator_c/eufs_msgs/msg/path_integral_params.h

@@ -6,9 +6,7 @@ from eufs_msgs.msg._chassis_command import ChassisCommand  # noqa: F401
 from eufs_msgs.msg._chassis_state import ChassisState  # noqa: F401
 from eufs_msgs.msg._cone_array import ConeArray  # noqa: F401
 from eufs_msgs.msg._cone_array_with_covariance import ConeArrayWithCovariance  # noqa: F401
-from eufs_msgs.msg._cone_array_with_covariance_plus import ConeArrayWithCovariancePlus  # noqa: F401
 from eufs_msgs.msg._cone_with_covariance import ConeWithCovariance  # noqa: F401
-from eufs_msgs.msg._cone_with_covariance_plus import ConeWithCovariancePlus  # noqa: F401
 from eufs_msgs.msg._costmap import Costmap  # noqa: F401
 from eufs_msgs.msg._ekf_err import EKFErr  # noqa: F401
 from eufs_msgs.msg._ekf_state import EKFState  # noqa: F401

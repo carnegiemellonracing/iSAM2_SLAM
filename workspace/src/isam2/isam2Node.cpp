@@ -67,11 +67,7 @@ class SLAMValidation : public rclcpp::Node
         }
     }
     void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr vehicle_state_data){
-<<<<<<< HEAD
         RCLCPP_INFO(this->get_logger(), "vehicle state:(%f,%f)\n",vehicle_state_data->pose.pose.orientation.x,vehicle_state_data->pose.pose.orientation.y);
-=======
-        RCLCPP_INFO(this->get_logger(), "vehicle state\n");
->>>>>>> c34fc460366d28be4e2f9205c3348654e09a0ea9
         double q1 = vehicle_state_data->pose.pose.orientation.x;
         double q2 = vehicle_state_data->pose.pose.orientation.y;
         double q3 = vehicle_state_data->pose.pose.orientation.z;
@@ -85,8 +81,7 @@ class SLAMValidation : public rclcpp::Node
     }
 
     void run_slam(){
-        slam_instance.step(this->get_logger(),global_odom, cones);
-        RCLCPP_INFO(this->get_logger(), "got output\n");
+        slam_instance.step(global_odom, cones);
         RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
 
     }

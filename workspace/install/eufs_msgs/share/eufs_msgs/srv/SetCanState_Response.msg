@@ -1,3 +1,1 @@
-
-bool success   # indicate successful run of triggered service
-string message # informational, e.g. for error messages
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_cmake/srv/SetCanState_Response.msg

@@ -1,2 +1,1 @@
-std_msgs/Header header
-eufs_msgs/NodeState[] states
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/NodeStateArray.msg

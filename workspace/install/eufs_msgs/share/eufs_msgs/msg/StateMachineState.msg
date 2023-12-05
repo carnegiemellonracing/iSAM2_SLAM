@@ -1,3 +1,1 @@
-# State of the EUFS State Machine
-uint16 state
-string state_str
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/StateMachineState.msg

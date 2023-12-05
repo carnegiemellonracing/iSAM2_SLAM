@@ -1,4 +1,1 @@
-int8 exitflag
-uint8 iterations
-float64 solve_time
-float64 cost
+/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/MPCState.msg
