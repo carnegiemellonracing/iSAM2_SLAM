@@ -1,0 +1,129 @@
+[1.125s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[1.125s] DEBUG:colcon:Parsed command line arguments: Namespace(allow_overriding=[], ament_cmake_args=None, base_paths=['.'], build_base='build', catkin_cmake_args=None, catkin_skip_building_tests=False, cmake_args=None, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, cmake_target=None, cmake_target_skip_unavailable=False, continue_on_error=False, event_handlers=None, executor='parallel', ignore_user_meta=False, install_base='install', log_base=None, log_level=None, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7fe285aa7a90>>, merge_install=False, metas=['./colcon.meta'], packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_end=None, packages_ignore=None, packages_ignore_regex=None, packages_select=None, packages_select_build_failed=False, packages_select_by_dep=None, packages_select_regex=None, packages_select_test_failures=False, packages_skip=None, packages_skip_build_finished=False, packages_skip_by_dep=None, packages_skip_regex=None, packages_skip_test_passed=False, packages_skip_up_to=None, packages_start=None, packages_up_to=None, packages_up_to_regex=None, parallel_workers=24, paths=None, symlink_install=False, test_result_base=None, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7fe285aa7a90>, verb_name='build', verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7fe2857e0c70>)
+[1.167s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[1.167s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[1.167s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[1.167s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[1.167s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[1.167s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[1.168s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace'
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[1.168s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extensions ['ignore', 'ignore_ament_install']
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extension 'ignore'
+[1.174s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extension 'ignore_ament_install'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extensions ['colcon_pkg']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extension 'colcon_pkg'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extensions ['colcon_meta']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extension 'colcon_meta'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extensions ['ros']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extension 'ros'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extensions ['cmake', 'python']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extension 'cmake'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extension 'python'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extensions ['python_setup_py']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/eufs_msgs) by extension 'python_setup_py'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extensions ['ignore', 'ignore_ament_install']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extension 'ignore'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extension 'ignore_ament_install'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extensions ['colcon_pkg']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extension 'colcon_pkg'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extensions ['colcon_meta']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extension 'colcon_meta'
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extensions ['ros']
+[1.175s] Level 1:colcon.colcon_core.package_identification:_identify(src/isam2) by extension 'ros'
+[1.176s] DEBUG:colcon.colcon_core.package_identification:Package 'src/isam2' with type 'ros.ament_cmake' and name 'isam2'
+[1.176s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[1.176s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[1.176s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[1.176s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[1.176s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[1.206s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[1.206s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[1.216s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 275 installed packages in /opt/ros/foxy
+[1.216s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'cmake_args' from command line to 'None'
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'cmake_target' from command line to 'None'
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'cmake_clean_cache' from command line to 'False'
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'cmake_clean_first' from command line to 'False'
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'cmake_force_configure' from command line to 'False'
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'ament_cmake_args' from command line to 'None'
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'catkin_cmake_args' from command line to 'None'
+[1.242s] Level 5:colcon.colcon_core.verb:set package 'isam2' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.242s] DEBUG:colcon.colcon_core.verb:Building package 'isam2' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2', 'merge_install': False, 'path': '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2', 'symlink_install': False, 'test_result_base': None}
+[1.246s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[1.251s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[1.251s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2' with build type 'ament_cmake'
+[1.251s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2'
+[1.256s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[1.256s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.256s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.269s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) /home/dale/miniconda3/bin/cmake /home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_INSTALL_PREFIX=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2
+[2.279s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2' returned '1': CMAKE_PREFIX_PATH=/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) /home/dale/miniconda3/bin/cmake /home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_INSTALL_PREFIX=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2
+[2.294s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(isam2)
+[2.299s] Level 1:colcon.colcon_core.environment:checking '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2' for CMake module files
+[2.300s] Level 1:colcon.colcon_core.environment:checking '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2' for CMake config files
+[2.300s] Level 1:colcon.colcon_core.environment:checking '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/bin'
+[2.300s] Level 1:colcon.colcon_core.environment:checking '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/lib/pkgconfig/isam2.pc'
+[2.300s] Level 1:colcon.colcon_core.environment:checking '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/lib/python3.8/site-packages'
+[2.300s] Level 1:colcon.colcon_core.environment:checking '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/bin'
+[2.305s] INFO:colcon.colcon_core.shell:Creating package script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.ps1'
+[2.305s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.dsv'
+[2.305s] INFO:colcon.colcon_core.shell:Creating package script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.sh'
+[2.305s] INFO:colcon.colcon_core.shell:Creating package script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.bash'
+[2.305s] INFO:colcon.colcon_core.shell:Creating package script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.zsh'
+[2.306s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/colcon-core/packages/isam2)
+[2.316s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[2.316s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[2.316s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[2.316s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[2.322s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[2.323s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[2.323s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[2.327s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[2.332s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/local_setup.ps1'
+[2.332s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/_local_setup_util_ps1.py'
+[2.333s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/setup.ps1'
+[2.338s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/local_setup.sh'
+[2.338s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/_local_setup_util_sh.py'
+[2.338s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/setup.sh'
+[2.343s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/local_setup.bash'
+[2.343s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/setup.bash'
+[2.348s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/local_setup.zsh'
+[2.348s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/setup.zsh'

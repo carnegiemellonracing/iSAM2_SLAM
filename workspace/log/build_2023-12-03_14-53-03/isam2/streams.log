@@ -1,0 +1,62 @@
+[0.018s] Invoking command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2': AMENT_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) LD_LIBRARY_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /home/dale/miniconda3/bin/cmake /home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_INSTALL_PREFIX=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2
+[0.034s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.035s] [33mCMake Warning (dev) at /opt/ros/foxy/share/ament_cmake_core/cmake/core/python.cmake:22 (find_package):
+[0.035s]   Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+[0.035s]   are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+[0.035s]   the cmake_policy command to set the policy and suppress this warning.
+[0.035s] 
+[0.035s] Call Stack (most recent call first):
+[0.035s]   /opt/ros/foxy/share/ament_cmake_core/cmake/core/all.cmake:53 (include)
+[0.035s]   /opt/ros/foxy/share/ament_cmake_core/cmake/ament_cmake_core-extras.cmake:17 (include)
+[0.035s]   /opt/ros/foxy/share/ament_cmake_core/cmake/ament_cmake_coreConfig.cmake:41 (include)
+[0.035s]   /opt/ros/foxy/share/ament_cmake/cmake/ament_cmake_export_dependencies-extras.cmake:15 (find_package)
+[0.035s]   /opt/ros/foxy/share/ament_cmake/cmake/ament_cmakeConfig.cmake:41 (include)
+[0.035s]   CMakeLists.txt:25 (find_package)
+[0.035s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.035s] [0m
+[0.045s] -- Using PYTHON_EXECUTABLE: /home/dale/miniconda3/bin/python3
+[0.110s] -- Found rclcpp: 2.4.3 (/opt/ros/foxy/share/rclcpp/cmake)
+[0.128s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.129s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.188s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.211s] -- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[0.212s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.277s] -- Found message_filters: 3.2.7 (/opt/ros/foxy/share/message_filters/cmake)
+[0.278s] -- Found eufs_msgs: 2.0.0 (/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/share/eufs_msgs/cmake)
+[0.478s] -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake (found suitable version "1.71.0", minimum required is "1.65") found components: serialization system filesystem thread program_options date_time timer chrono regex 
+[0.485s] -- GTSAM include directory:  /usr/local/lib/cmake/GTSAM/../../../include
+[0.523s] -- Configuring done (0.5s)
+[0.542s] -- Generating done (0.0s)
+[0.543s] -- Build files have been written to: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2
+[0.549s] Invoked command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2' returned '0': AMENT_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) LD_LIBRARY_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /home/dale/miniconda3/bin/cmake /home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_INSTALL_PREFIX=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2
+[0.550s] Invoking command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2': AMENT_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) LD_LIBRARY_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /home/dale/miniconda3/bin/cmake --build /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2 -- -j24 -l24
+[0.570s] [ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+[0.685s] In file included from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+[0.685s]                  from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[0.685s] [01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+[0.685s]    18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+[0.685s]       |  [01;35m[K^~~~~~~[m[K
+[7.642s] [100%] [32m[1mLinking CXX executable isam_test[0m
+[7.916s] [100%] Built target isam_test
+[7.919s] Invoked command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2' returned '0': AMENT_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) LD_LIBRARY_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /home/dale/miniconda3/bin/cmake --build /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2 -- -j24 -l24
+[7.940s] Invoking command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2': AMENT_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) LD_LIBRARY_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /home/dale/miniconda3/bin/cmake --install /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2
+[7.953s] -- Install configuration: ""
+[7.953s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test
+[7.954s] -- Set runtime path of "/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test" to ""
+[7.954s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/package_run_dependencies/isam2
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/parent_prefix_path/isam2
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.sh
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.dsv
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.sh
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.dsv
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.bash
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.sh
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.zsh
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.dsv
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.dsv
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/packages/isam2
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/ament_cmake_export_include_directories-extras.cmake
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config.cmake
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config-version.cmake
+[7.955s] -- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.xml
+[7.957s] Invoked command in '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2' returned '0': AMENT_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy CONDA_PROMPT_MODIFIER=(base) LD_LIBRARY_PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /home/dale/miniconda3/bin/cmake --install /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2

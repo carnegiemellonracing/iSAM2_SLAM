@@ -1,1 +1,4 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/ament_cmake_environment_hooks/local_setup.dsv
+source;share/eufs_msgs/environment/ament_prefix_path.sh
+source;share/eufs_msgs/environment/library_path.sh
+source;share/eufs_msgs/environment/path.sh
+source;share/eufs_msgs/environment/pythonpath.sh

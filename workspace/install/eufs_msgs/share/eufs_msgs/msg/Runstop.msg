@@ -1,1 +1,4 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/Runstop.msg
+std_msgs/Header header
+
+string sender
+bool motion_enabled

@@ -1,1 +1,2 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_cmake/srv/SetCanState_Request.msg
+uint16 ami_state
+uint16 as_state

@@ -1,0 +1,9 @@
+In file included from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+                 from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+   18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+      |  [01;35m[K^~~~~~~[m[K
+In file included from [01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[01m[K/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:128:15:[m[K [01;35m[Kwarning: [m[Kuse of ‘[01m[Kauto[m[K’ in parameter declaration only available with ‘[01m[K-fconcepts[m[K’
+  128 |     void step([01;35m[Kauto[m[K logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
+      |               [01;35m[K^~~~[m[K

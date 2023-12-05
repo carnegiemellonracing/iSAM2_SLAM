@@ -1,1 +1,13 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/TopicStatus.msg
+# Topic information
+string topic
+string description
+string group
+bool trigger_ebs
+string log_level
+
+# Topic status
+uint16 status
+
+uint16 OFF=0
+uint16 PUBLISHING=1
+uint16 TIMEOUT_EXCEEDED=2

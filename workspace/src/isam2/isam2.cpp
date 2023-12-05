@@ -176,8 +176,11 @@ public:
 
         Pose2 robot_est = isam2.calculateEstimate(X(x)).cast<Pose2>();
 
+
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
+            RCLCPP_INFO(logger, "observed cone: (%f,%f)",cone.x(),cone.y());
+
 
             // Pose2 conePose(cone.x(),cone.y(),0);
             Point2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y()); //calculate global position of the cone

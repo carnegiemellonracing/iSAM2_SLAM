@@ -1,0 +1,22 @@
+[ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+[100%] [32m[1mLinking CXX executable isam_test[0m
+[100%] Built target isam_test
+-- Install configuration: ""
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test
+-- Set runtime path of "/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test" to ""
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/package_run_dependencies/isam2
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/parent_prefix_path/isam2
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.sh
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.sh
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.dsv
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.bash
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.sh
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.zsh
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.dsv
+-- Installing: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.dsv
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/packages/isam2
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config.cmake
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config-version.cmake
+-- Up-to-date: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.xml

@@ -16,8 +16,12 @@ msg/ConeArray.idl
 msg/ConeArray.msg
 msg/ConeArrayWithCovariance.idl
 msg/ConeArrayWithCovariance.msg
+msg/ConeArrayWithCovariancePlus.idl
+msg/ConeArrayWithCovariancePlus.msg
 msg/ConeWithCovariance.idl
 msg/ConeWithCovariance.msg
+msg/ConeWithCovariancePlus.idl
+msg/ConeWithCovariancePlus.msg
 msg/Costmap.idl
 msg/Costmap.msg
 msg/EKFErr.idl

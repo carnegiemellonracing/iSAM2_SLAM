@@ -1,5 +1,0 @@
-CMake Error at CMakeLists.txt:18 (ament_environment_hooks):
-  Unknown CMake command "ament_environment_hooks".
-
-
-make: *** [Makefile:266: cmake_check_build_system] Error 1

@@ -1,0 +1,52 @@
+[0.000000] (-) TimerEvent: {}
+[0.000065] (isam2) JobQueued: {'identifier': 'isam2', 'dependencies': OrderedDict()}
+[0.000103] (isam2) JobStarted: {'identifier': 'isam2'}
+[0.016631] (isam2) JobProgress: {'identifier': 'isam2', 'progress': 'cmake'}
+[0.016892] (isam2) Command: {'cmd': ['/home/dale/miniconda3/bin/cmake', '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/src/isam2', '-DCMAKE_INSTALL_PREFIX=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/isam2'], 'cwd': '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('CONDA_PROMPT_MODIFIER', '(base)'), ('USER', 'dale'), ('SSH_AGENT_PID', '2276'), ('XDG_SESSION_TYPE', 'x11'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/home/dale'), ('CONDA_SHLVL', '1'), ('OLDPWD', '/home/dale/Documents/isam2/iSAM2_SLAM'), ('DESKTOP_SESSION', 'ubuntu'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('MANAGERPID', '2101'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('_CE_M', ''), ('IM_CONFIG_PHASE', '1'), ('ROS_DISTRO', 'foxy'), ('LOGNAME', 'dale'), ('JOURNAL_STREAM', '8:59233'), ('EUFS_MASTER', '/home/dale/Documents/eufs'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'dale'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('_CE_CONDA', ''), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/home/dale/miniconda3/bin:/home/dale/miniconda3/condabin:/opt/ros/foxy/bin:/home/dale/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'), ('SESSION_MANAGER', 'local/dale:@/tmp/.ICE-unix/2312,unix/dale:/tmp/.ICE-unix/2312'), ('INVOCATION_ID', '9175b8b855424189819a701ebc4ed279'), ('XDG_MENU_PREFIX', 'gnome-'), ('GNOME_TERMINAL_SCREEN', '/org/gnome/Terminal/screen/4a5bad25_d9a4_4730_9352_1297b4372149'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':1'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('GNOME_TERMINAL_SERVICE', ':1.83'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/opt/ros/foxy'), ('CONDA_PYTHON_EXE', '/home/dale/miniconda3/bin/python'), ('SHELL', '/bin/bash'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('CONDA_DEFAULT_ENV', 'base'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('CONDA_EXE', '/home/dale/miniconda3/bin/conda'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/dale/driverless-packages/PerceptionsLibrary22a:/home/dale/driverless-packages/PerceptionsLibrary22a:/opt/ros/foxy/lib/python3.8/site-packages'), ('CONDA_PREFIX', '/home/dale/miniconda3'), ('COLCON', '1'), ('VTE_VERSION', '6003'), ('CMAKE_PREFIX_PATH', '/opt/ros/foxy')]), 'shell': False}
+[0.033531] (isam2) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[0.034206] (isam2) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at /opt/ros/foxy/share/ament_cmake_core/cmake/core/python.cmake:22 (find_package):\n'}
+[0.034267] (isam2) StderrLine: {'line': b'  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules\n'}
+[0.034294] (isam2) StderrLine: {'line': b'  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use\n'}
+[0.034316] (isam2) StderrLine: {'line': b'  the cmake_policy command to set the policy and suppress this warning.\n'}
+[0.034337] (isam2) StderrLine: {'line': b'\n'}
+[0.034358] (isam2) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.034380] (isam2) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/core/all.cmake:53 (include)\n'}
+[0.034400] (isam2) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/ament_cmake_core-extras.cmake:17 (include)\n'}
+[0.034419] (isam2) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/ament_cmake_coreConfig.cmake:41 (include)\n'}
+[0.034439] (isam2) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake/cmake/ament_cmake_export_dependencies-extras.cmake:15 (find_package)\n'}
+[0.034459] (isam2) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake/cmake/ament_cmakeConfig.cmake:41 (include)\n'}
+[0.034478] (isam2) StderrLine: {'line': b'  CMakeLists.txt:25 (find_package)\n'}
+[0.034498] (isam2) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.034518] (isam2) StderrLine: {'line': b'\x1b[0m\n'}
+[0.043630] (isam2) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /home/dale/miniconda3/bin/python3\n'}
+[0.099693] (-) TimerEvent: {}
+[0.106473] (isam2) StdoutLine: {'line': b'-- Found rclcpp: 2.4.3 (/opt/ros/foxy/share/rclcpp/cmake)\n'}
+[0.122546] (isam2) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.124124] (isam2) StdoutLine: {'line': b'-- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)\n'}
+[0.180418] (isam2) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.199798] (-) TimerEvent: {}
+[0.202570] (isam2) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)\n'}
+[0.203185] (isam2) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.266006] (isam2) StdoutLine: {'line': b'-- Found message_filters: 3.2.7 (/opt/ros/foxy/share/message_filters/cmake)\n'}
+[0.271553] (isam2) StderrLine: {'line': b'\x1b[31mCMake Error at CMakeLists.txt:28 (find_package):\n'}
+[0.271697] (isam2) StderrLine: {'line': b'  By not providing "Findeufs_msgs.cmake" in CMAKE_MODULE_PATH this project\n'}
+[0.271731] (isam2) StderrLine: {'line': b'  has asked CMake to find a package configuration file provided by\n'}
+[0.271754] (isam2) StderrLine: {'line': b'  "eufs_msgs", but CMake did not find one.\n'}
+[0.271775] (isam2) StderrLine: {'line': b'\n'}
+[0.271800] (isam2) StderrLine: {'line': b'  Could not find a package configuration file provided by "eufs_msgs" with\n'}
+[0.271821] (isam2) StderrLine: {'line': b'  any of the following names:\n'}
+[0.271841] (isam2) StderrLine: {'line': b'\n'}
+[0.271861] (isam2) StderrLine: {'line': b'    eufs_msgsConfig.cmake\n'}
+[0.271881] (isam2) StderrLine: {'line': b'    eufs_msgs-config.cmake\n'}
+[0.271902] (isam2) StderrLine: {'line': b'\n'}
+[0.271921] (isam2) StderrLine: {'line': b'  Add the installation prefix of "eufs_msgs" to CMAKE_PREFIX_PATH or set\n'}
+[0.271947] (isam2) StderrLine: {'line': b'  "eufs_msgs_DIR" to a directory containing one of the above files.  If\n'}
+[0.271967] (isam2) StderrLine: {'line': b'  "eufs_msgs" provides a separate development package or SDK, be sure it has\n'}
+[0.271987] (isam2) StderrLine: {'line': b'  been installed.\n'}
+[0.272008] (isam2) StderrLine: {'line': b'\n'}
+[0.272026] (isam2) StderrLine: {'line': b'\x1b[0m\n'}
+[0.272045] (isam2) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.275215] (isam2) CommandEnded: {'returncode': 1}
+[0.299875] (-) TimerEvent: {}
+[0.303512] (isam2) JobEnded: {'identifier': 'isam2', 'rc': 1}
+[0.313784] (-) EventReactorShutdown: {}

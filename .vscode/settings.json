@@ -65,4 +65,8 @@
         "cfenv": "cpp",
         "typeindex": "cpp"
     }
+}{
+    "files.associations": {
+        "functional": "cpp"
+    }
 }
