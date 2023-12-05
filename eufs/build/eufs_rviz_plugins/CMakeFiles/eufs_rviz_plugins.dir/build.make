@@ -143,6 +143,7 @@ libeufs_rviz_plugins.so: /opt/ros/foxy/opt/yaml_cpp_vendor/lib/libyaml-cpp.so.0.
 libeufs_rviz_plugins.so: /opt/ros/foxy/lib/librviz_rendering.so
 libeufs_rviz_plugins.so: /opt/ros/foxy/opt/rviz_ogre_vendor/lib/libOgreOverlay.so
 libeufs_rviz_plugins.so: /opt/ros/foxy/opt/rviz_ogre_vendor/lib/libOgreMain.so
+libeufs_rviz_plugins.so: /usr/lib/x86_64-linux-gnu/libfreeimage.so
 libeufs_rviz_plugins.so: /usr/lib/x86_64-linux-gnu/libfreetype.so
 libeufs_rviz_plugins.so: /usr/lib/x86_64-linux-gnu/libz.so
 libeufs_rviz_plugins.so: /usr/lib/x86_64-linux-gnu/libOpenGL.so

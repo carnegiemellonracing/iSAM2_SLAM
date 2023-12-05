@@ -249,7 +249,8 @@ public:
 
         robot_est = isam2.calculateBestEstimate().at(X(x)).cast<gtsam::Pose2>();//  (X(x)).cast<gtsam::Pose2>();
         std::cout << "Robot Estimate:(" << robot_est.x() <<"," << robot_est.y() << ")" << std::endl;
-     
+
+        
         x++;
 
         // landmark_est.clear();

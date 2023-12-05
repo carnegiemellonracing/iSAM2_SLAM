@@ -1,8 +1,0 @@
-Metadata-Version: 2.1
-Name: eufs-racecar
-Version: 2.0.0
-Summary: Launch, URDF, mesh and material files for autonomous vehicles.
-Maintainer: Cameron Matthew
-Maintainer-email: cambobmat@icloud.com
-License: MIT
-Requires-Dist: setuptools

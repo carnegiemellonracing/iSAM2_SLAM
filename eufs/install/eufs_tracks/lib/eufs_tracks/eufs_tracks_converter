@@ -1,10 +1,7 @@
 #!/usr/bin/python3
-
-import sys
-
-from eufs_tracks.converter_tool import EUFSConverterGUI
-from rqt_gui.main import Main
-
-plugin = 'eufs_tracks.converter_tool.EUFSConverterGUI'
-main = Main(filename=plugin)
-sys.exit(main.main(standalone=plugin))
+# EASY-INSTALL-DEV-SCRIPT: 'eufs-tracks==2.0.0','eufs_tracks_converter'
+__requires__ = 'eufs-tracks==2.0.0'
+__import__('pkg_resources').require('eufs-tracks==2.0.0')
+__file__ = '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/scripts/eufs_tracks_converter'
+with open(__file__) as f:
+    exec(compile(f.read(), __file__, 'exec'))

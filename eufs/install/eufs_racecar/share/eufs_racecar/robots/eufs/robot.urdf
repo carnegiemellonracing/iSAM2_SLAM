@@ -38,7 +38,7 @@
       <wheelSpeedsTopicName>/ros_can/wheel_speeds</wheelSpeedsTopicName>
       <groundTruthWheelSpeedsTopicName>/ground_truth/wheel_speeds</groundTruthWheelSpeedsTopicName>
       <odometryTopicName>/ground_truth/odom</odometryTopicName>
-      <commandMode>acceleration</commandMode>
+      <commandMode>velocity</commandMode>
       <controlDelay>0.2</controlDelay>
       <!-- The time in seconds it takes for the car to go from lock to lock -->
       <steeringLockTime>1</steeringLockTime>

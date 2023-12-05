@@ -1,4 +1,3 @@
-README.md
 package.xml
 setup.cfg
 setup.py
@@ -8,6 +7,12 @@ setup.py
 ../../build/eufs_racecar/eufs_racecar.egg-info/requires.txt
 ../../build/eufs_racecar/eufs_racecar.egg-info/top_level.txt
 ../../build/eufs_racecar/eufs_racecar.egg-info/zip-safe
+eufs_racecar.egg-info/PKG-INFO
+eufs_racecar.egg-info/SOURCES.txt
+eufs_racecar.egg-info/dependency_links.txt
+eufs_racecar.egg-info/requires.txt
+eufs_racecar.egg-info/top_level.txt
+eufs_racecar.egg-info/zip-safe
 launch/load_car.launch.py
 meshes/ads_dv_chassis.dae
 meshes/ads_wheel_left.dae

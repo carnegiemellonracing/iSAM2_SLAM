@@ -1,0 +1,675 @@
+[0.000000] (-) TimerEvent: {}
+[0.001179] (eufs_msgs) JobQueued: {'identifier': 'eufs_msgs', 'dependencies': OrderedDict()}
+[0.001595] (eufs_racecar) JobQueued: {'identifier': 'eufs_racecar', 'dependencies': OrderedDict()}
+[0.001676] (eufs_sensors) JobQueued: {'identifier': 'eufs_sensors', 'dependencies': OrderedDict()}
+[0.001751] (eufs_tracks) JobQueued: {'identifier': 'eufs_tracks', 'dependencies': OrderedDict()}
+[0.001824] (eufs_launcher) JobQueued: {'identifier': 'eufs_launcher', 'dependencies': OrderedDict([('eufs_tracks', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks')])}
+[0.001901] (eufs_models) JobQueued: {'identifier': 'eufs_models', 'dependencies': OrderedDict([('eufs_msgs', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs')])}
+[0.001977] (eufs_rqt) JobQueued: {'identifier': 'eufs_rqt', 'dependencies': OrderedDict([('eufs_msgs', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs')])}
+[0.002053] (eufs_rviz_plugins) JobQueued: {'identifier': 'eufs_rviz_plugins', 'dependencies': OrderedDict([('eufs_msgs', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs')])}
+[0.002094] (eufs_plugins) JobQueued: {'identifier': 'eufs_plugins', 'dependencies': OrderedDict([('eufs_msgs', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs'), ('eufs_models', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models')])}
+[0.003359] (eufs_msgs) JobStarted: {'identifier': 'eufs_msgs'}
+[0.099680] (-) TimerEvent: {}
+[0.168435] (eufs_tracks) JobStarted: {'identifier': 'eufs_tracks'}
+[0.200349] (-) TimerEvent: {}
+[0.303312] (-) TimerEvent: {}
+[0.360954] (eufs_racecar) JobStarted: {'identifier': 'eufs_racecar'}
+[0.403768] (-) TimerEvent: {}
+[0.504677] (-) TimerEvent: {}
+[0.565478] (eufs_sensors) JobStarted: {'identifier': 'eufs_sensors'}
+[0.605057] (-) TimerEvent: {}
+[0.709321] (-) TimerEvent: {}
+[0.714555] (eufs_msgs) JobProgress: {'identifier': 'eufs_msgs', 'progress': 'cmake'}
+[0.716381] (eufs_msgs) Command: {'cmd': ['/usr/bin/cmake', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs', '-DCMAKE_BUILD_TYPE=RelWithDebInfo', '-DAMENT_CMAKE_SYMLINK_INSTALL=1', '-DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'andrewwhong'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/home/andrewwhong'), ('OLDPWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM'), ('TERM_PROGRAM_VERSION', '1.84.2'), ('VSCODE_IPC_HOOK_CLI', '/run/user/1000/vscode-ipc-c67907dd-7abd-4150-8577-2b55624ff41e.sock'), ('ROS_PYTHON_VERSION', '3'), ('GOROOT', '/home/andrewwhong/go/go'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu-20.04'), ('WAYLAND_DISPLAY', 'wayland-0'), ('COLCON_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install'), ('ROS_DISTRO', 'foxy'), ('LOGNAME', 'andrewwhong'), ('NAME', 'DESKTOP-NJ9IVDT'), ('WSL_INTEROP', '/run/WSL/682_interop'), ('PULSE_SERVER', 'unix:/mnt/wslg/PulseServer'), ('EUFS_MASTER', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/home/andrewwhong/.vscode-server/bin/1a5daa3a0231a0fbba4f14db7ec463cf99d7768e/bin/remote-cli:/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin'), ('XDG_RUNTIME_DIR', '/run/user/1000/'), ('DISPLAY', '172.19.96.1:0.0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/run/user/1000/vscode-git-6be0b5ed08.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy'), ('SHELL', '/bin/bash'), ('GTSAM_INCLUDE_DIR', '/usr/local/include/gtsam'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1'), ('WSL2_GUI_APPS_ENABLED', '1'), ('HOSTTYPE', 'x86_64'), ('CMAKE_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/opt/ros/foxy'), ('WSLENV', 'VSCODE_WSL_EXT_LOCATION/up')]), 'shell': False}
+[0.809465] (-) TimerEvent: {}
+[0.910265] (-) TimerEvent: {}
+[1.011180] (-) TimerEvent: {}
+[1.111967] (-) TimerEvent: {}
+[1.212647] (-) TimerEvent: {}
+[1.314188] (-) TimerEvent: {}
+[1.418811] (-) TimerEvent: {}
+[1.519653] (-) TimerEvent: {}
+[1.620381] (-) TimerEvent: {}
+[1.720976] (-) TimerEvent: {}
+[1.821613] (-) TimerEvent: {}
+[1.922291] (-) TimerEvent: {}
+[2.023086] (-) TimerEvent: {}
+[2.123727] (-) TimerEvent: {}
+[2.226834] (-) TimerEvent: {}
+[2.331890] (-) TimerEvent: {}
+[2.338127] (eufs_sensors) JobProgress: {'identifier': 'eufs_sensors', 'progress': 'cmake'}
+[2.343369] (eufs_sensors) Command: {'cmd': ['/usr/bin/cmake', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_sensors', '-DCMAKE_BUILD_TYPE=RelWithDebInfo', '-DAMENT_CMAKE_SYMLINK_INSTALL=1', '-DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'andrewwhong'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/home/andrewwhong'), ('OLDPWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM'), ('TERM_PROGRAM_VERSION', '1.84.2'), ('VSCODE_IPC_HOOK_CLI', '/run/user/1000/vscode-ipc-c67907dd-7abd-4150-8577-2b55624ff41e.sock'), ('ROS_PYTHON_VERSION', '3'), ('GOROOT', '/home/andrewwhong/go/go'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu-20.04'), ('WAYLAND_DISPLAY', 'wayland-0'), ('COLCON_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install'), ('ROS_DISTRO', 'foxy'), ('LOGNAME', 'andrewwhong'), ('NAME', 'DESKTOP-NJ9IVDT'), ('WSL_INTEROP', '/run/WSL/682_interop'), ('PULSE_SERVER', 'unix:/mnt/wslg/PulseServer'), ('EUFS_MASTER', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/home/andrewwhong/.vscode-server/bin/1a5daa3a0231a0fbba4f14db7ec463cf99d7768e/bin/remote-cli:/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin'), ('XDG_RUNTIME_DIR', '/run/user/1000/'), ('DISPLAY', '172.19.96.1:0.0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/run/user/1000/vscode-git-6be0b5ed08.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy'), ('SHELL', '/bin/bash'), ('GTSAM_INCLUDE_DIR', '/usr/local/include/gtsam'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1'), ('WSL2_GUI_APPS_ENABLED', '1'), ('HOSTTYPE', 'x86_64'), ('CMAKE_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/opt/ros/foxy'), ('WSLENV', 'VSCODE_WSL_EXT_LOCATION/up')]), 'shell': False}
+[2.352001] (eufs_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[2.357048] (eufs_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.8.10", minimum required is "3") \n'}
+[2.358328] (eufs_msgs) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/local/bin/python3\n'}
+[2.358686] (eufs_msgs) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[2.358885] (eufs_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)\n'}
+[2.359051] (eufs_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[2.359201] (eufs_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)\n'}
+[2.376294] (eufs_sensors) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[2.432084] (-) TimerEvent: {}
+[2.434501] (eufs_sensors) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/local/bin/python3\n'}
+[2.532231] (-) TimerEvent: {}
+[2.632878] (-) TimerEvent: {}
+[2.733434] (-) TimerEvent: {}
+[2.834099] (-) TimerEvent: {}
+[2.934683] (-) TimerEvent: {}
+[3.035470] (-) TimerEvent: {}
+[3.136462] (-) TimerEvent: {}
+[3.137547] (eufs_sensors) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[3.191841] (eufs_sensors) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.9.8 (/opt/ros/foxy/share/ament_lint_auto/cmake)\n'}
+[3.236732] (-) TimerEvent: {}
+[3.337627] (-) TimerEvent: {}
+[3.439096] (-) TimerEvent: {}
+[3.540536] (-) TimerEvent: {}
+[3.641281] (-) TimerEvent: {}
+[3.665306] (eufs_sensors) StdoutLine: {'line': b"-- Added test 'copyright' to check source files copyright and LICENSE\n"}
+[3.670583] (eufs_sensors) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[3.677438] (eufs_sensors) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[3.684951] (eufs_sensors) StdoutLine: {'line': b'-- Configuring done\n'}
+[3.696408] (eufs_sensors) StdoutLine: {'line': b'-- Generating done\n'}
+[3.698967] (eufs_sensors) StdoutLine: {'line': b'-- Build files have been written to: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors\n'}
+[3.730563] (eufs_sensors) CommandEnded: {'returncode': 0}
+[3.732215] (eufs_sensors) JobProgress: {'identifier': 'eufs_sensors', 'progress': 'build'}
+[3.738066] (eufs_sensors) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors', '--', '-j12', '-l12'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'andrewwhong'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/home/andrewwhong'), ('OLDPWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM'), ('TERM_PROGRAM_VERSION', '1.84.2'), ('VSCODE_IPC_HOOK_CLI', '/run/user/1000/vscode-ipc-c67907dd-7abd-4150-8577-2b55624ff41e.sock'), ('ROS_PYTHON_VERSION', '3'), ('GOROOT', '/home/andrewwhong/go/go'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu-20.04'), ('WAYLAND_DISPLAY', 'wayland-0'), ('COLCON_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install'), ('ROS_DISTRO', 'foxy'), ('LOGNAME', 'andrewwhong'), ('NAME', 'DESKTOP-NJ9IVDT'), ('WSL_INTEROP', '/run/WSL/682_interop'), ('PULSE_SERVER', 'unix:/mnt/wslg/PulseServer'), ('EUFS_MASTER', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/home/andrewwhong/.vscode-server/bin/1a5daa3a0231a0fbba4f14db7ec463cf99d7768e/bin/remote-cli:/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin'), ('XDG_RUNTIME_DIR', '/run/user/1000/'), ('DISPLAY', '172.19.96.1:0.0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/run/user/1000/vscode-git-6be0b5ed08.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy'), ('SHELL', '/bin/bash'), ('GTSAM_INCLUDE_DIR', '/usr/local/include/gtsam'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1'), ('WSL2_GUI_APPS_ENABLED', '1'), ('HOSTTYPE', 'x86_64'), ('CMAKE_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/opt/ros/foxy'), ('WSLENV', 'VSCODE_WSL_EXT_LOCATION/up')]), 'shell': False}
+[3.741864] (-) TimerEvent: {}
+[3.843075] (-) TimerEvent: {}
+[3.851479] (eufs_sensors) CommandEnded: {'returncode': 0}
+[3.913637] (eufs_sensors) JobProgress: {'identifier': 'eufs_sensors', 'progress': 'install'}
+[3.940900] (eufs_sensors) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'andrewwhong'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/home/andrewwhong'), ('OLDPWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM'), ('TERM_PROGRAM_VERSION', '1.84.2'), ('VSCODE_IPC_HOOK_CLI', '/run/user/1000/vscode-ipc-c67907dd-7abd-4150-8577-2b55624ff41e.sock'), ('ROS_PYTHON_VERSION', '3'), ('GOROOT', '/home/andrewwhong/go/go'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu-20.04'), ('WAYLAND_DISPLAY', 'wayland-0'), ('COLCON_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install'), ('ROS_DISTRO', 'foxy'), ('LOGNAME', 'andrewwhong'), ('NAME', 'DESKTOP-NJ9IVDT'), ('WSL_INTEROP', '/run/WSL/682_interop'), ('PULSE_SERVER', 'unix:/mnt/wslg/PulseServer'), ('EUFS_MASTER', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/home/andrewwhong/.vscode-server/bin/1a5daa3a0231a0fbba4f14db7ec463cf99d7768e/bin/remote-cli:/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin'), ('XDG_RUNTIME_DIR', '/run/user/1000/'), ('DISPLAY', '172.19.96.1:0.0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/run/user/1000/vscode-git-6be0b5ed08.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy'), ('SHELL', '/bin/bash'), ('GTSAM_INCLUDE_DIR', '/usr/local/include/gtsam'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1'), ('WSL2_GUI_APPS_ENABLED', '1'), ('HOSTTYPE', 'x86_64'), ('CMAKE_PREFIX_PATH', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/opt/ros/foxy'), ('WSLENV', 'VSCODE_WSL_EXT_LOCATION/up')]), 'shell': False}
+[3.944911] (-) TimerEvent: {}
+[3.963434] (eufs_sensors) StdoutLine: {'line': b'-- Install configuration: "RelWithDebInfo"\n'}
+[3.964834] (eufs_sensors) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[3.966340] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/VLP16_base_1.dae\n'}
+[3.990266] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/VLP16_base_2.dae\n'}
+[4.011239] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/VLP16_scan.dae\n'}
+[4.029287] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/antenna_3GO16.dae\n'}
+[4.045048] (-) TimerEvent: {}
+[4.048976] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/antenna_3GO16.stl\n'}
+[4.069051] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/zed.dae\n'}
+[4.092560] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/VLP-16R.urdf.xacro\n'}
+[4.111302] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/all_sensors.urdf.xacro\n'}
+[4.130432] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/gps.urdf.xacro\n'}
+[4.145189] (-) TimerEvent: {}
+[4.149408] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/imu.urdf.xacro\n'}
+[4.172921] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/magnetometer.urdf.xacro\n'}
+[4.193661] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/zed.urdf.xacro\n'}
+[4.218688] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/ament_index/resource_index/package_run_dependencies/eufs_sensors\n'}
+[4.243748] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/ament_index/resource_index/parent_prefix_path/eufs_sensors\n'}
+[4.245372] (-) TimerEvent: {}
+[4.266070] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/environment/ament_prefix_path.sh\n'}
+[4.287074] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/environment/ament_prefix_path.dsv\n'}
+[4.310174] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/environment/path.sh\n'}
+[4.329811] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/environment/path.dsv\n'}
+[4.345490] (-) TimerEvent: {}
+[4.351358] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/local_setup.bash\n'}
+[4.372744] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/local_setup.sh\n'}
+[4.392840] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/local_setup.zsh\n'}
+[4.421890] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/local_setup.dsv\n'}
+[4.445718] (-) TimerEvent: {}
+[4.452917] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/package.dsv\n'}
+[4.485676] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/ament_index/resource_index/packages/eufs_sensors\n'}
+[4.517163] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[4.542519] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/cmake/eufs_sensorsConfig.cmake\n'}
+[4.545876] (-) TimerEvent: {}
+[4.578365] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/cmake/eufs_sensorsConfig-version.cmake\n'}
+[4.608331] (eufs_sensors) StdoutLine: {'line': b'-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/package.xml\n'}
+[4.644532] (eufs_sensors) CommandEnded: {'returncode': 0}
+[4.652603] (-) TimerEvent: {}
+[4.756305] (-) TimerEvent: {}
+[4.859729] (-) TimerEvent: {}
+[4.963629] (-) TimerEvent: {}
+[5.066655] (-) TimerEvent: {}
+[5.168347] (-) TimerEvent: {}
+[5.270711] (-) TimerEvent: {}
+[5.334105] (eufs_sensors) JobEnded: {'identifier': 'eufs_sensors', 'rc': 0}
+[5.370880] (-) TimerEvent: {}
+[5.403613] (eufs_tracks) Command: {'cmd': ['/usr/bin/python3', 'setup.py', 'develop', '--editable', '--build-directory', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build', '--no-deps', 'install_data'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'andrewwhong', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib', 'HOME': '/home/andrewwhong', 'OLDPWD': '/home/andrewwhong/classes/16833/iSAM2_SLAM', 'TERM_PROGRAM_VERSION': '1.84.2', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-c67907dd-7abd-4150-8577-2b55624ff41e.sock', 'ROS_PYTHON_VERSION': '3', 'GOROOT': '/home/andrewwhong/go/go', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'WSL_DISTRO_NAME': 'Ubuntu-20.04', 'WAYLAND_DISPLAY': 'wayland-0', 'COLCON_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install', 'ROS_DISTRO': 'foxy', 'LOGNAME': 'andrewwhong', 'NAME': 'DESKTOP-NJ9IVDT', 'WSL_INTEROP': '/run/WSL/682_interop', 'PULSE_SERVER': 'unix:/mnt/wslg/PulseServer', 'EUFS_MASTER': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm-256color', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/opt/ros/foxy/bin:/home/andrewwhong/.vscode-server/bin/1a5daa3a0231a0fbba4f14db7ec463cf99d7768e/bin/remote-cli:/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000/', 'DISPLAY': '172.19.96.1:0.0', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-6be0b5ed08.sock', 'TERM_PROGRAM': 'vscode', 'AMENT_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy', 'SHELL': '/bin/bash', 'GTSAM_INCLUDE_DIR': '/usr/local/include/gtsam', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'PWD': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages', 'COLCON': '1', 'WSL2_GUI_APPS_ENABLED': '1', 'HOSTTYPE': 'x86_64', 'CMAKE_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs', 'WSLENV': 'VSCODE_WSL_EXT_LOCATION/up'}, 'shell': False}
+[5.420165] (eufs_racecar) Command: {'cmd': ['/usr/bin/python3', 'setup.py', 'develop', '--editable', '--build-directory', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/build', '--no-deps', 'install_data'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'andrewwhong', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib', 'HOME': '/home/andrewwhong', 'OLDPWD': '/home/andrewwhong/classes/16833/iSAM2_SLAM', 'TERM_PROGRAM_VERSION': '1.84.2', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-c67907dd-7abd-4150-8577-2b55624ff41e.sock', 'ROS_PYTHON_VERSION': '3', 'GOROOT': '/home/andrewwhong/go/go', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'WSL_DISTRO_NAME': 'Ubuntu-20.04', 'WAYLAND_DISPLAY': 'wayland-0', 'COLCON_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install', 'ROS_DISTRO': 'foxy', 'LOGNAME': 'andrewwhong', 'NAME': 'DESKTOP-NJ9IVDT', 'WSL_INTEROP': '/run/WSL/682_interop', 'PULSE_SERVER': 'unix:/mnt/wslg/PulseServer', 'EUFS_MASTER': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm-256color', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/opt/ros/foxy/bin:/home/andrewwhong/.vscode-server/bin/1a5daa3a0231a0fbba4f14db7ec463cf99d7768e/bin/remote-cli:/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000/', 'DISPLAY': '172.19.96.1:0.0', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-6be0b5ed08.sock', 'TERM_PROGRAM': 'vscode', 'AMENT_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy', 'SHELL': '/bin/bash', 'GTSAM_INCLUDE_DIR': '/usr/local/include/gtsam', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'PWD': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages', 'COLCON': '1', 'WSL2_GUI_APPS_ENABLED': '1', 'HOSTTYPE': 'x86_64', 'CMAKE_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs', 'WSLENV': 'VSCODE_WSL_EXT_LOCATION/up'}, 'shell': False}
+[5.471093] (-) TimerEvent: {}
+[5.571738] (-) TimerEvent: {}
+[5.672630] (-) TimerEvent: {}
+[5.773249] (-) TimerEvent: {}
+[5.873884] (-) TimerEvent: {}
+[5.974769] (-) TimerEvent: {}
+[6.075816] (-) TimerEvent: {}
+[6.176558] (-) TimerEvent: {}
+[6.277233] (-) TimerEvent: {}
+[6.377869] (-) TimerEvent: {}
+[6.478442] (-) TimerEvent: {}
+[6.549167] (eufs_racecar) StdoutLine: {'line': b'running develop\n'}
+[6.550699] (eufs_racecar) StderrLine: {'line': b'/home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/command/develop.py:39: EasyInstallDeprecationWarning: easy_install command is deprecated.\n'}
+[6.551143] (eufs_racecar) StderrLine: {'line': b'!!\n'}
+[6.551299] (eufs_racecar) StderrLine: {'line': b'\n'}
+[6.551462] (eufs_racecar) StderrLine: {'line': b'        ********************************************************************************\n'}
+[6.551700] (eufs_racecar) StderrLine: {'line': b'        Please avoid running ``setup.py`` and ``easy_install``.\n'}
+[6.551972] (eufs_racecar) StderrLine: {'line': b'        Instead, use pypa/build, pypa/installer or other\n'}
+[6.552177] (eufs_racecar) StderrLine: {'line': b'        standards-based tools.\n'}
+[6.552357] (eufs_racecar) StderrLine: {'line': b'\n'}
+[6.552592] (eufs_racecar) StderrLine: {'line': b'        See https://github.com/pypa/setuptools/issues/917 for details.\n'}
+[6.552782] (eufs_racecar) StderrLine: {'line': b'        ********************************************************************************\n'}
+[6.552963] (eufs_racecar) StderrLine: {'line': b'\n'}
+[6.553152] (eufs_racecar) StderrLine: {'line': b'!!\n'}
+[6.553340] (eufs_racecar) StderrLine: {'line': b'  easy_install.initialize_options(self)\n'}
+[6.571995] (eufs_tracks) StdoutLine: {'line': b'running develop\n'}
+[6.572736] (eufs_tracks) StderrLine: {'line': b'/home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/command/develop.py:39: EasyInstallDeprecationWarning: easy_install command is deprecated.\n'}
+[6.572998] (eufs_tracks) StderrLine: {'line': b'!!\n'}
+[6.573194] (eufs_tracks) StderrLine: {'line': b'\n'}
+[6.573440] (eufs_tracks) StderrLine: {'line': b'        ********************************************************************************\n'}
+[6.573728] (eufs_tracks) StderrLine: {'line': b'        Please avoid running ``setup.py`` and ``easy_install``.\n'}
+[6.573911] (eufs_tracks) StderrLine: {'line': b'        Instead, use pypa/build, pypa/installer or other\n'}
+[6.574070] (eufs_tracks) StderrLine: {'line': b'        standards-based tools.\n'}
+[6.574329] (eufs_tracks) StderrLine: {'line': b'\n'}
+[6.574579] (eufs_tracks) StderrLine: {'line': b'        See https://github.com/pypa/setuptools/issues/917 for details.\n'}
+[6.574786] (eufs_tracks) StderrLine: {'line': b'        ********************************************************************************\n'}
+[6.575006] (eufs_tracks) StderrLine: {'line': b'\n'}
+[6.575280] (eufs_tracks) StderrLine: {'line': b'!!\n'}
+[6.575656] (eufs_tracks) StderrLine: {'line': b'  easy_install.initialize_options(self)\n'}
+[6.578605] (-) TimerEvent: {}
+[6.667935] (eufs_racecar) StderrLine: {'line': b'/home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.\n'}
+[6.668632] (eufs_racecar) StderrLine: {'line': b'!!\n'}
+[6.669148] (eufs_racecar) StderrLine: {'line': b'\n'}
+[6.669418] (eufs_racecar) StderrLine: {'line': b'        ********************************************************************************\n'}
+[6.669636] (eufs_racecar) StderrLine: {'line': b'        Please avoid running ``setup.py`` directly.\n'}
+[6.669842] (eufs_racecar) StderrLine: {'line': b'        Instead, use pypa/build, pypa/installer or other\n'}
+[6.670035] (eufs_racecar) StderrLine: {'line': b'        standards-based tools.\n'}
+[6.670265] (eufs_racecar) StderrLine: {'line': b'\n'}
+[6.670588] (eufs_racecar) StderrLine: {'line': b'        See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.\n'}
+[6.670813] (eufs_racecar) StderrLine: {'line': b'        ********************************************************************************\n'}
+[6.671500] (eufs_racecar) StderrLine: {'line': b'\n'}
+[6.671726] (eufs_racecar) StderrLine: {'line': b'!!\n'}
+[6.672017] (eufs_racecar) StderrLine: {'line': b'  self.initialize_options()\n'}
+[6.678770] (-) TimerEvent: {}
+[6.686598] (eufs_tracks) StderrLine: {'line': b'/home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.\n'}
+[6.687010] (eufs_tracks) StderrLine: {'line': b'!!\n'}
+[6.687275] (eufs_tracks) StderrLine: {'line': b'\n'}
+[6.687473] (eufs_tracks) StderrLine: {'line': b'        ********************************************************************************\n'}
+[6.687666] (eufs_tracks) StderrLine: {'line': b'        Please avoid running ``setup.py`` directly.\n'}
+[6.687839] (eufs_tracks) StderrLine: {'line': b'        Instead, use pypa/build, pypa/installer or other\n'}
+[6.688008] (eufs_tracks) StderrLine: {'line': b'        standards-based tools.\n'}
+[6.688233] (eufs_tracks) StderrLine: {'line': b'\n'}
+[6.688405] (eufs_tracks) StderrLine: {'line': b'        See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.\n'}
+[6.688577] (eufs_tracks) StderrLine: {'line': b'        ********************************************************************************\n'}
+[6.689064] (eufs_tracks) StderrLine: {'line': b'\n'}
+[6.689298] (eufs_tracks) StderrLine: {'line': b'!!\n'}
+[6.689492] (eufs_tracks) StderrLine: {'line': b'  self.initialize_options()\n'}
+[6.779032] (-) TimerEvent: {}
+[6.879687] (-) TimerEvent: {}
+[6.980302] (-) TimerEvent: {}
+[7.080989] (-) TimerEvent: {}
+[7.181563] (-) TimerEvent: {}
+[7.282161] (-) TimerEvent: {}
+[7.383291] (-) TimerEvent: {}
+[7.400761] (eufs_racecar) StdoutLine: {'line': b'running egg_info\n'}
+[7.467990] (eufs_tracks) StdoutLine: {'line': b'running egg_info\n'}
+[7.483525] (-) TimerEvent: {}
+[7.499149] (eufs_racecar) StdoutLine: {'line': b'writing eufs_racecar.egg-info/PKG-INFO\n'}
+[7.500709] (eufs_racecar) StdoutLine: {'line': b'writing dependency_links to eufs_racecar.egg-info/dependency_links.txt\n'}
+[7.501626] (eufs_racecar) StdoutLine: {'line': b'writing requirements to eufs_racecar.egg-info/requires.txt\n'}
+[7.502273] (eufs_racecar) StdoutLine: {'line': b'writing top-level names to eufs_racecar.egg-info/top_level.txt\n'}
+[7.558683] (eufs_tracks) StdoutLine: {'line': b'writing eufs_tracks.egg-info/PKG-INFO\n'}
+[7.560511] (eufs_tracks) StdoutLine: {'line': b'writing dependency_links to eufs_tracks.egg-info/dependency_links.txt\n'}
+[7.561308] (eufs_tracks) StdoutLine: {'line': b'writing entry points to eufs_tracks.egg-info/entry_points.txt\n'}
+[7.561780] (eufs_tracks) StdoutLine: {'line': b'writing requirements to eufs_tracks.egg-info/requires.txt\n'}
+[7.562397] (eufs_tracks) StdoutLine: {'line': b'writing top-level names to eufs_tracks.egg-info/top_level.txt\n'}
+[7.583685] (-) TimerEvent: {}
+[7.616326] (eufs_racecar) StdoutLine: {'line': b"reading manifest file 'eufs_racecar.egg-info/SOURCES.txt'\n"}
+[7.619208] (eufs_racecar) StdoutLine: {'line': b"writing manifest file 'eufs_racecar.egg-info/SOURCES.txt'\n"}
+[7.683843] (-) TimerEvent: {}
+[7.784445] (-) TimerEvent: {}
+[7.824598] (eufs_tracks) StdoutLine: {'line': b"reading manifest file 'eufs_tracks.egg-info/SOURCES.txt'\n"}
+[7.829132] (eufs_tracks) StdoutLine: {'line': b"writing manifest file 'eufs_tracks.egg-info/SOURCES.txt'\n"}
+[7.884609] (-) TimerEvent: {}
+[7.885776] (eufs_racecar) StdoutLine: {'line': b'running build_ext\n'}
+[7.940264] (eufs_racecar) StdoutLine: {'line': b'Creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages/eufs-racecar.egg-link (link to .)\n'}
+[7.941560] (eufs_racecar) StdoutLine: {'line': b'\n'}
+[7.942099] (eufs_racecar) StdoutLine: {'line': b'Installed /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar\n'}
+[7.942297] (eufs_racecar) StdoutLine: {'line': b'running install_data\n'}
+[7.942610] (eufs_racecar) StdoutLine: {'line': b'copying resource/eufs_racecar -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/ament_index/resource_index/packages\n'}
+[7.943061] (eufs_racecar) StdoutLine: {'line': b'copying package.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar\n'}
+[7.943535] (eufs_racecar) StdoutLine: {'line': b'copying meshes/ads_wheel_left.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes\n'}
+[7.954482] (eufs_racecar) StdoutLine: {'line': b'copying meshes/ads_dv_chassis.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes\n'}
+[7.962456] (eufs_racecar) StdoutLine: {'line': b'copying meshes/wheel_left.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes\n'}
+[7.964948] (eufs_racecar) StdoutLine: {'line': b'copying meshes/wheel_right.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes\n'}
+[7.966664] (eufs_racecar) StdoutLine: {'line': b'copying meshes/sisu-20d.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes\n'}
+[7.984800] (-) TimerEvent: {}
+[8.006630] (eufs_racecar) StdoutLine: {'line': b'copying meshes/ads_wheel_right.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes\n'}
+[8.017155] (eufs_racecar) StdoutLine: {'line': b'copying urdf/wheels.urdf.xacro -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/urdf\n'}
+[8.017616] (eufs_racecar) StdoutLine: {'line': b'copying urdf/eufs_base.urdf.xacro -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/urdf\n'}
+[8.018023] (eufs_racecar) StdoutLine: {'line': b'copying launch/load_car.launch.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/launch\n'}
+[8.018484] (eufs_racecar) StdoutLine: {'line': b'copying robots/eufs/configDry.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/eufs\n'}
+[8.018955] (eufs_racecar) StdoutLine: {'line': b'copying robots/eufs/configWet.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/eufs\n'}
+[8.019409] (eufs_racecar) StdoutLine: {'line': b'copying robots/eufs/robot.urdf.xacro -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/eufs\n'}
+[8.020441] (eufs_racecar) StdoutLine: {'line': b'copying robots/ads-dv/configDry.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/ads-dv\n'}
+[8.021384] (eufs_racecar) StdoutLine: {'line': b'copying robots/ads-dv/configWet.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/ads-dv\n'}
+[8.022525] (eufs_racecar) StdoutLine: {'line': b'copying robots/ads-dv/robot.urdf.xacro -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/ads-dv\n'}
+[8.023800] (eufs_racecar) StdoutLine: {'line': b'copying robots/ads-dv/ADS-DV Sensor Position.pdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/ads-dv\n'}
+[8.030853] (eufs_tracks) StdoutLine: {'line': b'running build_ext\n'}
+[8.031369] (eufs_tracks) StdoutLine: {'line': b'Creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs-tracks.egg-link (link to .)\n'}
+[8.035548] (eufs_tracks) StdoutLine: {'line': b'Installing eufs_tracks_converter script to /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/eufs_tracks\n'}
+[8.037796] (eufs_tracks) StdoutLine: {'line': b'Installing eufs_tracks_generator script to /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/eufs_tracks\n'}
+[8.038504] (eufs_tracks) StdoutLine: {'line': b'\n'}
+[8.039080] (eufs_tracks) StdoutLine: {'line': b'Installed /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks\n'}
+[8.039395] (eufs_tracks) StdoutLine: {'line': b'running install_data\n'}
+[8.039763] (eufs_tracks) StdoutLine: {'line': b'copying package.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks\n'}
+[8.039979] (eufs_tracks) StdoutLine: {'line': b'copying plugin.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks\n'}
+[8.040525] (eufs_tracks) StdoutLine: {'line': b'copying resource/eufs_tracks -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/ament_index/resource_index/packages\n'}
+[8.040739] (eufs_tracks) StdoutLine: {'line': b'copying csv/comp_2021.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.041093] (eufs_tracks) StdoutLine: {'line': b'copying csv/skidpad.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.041490] (eufs_tracks) StdoutLine: {'line': b'copying csv/its_a_mess.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.041840] (eufs_tracks) StdoutLine: {'line': b'copying csv/peanut.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.042147] (eufs_tracks) StdoutLine: {'line': b'copying csv/rectangle.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.042722] (eufs_tracks) StdoutLine: {'line': b'copying csv/acceleration.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.043057] (eufs_tracks) StdoutLine: {'line': b'copying csv/rand.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.043446] (eufs_tracks) StdoutLine: {'line': b'copying csv/garden_light.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.043950] (eufs_tracks) StdoutLine: {'line': b'copying csv/bone.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.044602] (eufs_tracks) StdoutLine: {'line': b'copying csv/boa_constrictor.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.044851] (eufs_tracks) StdoutLine: {'line': b'copying csv/hairpins_increasing_difficulty.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.045177] (eufs_tracks) StdoutLine: {'line': b'copying csv/small_track.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv\n'}
+[8.045697] (eufs_tracks) StdoutLine: {'line': b'copying image/comp_2021.png -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/image\n'}
+[8.045859] (eufs_tracks) StdoutLine: {'line': b'copying image/skidpad.png -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/image\n'}
+[8.046090] (eufs_tracks) StdoutLine: {'line': b'copying launch/empty.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.046390] (eufs_tracks) StdoutLine: {'line': b'copying launch/skidpad.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.046895] (eufs_tracks) StdoutLine: {'line': b'copying launch/its_a_mess.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.047153] (eufs_tracks) StdoutLine: {'line': b'copying launch/rand.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.047498] (eufs_tracks) StdoutLine: {'line': b'copying launch/peanut.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.048038] (eufs_tracks) StdoutLine: {'line': b'copying launch/boa_constrictor.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.048838] (eufs_tracks) StdoutLine: {'line': b'copying launch/garden_light.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.049607] (eufs_tracks) StdoutLine: {'line': b'copying launch/rectangle.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.050099] (eufs_tracks) StdoutLine: {'line': b'copying launch/comp_2021.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.050350] (eufs_tracks) StdoutLine: {'line': b'copying launch/acceleration.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.050501] (eufs_tracks) StdoutLine: {'line': b'copying launch/hairpins_increasing_difficulty.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.050694] (eufs_tracks) StdoutLine: {'line': b'copying launch/eufs_track_generator.launch.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.050886] (eufs_tracks) StdoutLine: {'line': b'copying launch/small_track.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.051098] (eufs_tracks) StdoutLine: {'line': b'copying launch/blacklist.txt -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch\n'}
+[8.051259] (eufs_tracks) StdoutLine: {'line': b'copying materials/asphalt.jpg -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/materials\n'}
+[8.074158] (eufs_tracks) StdoutLine: {'line': b'copying meshes/cone_big.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes\n'}
+[8.074897] (eufs_tracks) StdoutLine: {'line': b'copying meshes/cone_blue.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes\n'}
+[8.075360] (eufs_tracks) StdoutLine: {'line': b'copying meshes/cone.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes\n'}
+[8.075906] (eufs_tracks) StdoutLine: {'line': b'copying meshes/cone_yellow.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes\n'}
+[8.076355] (eufs_tracks) StdoutLine: {'line': b'copying meshes/MonkeyNoise.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes\n'}
+[8.077039] (eufs_tracks) StdoutLine: {'line': b'copying meshes/NoiseCube.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes\n'}
+[8.077832] (eufs_tracks) StdoutLine: {'line': b'copying worlds/boa_constrictor.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.078251] (eufs_tracks) StdoutLine: {'line': b'copying worlds/hairpins_increasing_difficulty.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.078573] (eufs_tracks) StdoutLine: {'line': b'copying worlds/rand.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.078952] (eufs_tracks) StdoutLine: {'line': b'copying worlds/its_a_mess.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.079793] (eufs_tracks) StdoutLine: {'line': b'copying worlds/peanut.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.080130] (eufs_tracks) StdoutLine: {'line': b'copying worlds/garden_light.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.080366] (eufs_tracks) StdoutLine: {'line': b'copying worlds/comp_2021.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.080621] (eufs_tracks) StdoutLine: {'line': b'copying worlds/rectangle.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.080881] (eufs_tracks) StdoutLine: {'line': b'copying worlds/acceleration.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.081139] (eufs_tracks) StdoutLine: {'line': b'copying worlds/small_track.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.081558] (eufs_tracks) StdoutLine: {'line': b'copying worlds/skidpad.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds\n'}
+[8.081790] (eufs_tracks) StdoutLine: {'line': b'copying resource/randgen_model_template/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource/randgen_model_template\n'}
+[8.082096] (eufs_tracks) StdoutLine: {'line': b'copying resource/randgen_model_template/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource/randgen_model_template\n'}
+[8.082797] (eufs_tracks) StdoutLine: {'line': b'copying resource/noiseFiles.txt -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource\n'}
+[8.083262] (eufs_tracks) StdoutLine: {'line': b'copying resource/randgen_launch_template -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource\n'}
+[8.083740] (eufs_tracks) StdoutLine: {'line': b'copying resource/randgen_world_template -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource\n'}
+[8.084130] (eufs_tracks) StdoutLine: {'line': b'copying resource/conversion_tool.ui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource\n'}
+[8.084569] (eufs_tracks) StdoutLine: {'line': b'copying models/blue_cone/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/blue_cone\n'}
+[8.084804] (-) TimerEvent: {}
+[8.085341] (eufs_tracks) StdoutLine: {'line': b'copying models/blue_cone/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/blue_cone\n'}
+[8.085945] (eufs_tracks) StdoutLine: {'line': b'copying models/rectangle/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rectangle\n'}
+[8.086420] (eufs_tracks) StdoutLine: {'line': b'copying models/rectangle/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rectangle\n'}
+[8.086982] (eufs_tracks) StdoutLine: {'line': b'copying models/skidpad/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/skidpad\n'}
+[8.087556] (eufs_tracks) StdoutLine: {'line': b'copying models/skidpad/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/skidpad\n'}
+[8.088211] (eufs_tracks) StdoutLine: {'line': b'copying models/hairpins_increasing_difficulty/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/hairpins_increasing_difficulty\n'}
+[8.088472] (eufs_tracks) StdoutLine: {'line': b'copying models/hairpins_increasing_difficulty/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/hairpins_increasing_difficulty\n'}
+[8.088883] (eufs_tracks) StdoutLine: {'line': b'copying models/peanut/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/peanut\n'}
+[8.089863] (eufs_tracks) StdoutLine: {'line': b'copying models/peanut/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/peanut\n'}
+[8.090926] (eufs_tracks) StdoutLine: {'line': b'copying models/yellow_cone/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/yellow_cone\n'}
+[8.092374] (eufs_tracks) StdoutLine: {'line': b'copying models/yellow_cone/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/yellow_cone\n'}
+[8.093207] (eufs_tracks) StdoutLine: {'line': b'copying models/comp_2021/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/comp_2021\n'}
+[8.093688] (eufs_tracks) StdoutLine: {'line': b'copying models/comp_2021/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/comp_2021\n'}
+[8.093986] (eufs_tracks) StdoutLine: {'line': b'copying models/rand/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rand\n'}
+[8.094210] (eufs_tracks) StdoutLine: {'line': b'copying models/rand/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rand\n'}
+[8.094485] (eufs_tracks) StdoutLine: {'line': b'copying models/garden_light/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/garden_light\n'}
+[8.094781] (eufs_tracks) StdoutLine: {'line': b'copying models/garden_light/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/garden_light\n'}
+[8.095441] (eufs_tracks) StdoutLine: {'line': b'copying models/boa_constrictor/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/boa_constrictor\n'}
+[8.095703] (eufs_tracks) StdoutLine: {'line': b'copying models/boa_constrictor/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/boa_constrictor\n'}
+[8.096272] (eufs_tracks) StdoutLine: {'line': b'copying models/big_cone/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/big_cone\n'}
+[8.096565] (eufs_tracks) StdoutLine: {'line': b'copying models/big_cone/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/big_cone\n'}
+[8.097064] (eufs_tracks) StdoutLine: {'line': b'copying models/acceleration/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/acceleration\n'}
+[8.097299] (eufs_tracks) StdoutLine: {'line': b'copying models/acceleration/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/acceleration\n'}
+[8.097987] (eufs_tracks) StdoutLine: {'line': b'copying models/small_track/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/small_track\n'}
+[8.098335] (eufs_tracks) StdoutLine: {'line': b'copying models/small_track/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/small_track\n'}
+[8.098738] (eufs_tracks) StdoutLine: {'line': b'copying models/its_a_mess/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/its_a_mess\n'}
+[8.098934] (eufs_tracks) StdoutLine: {'line': b'copying models/its_a_mess/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/its_a_mess\n'}
+[8.099125] (eufs_tracks) StdoutLine: {'line': b'copying models/ground_plane/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/ground_plane\n'}
+[8.099295] (eufs_tracks) StdoutLine: {'line': b'copying models/ground_plane/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/ground_plane\n'}
+[8.099482] (eufs_tracks) StdoutLine: {'line': b'copying models/orange_cone/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/orange_cone\n'}
+[8.099655] (eufs_tracks) StdoutLine: {'line': b'copying models/orange_cone/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/orange_cone\n'}
+[8.153022] (eufs_racecar) CommandEnded: {'returncode': 0}
+[8.185295] (-) TimerEvent: {}
+[8.287422] (-) TimerEvent: {}
+[8.349778] (eufs_racecar) JobEnded: {'identifier': 'eufs_racecar', 'rc': 0}
+[8.355483] (eufs_tracks) CommandEnded: {'returncode': 0}
+[8.387948] (-) TimerEvent: {}
+[8.492622] (-) TimerEvent: {}
+[8.567962] (eufs_tracks) JobEnded: {'identifier': 'eufs_tracks', 'rc': 0}
+[8.572543] (eufs_launcher) JobStarted: {'identifier': 'eufs_launcher'}
+[8.593553] (-) TimerEvent: {}
+[8.695415] (-) TimerEvent: {}
+[8.797230] (-) TimerEvent: {}
+[8.901887] (-) TimerEvent: {}
+[9.002864] (-) TimerEvent: {}
+[9.104088] (-) TimerEvent: {}
+[9.204721] (-) TimerEvent: {}
+[9.305515] (-) TimerEvent: {}
+[9.406320] (-) TimerEvent: {}
+[9.507000] (-) TimerEvent: {}
+[9.607969] (-) TimerEvent: {}
+[9.708681] (-) TimerEvent: {}
+[9.809269] (-) TimerEvent: {}
+[9.909881] (-) TimerEvent: {}
+[10.010478] (-) TimerEvent: {}
+[10.110983] (-) TimerEvent: {}
+[10.211561] (-) TimerEvent: {}
+[10.312197] (-) TimerEvent: {}
+[10.413543] (-) TimerEvent: {}
+[10.515990] (-) TimerEvent: {}
+[10.617025] (-) TimerEvent: {}
+[10.717798] (-) TimerEvent: {}
+[10.819792] (-) TimerEvent: {}
+[10.920643] (-) TimerEvent: {}
+[11.021531] (-) TimerEvent: {}
+[11.122952] (-) TimerEvent: {}
+[11.223714] (-) TimerEvent: {}
+[11.324492] (-) TimerEvent: {}
+[11.425242] (-) TimerEvent: {}
+[11.526002] (-) TimerEvent: {}
+[11.626567] (-) TimerEvent: {}
+[11.727150] (-) TimerEvent: {}
+[11.827887] (-) TimerEvent: {}
+[11.928504] (-) TimerEvent: {}
+[12.028980] (-) TimerEvent: {}
+[12.129538] (-) TimerEvent: {}
+[12.230085] (-) TimerEvent: {}
+[12.330789] (-) TimerEvent: {}
+[12.431454] (-) TimerEvent: {}
+[12.532393] (-) TimerEvent: {}
+[12.633183] (-) TimerEvent: {}
+[12.734020] (-) TimerEvent: {}
+[12.838147] (-) TimerEvent: {}
+[12.939751] (-) TimerEvent: {}
+[13.040292] (-) TimerEvent: {}
+[13.140859] (-) TimerEvent: {}
+[13.241489] (-) TimerEvent: {}
+[13.342069] (-) TimerEvent: {}
+[13.442678] (-) TimerEvent: {}
+[13.543350] (-) TimerEvent: {}
+[13.645732] (-) TimerEvent: {}
+[13.661282] (eufs_launcher) Command: {'cmd': ['/usr/bin/python3', 'setup.py', 'develop', '--editable', '--build-directory', '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/build', '--no-deps', 'install_data'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'andrewwhong', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib', 'HOME': '/home/andrewwhong', 'OLDPWD': '/home/andrewwhong/classes/16833/iSAM2_SLAM', 'TERM_PROGRAM_VERSION': '1.84.2', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-c67907dd-7abd-4150-8577-2b55624ff41e.sock', 'ROS_PYTHON_VERSION': '3', 'GOROOT': '/home/andrewwhong/go/go', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'WSL_DISTRO_NAME': 'Ubuntu-20.04', 'WAYLAND_DISPLAY': 'wayland-0', 'COLCON_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install', 'ROS_DISTRO': 'foxy', 'LOGNAME': 'andrewwhong', 'NAME': 'DESKTOP-NJ9IVDT', 'WSL_INTEROP': '/run/WSL/682_interop', 'PULSE_SERVER': 'unix:/mnt/wslg/PulseServer', 'EUFS_MASTER': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm-256color', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/opt/ros/foxy/bin:/home/andrewwhong/.vscode-server/bin/1a5daa3a0231a0fbba4f14db7ec463cf99d7768e/bin/remote-cli:/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000/', 'DISPLAY': '172.19.96.1:0.0', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-6be0b5ed08.sock', 'TERM_PROGRAM': 'vscode', 'AMENT_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy', 'SHELL': '/bin/bash', 'GTSAM_INCLUDE_DIR': '/usr/local/include/gtsam', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'PWD': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages', 'COLCON': '1', 'WSL2_GUI_APPS_ENABLED': '1', 'HOSTTYPE': 'x86_64', 'CMAKE_PREFIX_PATH': '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs', 'WSLENV': 'VSCODE_WSL_EXT_LOCATION/up'}, 'shell': False}
+[13.745882] (-) TimerEvent: {}
+[13.846531] (-) TimerEvent: {}
+[13.947242] (-) TimerEvent: {}
+[14.047956] (-) TimerEvent: {}
+[14.148684] (-) TimerEvent: {}
+[14.249260] (-) TimerEvent: {}
+[14.350076] (-) TimerEvent: {}
+[14.450665] (-) TimerEvent: {}
+[14.551219] (-) TimerEvent: {}
+[14.651816] (-) TimerEvent: {}
+[14.737498] (eufs_launcher) StdoutLine: {'line': b'running develop\n'}
+[14.738545] (eufs_launcher) StderrLine: {'line': b'/home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/command/develop.py:39: EasyInstallDeprecationWarning: easy_install command is deprecated.\n'}
+[14.738962] (eufs_launcher) StderrLine: {'line': b'!!\n'}
+[14.739197] (eufs_launcher) StderrLine: {'line': b'\n'}
+[14.739394] (eufs_launcher) StderrLine: {'line': b'        ********************************************************************************\n'}
+[14.739605] (eufs_launcher) StderrLine: {'line': b'        Please avoid running ``setup.py`` and ``easy_install``.\n'}
+[14.739779] (eufs_launcher) StderrLine: {'line': b'        Instead, use pypa/build, pypa/installer or other\n'}
+[14.739962] (eufs_launcher) StderrLine: {'line': b'        standards-based tools.\n'}
+[14.740151] (eufs_launcher) StderrLine: {'line': b'\n'}
+[14.740311] (eufs_launcher) StderrLine: {'line': b'        See https://github.com/pypa/setuptools/issues/917 for details.\n'}
+[14.740458] (eufs_launcher) StderrLine: {'line': b'        ********************************************************************************\n'}
+[14.740603] (eufs_launcher) StderrLine: {'line': b'\n'}
+[14.740771] (eufs_launcher) StderrLine: {'line': b'!!\n'}
+[14.740979] (eufs_launcher) StderrLine: {'line': b'  easy_install.initialize_options(self)\n'}
+[14.752068] (-) TimerEvent: {}
+[14.852928] (-) TimerEvent: {}
+[14.860739] (eufs_launcher) StderrLine: {'line': b'/home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.\n'}
+[14.861166] (eufs_launcher) StderrLine: {'line': b'!!\n'}
+[14.861389] (eufs_launcher) StderrLine: {'line': b'\n'}
+[14.861642] (eufs_launcher) StderrLine: {'line': b'        ********************************************************************************\n'}
+[14.861875] (eufs_launcher) StderrLine: {'line': b'        Please avoid running ``setup.py`` directly.\n'}
+[14.862078] (eufs_launcher) StderrLine: {'line': b'        Instead, use pypa/build, pypa/installer or other\n'}
+[14.862240] (eufs_launcher) StderrLine: {'line': b'        standards-based tools.\n'}
+[14.862418] (eufs_launcher) StderrLine: {'line': b'\n'}
+[14.862605] (eufs_launcher) StderrLine: {'line': b'        See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.\n'}
+[14.862805] (eufs_launcher) StderrLine: {'line': b'        ********************************************************************************\n'}
+[14.863010] (eufs_launcher) StderrLine: {'line': b'\n'}
+[14.863200] (eufs_launcher) StderrLine: {'line': b'!!\n'}
+[14.863357] (eufs_launcher) StderrLine: {'line': b'  self.initialize_options()\n'}
+[14.953076] (-) TimerEvent: {}
+[15.053561] (-) TimerEvent: {}
+[15.154127] (-) TimerEvent: {}
+[15.254721] (-) TimerEvent: {}
+[15.355164] (-) TimerEvent: {}
+[15.455765] (-) TimerEvent: {}
+[15.470951] (eufs_launcher) StdoutLine: {'line': b'running egg_info\n'}
+[15.471349] (eufs_launcher) StdoutLine: {'line': b'creating src/eufs_launcher.egg-info\n'}
+[15.548195] (eufs_launcher) StdoutLine: {'line': b'writing src/eufs_launcher.egg-info/PKG-INFO\n'}
+[15.550005] (eufs_launcher) StdoutLine: {'line': b'writing dependency_links to src/eufs_launcher.egg-info/dependency_links.txt\n'}
+[15.550907] (eufs_launcher) StdoutLine: {'line': b'writing requirements to src/eufs_launcher.egg-info/requires.txt\n'}
+[15.551622] (eufs_launcher) StdoutLine: {'line': b'writing top-level names to src/eufs_launcher.egg-info/top_level.txt\n'}
+[15.555893] (-) TimerEvent: {}
+[15.560285] (eufs_launcher) StdoutLine: {'line': b"writing manifest file 'src/eufs_launcher.egg-info/SOURCES.txt'\n"}
+[15.656077] (-) TimerEvent: {}
+[15.756783] (-) TimerEvent: {}
+[15.813926] (eufs_launcher) StdoutLine: {'line': b"reading manifest file 'src/eufs_launcher.egg-info/SOURCES.txt'\n"}
+[15.815834] (eufs_launcher) StdoutLine: {'line': b"writing manifest file 'src/eufs_launcher.egg-info/SOURCES.txt'\n"}
+[15.856962] (-) TimerEvent: {}
+[15.957467] (-) TimerEvent: {}
+[16.005593] (eufs_launcher) StdoutLine: {'line': b'running build_ext\n'}
+[16.006301] (eufs_launcher) StdoutLine: {'line': b'Creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages/eufs-launcher.egg-link (link to src)\n'}
+[16.008833] (eufs_launcher) StdoutLine: {'line': b'Installing eufs_launcher script to /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/eufs_launcher\n'}
+[16.009465] (eufs_launcher) StdoutLine: {'line': b'\n'}
+[16.009973] (eufs_launcher) StdoutLine: {'line': b'Installed /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/src\n'}
+[16.010836] (eufs_launcher) StdoutLine: {'line': b'running install_data\n'}
+[16.011020] (eufs_launcher) StdoutLine: {'line': b'copying launch/eufs_launcher.launch.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher\n'}
+[16.011252] (eufs_launcher) StdoutLine: {'line': b'copying launch/simulation.launch.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher\n'}
+[16.011923] (eufs_launcher) StdoutLine: {'line': b'copying config/default.rviz -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher/config\n'}
+[16.013474] (eufs_launcher) StdoutLine: {'line': b'copying config/eufs_launcher.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher/config\n'}
+[16.014881] (eufs_launcher) StdoutLine: {'line': b'copying resource/launcher.ui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher/resource\n'}
+[16.017905] (eufs_launcher) StdoutLine: {'line': b'copying plugin.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher\n'}
+[16.018746] (eufs_launcher) StdoutLine: {'line': b'copying package.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher\n'}
+[16.019687] (eufs_launcher) StdoutLine: {'line': b'copying resource/eufs_launcher -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/ament_index/resource_index/packages\n'}
+[16.057691] (-) TimerEvent: {}
+[16.119240] (eufs_launcher) CommandEnded: {'returncode': 0}
+[16.157973] (-) TimerEvent: {}
+[16.260639] (-) TimerEvent: {}
+[16.298367] (eufs_launcher) JobEnded: {'identifier': 'eufs_launcher', 'rc': 0}
+[16.360817] (-) TimerEvent: {}
+[16.461719] (-) TimerEvent: {}
+[16.562286] (-) TimerEvent: {}
+[16.662990] (-) TimerEvent: {}
+[16.763745] (-) TimerEvent: {}
+[16.864787] (-) TimerEvent: {}
+[16.965511] (-) TimerEvent: {}
+[17.066305] (-) TimerEvent: {}
+[17.167046] (-) TimerEvent: {}
+[17.267597] (-) TimerEvent: {}
+[17.368030] (-) TimerEvent: {}
+[17.468612] (-) TimerEvent: {}
+[17.569513] (-) TimerEvent: {}
+[17.669992] (-) TimerEvent: {}
+[17.770485] (-) TimerEvent: {}
+[17.870936] (-) TimerEvent: {}
+[17.971432] (-) TimerEvent: {}
+[18.071989] (-) TimerEvent: {}
+[18.172411] (-) TimerEvent: {}
+[18.273134] (-) TimerEvent: {}
+[18.373802] (-) TimerEvent: {}
+[18.474504] (-) TimerEvent: {}
+[18.574936] (-) TimerEvent: {}
+[18.675347] (-) TimerEvent: {}
+[18.775742] (-) TimerEvent: {}
+[18.876325] (-) TimerEvent: {}
+[18.976870] (-) TimerEvent: {}
+[19.077484] (-) TimerEvent: {}
+[19.178233] (-) TimerEvent: {}
+[19.279043] (-) TimerEvent: {}
+[19.379791] (-) TimerEvent: {}
+[19.480692] (-) TimerEvent: {}
+[19.581454] (-) TimerEvent: {}
+[19.682562] (-) TimerEvent: {}
+[19.783284] (-) TimerEvent: {}
+[19.883961] (-) TimerEvent: {}
+[19.984758] (-) TimerEvent: {}
+[20.085354] (-) TimerEvent: {}
+[20.186145] (-) TimerEvent: {}
+[20.286838] (-) TimerEvent: {}
+[20.387295] (-) TimerEvent: {}
+[20.487720] (-) TimerEvent: {}
+[20.588347] (-) TimerEvent: {}
+[20.689095] (-) TimerEvent: {}
+[20.789755] (-) TimerEvent: {}
+[20.890363] (-) TimerEvent: {}
+[20.990886] (-) TimerEvent: {}
+[21.091337] (-) TimerEvent: {}
+[21.191806] (-) TimerEvent: {}
+[21.292334] (-) TimerEvent: {}
+[21.392890] (-) TimerEvent: {}
+[21.493335] (-) TimerEvent: {}
+[21.594096] (-) TimerEvent: {}
+[21.694931] (-) TimerEvent: {}
+[21.796118] (-) TimerEvent: {}
+[21.897202] (-) TimerEvent: {}
+[21.998057] (-) TimerEvent: {}
+[22.099140] (-) TimerEvent: {}
+[22.199774] (-) TimerEvent: {}
+[22.300377] (-) TimerEvent: {}
+[22.400971] (-) TimerEvent: {}
+[22.501745] (-) TimerEvent: {}
+[22.602412] (-) TimerEvent: {}
+[22.703093] (-) TimerEvent: {}
+[22.803782] (-) TimerEvent: {}
+[22.904325] (-) TimerEvent: {}
+[23.004794] (-) TimerEvent: {}
+[23.105390] (-) TimerEvent: {}
+[23.206166] (-) TimerEvent: {}
+[23.306889] (-) TimerEvent: {}
+[23.407804] (-) TimerEvent: {}
+[23.508356] (-) TimerEvent: {}
+[23.608867] (-) TimerEvent: {}
+[23.709532] (-) TimerEvent: {}
+[23.810190] (-) TimerEvent: {}
+[23.910864] (-) TimerEvent: {}
+[24.011596] (-) TimerEvent: {}
+[24.112141] (-) TimerEvent: {}
+[24.212732] (-) TimerEvent: {}
+[24.313270] (-) TimerEvent: {}
+[24.413860] (-) TimerEvent: {}
+[24.460863] (eufs_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[24.514018] (-) TimerEvent: {}
+[24.533465] (eufs_msgs) StdoutLine: {'line': b'-- Found std_msgs: 2.0.5 (/opt/ros/foxy/share/std_msgs/cmake)\n'}
+[24.614186] (-) TimerEvent: {}
+[24.615365] (eufs_msgs) StdoutLine: {'line': b'-- Found geometry_msgs: 2.0.5 (/opt/ros/foxy/share/geometry_msgs/cmake)\n'}
+[24.683395] (eufs_msgs) StdoutLine: {'line': b'-- Found sensor_msgs: 2.0.5 (/opt/ros/foxy/share/sensor_msgs/cmake)\n'}
+[24.714341] (-) TimerEvent: {}
+[24.814772] (-) TimerEvent: {}
+[24.915157] (-) TimerEvent: {}
+[24.934076] (eufs_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/local/bin/python3 (found version "3.8.10") \n'}
+[25.015318] (-) TimerEvent: {}
+[25.115815] (-) TimerEvent: {}
+[25.216229] (-) TimerEvent: {}
+[25.316691] (-) TimerEvent: {}
+[25.417106] (-) TimerEvent: {}
+[25.517587] (-) TimerEvent: {}
+[25.617989] (-) TimerEvent: {}
+[25.718465] (-) TimerEvent: {}
+[25.818879] (-) TimerEvent: {}
+[25.919240] (-) TimerEvent: {}
+[26.019650] (-) TimerEvent: {}
+[26.073448] (eufs_msgs) StdoutLine: {'line': b'-- Found ament_cmake_ros: 0.9.2 (/opt/ros/foxy/share/ament_cmake_ros/cmake)\n'}
+[26.119813] (-) TimerEvent: {}
+[26.220331] (-) TimerEvent: {}
+[26.320818] (-) TimerEvent: {}
+[26.421335] (-) TimerEvent: {}
+[26.521839] (-) TimerEvent: {}
+[26.622319] (-) TimerEvent: {}
+[26.722717] (-) TimerEvent: {}
+[26.823160] (-) TimerEvent: {}
+[26.923625] (-) TimerEvent: {}
+[27.024066] (-) TimerEvent: {}
+[27.124581] (-) TimerEvent: {}
+[27.225415] (-) TimerEvent: {}
+[27.327344] (-) TimerEvent: {}
+[27.428070] (-) TimerEvent: {}
+[27.528930] (-) TimerEvent: {}
+[27.629648] (-) TimerEvent: {}
+[27.730196] (-) TimerEvent: {}
+[27.830761] (-) TimerEvent: {}
+[27.931329] (-) TimerEvent: {}
+[28.031835] (-) TimerEvent: {}
+[28.132278] (-) TimerEvent: {}
+[28.232764] (-) TimerEvent: {}
+[28.333273] (-) TimerEvent: {}
+[28.433913] (-) TimerEvent: {}
+[28.534398] (-) TimerEvent: {}
+[28.635100] (-) TimerEvent: {}
+[28.735801] (-) TimerEvent: {}
+[28.836447] (-) TimerEvent: {}
+[28.936990] (-) TimerEvent: {}
+[29.037529] (-) TimerEvent: {}
+[29.138077] (-) TimerEvent: {}
+[29.238611] (-) TimerEvent: {}
+[29.339472] (-) TimerEvent: {}
+[29.440126] (-) TimerEvent: {}
+[29.540871] (-) TimerEvent: {}
+[29.641740] (-) TimerEvent: {}
+[29.742360] (-) TimerEvent: {}
+[29.843026] (-) TimerEvent: {}
+[29.943556] (-) TimerEvent: {}
+[30.044018] (-) TimerEvent: {}
+[30.144626] (-) TimerEvent: {}
+[30.245161] (-) TimerEvent: {}
+[30.345596] (-) TimerEvent: {}
+[30.446102] (-) TimerEvent: {}
+[30.546605] (-) TimerEvent: {}
+[30.647070] (-) TimerEvent: {}
+[30.747546] (-) TimerEvent: {}
+[30.848172] (-) TimerEvent: {}
+[30.948617] (-) TimerEvent: {}
+[31.049057] (-) TimerEvent: {}
+[31.149709] (-) TimerEvent: {}
+[31.250132] (-) TimerEvent: {}
+[31.350532] (-) TimerEvent: {}
+[31.451270] (-) TimerEvent: {}
+[31.551816] (-) TimerEvent: {}
+[31.652298] (-) TimerEvent: {}
+[31.752869] (-) TimerEvent: {}
+[31.853329] (-) TimerEvent: {}
+[31.953924] (-) TimerEvent: {}
+[32.054498] (-) TimerEvent: {}
+[32.155086] (-) TimerEvent: {}
+[32.255649] (-) TimerEvent: {}
+[32.356262] (-) TimerEvent: {}
+[32.456798] (-) TimerEvent: {}
+[32.557283] (-) TimerEvent: {}
+[32.657901] (-) TimerEvent: {}
+[32.758428] (-) TimerEvent: {}
+[32.858839] (-) TimerEvent: {}
+[32.959322] (-) TimerEvent: {}
+[33.059785] (-) TimerEvent: {}
+[33.160503] (-) TimerEvent: {}
+[33.261059] (-) TimerEvent: {}
+[33.361498] (-) TimerEvent: {}
+[33.461978] (-) TimerEvent: {}
+[33.562418] (-) TimerEvent: {}
+[33.662869] (-) TimerEvent: {}
+[33.763624] (-) TimerEvent: {}
+[33.864158] (-) TimerEvent: {}
+[33.964720] (-) TimerEvent: {}
+[34.065166] (-) TimerEvent: {}
+[34.165631] (-) TimerEvent: {}
+[34.266105] (-) TimerEvent: {}
+[34.366642] (-) TimerEvent: {}
+[34.453230] (eufs_msgs) CommandEnded: {'returncode': -2}
+[34.466834] (-) TimerEvent: {}
+[34.568253] (-) TimerEvent: {}
+[34.647955] (eufs_msgs) JobEnded: {'identifier': 'eufs_msgs', 'rc': 'SIGINT'}
+[34.659416] (eufs_models) JobSkipped: {'identifier': 'eufs_models'}
+[34.659549] (eufs_rqt) JobSkipped: {'identifier': 'eufs_rqt'}
+[34.659621] (eufs_rviz_plugins) JobSkipped: {'identifier': 'eufs_rviz_plugins'}
+[34.659701] (eufs_plugins) JobSkipped: {'identifier': 'eufs_plugins'}
+[34.659767] (-) EventReactorShutdown: {}
