@@ -1,0 +1,5 @@
+In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+                 from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+   18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+      |  [01;35m[K^~~~~~~[m[K

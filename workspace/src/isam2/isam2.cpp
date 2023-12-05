@@ -33,7 +33,7 @@
 // using namespace std;
 using namespace gtsam;
 
-static const int M_DIST_TH = 5.99;
+static const int M_DIST_TH = 100;//5.99;
 
 static const float DT = 0.1;
 static const float SIM_TIME = 50.0;
@@ -63,18 +63,19 @@ private:
     //Create a factor graph and values for new data
     NonlinearFactorGraph graph;
     Values values;
+    Values observed;
 
     int x;
     //Define empty set
     // using Cmp = std::integral_constant<decltype(&cmp), &cmp>;
-    std::set<Landmark, const Compare> observed;
+    // std::set<Landmark, const Compare> observed;
 
     gtsam::Symbol X(int robot_pose_id) {
         return Symbol('x', robot_pose_id);
     }
 
     gtsam::Symbol L(int cone_pose_id) {
-        return Symbol('L', cone_pose_id);
+        return Symbol('l', cone_pose_id);
     }
 
 public:
@@ -89,6 +90,7 @@ public:
         isam2 = gtsam::ISAM2();
         graph = gtsam::NonlinearFactorGraph();
         values = gtsam::Values();
+        observed = gtsam::Values();
         x = 0;
         n_landmarks = 0;
         robot_est = gtsam::Pose2(0, 0, 0);
@@ -97,24 +99,33 @@ public:
         // isam2.joint1(1,2);
     }
 
-    double mahalanobisDist(Pose2 measurement,Pose2 landmark,Key landmark_key){
+    double mahalanobisDist(Point2 measurement,Point2 landmark,Symbol landmark_key){
+        std::cout << "Landmark key:\n"  << landmark_key << std::endl;
+
         Matrix marginal_covariance = isam2.marginalCovariance(landmark_key);
-        
+
+        std::cout << "Covariance Matrix:\n"  << marginal_covariance << std::endl;
+
         Eigen::MatrixXd diff(1, 2); 
         diff << measurement.x()-landmark.x(),measurement.y()-landmark.y();
 
+        std::cout << "Diff:\n"  << diff << std::endl;
+
         Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
+        
         std::cout << "Mahalanobis result:\n"  << result << std::endl;
 
         return result(0);
     }
 
-    int associate(Pose2 measurement) {
+    int associate(Point2 measurement) {
         // Vector that will store mahalanobis distances
         std::vector<double> min_dist;
         for (int i = 0; i < n_landmarks; i++) {
-            gtsam::Pose2 landmark = values.at(L(i)).cast<Pose2>();
+            gtsam::Point2 landmark = observed.at(L(i)).cast<Point2>();
             // Adding mahalanobis distance to minimum distance vector
+            std::cout << "Before Mahalanobis key:\n"  << L(i) << std::endl;
+
             double mahalanobis = mahalanobisDist(measurement,landmark,L(i));
             min_dist.push_back(mahalanobis);
         }
@@ -126,27 +137,30 @@ public:
     }
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
-        // Eigen::VectorXd temp(3); 
-        // temp << 0,0,0;
-        // Vector noiseModel = temp;
+        Vector NoiseModel(3);
+        NoiseModel(0) = 0;
+        NoiseModel(1) = 0;
+        NoiseModel(2) = 0;
 
-        Vector noiseModel(3);
-        noiseModel(0) = 0;
-        noiseModel(1) = 0;
-        noiseModel(2) = 0;
+        Vector LandmarkNoiseModel(2);
+        LandmarkNoiseModel(0) = 0;
+        LandmarkNoiseModel(1) = 0;
 
         Pose2 prev_robot_est;
         if (x==0) {//if this is the first pose, add your inital pose to the factor graph
+            std::cout << "First pose\n" << std::endl;
 
-            noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(noiseModel);
+            static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
             //add prior
             graph.add(prior_factor);
             values.insert(X(0), global_odom);
+
             prev_robot_est = Pose2(0, 0, 0);
         }
         else {
-            noiseModel::Diagonal::shared_ptr odom_model = noiseModel::Diagonal::Sigmas(noiseModel);
+            std::cout << "New Pose\n" << std::endl;
+            static noiseModel::Diagonal::shared_ptr odom_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             Pose2 prev_pos = isam2.calculateEstimate(X(x - 1)).cast<Pose2>();
             //create a factor between current and previous robot pose
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(x - 1), X(x), Pose2(global_odom.x() - prev_pos.x(), global_odom.y() - prev_pos.y(), global_odom.theta() - prev_pos.theta()), odom_model);
@@ -155,63 +169,85 @@ public:
             prev_robot_est = prev_pos;
         }
 
+        //todo only do this once after update
         isam2.update(graph, values);
         graph.resize(0);
         values.clear();
+
         Pose2 robot_est = isam2.calculateEstimate(X(x)).cast<Pose2>();
 
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
 
-            Pose2 conePose(cone.x(),cone.y(),0);
-  
-            // Point2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y()); //calculate global position of the cone
-            Pose2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y(),0);
-            // const Landmark enum_cone{lm_id: n_landmarks, lm_pos: global_cone}; //TODO: remove
+            // Pose2 conePose(cone.x(),cone.y(),0);
+            Point2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y()); //calculate global position of the cone
+            // Pose2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y(),0);
 
             //for the current cone, we want to compare againt all other cones for data association
             //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
             //This is jvc lmao
             int associated_ID = associate(global_cone);
+            std::cout << "Associated ID:\n"  << associated_ID << std::endl;
 
+            static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
             //If it is a new cone:
             if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
                 //add cone to list
                 // observed.insert(enum_cone);
+                std::cout << "New Landmark:\n"  << L(n_landmarks) << std::endl;
 
                 //add factor between pose and landmark
                 double range =  norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
                 double bearing = std::atan2(cone.y(), cone.x()) - global_odom.theta();
                 Rot2 angle = Rot2(bearing);
       
-                graph.add(BearingRangeFactor<Pose2, Pose2, Rot2, double>(X(x), L(n_landmarks), angle, range, noiseModel::Diagonal::Sigmas(noiseModel))); 
+                graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(n_landmarks), angle, range, landmark_model)); 
                 //this is how we model noise for the environmant
+                std::cout << "added bearing range factor\n"<< std::endl;
+
                 values.insert(L(n_landmarks), global_cone);
+                observed.insert(L(n_landmarks), global_cone);
+
+
+                std::cout << "after inserting values\n"<< std::endl;
+
+                isam2.update(graph, values);
+                graph.resize(0);
+                values.clear();
+
                 n_landmarks++;
             } else {
+                std::cout << "Associated Landmark:\n"  << X(x) << std::endl;
 
                 //Add a factor to the associated landmark
-                int associated_id = 1;
                 double range =  norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
                 double bearing = std::atan2(cone.y(), cone.x()) - global_odom.theta();
                 Rot2 angle = Rot2(bearing);
-
-                graph.add(BearingRangeFactor<Pose2, Pose2, Rot2, double>(X(x), L(associated_id), angle, range, noiseModel::Diagonal::Sigmas(noiseModel)));
+                graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(associated_ID), angle, range, landmark_model));
             }
+
         }
         // DATA ASSOCIATION END
-
         isam2.update(graph, values);
         graph.resize(0);
         values.clear();
+
 
         //calculate estimate of robot state
         robot_est = isam2.calculateEstimate(X(x)).cast<gtsam::Pose2>();
         x++;
 
-        landmark_est.clear();
-        for (int i = 0; i < n_landmarks; i++) {
-            landmark_est.push_back(isam2.calculateEstimate(L(i)).cast<gtsam::Point2>());
-        }
+        // landmark_est.clear();
+        // for (int i = 0; i < n_landmarks; i++) {
+
+        //     auto landmarkVal = isam2.calculateEstimate(L(i)).cast<gtsam::Point2>();
+        //     auto it = find(landmark_est.begin(), landmark_est.end(), landmarkVal); 
+        //     if (it != landmark_est.end()) { 
+        //         // Pair found 
+        //     } else { 
+        //         landmark_est.push_back(isam2.calculateEstimate(L(i)).cast<gtsam::Point2>());
+        //         // Pair not found 
+        //     } 
+        // }
     }
 };

@@ -1,0 +1,49 @@
+[0.991s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2
+[1.044s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[1.129s] -- Using PYTHON_EXECUTABLE: /usr/local/bin/python3
+[2.096s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[2.153s] -- Found rclcpp: 2.4.3 (/opt/ros/foxy/share/rclcpp/cmake)
+[3.026s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[3.039s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[27.413s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[27.607s] -- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[27.614s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[28.074s] -- Found message_filters: 3.2.7 (/opt/ros/foxy/share/message_filters/cmake)
+[28.082s] -- Found eufs_msgs: 2.0.0 (/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/share/eufs_msgs/cmake)
+[29.220s] -- GTSAM include directory:  /usr/local/lib/cmake/GTSAM/../../../include
+[29.507s] -- Configuring done
+[29.574s] -- Generating done
+[29.578s] -- Build files have been written to: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2
+[29.599s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2' returned '0': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2
+[29.609s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 -- -j12 -l12
+[29.728s] [35m[1mScanning dependencies of target isam_test[0m
+[29.848s] [ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+[31.419s] In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+[31.419s]                  from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[31.419s] [01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+[31.420s]    18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+[31.420s]       |  [01;35m[K^~~~~~~[m[K
+[125.929s] [100%] [32m[1mLinking CXX executable isam_test[0m
+[128.185s] [100%] Built target isam_test
+[128.251s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2' returned '0': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 -- -j12 -l12
+[128.322s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake --install /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2
+[128.347s] -- Install configuration: "RelWithDebInfo"
+[128.350s] -- Execute custom install script
+[128.356s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test
+[128.362s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/package_run_dependencies/isam2
+[128.365s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/parent_prefix_path/isam2
+[128.373s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.sh
+[128.379s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.dsv
+[128.380s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.sh
+[128.381s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.dsv
+[128.384s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.bash
+[128.388s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.sh
+[128.390s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.zsh
+[128.396s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.dsv
+[128.397s] -- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.dsv
+[128.424s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/packages/isam2
+[128.428s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/ament_cmake_export_include_directories-extras.cmake
+[128.429s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config.cmake
+[128.431s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config-version.cmake
+[128.432s] -- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.xml
+[128.439s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2' returned '0': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/opt/rviz_ogre_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib WSLENV=ELECTRON_RUN_AS_NODE/w: /usr/bin/cmake --install /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2

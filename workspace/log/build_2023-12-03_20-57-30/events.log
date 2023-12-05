@@ -1,0 +1,40 @@
+[0.000000] (-) TimerEvent: {}
+[0.001329] (eufs_msgs) JobQueued: {'identifier': 'eufs_msgs', 'dependencies': OrderedDict()}
+[0.001786] (isam2) JobQueued: {'identifier': 'isam2', 'dependencies': OrderedDict([('eufs_msgs', '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs')])}
+[0.002237] (eufs_msgs) JobStarted: {'identifier': 'eufs_msgs'}
+[0.051875] (eufs_msgs) JobProgress: {'identifier': 'eufs_msgs', 'progress': 'cmake'}
+[0.054962] (eufs_msgs) Command: {'cmd': ['/usr/bin/cmake', '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs', '-DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs'], 'cwd': '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs', 'env': OrderedDict([('USER', 'andrewwhong'), ('SHLVL', '1'), ('HOME', '/home/andrewwhong'), ('OLDPWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM'), ('GOROOT', '/home/andrewwhong/go/go'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('WSL_DISTRO_NAME', 'Ubuntu-20.04'), ('WAYLAND_DISPLAY', 'wayland-0'), ('LOGNAME', 'andrewwhong'), ('NAME', 'DESKTOP-NJ9IVDT'), ('WSL_INTEROP', '/run/WSL/56320_interop'), ('PULSE_SERVER', 'unix:/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('TERM', 'xterm-256color'), ('PATH', '/home/andrewwhong/go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/WindowsApps/CanonicalGroupLimited.Ubuntu20.04LTS_2004.6.16.0_x64__79rhkp1fndgsc:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.5/libnvvp:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/Wolfram Research/WolframScript/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/Program Files/MATLAB/R2022b/runtime/win64:/mnt/c/Program Files/MATLAB/R2022b/bin:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/MATLAB/R2021a/bin:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Common Files/Autodesk Shared/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2023.2.2/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/Andrew Chong/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/Andrew Chong/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/ProgramData/Andrew Chong/GitHubDesktop/bin:/mnt/c/Program Files/CMake/bin:/mnt/c/Users/Andrew Chong/AppData/Local/GitHubDesktop/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Users/Andrew Chong/AppData/Local/JetBrains/Toolbox/scripts:/snap/bin'), ('XDG_RUNTIME_DIR', '/run/user/1000/'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('SHELL', '/bin/bash'), ('PWD', '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('COLCON', '1'), ('WSL2_GUI_APPS_ENABLED', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', '')]), 'shell': False}
+[0.099661] (-) TimerEvent: {}
+[0.200135] (-) TimerEvent: {}
+[0.213773] (eufs_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[0.255241] (eufs_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.8.10", minimum required is "3") \n'}
+[0.255653] (eufs_msgs) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/local/bin/python3\n'}
+[0.300255] (-) TimerEvent: {}
+[0.400622] (-) TimerEvent: {}
+[0.501028] (-) TimerEvent: {}
+[0.589002] (eufs_msgs) StderrLine: {'line': b'Traceback (most recent call last):\n'}
+[0.589383] (eufs_msgs) StderrLine: {'line': b'  File "/opt/ros/foxy/share/ament_cmake_core/cmake/package_templates/templates_2_cmake.py", line 21, in <module>\n'}
+[0.589600] (eufs_msgs) StderrLine: {'line': b'    from ament_package.templates import get_environment_hook_template_path\n'}
+[0.589771] (eufs_msgs) StderrLine: {'line': b"ModuleNotFoundError: No module named 'ament_package'\n"}
+[0.601168] (-) TimerEvent: {}
+[0.614534] (eufs_msgs) StderrLine: {'line': b'CMake Error at /opt/ros/foxy/share/ament_cmake_core/cmake/ament_cmake_package_templates-extras.cmake:41 (message):\n'}
+[0.614840] (eufs_msgs) StderrLine: {'line': b'  execute_process(/usr/local/bin/python3\n'}
+[0.614992] (eufs_msgs) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/package_templates/templates_2_cmake.py\n'}
+[0.615260] (eufs_msgs) StderrLine: {'line': b'  /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/ament_cmake_package_templates/templates.cmake)\n'}
+[0.615528] (eufs_msgs) StderrLine: {'line': b'  returned error code 1\n'}
+[0.615814] (eufs_msgs) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.616066] (eufs_msgs) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/ament_cmake_coreConfig.cmake:41 (include)\n'}
+[0.616408] (eufs_msgs) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake/cmake/ament_cmake_export_dependencies-extras.cmake:15 (find_package)\n'}
+[0.616534] (eufs_msgs) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake/cmake/ament_cmakeConfig.cmake:41 (include)\n'}
+[0.616630] (eufs_msgs) StderrLine: {'line': b'  CMakeLists.txt:19 (find_package)\n'}
+[0.616708] (eufs_msgs) StderrLine: {'line': b'\n'}
+[0.616782] (eufs_msgs) StderrLine: {'line': b'\n'}
+[0.616856] (eufs_msgs) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.616937] (eufs_msgs) StdoutLine: {'line': b'See also "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/CMakeFiles/CMakeOutput.log".\n'}
+[0.629180] (eufs_msgs) CommandEnded: {'returncode': 1}
+[0.714468] (-) TimerEvent: {}
+[0.890053] (-) TimerEvent: {}
+[1.008451] (-) TimerEvent: {}
+[1.063593] (eufs_msgs) JobEnded: {'identifier': 'eufs_msgs', 'rc': 1}
+[1.075023] (isam2) JobSkipped: {'identifier': 'isam2'}
+[1.075194] (-) EventReactorShutdown: {}

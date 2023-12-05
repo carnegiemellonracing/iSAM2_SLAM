@@ -67,7 +67,7 @@ class SLAMValidation : public rclcpp::Node
         }
     }
     void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr vehicle_state_data){
-        // RCLCPP_INFO(this->get_logger(), "vehicle state\n");
+        RCLCPP_INFO(this->get_logger(), "vehicle state:(%f,%f)\n",vehicle_state_data->pose.pose.orientation.x,vehicle_state_data->pose.pose.orientation.y);
         double q1 = vehicle_state_data->pose.pose.orientation.x;
         double q2 = vehicle_state_data->pose.pose.orientation.y;
         double q3 = vehicle_state_data->pose.pose.orientation.z;
