@@ -1,0 +1,38 @@
+[0.456s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_models -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models
+[0.988s] -- The C compiler identification is GNU 9.4.0
+[1.864s] -- The CXX compiler identification is GNU 9.4.0
+[2.406s] -- Check for working C compiler: /usr/bin/cc
+[2.884s] -- Check for working C compiler: /usr/bin/cc -- works
+[2.888s] -- Detecting C compiler ABI info
+[3.370s] -- Detecting C compiler ABI info - done
+[3.393s] -- Detecting C compile features
+[3.394s] -- Detecting C compile features - done
+[3.399s] -- Check for working CXX compiler: /usr/bin/c++
+[3.893s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[3.896s] -- Detecting CXX compiler ABI info
+[4.424s] -- Detecting CXX compiler ABI info - done
+[4.445s] -- Detecting CXX compile features
+[4.447s] -- Detecting CXX compile features - done
+[4.452s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[4.504s] -- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+[4.504s] -- Using PYTHON_EXECUTABLE: /usr/local/bin/python3
+[8.535s] CMake Error at CMakeLists.txt:25 (find_package):
+[8.535s]   By not providing "Findyaml-cpp.cmake" in CMAKE_MODULE_PATH this project has
+[8.536s]   asked CMake to find a package configuration file provided by "yaml-cpp",
+[8.536s]   but CMake did not find one.
+[8.537s] 
+[8.537s]   Could not find a package configuration file provided by "yaml-cpp" with any
+[8.538s]   of the following names:
+[8.538s] 
+[8.538s]     yaml-cppConfig.cmake
+[8.538s]     yaml-cpp-config.cmake
+[8.539s] 
+[8.539s]   Add the installation prefix of "yaml-cpp" to CMAKE_PREFIX_PATH or set
+[8.539s]   "yaml-cpp_DIR" to a directory containing one of the above files.  If
+[8.540s]   "yaml-cpp" provides a separate development package or SDK, be sure it has
+[8.540s]   been installed.
+[8.541s] 
+[8.542s] 
+[8.543s] -- Configuring incomplete, errors occurred!
+[8.544s] See also "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models/CMakeFiles/CMakeOutput.log".
+[8.545s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models' returned '1': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_models -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models

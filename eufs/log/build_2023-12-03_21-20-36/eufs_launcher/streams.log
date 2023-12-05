@@ -1,0 +1,45 @@
+[2.945s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_launcher': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:${AMENT_PREFIX_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/eufs_launcher build --build-base /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/build install --record /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/install.log --single-version-externally-managed
+[3.634s] running egg_info
+[3.685s] writing ../../build/eufs_launcher/eufs_launcher.egg-info/PKG-INFO
+[3.686s] writing dependency_links to ../../build/eufs_launcher/eufs_launcher.egg-info/dependency_links.txt
+[3.686s] writing requirements to ../../build/eufs_launcher/eufs_launcher.egg-info/requires.txt
+[3.687s] writing top-level names to ../../build/eufs_launcher/eufs_launcher.egg-info/top_level.txt
+[3.992s] reading manifest file '../../build/eufs_launcher/eufs_launcher.egg-info/SOURCES.txt'
+[3.994s] writing manifest file '../../build/eufs_launcher/eufs_launcher.egg-info/SOURCES.txt'
+[3.994s] running build
+[3.995s] running build_py
+[3.996s] copying src/eufs_launcher/LauncherModule.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/build/lib/eufs_launcher
+[3.996s] copying src/eufs_launcher/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/build/lib/eufs_launcher
+[3.997s] running build_scripts
+[3.997s] running install
+[3.998s] /home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.
+[3.998s] !!
+[3.998s] 
+[3.998s]         ********************************************************************************
+[3.998s]         Please avoid running ``setup.py`` directly.
+[3.999s]         Instead, use pypa/build, pypa/installer or other
+[3.999s]         standards-based tools.
+[3.999s] 
+[3.999s]         See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.
+[3.999s]         ********************************************************************************
+[3.999s] 
+[4.000s] !!
+[4.000s]   self.initialize_options()
+[4.009s] running install_lib
+[4.043s] running install_data
+[4.075s] copying launch/eufs_launcher.launch.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher
+[4.076s] copying launch/simulation.launch.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher
+[4.077s] copying config/default.rviz -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher/config
+[4.077s] copying config/eufs_launcher.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher/config
+[4.078s] copying resource/launcher.ui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher/resource
+[4.079s] copying plugin.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher
+[4.079s] copying package.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/eufs_launcher
+[4.080s] copying resource/eufs_launcher -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/share/ament_index/resource_index/packages
+[4.081s] running install_egg_info
+[4.112s] removing '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages/eufs_launcher-2.0.0-py3.8.egg-info' (and everything under it)
+[4.112s] Copying ../../build/eufs_launcher/eufs_launcher.egg-info to /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages/eufs_launcher-2.0.0-py3.8.egg-info
+[4.114s] running install_scripts
+[4.146s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/build/scripts-3.8/eufs_launcher -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/eufs_launcher
+[4.146s] changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/eufs_launcher/eufs_launcher to 755
+[4.171s] writing list of installed files to '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/install.log'
+[4.215s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_launcher' returned '0': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks:${AMENT_PREFIX_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_launcher/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/eufs_launcher build --build-base /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/build install --record /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_launcher/install.log --single-version-externally-managed

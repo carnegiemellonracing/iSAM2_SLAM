@@ -1,0 +1,203 @@
+[2.718s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_tracks': PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/eufs_tracks build --build-base /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build install --record /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/install.log --single-version-externally-managed
+[3.162s] running egg_info
+[3.163s] creating ../../build/eufs_tracks/eufs_tracks.egg-info
+[3.195s] writing ../../build/eufs_tracks/eufs_tracks.egg-info/PKG-INFO
+[3.196s] writing dependency_links to ../../build/eufs_tracks/eufs_tracks.egg-info/dependency_links.txt
+[3.196s] writing entry points to ../../build/eufs_tracks/eufs_tracks.egg-info/entry_points.txt
+[3.196s] writing requirements to ../../build/eufs_tracks/eufs_tracks.egg-info/requires.txt
+[3.197s] writing top-level names to ../../build/eufs_tracks/eufs_tracks.egg-info/top_level.txt
+[3.392s] writing manifest file '../../build/eufs_tracks/eufs_tracks.egg-info/SOURCES.txt'
+[3.508s] reading manifest file '../../build/eufs_tracks/eufs_tracks.egg-info/SOURCES.txt'
+[3.511s] writing manifest file '../../build/eufs_tracks/eufs_tracks.egg-info/SOURCES.txt'
+[3.512s] running build
+[3.512s] running build_py
+[3.512s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build
+[3.513s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib
+[3.513s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks
+[3.513s] copying eufs_tracks/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks
+[3.514s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli
+[3.514s] copying eufs_tracks/cli/main.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli
+[3.514s] copying eufs_tracks/cli/create.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli
+[3.514s] copying eufs_tracks/cli/convert.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli
+[3.515s] copying eufs_tracks/cli/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli
+[3.515s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/converter_tool
+[3.516s] copying eufs_tracks/converter_tool/converter.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/converter_tool
+[3.518s] copying eufs_tracks/converter_tool/converter_gui.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/converter_tool
+[3.518s] copying eufs_tracks/converter_tool/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/converter_tool
+[3.519s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/track_generator
+[3.519s] copying eufs_tracks/track_generator/track_generator_gui.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/track_generator
+[3.520s] copying eufs_tracks/track_generator/track_generator.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/track_generator
+[3.521s] copying eufs_tracks/track_generator/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/track_generator
+[3.523s] running build_scripts
+[3.523s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/scripts-3.8
+[3.524s] copying and adjusting scripts/eufs_tracks_converter -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/scripts-3.8
+[3.524s] copying and adjusting scripts/eufs_tracks_generator -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/scripts-3.8
+[3.525s] changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/scripts-3.8/eufs_tracks_converter from 644 to 755
+[3.525s] changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/scripts-3.8/eufs_tracks_generator from 644 to 755
+[3.526s] running install
+[3.526s] /home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.
+[3.526s] !!
+[3.526s] 
+[3.526s]         ********************************************************************************
+[3.527s]         Please avoid running ``setup.py`` directly.
+[3.527s]         Instead, use pypa/build, pypa/installer or other
+[3.527s]         standards-based tools.
+[3.527s] 
+[3.527s]         See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.
+[3.527s]         ********************************************************************************
+[3.527s] 
+[3.527s] !!
+[3.527s]   self.initialize_options()
+[3.536s] running install_lib
+[3.573s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks
+[3.574s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli
+[3.575s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli/main.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli
+[3.576s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli/create.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli
+[3.576s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli/convert.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli
+[3.576s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/cli/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli
+[3.577s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/converter_tool
+[3.577s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/converter_tool/converter.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/converter_tool
+[3.578s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/converter_tool/converter_gui.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/converter_tool
+[3.578s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/converter_tool/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/converter_tool
+[3.578s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/track_generator
+[3.579s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/track_generator/track_generator_gui.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/track_generator
+[3.579s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/track_generator/track_generator.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/track_generator
+[3.579s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/track_generator/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/track_generator
+[3.579s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/lib/eufs_tracks/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks
+[3.579s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli/main.py to main.cpython-38.pyc
+[3.580s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli/create.py to create.cpython-38.pyc
+[3.580s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli/convert.py to convert.cpython-38.pyc
+[3.581s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/cli/__init__.py to __init__.cpython-38.pyc
+[3.582s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/converter_tool/converter.py to converter.cpython-38.pyc
+[3.589s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/converter_tool/converter_gui.py to converter_gui.cpython-38.pyc
+[3.590s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/converter_tool/__init__.py to __init__.cpython-38.pyc
+[3.591s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/track_generator/track_generator_gui.py to track_generator_gui.cpython-38.pyc
+[3.595s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/track_generator/track_generator.py to track_generator.cpython-38.pyc
+[3.598s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/track_generator/__init__.py to __init__.cpython-38.pyc
+[3.599s] byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks/__init__.py to __init__.cpython-38.pyc
+[3.599s] running install_data
+[3.631s] copying package.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks
+[3.631s] copying plugin.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks
+[3.632s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/ament_index
+[3.632s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/ament_index/resource_index
+[3.633s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/ament_index/resource_index/packages
+[3.633s] copying resource/eufs_tracks -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/ament_index/resource_index/packages
+[3.634s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.634s] copying csv/comp_2021.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.634s] copying csv/skidpad.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.635s] copying csv/its_a_mess.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.636s] copying csv/peanut.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.637s] copying csv/rectangle.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.638s] copying csv/acceleration.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.639s] copying csv/rand.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.640s] copying csv/garden_light.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.641s] copying csv/bone.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.641s] copying csv/boa_constrictor.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.642s] copying csv/hairpins_increasing_difficulty.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.643s] copying csv/small_track.csv -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/csv
+[3.644s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/image
+[3.645s] copying image/comp_2021.png -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/image
+[3.646s] copying image/skidpad.png -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/image
+[3.646s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.647s] copying launch/empty.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.647s] copying launch/skidpad.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.648s] copying launch/its_a_mess.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.649s] copying launch/rand.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.649s] copying launch/peanut.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.650s] copying launch/boa_constrictor.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.650s] copying launch/garden_light.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.651s] copying launch/rectangle.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.653s] copying launch/comp_2021.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.654s] copying launch/acceleration.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.654s] copying launch/hairpins_increasing_difficulty.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.655s] copying launch/eufs_track_generator.launch.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.655s] copying launch/small_track.launch -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.657s] copying launch/blacklist.txt -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/launch
+[3.658s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/materials
+[3.659s] copying materials/asphalt.jpg -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/materials
+[3.707s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes
+[3.707s] copying meshes/cone_big.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes
+[3.709s] copying meshes/cone_blue.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes
+[3.710s] copying meshes/cone.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes
+[3.711s] copying meshes/cone_yellow.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes
+[3.711s] copying meshes/MonkeyNoise.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes
+[3.713s] copying meshes/NoiseCube.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/meshes
+[3.713s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.714s] copying worlds/boa_constrictor.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.715s] copying worlds/hairpins_increasing_difficulty.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.718s] copying worlds/rand.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.721s] copying worlds/its_a_mess.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.721s] copying worlds/peanut.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.723s] copying worlds/garden_light.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.724s] copying worlds/comp_2021.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.725s] copying worlds/rectangle.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.725s] copying worlds/acceleration.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.726s] copying worlds/small_track.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.727s] copying worlds/skidpad.world -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/worlds
+[3.728s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource
+[3.729s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource/randgen_model_template
+[3.729s] copying resource/randgen_model_template/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource/randgen_model_template
+[3.730s] copying resource/randgen_model_template/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource/randgen_model_template
+[3.730s] copying resource/noiseFiles.txt -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource
+[3.731s] copying resource/randgen_launch_template -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource
+[3.732s] copying resource/randgen_world_template -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource
+[3.732s] copying resource/conversion_tool.ui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/resource
+[3.733s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models
+[3.733s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/blue_cone
+[3.734s] copying models/blue_cone/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/blue_cone
+[3.737s] copying models/blue_cone/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/blue_cone
+[3.738s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rectangle
+[3.739s] copying models/rectangle/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rectangle
+[3.740s] copying models/rectangle/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rectangle
+[3.744s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/skidpad
+[3.748s] copying models/skidpad/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/skidpad
+[3.749s] copying models/skidpad/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/skidpad
+[3.751s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/hairpins_increasing_difficulty
+[3.752s] copying models/hairpins_increasing_difficulty/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/hairpins_increasing_difficulty
+[3.752s] copying models/hairpins_increasing_difficulty/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/hairpins_increasing_difficulty
+[3.752s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/peanut
+[3.754s] copying models/peanut/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/peanut
+[3.755s] copying models/peanut/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/peanut
+[3.757s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/yellow_cone
+[3.759s] copying models/yellow_cone/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/yellow_cone
+[3.763s] copying models/yellow_cone/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/yellow_cone
+[3.766s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/comp_2021
+[3.769s] copying models/comp_2021/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/comp_2021
+[3.773s] copying models/comp_2021/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/comp_2021
+[3.776s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rand
+[3.780s] copying models/rand/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rand
+[3.782s] copying models/rand/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/rand
+[3.789s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/garden_light
+[3.790s] copying models/garden_light/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/garden_light
+[3.794s] copying models/garden_light/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/garden_light
+[3.795s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/boa_constrictor
+[3.796s] copying models/boa_constrictor/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/boa_constrictor
+[3.797s] copying models/boa_constrictor/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/boa_constrictor
+[3.798s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/big_cone
+[3.798s] copying models/big_cone/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/big_cone
+[3.799s] copying models/big_cone/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/big_cone
+[3.799s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/acceleration
+[3.799s] copying models/acceleration/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/acceleration
+[3.799s] copying models/acceleration/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/acceleration
+[3.799s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/small_track
+[3.799s] copying models/small_track/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/small_track
+[3.799s] copying models/small_track/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/small_track
+[3.800s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/its_a_mess
+[3.800s] copying models/its_a_mess/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/its_a_mess
+[3.800s] copying models/its_a_mess/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/its_a_mess
+[3.800s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/ground_plane
+[3.800s] copying models/ground_plane/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/ground_plane
+[3.800s] copying models/ground_plane/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/ground_plane
+[3.800s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/orange_cone
+[3.800s] copying models/orange_cone/model.config -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/orange_cone
+[3.801s] copying models/orange_cone/model.sdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/share/eufs_tracks/models/orange_cone
+[3.801s] running install_egg_info
+[3.844s] Copying ../../build/eufs_tracks/eufs_tracks.egg-info to /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages/eufs_tracks-2.0.0-py3.8.egg-info
+[3.845s] running install_scripts
+[3.875s] creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/eufs_tracks
+[3.876s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/scripts-3.8/eufs_tracks_generator -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/eufs_tracks
+[3.876s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build/scripts-3.8/eufs_tracks_converter -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/eufs_tracks
+[3.876s] changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/eufs_tracks/eufs_tracks_generator to 755
+[3.876s] changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/eufs_tracks/eufs_tracks_converter to 755
+[3.908s] writing list of installed files to '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/install.log'
+[3.988s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_tracks' returned '0': PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_tracks/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/eufs_tracks build --build-base /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/build install --record /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_tracks/install.log --single-version-externally-managed

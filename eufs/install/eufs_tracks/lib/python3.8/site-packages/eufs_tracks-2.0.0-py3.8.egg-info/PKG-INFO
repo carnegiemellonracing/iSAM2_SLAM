@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: eufs-tracks
+Version: 2.0.0
+Summary: Procedurally generates tracks and converts between file formats.
+Maintainer: Cameron Matthew
+Maintainer-email: cambobmat@icloud.com
+License: MIT
+Requires-Dist: setuptools

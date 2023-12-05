@@ -1,0 +1,139 @@
+[0.800s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_plugins -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins
+[0.830s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.867s] -- Using PYTHON_EXECUTABLE: /usr/local/bin/python3
+[1.210s] -- Found gazebo_dev: 3.5.3 (/opt/ros/foxy/share/gazebo_dev/cmake)
+[4.286s] -- Found DART: /usr/include (Required is at least version "6.6") found components: dart 
+[4.328s] -- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so;-lpthread (found version "3.6.1") 
+[4.331s] -- Looking for ignition-math6 -- found version 6.15.0
+[4.340s] -- Searching for dependencies of ignition-math6
+[4.343s] -- Looking for OGRE...
+[4.349s] -- Found Ogre Ghadamon (1.9.0)
+[4.350s] -- Found OGRE: optimized;/usr/lib/x86_64-linux-gnu/libOgreMain.so;debug;/usr/lib/x86_64-linux-gnu/libOgreMain.so
+[4.361s] -- Looking for OGRE_Paging...
+[4.361s] -- Found OGRE_Paging: optimized;/usr/lib/x86_64-linux-gnu/libOgrePaging.so;debug;/usr/lib/x86_64-linux-gnu/libOgrePaging.so
+[4.362s] -- Looking for OGRE_Terrain...
+[4.362s] -- Found OGRE_Terrain: optimized;/usr/lib/x86_64-linux-gnu/libOgreTerrain.so;debug;/usr/lib/x86_64-linux-gnu/libOgreTerrain.so
+[4.362s] -- Looking for OGRE_Property...
+[4.362s] -- Found OGRE_Property: optimized;/usr/lib/x86_64-linux-gnu/libOgreProperty.so;debug;/usr/lib/x86_64-linux-gnu/libOgreProperty.so
+[4.363s] -- Looking for OGRE_RTShaderSystem...
+[4.363s] -- Found OGRE_RTShaderSystem: optimized;/usr/lib/x86_64-linux-gnu/libOgreRTShaderSystem.so;debug;/usr/lib/x86_64-linux-gnu/libOgreRTShaderSystem.so
+[4.363s] -- Looking for OGRE_Volume...
+[4.363s] -- Found OGRE_Volume: optimized;/usr/lib/x86_64-linux-gnu/libOgreVolume.so;debug;/usr/lib/x86_64-linux-gnu/libOgreVolume.so
+[4.363s] -- Looking for OGRE_Overlay...
+[4.363s] -- Found OGRE_Overlay: optimized;/usr/lib/x86_64-linux-gnu/libOgreOverlay.so;debug;/usr/lib/x86_64-linux-gnu/libOgreOverlay.so
+[64.204s] -- Looking for ignition-math6 -- found version 6.15.0
+[64.204s] -- Looking for ignition-transport8 -- found version 8.3.0
+[64.205s] -- Searching for dependencies of ignition-transport8
+[66.688s] -- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so;-lpthread (found suitable version "3.6.1", minimum required is "3") 
+[69.280s] -- Config-file not installed for ZeroMQ -- checking for pkg-config
+[69.284s] -- Checking for module 'libzmq >= 4'
+[69.300s] --   Found libzmq , version 4.3.2
+[69.347s] -- Checking for module 'uuid'
+[69.362s] --   Found uuid, version 2.34.0
+[69.400s] -- Looking for ignition-msgs5 -- found version 5.10.0
+[69.401s] -- Searching for dependencies of ignition-msgs5
+[71.902s] -- Looking for ignition-math6 -- found version 6.15.0
+[71.907s] -- Checking for module 'tinyxml2'
+[71.925s] --   Found tinyxml2, version 6.2.0
+[71.974s] -- Looking for ignition-msgs5 -- found version 5.10.0
+[71.974s] -- Looking for ignition-common3 -- found version 3.14.2
+[71.975s] -- Searching for dependencies of ignition-common3
+[71.975s] -- Looking for dlfcn.h - found
+[71.975s] -- Looking for libdl - found
+[72.188s] -- Searching for <ignition-common3> component [graphics]
+[72.188s] -- Looking for ignition-common3-graphics -- found version 3.14.2
+[72.188s] -- Searching for dependencies of ignition-common3-graphics
+[72.189s] -- Looking for ignition-math6 -- found version 6.15.0
+[72.190s] -- Looking for ignition-fuel_tools4 -- found version 4.6.0
+[72.191s] -- Searching for dependencies of ignition-fuel_tools4
+[72.650s] -- Checking for module 'jsoncpp'
+[72.665s] --   Found jsoncpp, version 1.7.4
+[72.706s] -- Checking for module 'libzip'
+[72.721s] --   Found libzip, version 1.5.1
+[72.757s] -- Looking for ignition-common3 -- found version 3.14.2
+[72.758s] -- Looking for ignition-math6 -- found version 6.15.0
+[72.758s] -- Looking for ignition-msgs5 -- found version 5.10.0
+[72.759s] -- Gazebo version: 11.11
+[72.760s] -- Found gazebo_ros: 3.5.3 (/opt/ros/foxy/share/gazebo_ros/cmake)
+[72.906s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[72.910s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[83.393s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[83.448s] -- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[83.450s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[83.631s] -- Found geometry_msgs: 2.0.5 (/opt/ros/foxy/share/geometry_msgs/cmake)
+[83.670s] -- Found nav_msgs: 2.0.5 (/opt/ros/foxy/share/nav_msgs/cmake)
+[83.753s] -- Found std_srvs: 2.0.5 (/opt/ros/foxy/share/std_srvs/cmake)
+[83.763s] -- Found tf2: 0.13.14 (/opt/ros/foxy/share/tf2/cmake)
+[83.774s] -- Found tf2_ros: 0.13.14 (/opt/ros/foxy/share/tf2_ros/cmake)
+[84.136s] -- Found eufs_msgs: 2.0.0 (/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/share/eufs_msgs/cmake)
+[84.461s] -- Found eufs_models: 2.0.0 (/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake)
+[84.487s] -- Found ackermann_msgs: 2.0.2 (/opt/ros/foxy/share/ackermann_msgs/cmake)
+[84.532s] -- Found image_geometry: 3.0.7 (/opt/ros/foxy/share/image_geometry/cmake)
+[84.555s] -- Found yaml_cpp_vendor: 7.0.3 (/opt/ros/foxy/share/yaml_cpp_vendor/cmake)
+[84.555s] -- Setting yaml-cpp_DIR to: '/opt/ros/foxy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/lib/cmake/yaml-cpp'
+[84.825s] -- Configuring done
+[84.983s] -- Generating done
+[84.987s] -- Build files have been written to: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins
+[85.008s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins' returned '0': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_plugins -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins
+[85.013s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins -- -j12 -l12
+[85.065s] [35m[1mScanning dependencies of target gazebo_camera_cones[0m
+[85.065s] [35m[1mScanning dependencies of target gazebo_ground_truth_cones[0m
+[85.066s] [35m[1mScanning dependencies of target gazebo_race_car_model[0m
+[85.066s] [35m[1mScanning dependencies of target gazebo_simulate_bounding_boxes[0m
+[85.454s] [ 11%] [32mBuilding CXX object gazebo_cone_plugins/CMakeFiles/gazebo_camera_cones.dir/src/gazebo_camera_cones.cpp.o[0m
+[85.465s] [ 33%] [32mBuilding CXX object gazebo_race_car_model/CMakeFiles/gazebo_race_car_model.dir/src/gazebo_ros_race_car_model.cpp.o[0m
+[85.465s] [ 33%] [32mBuilding CXX object gazebo_cone_plugins/CMakeFiles/gazebo_ground_truth_cones.dir/src/gazebo_ground_truth_cones.cpp.o[0m
+[85.466s] [ 44%] [32mBuilding CXX object gazebo_race_car_model/CMakeFiles/gazebo_race_car_model.dir/src/state_machine.cpp.o[0m
+[85.516s] [ 55%] [32mBuilding CXX object gazebo_simulate_bounding_boxes/CMakeFiles/gazebo_simulate_bounding_boxes.dir/src/gazebo_simulate_bounding_boxes.cpp.o[0m
+[152.068s] [ 66%] [32m[1mLinking CXX shared library libgazebo_camera_cones.so[0m
+[152.892s] [ 77%] [32m[1mLinking CXX shared library libgazebo_ground_truth_cones.so[0m
+[153.931s] [ 77%] Built target gazebo_camera_cones
+[154.390s] [ 77%] Built target gazebo_ground_truth_cones
+[167.163s] [ 88%] [32m[1mLinking CXX shared library libgazebo_race_car_model.so[0m
+[169.275s] [ 88%] Built target gazebo_race_car_model
+[174.120s] [100%] [32m[1mLinking CXX shared library libgazebo_simulate_bounding_boxes.so[0m
+[175.575s] [100%] Built target gazebo_simulate_bounding_boxes
+[176.053s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins' returned '0': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins -- -j12 -l12
+[176.430s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins
+[176.452s] -- Install configuration: ""
+[176.454s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/urdf
+[176.454s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/urdf/eufs_plugins.gazebo.xacro
+[176.457s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/library_path.sh
+[176.458s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/library_path.dsv
+[176.460s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/ament_index/resource_index/package_run_dependencies/eufs_plugins
+[176.461s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/ament_index/resource_index/parent_prefix_path/eufs_plugins
+[176.463s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/ament_prefix_path.sh
+[176.463s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/ament_prefix_path.dsv
+[176.464s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/path.sh
+[176.464s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/path.dsv
+[176.465s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/local_setup.bash
+[176.465s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/local_setup.sh
+[176.465s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/local_setup.zsh
+[176.466s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/local_setup.dsv
+[176.466s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/package.dsv
+[176.467s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/ament_index/resource_index/packages/eufs_plugins
+[176.468s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/cmake/ament_cmake_export_libraries-extras.cmake
+[176.468s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/cmake/ament_cmake_export_include_directories-extras.cmake
+[176.469s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/cmake/ament_cmake_export_dependencies-extras.cmake
+[176.470s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/cmake/eufs_pluginsConfig.cmake
+[176.470s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/cmake/eufs_pluginsConfig-version.cmake
+[176.470s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/package.xml
+[176.471s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/config
+[176.472s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/config/cone_recolor.yaml
+[176.472s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/library_path.sh
+[176.472s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/library_path.dsv
+[176.473s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib/libgazebo_ground_truth_cones.so
+[176.488s] -- Set runtime path of "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib/libgazebo_ground_truth_cones.so" to ""
+[176.488s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib/libgazebo_camera_cones.so
+[176.502s] -- Set runtime path of "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib/libgazebo_camera_cones.so" to ""
+[176.503s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/library_path.sh
+[176.503s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/library_path.dsv
+[176.503s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib/libgazebo_race_car_model.so
+[176.512s] -- Set runtime path of "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib/libgazebo_race_car_model.so" to ""
+[176.512s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/library_path.sh
+[176.513s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/environment/library_path.dsv
+[176.513s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/config
+[176.513s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/share/eufs_plugins/config/boundingBoxes.yaml
+[176.514s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib/libgazebo_simulate_bounding_boxes.so
+[176.519s] -- Set runtime path of "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_plugins/lib/libgazebo_simulate_bounding_boxes.so" to ""
+[176.537s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins' returned '0': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_plugins

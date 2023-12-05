@@ -1,0 +1,60 @@
+[0.845s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_models -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models
+[0.875s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.938s] -- Using PYTHON_EXECUTABLE: /usr/local/bin/python3
+[1.360s] -- Found eufs_msgs: 2.0.0 (/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/share/eufs_msgs/cmake)
+[1.992s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[2.010s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[6.954s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+[11.380s] -- Found FastRTPS: /opt/ros/foxy/include  
+[18.294s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[19.338s] -- Configuring done
+[19.351s] -- Generating done
+[19.353s] -- Build files have been written to: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models
+[19.368s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models' returned '0': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_models -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models
+[19.374s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models -- -j12 -l12
+[19.431s] [35m[1mScanning dependencies of target eufs_models[0m
+[19.459s] [ 25%] [32mBuilding CXX object CMakeFiles/eufs_models.dir/src/point_mass.cpp.o[0m
+[19.460s] [ 50%] [32mBuilding CXX object CMakeFiles/eufs_models.dir/src/dynamic_bicycle.cpp.o[0m
+[19.462s] [ 75%] [32mBuilding CXX object CMakeFiles/eufs_models.dir/src/vehicle_model.cpp.o[0m
+[21.870s] [100%] [32m[1mLinking CXX static library libeufs_models.a[0m
+[21.933s] [100%] Built target eufs_models
+[21.963s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models' returned '0': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models -- -j12 -l12
+[22.016s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models
+[22.027s] -- Install configuration: ""
+[22.028s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/environment/library_path.sh
+[22.028s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/environment/library_path.dsv
+[22.029s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include
+[22.029s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models
+[22.030s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models/dynamic_bicycle.hpp
+[22.030s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models/vehicle_input.hpp
+[22.030s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models/vehicle_param.hpp
+[22.030s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models/eufs_models.hpp
+[22.031s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models/vehicle_state.hpp
+[22.031s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models/noise.hpp
+[22.031s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models/point_mass.hpp
+[22.032s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/include/eufs_models/vehicle_model.hpp
+[22.032s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/lib/libeufs_models.a
+[22.033s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/ament_index/resource_index/package_run_dependencies/eufs_models
+[22.033s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/ament_index/resource_index/parent_prefix_path/eufs_models
+[22.034s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/environment/ament_prefix_path.sh
+[22.034s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/environment/ament_prefix_path.dsv
+[22.035s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/environment/path.sh
+[22.035s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/environment/path.dsv
+[22.036s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/local_setup.bash
+[22.036s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/local_setup.sh
+[22.036s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/local_setup.zsh
+[22.037s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/local_setup.dsv
+[22.037s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/package.dsv
+[22.038s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/ament_index/resource_index/packages/eufs_models
+[22.038s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake/export_eufs_modelsExport.cmake
+[22.038s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake/export_eufs_modelsExport-noconfig.cmake
+[22.039s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake/ament_cmake_export_include_directories-extras.cmake
+[22.039s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake/ament_cmake_export_libraries-extras.cmake
+[22.039s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake/ament_cmake_export_targets-extras.cmake
+[22.040s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake/ament_cmake_export_dependencies-extras.cmake
+[22.040s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake/eufs_modelsConfig.cmake
+[22.040s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/cmake/eufs_modelsConfig-version.cmake
+[22.041s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/package.xml
+[22.041s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/models/models.txt
+[22.042s] -- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/config/noise.yaml
+[22.047s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models' returned '0': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_models

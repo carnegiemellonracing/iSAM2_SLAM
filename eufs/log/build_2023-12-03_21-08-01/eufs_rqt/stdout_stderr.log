@@ -1,0 +1,67 @@
+running egg_info
+creating ../../build/eufs_rqt/eufs_rqt.egg-info
+writing ../../build/eufs_rqt/eufs_rqt.egg-info/PKG-INFO
+writing dependency_links to ../../build/eufs_rqt/eufs_rqt.egg-info/dependency_links.txt
+writing requirements to ../../build/eufs_rqt/eufs_rqt.egg-info/requires.txt
+writing top-level names to ../../build/eufs_rqt/eufs_rqt.egg-info/top_level.txt
+writing manifest file '../../build/eufs_rqt/eufs_rqt.egg-info/SOURCES.txt'
+reading manifest file '../../build/eufs_rqt/eufs_rqt.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/eufs_rqt/eufs_rqt.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt
+copying src/eufs_rqt/EUFSRobotSteeringGUI.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt
+copying src/eufs_rqt/MissionControlGUI.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt
+copying src/eufs_rqt/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt
+running build_scripts
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8
+copying and adjusting scripts/eufs_robot_steering_gui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8
+copying and adjusting scripts/mission_control_gui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8
+changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8/eufs_robot_steering_gui from 644 to 755
+changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8/mission_control_gui from 644 to 755
+running install
+/home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.
+!!
+
+        ********************************************************************************
+        Please avoid running ``setup.py`` directly.
+        Instead, use pypa/build, pypa/installer or other
+        standards-based tools.
+
+        See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.
+        ********************************************************************************
+
+!!
+  self.initialize_options()
+running install_lib
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt
+copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt/EUFSRobotSteeringGUI.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt
+copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt/MissionControlGUI.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt
+copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt
+byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt/EUFSRobotSteeringGUI.py to EUFSRobotSteeringGUI.cpython-38.pyc
+byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt/MissionControlGUI.py to MissionControlGUI.cpython-38.pyc
+byte-compiling /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt/__init__.py to __init__.cpython-38.pyc
+running install_data
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt/config
+copying config/eufs_sim.perspective -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt/config
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt/resource
+copying resource/EUFSRobotSteeringGUI.ui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt/resource
+copying resource/MissionControlGUI.ui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt/resource
+copying plugin.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/ament_index
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/ament_index/resource_index
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/ament_index/resource_index/packages
+copying resource/eufs_rqt -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/ament_index/resource_index/packages
+copying package.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt
+running install_egg_info
+Copying ../../build/eufs_rqt/eufs_rqt.egg-info to /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt-2.0.0-py3.8.egg-info
+running install_scripts
+creating /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt
+copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8/mission_control_gui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt
+copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8/eufs_robot_steering_gui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt
+changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt/mission_control_gui to 755
+changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt/eufs_robot_steering_gui to 755
+writing list of installed files to '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/install.log'

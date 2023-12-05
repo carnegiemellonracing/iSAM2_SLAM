@@ -1,0 +1,48 @@
+[4.381s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_racecar': PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/eufs_racecar build --build-base /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/build install --record /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/install.log --single-version-externally-managed
+[5.018s] running egg_info
+[5.066s] writing ../../build/eufs_racecar/eufs_racecar.egg-info/PKG-INFO
+[5.067s] writing dependency_links to ../../build/eufs_racecar/eufs_racecar.egg-info/dependency_links.txt
+[5.069s] writing requirements to ../../build/eufs_racecar/eufs_racecar.egg-info/requires.txt
+[5.069s] writing top-level names to ../../build/eufs_racecar/eufs_racecar.egg-info/top_level.txt
+[5.365s] reading manifest file '../../build/eufs_racecar/eufs_racecar.egg-info/SOURCES.txt'
+[5.368s] writing manifest file '../../build/eufs_racecar/eufs_racecar.egg-info/SOURCES.txt'
+[5.369s] running build
+[5.369s] running install
+[5.370s] /home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.
+[5.370s] !!
+[5.371s] 
+[5.371s]         ********************************************************************************
+[5.371s]         Please avoid running ``setup.py`` directly.
+[5.371s]         Instead, use pypa/build, pypa/installer or other
+[5.372s]         standards-based tools.
+[5.372s] 
+[5.372s]         See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.
+[5.373s]         ********************************************************************************
+[5.373s] 
+[5.374s] !!
+[5.374s]   self.initialize_options()
+[5.382s] running install_data
+[5.438s] copying resource/eufs_racecar -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/ament_index/resource_index/packages
+[5.439s] copying package.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar
+[5.439s] copying meshes/ads_wheel_left.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes
+[5.514s] copying meshes/ads_dv_chassis.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes
+[5.553s] copying meshes/wheel_left.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes
+[5.561s] copying meshes/wheel_right.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes
+[5.568s] copying meshes/sisu-20d.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes
+[5.682s] copying meshes/ads_wheel_right.dae -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/meshes
+[5.706s] copying urdf/wheels.urdf.xacro -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/urdf
+[5.707s] copying urdf/eufs_base.urdf.xacro -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/urdf
+[5.708s] copying launch/load_car.launch.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/launch
+[5.709s] copying robots/eufs/configDry.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/eufs
+[5.710s] copying robots/eufs/configWet.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/eufs
+[5.711s] copying robots/eufs/robot.urdf.xacro -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/eufs
+[5.712s] copying robots/ads-dv/configDry.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/ads-dv
+[5.714s] copying robots/ads-dv/configWet.yaml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/ads-dv
+[5.715s] copying robots/ads-dv/robot.urdf.xacro -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/ads-dv
+[5.717s] copying robots/ads-dv/ADS-DV Sensor Position.pdf -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/share/eufs_racecar/robots/ads-dv
+[5.727s] running install_egg_info
+[5.837s] removing '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages/eufs_racecar-2.0.0-py3.8.egg-info' (and everything under it)
+[5.839s] Copying ../../build/eufs_racecar/eufs_racecar.egg-info to /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages/eufs_racecar-2.0.0-py3.8.egg-info
+[5.840s] running install_scripts
+[5.995s] writing list of installed files to '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/install.log'
+[6.755s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_racecar' returned '0': PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_racecar/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/eufs_racecar build --build-base /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/build install --record /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_racecar/install.log --single-version-externally-managed

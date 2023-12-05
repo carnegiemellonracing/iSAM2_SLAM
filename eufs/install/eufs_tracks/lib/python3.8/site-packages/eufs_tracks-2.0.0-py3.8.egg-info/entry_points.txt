@@ -1,0 +1,6 @@
+[eufs_tracks.verb]
+convert = eufs_tracks.cli.convert:EUFSTracksConvert
+create = eufs_tracks.cli.create:EUFSTracksCreate
+
+[eufscli.command]
+track = eufs_tracks.cli.main:EUFSTrackGenerator

@@ -1,0 +1,35 @@
+[1.067s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors -- -j12 -l12
+[1.132s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors -- -j12 -l12
+[1.183s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --install /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors
+[1.197s] -- Install configuration: ""
+[1.197s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes
+[1.199s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/antenna_3GO16.stl
+[1.199s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/zed.dae
+[1.200s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/VLP16_scan.dae
+[1.200s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/VLP16_base_1.dae
+[1.201s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/antenna_3GO16.dae
+[1.201s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/meshes/VLP16_base_2.dae
+[1.202s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf
+[1.202s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/all_sensors.urdf.xacro
+[1.202s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/magnetometer.urdf.xacro
+[1.203s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/gps.urdf.xacro
+[1.203s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/VLP-16R.urdf.xacro
+[1.203s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/zed.urdf.xacro
+[1.204s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/urdf/imu.urdf.xacro
+[1.204s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/ament_index/resource_index/package_run_dependencies/eufs_sensors
+[1.204s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/ament_index/resource_index/parent_prefix_path/eufs_sensors
+[1.205s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/environment/ament_prefix_path.sh
+[1.205s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/environment/ament_prefix_path.dsv
+[1.206s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/environment/path.sh
+[1.207s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/environment/path.dsv
+[1.208s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/local_setup.bash
+[1.208s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/local_setup.sh
+[1.208s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/local_setup.zsh
+[1.209s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/local_setup.dsv
+[1.213s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/package.dsv
+[1.214s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/ament_index/resource_index/packages/eufs_sensors
+[1.216s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/cmake/ament_cmake_export_dependencies-extras.cmake
+[1.218s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/cmake/eufs_sensorsConfig.cmake
+[1.220s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/cmake/eufs_sensorsConfig-version.cmake
+[1.222s] -- Up-to-date: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_sensors/share/eufs_sensors/package.xml
+[1.223s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --install /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors

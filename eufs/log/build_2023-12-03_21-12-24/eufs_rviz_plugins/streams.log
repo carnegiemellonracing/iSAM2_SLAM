@@ -1,0 +1,79 @@
+[1.276s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rviz_plugins': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/opt/ros/foxy LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/eufs_rviz_plugins -DCMAKE_INSTALL_PREFIX=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins
+[2.178s] -- The C compiler identification is GNU 9.4.0
+[3.446s] -- The CXX compiler identification is GNU 9.4.0
+[4.113s] -- Check for working C compiler: /usr/bin/cc
+[4.651s] -- Check for working C compiler: /usr/bin/cc -- works
+[4.654s] -- Detecting C compiler ABI info
+[5.226s] -- Detecting C compiler ABI info - done
+[5.266s] -- Detecting C compile features
+[5.267s] -- Detecting C compile features - done
+[5.272s] -- Check for working CXX compiler: /usr/bin/c++
+[5.812s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[5.817s] -- Detecting CXX compiler ABI info
+[6.338s] -- Detecting CXX compiler ABI info - done
+[6.357s] -- Detecting CXX compile features
+[6.359s] -- Detecting CXX compile features - done
+[6.363s] -- Found ament_cmake: 0.9.12 (/opt/ros/foxy/share/ament_cmake/cmake)
+[6.404s] -- Found PythonInterp: /usr/local/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+[6.405s] -- Using PYTHON_EXECUTABLE: /usr/local/bin/python3
+[6.861s] -- Found eigen3_cmake_module: 0.1.1 (/opt/ros/foxy/share/eigen3_cmake_module/cmake)
+[6.865s] -- Found pluginlib: 2.5.4 (/opt/ros/foxy/share/pluginlib/cmake)
+[11.447s] -- Found rviz_common: 8.2.8 (/opt/ros/foxy/share/rviz_common/cmake)
+[11.493s] -- Setting OGRE_DIR to: '/opt/ros/foxy/share/rviz_ogre_vendor/cmake/../../../opt/rviz_ogre_vendor/lib/OGRE/cmake'
+[11.498s] -- Found OGRE
+[11.499s] --   static     : OFF
+[11.499s] --   components : HLMS;MeshLodGenerator;Overlay;Paging;Property;RTShaderSystem;Terrain;Volume
+[11.499s] --   plugins    : Plugin_BSPSceneManager;Plugin_OctreeSceneManager;Plugin_PCZSceneManager;Plugin_ParticleFX;RenderSystem_GL;RenderSystem_GL3Plus;Codec_STBI
+[11.500s] --   media      : /opt/ros/foxy/opt/rviz_ogre_vendor/share/OGRE/Media
+[11.500s] -- OGRE_LIBRARIES: OgreHLMS;OgreMeshLodGenerator;OgreOverlay;OgrePaging;OgreProperty;OgreRTShaderSystem;OgreTerrain;OgreVolume;OgreMain
+[11.500s] -- OGRE_LIBRARY_DIRS: /opt/ros/foxy/opt/rviz_ogre_vendor/lib
+[11.500s] -- OGRE_PLUGINS: Plugin_BSPSceneManager;Plugin_OctreeSceneManager;Plugin_PCZSceneManager;Plugin_ParticleFX;RenderSystem_GL;RenderSystem_GL3Plus;Codec_STBI
+[11.501s] -- OGRE_PLUGIN_DIR: /opt/ros/foxy/opt/rviz_ogre_vendor/lib/OGRE
+[11.501s] -- rviz_ogre_vendor::OgreOverlay for IMPORTED_LOCATION_RELEASE: /opt/ros/foxy/opt/rviz_ogre_vendor/lib/libOgreOverlay.so
+[11.501s] -- rviz_ogre_vendor::OgreOverlay for IMPORTED_LOCATION_DEBUG: /opt/ros/foxy/opt/rviz_ogre_vendor/lib/libOgreOverlay.so
+[11.502s] -- rviz_ogre_vendor::OgreMain for IMPORTED_LOCATION_RELEASE: /opt/ros/foxy/opt/rviz_ogre_vendor/lib/libOgreMain.so
+[11.502s] -- rviz_ogre_vendor::OgreMain for IMPORTED_LOCATION_DEBUG: /opt/ros/foxy/opt/rviz_ogre_vendor/lib/libOgreMain.so
+[11.661s] -- Could not find freeimage library
+[17.470s] -- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.2.11") 
+[18.978s] -- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   
+[29.230s] -- Found X11: /usr/include   
+[29.236s] -- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so
+[29.741s] -- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so - found
+[29.741s] -- Looking for gethostbyname
+[30.208s] -- Looking for gethostbyname - found
+[30.208s] -- Looking for connect
+[30.656s] -- Looking for connect - found
+[30.656s] -- Looking for remove
+[31.080s] -- Looking for remove - found
+[31.081s] -- Looking for shmat
+[31.454s] -- Looking for shmat - found
+[31.455s] -- Looking for IceConnectionNumber in ICE
+[31.837s] -- Looking for IceConnectionNumber in ICE - found
+[31.971s] -- rviz_ogre_vendor::RenderSystem_GL for IMPORTED_LOCATION_RELEASE: _render_system_gl_static_library_abs-NOTFOUND
+[31.971s] -- rviz_ogre_vendor::RenderSystem_GL for IMPORTED_LOCATION_DEBUG: _render_system_gl_static_library_abs-NOTFOUND
+[31.984s] -- library: libassimp.so.5
+[32.611s] -- library: /usr/lib/x86_64-linux-gnu/libcurl.so
+[32.657s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[32.668s] -- Found rosidl_adapter: 1.3.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[35.990s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+[39.612s] -- Found FastRTPS: /opt/ros/foxy/include  
+[45.960s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[46.211s] -- Found rmw_implementation_cmake: 1.0.4 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[46.216s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[46.219s] -- Looking for pthread.h
+[46.741s] -- Looking for pthread.h - found
+[46.742s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[47.222s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+[47.222s] -- Looking for pthread_create in pthreads
+[47.610s] -- Looking for pthread_create in pthreads - not found
+[47.610s] -- Looking for pthread_create in pthread
+[47.977s] -- Looking for pthread_create in pthread - found
+[47.979s] -- Found Threads: TRUE  
+[48.395s] -- Found Eigen3: TRUE (found version "3.3.7") 
+[54.023s] -- Setting yaml-cpp_DIR to: '/opt/ros/foxy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/lib/cmake/yaml-cpp'
+[54.036s] -- Found rviz_default_plugins: 8.2.8 (/opt/ros/foxy/share/rviz_default_plugins/cmake)
+[54.921s] -- Found eufs_msgs: 2.0.0 (/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/share/eufs_msgs/cmake)
+[55.219s] -- Found ament_lint_auto: 0.9.8 (/opt/ros/foxy/share/ament_lint_auto/cmake)
+[55.387s] -- Configuring done
+[55.496s] -- Generating done
+[55.501s] -- Build files have been written to: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rviz_plugins

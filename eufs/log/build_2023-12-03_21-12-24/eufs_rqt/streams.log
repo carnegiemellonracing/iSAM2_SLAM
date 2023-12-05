@@ -1,0 +1,47 @@
+[3.879s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_rqt': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/eufs_rqt build --build-base /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build install --record /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/install.log --single-version-externally-managed
+[4.615s] running egg_info
+[4.671s] writing ../../build/eufs_rqt/eufs_rqt.egg-info/PKG-INFO
+[4.672s] writing dependency_links to ../../build/eufs_rqt/eufs_rqt.egg-info/dependency_links.txt
+[4.673s] writing requirements to ../../build/eufs_rqt/eufs_rqt.egg-info/requires.txt
+[4.673s] writing top-level names to ../../build/eufs_rqt/eufs_rqt.egg-info/top_level.txt
+[5.125s] reading manifest file '../../build/eufs_rqt/eufs_rqt.egg-info/SOURCES.txt'
+[5.132s] adding license file 'LICENSE'
+[5.134s] writing manifest file '../../build/eufs_rqt/eufs_rqt.egg-info/SOURCES.txt'
+[5.135s] running build
+[5.137s] running build_py
+[5.138s] copying src/eufs_rqt/EUFSRobotSteeringGUI.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt
+[5.139s] copying src/eufs_rqt/MissionControlGUI.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt
+[5.139s] copying src/eufs_rqt/__init__.py -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/lib/eufs_rqt
+[5.139s] running build_scripts
+[5.139s] running install
+[5.140s] /home/andrewwhong/.local/lib/python3.8/site-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.
+[5.140s] !!
+[5.140s] 
+[5.140s]         ********************************************************************************
+[5.141s]         Please avoid running ``setup.py`` directly.
+[5.141s]         Instead, use pypa/build, pypa/installer or other
+[5.141s]         standards-based tools.
+[5.142s] 
+[5.142s]         See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.
+[5.142s]         ********************************************************************************
+[5.143s] 
+[5.143s] !!
+[5.144s]   self.initialize_options()
+[5.153s] running install_lib
+[5.201s] running install_data
+[5.246s] copying config/eufs_sim.perspective -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt/config
+[5.247s] copying resource/EUFSRobotSteeringGUI.ui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt/resource
+[5.248s] copying resource/MissionControlGUI.ui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt/resource
+[5.249s] copying plugin.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt
+[5.251s] copying resource/eufs_rqt -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/ament_index/resource_index/packages
+[5.252s] copying package.xml -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/share/eufs_rqt
+[5.252s] running install_egg_info
+[5.296s] removing '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt-2.0.0-py3.8.egg-info' (and everything under it)
+[5.297s] Copying ../../build/eufs_rqt/eufs_rqt.egg-info to /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages/eufs_rqt-2.0.0-py3.8.egg-info
+[5.300s] running install_scripts
+[5.345s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8/mission_control_gui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt
+[5.345s] copying /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build/scripts-3.8/eufs_robot_steering_gui -> /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt
+[5.347s] changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt/mission_control_gui to 755
+[5.347s] changing mode of /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/eufs_rqt/eufs_robot_steering_gui to 755
+[5.384s] writing list of installed files to '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/install.log'
+[5.450s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_sim/eufs_rqt' returned '0': AMENT_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/prefix_override:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rqt/lib/python3.8/site-packages:/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/eufs_rqt build --build-base /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/build install --record /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_rqt/install.log --single-version-externally-managed

@@ -1,0 +1,40 @@
+[ 14%] [34m[1mGenerating include/eufs_rviz_plugins/displays/waypoint_array_stamped/moc_waypoint_array_stamped_display.cpp[0m
+[ 28%] [34m[1mGenerating include/eufs_rviz_plugins/displays/cone_array_with_covariance/moc_cone_array_with_covariance_display.cpp[0m
+[35m[1mScanning dependencies of target eufs_rviz_plugins[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/eufs_rviz_plugins.dir/include/eufs_rviz_plugins/displays/cone_array_with_covariance/moc_cone_array_with_covariance_display.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/eufs_rviz_plugins.dir/include/eufs_rviz_plugins/displays/waypoint_array_stamped/moc_waypoint_array_stamped_display.cpp.o[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/eufs_rviz_plugins.dir/src/eufs_rviz_plugins/displays/waypoint_array_stamped/waypoint_array_stamped_display.cpp.o[0m
+[ 85%] [32mBuilding CXX object CMakeFiles/eufs_rviz_plugins.dir/src/eufs_rviz_plugins/displays/cone_array_with_covariance/cone_array_with_covariance_display.cpp.o[0m
+[100%] [32m[1mLinking CXX shared library libeufs_rviz_plugins.so[0m
+[100%] Built target eufs_rviz_plugins
+-- Install configuration: ""
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib/libeufs_rviz_plugins.so
+-- Set runtime path of "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/lib/libeufs_rviz_plugins.so" to ""
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/icons
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/icons/classes
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/icons/classes/ConeArrayWithCovariance.png
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/meshes
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/meshes/cone.dae
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/meshes/big_cone.dae
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/plugins.xml
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/ament_index/resource_index/package_run_dependencies/eufs_rviz_plugins
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/ament_index/resource_index/parent_prefix_path/eufs_rviz_plugins
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/environment/ament_prefix_path.sh
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/environment/ament_prefix_path.dsv
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/environment/path.sh
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/environment/path.dsv
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/local_setup.bash
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/local_setup.sh
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/local_setup.zsh
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/local_setup.dsv
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/package.dsv
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/ament_index/resource_index/packages/eufs_rviz_plugins
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/ament_index/resource_index/rviz_common__pluginlib__plugin/eufs_rviz_plugins
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/cmake/export_eufs_rviz_pluginsExport.cmake
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/cmake/export_eufs_rviz_pluginsExport-noconfig.cmake
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/cmake/ament_cmake_export_targets-extras.cmake
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/cmake/eufs_rviz_pluginsConfig.cmake
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/cmake/eufs_rviz_pluginsConfig-version.cmake
+-- Installing: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_rviz_plugins/share/eufs_rviz_plugins/package.xml

@@ -1,0 +1,4 @@
+source;share/eufs_rviz_plugins/local_setup.bash
+source;share/eufs_rviz_plugins/local_setup.dsv
+source;share/eufs_rviz_plugins/local_setup.sh
+source;share/eufs_rviz_plugins/local_setup.zsh
