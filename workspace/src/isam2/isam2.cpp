@@ -85,8 +85,6 @@ public:
     std::vector<gtsam::Point2> landmark_est;
 
     slamISAM() {
-
-
         parameters = ISAM2Params(ISAM2DoglegParams(),0.01,1);
         parameters.setFactorization("QR");
 
@@ -104,7 +102,6 @@ public:
 
     double mahalanobisDist(Point2 measurement,Point2 landmark,Symbol landmark_key){
         //std::cout << "Landmark key: "  << landmark_key << std::endl;
-
         //std::cout << "Measurement:\n"  << measurement << std::endl;
         //std::cout << "landmark:\n"  << landmark << std::endl;
 
@@ -128,16 +125,12 @@ public:
             //only do when the landmark has been observed in the previous step
             if(!observed.exists(L(i))){
                 //Retrieve point from isam
-                gtsam::Point2 landmark = isam2.calculateBestEstimate().at(L(i)).cast<Point2>();
+                gtsam::Point2 landmark = isam2.calculateEstimate().at(L(i)).cast<Point2>();
                 // Adding mahalanobis distance to minimum distance vector
                 // std::cout << "Before Mahalanobis key:\n"  << L(i) << std::endl;
                 double mahalanobis = mahalanobisDist(measurement,landmark,L(i));
-                min_dist.push_back(mahalanobis);
-
-
-            
+                min_dist.push_back(mahalanobis);            
             }
-
         }
         min_dist.push_back(M_DIST_TH); // Add M_DIST_TH for new landmark
         // Find the index of the minimum element in 'min_dist'
@@ -219,7 +212,6 @@ public:
                 values.insert(L(n_landmarks), global_cone);
                 observed.insert(L(n_landmarks), global_cone);
 
-
                 //std::cout << "after inserting values\n"<< std::endl;
 
                 //don't check the ones in observed
@@ -244,12 +236,12 @@ public:
         observed.clear();
 
         //calculate estimate of robot state
-        auto estimate = isam2.calculateBestEstimate();
+
+        auto estimate = isam2.calculateEstimate();
         estimate.print("Estimate:");
 
-        robot_est = isam2.calculateBestEstimate().at(X(x)).cast<gtsam::Pose2>();//  (X(x)).cast<gtsam::Pose2>();
+        robot_est = isam2.calculateEstimate().at(X(x)).cast<gtsam::Pose2>();//  (X(x)).cast<gtsam::Pose2>();
         std::cout << "Robot Estimate:(" << robot_est.x() <<"," << robot_est.y() << ")" << std::endl;
-
         
         x++;
 
