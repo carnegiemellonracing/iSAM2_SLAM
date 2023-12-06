@@ -30,10 +30,12 @@
 
 #include <vector>
 
+#include <iostream>
+#include <fstream>
 // using namespace std;
 using namespace gtsam;
 
-static const int M_DIST_TH = 100;//5.99;
+static const int M_DIST_TH = 5.99;
 
 static const float DT = 0.1;
 static const float SIM_TIME = 50.0;
@@ -113,7 +115,7 @@ public:
         //std::cout << "Covariance Matrix:\n"  << marginal_covariance << std::endl;
         Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
         
-        //std::cout << "Mahalanobis result:\n"  << result << std::endl;
+        std::cout << "Mahalanobis result:\n"  << result << std::endl;
 
         return result(0);
     }
@@ -126,6 +128,8 @@ public:
             if(!observed.exists(L(i))){
                 //Retrieve point from isam
                 gtsam::Point2 landmark = isam2.calculateEstimate().at(L(i)).cast<Point2>();
+                std::cout << "Landmark\n"  << landmark << std::endl;
+
                 // Adding mahalanobis distance to minimum distance vector
                 // std::cout << "Before Mahalanobis key:\n"  << L(i) << std::endl;
                 double mahalanobis = mahalanobisDist(measurement,landmark,L(i));
@@ -180,6 +184,7 @@ public:
         std::cout << "global_odom: "  << global_odom << std::endl;
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
+            //cones are with respect to the car
 
             // Pose2 conePose(cone.x(),cone.y(),0);
             std::cout << "cone: "  << cone << std::endl;
@@ -201,27 +206,21 @@ public:
                 //std::cout << "New Landmark:\n"  << L(n_landmarks) << std::endl;
 
                 //add factor between pose and landmark
-                double range =  norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
-                double bearing = std::atan2(cone.y(), cone.x()) - global_odom.theta();
+                double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+                double bearing = std::atan2(cone.y(), cone.x());// - global_odom.theta();
                 Rot2 angle = Rot2(bearing);
       
                 graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(n_landmarks), angle, range, landmark_model)); 
                 //this is how we model noise for the environmant
-                //std::cout << "added bearing range factor\n"<< std::endl;
-
                 values.insert(L(n_landmarks), global_cone);
                 observed.insert(L(n_landmarks), global_cone);
-
-                //std::cout << "after inserting values\n"<< std::endl;
-
                 //don't check the ones in observed
                 n_landmarks++;
             } else {
                 //std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
-
                 //Add a factor to the associated landmark
                 double range =  norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
-                double bearing = std::atan2(cone.y(), cone.x()) - global_odom.theta();
+                double bearing = std::atan2(cone.y(), cone.x());// - global_odom.theta();
                 Rot2 angle = Rot2(bearing);
                 graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(associated_ID), angle, range, landmark_model));
             }
@@ -231,6 +230,9 @@ public:
         // DATA ASSOCIATION END
 
         isam2.update(graph, values);
+        isam2.update();  
+        isam2.update();  
+        isam2.update();  
         graph.resize(0);
         values.clear();
         observed.clear();
@@ -239,6 +241,11 @@ public:
 
         auto estimate = isam2.calculateEstimate();
         estimate.print("Estimate:");
+
+        // ofstream myfile;
+        // myfile.open (f"estimate%d.txt",i);
+        // myfile << "Writing this to a file.\n";
+        // myfile.close();
 
         robot_est = isam2.calculateEstimate().at(X(x)).cast<gtsam::Pose2>();//  (X(x)).cast<gtsam::Pose2>();
         std::cout << "Robot Estimate:(" << robot_est.x() <<"," << robot_est.y() << ")" << std::endl;

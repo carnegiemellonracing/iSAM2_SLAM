@@ -18,7 +18,9 @@
 #include <cmath>
 #include <chrono>
 
+// #define CONE_DATA_TOPIC "/ground_truth/cones"
 #define CONE_DATA_TOPIC "/ground_truth/cones"
+
 #define VEHICLE_DATA_TOPIC "/ground_truth/state"
 
 using namespace std;
@@ -64,7 +66,11 @@ class SLAMValidation : public rclcpp::Node
         for(uint i = 0; i < cone_data->orange_cones.size(); i++){
             gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->orange_cones[i].point.x, cone_data->orange_cones[i].point.y));
             cones.push_back(to_add);
-        }
+        }   
+
+        //run every time you get a measurement
+        slam_instance.step(global_odom, cones);
+        RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
     void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr vehicle_state_data){
         RCLCPP_INFO(this->get_logger(), "vehicle state:(%f,%f)\n",vehicle_state_data->pose.pose.orientation.x,vehicle_state_data->pose.pose.orientation.y);
@@ -75,14 +81,15 @@ class SLAMValidation : public rclcpp::Node
         double yaw = atan2(2*(q0*q3+q1*q2), pow(q0, 2)+pow(q1, 2)-pow(q2, 2)-pow(q3, 2));
 
         global_odom = gtsam::Pose2(vehicle_state_data->pose.pose.position.x, vehicle_state_data->pose.pose.position.y, yaw);
+        
     }
     void timer_callback(){
       run_slam();
     }
 
     void run_slam(){
-        slam_instance.step(global_odom, cones);
-        RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
+        // slam_instance.step(global_odom, cones);
+        // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
 
     }
     // ISAM2Params parameters;
