@@ -35,7 +35,7 @@
 // using namespace std;
 using namespace gtsam;
 
-static const int M_DIST_TH = 50;
+static const int M_DIST_TH = 10;
 
 static const float DT = 0.1;
 static const float SIM_TIME = 50.0;
@@ -186,11 +186,20 @@ public:
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
-
-            Pose2 conePose(cone.x(),cone.y(),0);
             // std::cout << "cone: "  << cone << std::endl;
 
-            Pose2 global_cone(global_odom.x() + conePose.x(), global_odom.y() + conePose.y(),0); //calculate global position of the cone
+            Pose2 conePose(cone.x(),cone.y(),0);
+            double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+            double bearing = std::atan2(conePose.x(), conePose.y());//+ global_odom.theta();
+
+
+            double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
+            double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
+
+            // x_world = x_robot + range*np.cos(angle+rot_robot) #calculate x and y in terms of world frame
+            // y_world = y_robot + range*np.sin(angle+rot_robot)
+
+            Pose2 global_cone(global_cone_x,global_cone_x,0); //calculate global position of the cone
             // Pose2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y(),0);
 
             //for the current cone, we want to compare againt all other cones for data association
@@ -206,10 +215,13 @@ public:
                 // observed.insert(enum_cone);
                 //std::cout << "New Landmark:\n"  << L(n_landmarks) << std::endl;
 
+
+                if (n_landmarks == 0) {
+                    graph.addPrior(L(0),conePose);
+
+                }
                 //add factor between pose and landmark
-                double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
-                double bearing = std::atan2(conePose.y(), conePose.x()) + global_odom.theta();
-                Rot2 angle = Rot2(bearing);
+                // Rot2 angle = Rot2(bearing);
 
                 graph.add(BetweenFactor<Pose2>(X(x), L(n_landmarks), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
                 // graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(n_landmarks), angle, range, landmark_model)); 
@@ -221,9 +233,7 @@ public:
             } else {
                 //std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
                 //Add a factor to the associated landmark
-                double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
-                double bearing = std::atan2(conePose.y(), conePose.x())+ global_odom.theta();
-                Rot2 angle = Rot2(bearing);
+                // Rot2 angle = Rot2(bearing);
 
                 graph.add(BetweenFactor<Pose2>(X(x), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
                 // graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(associated_ID), angle, range, landmark_model));
@@ -234,9 +244,9 @@ public:
         // DATA ASSOCIATION END
 
         isam2.update(graph, values);
-        isam2.update();  
-        isam2.update();  
-        isam2.update();  
+        // isam2.update();  
+        // isam2.update();  
+        // isam2.update();  
         graph.resize(0);
         values.clear();
         observed.clear();

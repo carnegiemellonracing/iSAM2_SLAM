@@ -72,9 +72,9 @@ while True:
                     #         landmarks = np.vstack((landmarks,tempLandmark))        
                     # landmark = (landmark+1)%5
 
-
-    scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
-    scatter2 = plt.scatter(landmarks[:,0],landmarks[:,1], s=10, c='r', marker="o", label='landmark')
-    plt.pause(1)
-    scatter.remove()
-    scatter2.remove()
+    if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0):
+        scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
+        scatter2 = plt.scatter(landmarks[:,0],landmarks[:,1], s=10, c='r', marker="o", label='landmark')
+        plt.pause(1)
+        scatter.remove()
+        scatter2.remove()
