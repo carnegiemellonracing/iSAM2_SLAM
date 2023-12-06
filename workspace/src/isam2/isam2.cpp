@@ -35,7 +35,7 @@
 // using namespace std;
 using namespace gtsam;
 
-static const int M_DIST_TH = 5.99;
+static const int M_DIST_TH = 50;
 
 static const float DT = 0.1;
 static const float SIM_TIME = 50.0;
@@ -102,7 +102,7 @@ public:
         // isam2.joint1(1,2);
     }
 
-    double mahalanobisDist(Point2 measurement,Point2 landmark,Symbol landmark_key){
+    double mahalanobisDist(Pose2 measurement,Pose2 landmark,Symbol landmark_key){
         //std::cout << "Landmark key: "  << landmark_key << std::endl;
         //std::cout << "Measurement:\n"  << measurement << std::endl;
         //std::cout << "landmark:\n"  << landmark << std::endl;
@@ -115,20 +115,20 @@ public:
         //std::cout << "Covariance Matrix:\n"  << marginal_covariance << std::endl;
         Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
         
-        std::cout << "Mahalanobis result:\n"  << result << std::endl;
+        // std::cout << "Mahalanobis result:\n"  << result << std::endl;
 
         return result(0);
     }
 
-    int associate(Point2 measurement) {
+    int associate(Pose2 measurement) {
         // Vector that will store mahalanobis distances
         std::vector<double> min_dist;
         for (int i = 0; i < n_landmarks; i++) {
             //only do when the landmark has been observed in the previous step
             if(!observed.exists(L(i))){
                 //Retrieve point from isam
-                gtsam::Point2 landmark = isam2.calculateEstimate().at(L(i)).cast<Point2>();
-                std::cout << "Landmark\n"  << landmark << std::endl;
+                gtsam::Pose2 landmark = isam2.calculateEstimate().at(L(i)).cast<Pose2>();
+                // std::cout << "Landmark\n"  << landmark << std::endl;
 
                 // Adding mahalanobis distance to minimum distance vector
                 // std::cout << "Before Mahalanobis key:\n"  << L(i) << std::endl;
@@ -149,9 +149,10 @@ public:
         NoiseModel(1) = 0;
         NoiseModel(2) = 0;
 
-        Vector LandmarkNoiseModel(2);
+        Vector LandmarkNoiseModel(3);
         LandmarkNoiseModel(0) = 0;
         LandmarkNoiseModel(1) = 0;
+        LandmarkNoiseModel(2) = 0;
 
         Pose2 prev_robot_est;
         if (x==0) {//if this is the first pose, add your inital pose to the factor graph
@@ -181,15 +182,15 @@ public:
         graph.resize(0);
         values.clear();
 
-        std::cout << "global_odom: "  << global_odom << std::endl;
+        // std::cout << "global_odom: "  << global_odom << std::endl;
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
 
-            // Pose2 conePose(cone.x(),cone.y(),0);
-            std::cout << "cone: "  << cone << std::endl;
+            Pose2 conePose(cone.x(),cone.y(),0);
+            // std::cout << "cone: "  << cone << std::endl;
 
-            Point2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y()); //calculate global position of the cone
+            Pose2 global_cone(global_odom.x() + conePose.x(), global_odom.y() + conePose.y(),0); //calculate global position of the cone
             // Pose2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y(),0);
 
             //for the current cone, we want to compare againt all other cones for data association
@@ -207,10 +208,11 @@ public:
 
                 //add factor between pose and landmark
                 double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
-                double bearing = std::atan2(cone.y(), cone.x());// - global_odom.theta();
+                double bearing = std::atan2(conePose.y(), conePose.x()) + global_odom.theta();
                 Rot2 angle = Rot2(bearing);
-      
-                graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(n_landmarks), angle, range, landmark_model)); 
+
+                graph.add(BetweenFactor<Pose2>(X(x), L(n_landmarks), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
+                // graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(n_landmarks), angle, range, landmark_model)); 
                 //this is how we model noise for the environmant
                 values.insert(L(n_landmarks), global_cone);
                 observed.insert(L(n_landmarks), global_cone);
@@ -219,10 +221,12 @@ public:
             } else {
                 //std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
                 //Add a factor to the associated landmark
-                double range =  norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
-                double bearing = std::atan2(cone.y(), cone.x());// - global_odom.theta();
+                double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+                double bearing = std::atan2(conePose.y(), conePose.x())+ global_odom.theta();
                 Rot2 angle = Rot2(bearing);
-                graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(associated_ID), angle, range, landmark_model));
+
+                graph.add(BetweenFactor<Pose2>(X(x), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
+                // graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(associated_ID), angle, range, landmark_model));
             }
 
         }
@@ -239,8 +243,16 @@ public:
 
         //calculate estimate of robot state
 
+        std::ofstream ofs;
+
+        std::ofstream out("squirrel.txt");
+        std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+        std::cout.rdbuf(out.rdbuf());
+        ofs.open("squirrel.txt", std::ofstream::out | std::ofstream::trunc);
         auto estimate = isam2.calculateEstimate();
         estimate.print("Estimate:");
+        ofs.close();
+        std::cout.rdbuf(coutbuf); //reset to standard output again
 
         // ofstream myfile;
         // myfile.open (f"estimate%d.txt",i);
@@ -248,7 +260,7 @@ public:
         // myfile.close();
 
         robot_est = isam2.calculateEstimate().at(X(x)).cast<gtsam::Pose2>();//  (X(x)).cast<gtsam::Pose2>();
-        std::cout << "Robot Estimate:(" << robot_est.x() <<"," << robot_est.y() << ")" << std::endl;
+        // std::cout << "Robot Estimate:(" << robot_est.x() <<"," << robot_est.y() << ")" << std::endl;
         
         x++;
 

@@ -1,0 +1,16 @@
+[0.636s] Invoking command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 -- -j12 -l12
+[0.743s] [35m[1mScanning dependencies of target isam_test[0m
+[0.806s] [ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+[1.787s] In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+[1.788s]                  from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[1.788s] [01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+[1.788s]    18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+[1.788s]       |  [01;35m[K^~~~~~~[m[K
+[11.862s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[11.862s] [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:120:19:[m[K [01;31m[Kerror: [m[K‘[01m[Kcoutbuf[m[K’ was not declared in this scope
+[11.862s]   120 |   std::cout.rdbuf([01;31m[Kcoutbuf[m[K); //reset to standard output again
+[11.862s]       |                   [01;31m[K^~~~~~~[m[K
+[23.759s] make[2]: *** [CMakeFiles/isam_test.dir/build.make:63: CMakeFiles/isam_test.dir/isam2Node.cpp.o] Error 1
+[23.760s] make[1]: *** [CMakeFiles/Makefile2:78: CMakeFiles/isam_test.dir/all] Error 2
+[23.760s] make: *** [Makefile:141: all] Error 2
+[23.766s] Invoked command in '/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2' returned '2': CMAKE_PREFIX_PATH=/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/eufs_msgs:/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2:/opt/ros/foxy /usr/bin/cmake --build /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 -- -j12 -l12

@@ -1,8 +1,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
-with open('src/isam2/data/estimate2.txt') as f:
-    lines = f.readlines() # list containing lines of file
+fig = plt.figure()
+plt.ion()
+#plt.legend(loc='upper left')
+plt.show()
+
+while True:
+    # with open('src/isam2/data/estimate2.txt') as f:
+    with open("squirrel.txt") as f:
+        lines = f.readlines() # list containing lines of file
+
+    # Don't do anything if the file is empty
+    if len(lines) == 0:
+        continue
 
     landmarks = np.array([])
     poses = np.array([])
@@ -12,7 +24,6 @@ with open('src/isam2/data/estimate2.txt') as f:
     landmark = 0
     for line in lines:
         line = line.strip() # remove leading/trailing white spaces
-        # print(line)
         if line:
             if i == 1 or i==2:
                 i = i + 1
@@ -24,6 +35,7 @@ with open('src/isam2/data/estimate2.txt') as f:
                     landmark = 1
                     #next line is landmark
                 elif pose == 1:
+                    # Create array for poses and update it incrementally
                     #single line in pose
                     #strip parentheses
                     temp = line[1:len(line)-1]
@@ -34,30 +46,35 @@ with open('src/isam2/data/estimate2.txt') as f:
                     else:
                         poses = np.vstack((poses,temp))
                     pose = 0
-                elif landmark > 0:
-                    if landmark == 1:
-                        tempLandmark = []
-                    elif landmark == 2:
-                        line = line[0:-1] #strip ;
-                        tempLandmark.append(line)
-                    elif landmark == 3:
-                        tempLandmark.append(line)
-                    elif landmark == 4:
-                        tempLandmark = np.array(tempLandmark)
-                        tempLandmark = tempLandmark.astype(float)
-                        if(landmarks.size == 0):
-                            landmarks = tempLandmark
-                        else:
-                            landmarks = np.vstack((landmarks,tempLandmark))        
-                    landmark = (landmark+1)%5
-                        
-# print("poses:",poses)
-# print("landmark:",landmarks)
+                elif landmark == 1:
+                    temp = line[1:len(line)-1]
+                    temp = np.array(temp.split(','))
+                    temp = temp.astype(float)
+                    if(landmarks.size == 0):
+                        landmarks = temp
+                    else:
+                        landmarks = np.vstack((landmarks,temp))
+                    landmark = 0
 
-fig = plt.figure()
-ax1 = fig.add_subplot(111)
+                    # if landmark == 1:
+                    #     tempLandmark = []
+                    # elif landmark == 2:
+                    #     line = line[0:-1] #strip ;
+                    #     tempLandmark.append(line)
+                    # elif landmark == 3:
+                    #     tempLandmark.append(line)
+                    # elif landmark == 4:
+                    #     tempLandmark = np.array(tempLandmark)
+                    #     tempLandmark = tempLandmark.astype(float)
+                    #     if(landmarks.size == 0):
+                    #         landmarks = tempLandmark
+                    #     else:
+                    #         landmarks = np.vstack((landmarks,tempLandmark))        
+                    # landmark = (landmark+1)%5
 
-ax1.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
-ax1.scatter(landmarks[:,0],landmarks[:,1], s=10, c='r', marker="o", label='landmark')
-plt.legend(loc='upper left')
-plt.show()
+
+    scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
+    scatter2 = plt.scatter(landmarks[:,0],landmarks[:,1], s=10, c='r', marker="o", label='landmark')
+    plt.pause(1)
+    scatter.remove()
+    scatter2.remove()

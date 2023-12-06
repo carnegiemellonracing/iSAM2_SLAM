@@ -53,7 +53,7 @@ class SLAMValidation : public rclcpp::Node
     }
   private:
     void cone_callback(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data){
-        RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
+        // RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
         cones.clear();
         for(uint i = 0; i < cone_data->blue_cones.size(); i++){
             gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->blue_cones[i].point.x, cone_data->blue_cones[i].point.y));
@@ -70,10 +70,10 @@ class SLAMValidation : public rclcpp::Node
 
         //run every time you get a measurement
         slam_instance.step(global_odom, cones);
-        RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
+        // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
     void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr vehicle_state_data){
-        RCLCPP_INFO(this->get_logger(), "vehicle state:(%f,%f)\n",vehicle_state_data->pose.pose.orientation.x,vehicle_state_data->pose.pose.orientation.y);
+        // RCLCPP_INFO(this->get_logger(), "vehicle state:(%f,%f)\n",vehicle_state_data->pose.pose.orientation.x,vehicle_state_data->pose.pose.orientation.y);
         double q1 = vehicle_state_data->pose.pose.orientation.x;
         double q2 = vehicle_state_data->pose.pose.orientation.y;
         double q3 = vehicle_state_data->pose.pose.orientation.z;
@@ -107,8 +107,17 @@ class SLAMValidation : public rclcpp::Node
 };
 
 int main(int argc, char * argv[]){
+
+
+
+  std::ofstream out("squirrel.txt");
+  std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+  std::cout.rdbuf(out.rdbuf());
+
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<SLAMValidation>());
   rclcpp::shutdown();
+  std::cout.rdbuf(coutbuf); //reset to standard output again
+
   return 0;
 }

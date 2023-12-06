@@ -1,0 +1,42 @@
+[35m[1mScanning dependencies of target isam_test[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/isam_test.dir/isam2Node.cpp.o[0m
+In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:29[m[K,
+                 from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[01m[K/usr/local/include/gtsam/slam/BearingRangeFactor.h:18:2:[m[K [01;35m[Kwarning: [m[K#warning "BearingRangeFactor is now an ExpressionFactor in SAM directory" [[01;35m[K-Wcpp[m[K]
+   18 | #[01;35m[Kwarning[m[K "BearingRangeFactor is now an ExpressionFactor in SAM directory"
+      |  [01;35m[K^~~~~~~[m[K
+In file included from [01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2Node.cpp:14[m[K:
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:[m[K In member function ‘[01m[Kvoid slamISAM::step(gtsam::Pose2, std::vector<Eigen::Matrix<double, 2, 1> >&)[m[K’:
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:209:24:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Krange[m[K’ [[01;35m[K-Wunused-variable[m[K]
+  209 |                 double [01;35m[Krange[m[K = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+      |                        [01;35m[K^~~~~[m[K
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:211:22:[m[K [01;35m[Kwarning: [m[Kvariable ‘[01m[Kangle[m[K’ set but not used [[01;35m[K-Wunused-but-set-variable[m[K]
+  211 |                 Rot2 [01;35m[Kangle[m[K = Rot2(bearing);
+      |                      [01;35m[K^~~~~[m[K
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:223:24:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Krange[m[K’ [[01;35m[K-Wunused-variable[m[K]
+  223 |                 double [01;35m[Krange[m[K = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+      |                        [01;35m[K^~~~~[m[K
+[01m[K/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2/isam2.cpp:225:22:[m[K [01;35m[Kwarning: [m[Kvariable ‘[01m[Kangle[m[K’ set but not used [[01;35m[K-Wunused-but-set-variable[m[K]
+  225 |                 Rot2 [01;35m[Kangle[m[K = Rot2(bearing);
+      |                      [01;35m[K^~~~~[m[K
+[100%] [32m[1mLinking CXX executable isam_test[0m
+[100%] Built target isam_test
+-- Install configuration: "RelWithDebInfo"
+-- Execute custom install script
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/package_run_dependencies/isam2
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/parent_prefix_path/isam2
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.sh
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/environment/path.dsv
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.bash
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.sh
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.zsh
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/local_setup.dsv
+-- Symlinking: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.dsv
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/ament_index/resource_index/packages/isam2
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config.cmake
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/cmake/isam2Config-version.cmake
+-- Up-to-date symlink: /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/share/isam2/package.xml
