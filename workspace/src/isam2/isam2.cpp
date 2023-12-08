@@ -35,7 +35,7 @@
 // using namespace std;
 using namespace gtsam;
 
-static const int M_DIST_TH = 10;
+static const int M_DIST_TH = 15;
 
 static const float DT = 0.1;
 static const float SIM_TIME = 50.0;
@@ -171,6 +171,7 @@ public:
             static noiseModel::Diagonal::shared_ptr odom_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             Pose2 prev_pos = isam2.calculateEstimate(X(x - 1)).cast<Pose2>();
             //create a factor between current and previous robot pose
+            //add odometry estimates
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(x - 1), X(x), Pose2(global_odom.x() - prev_pos.x(), global_odom.y() - prev_pos.y(), global_odom.theta() - prev_pos.theta()), odom_model);
             graph.add(odom_factor);
             values.insert(X(x), global_odom);
@@ -190,7 +191,7 @@ public:
 
             Pose2 conePose(cone.x(),cone.y(),0);
             double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
-            double bearing = std::atan2(conePose.x(), conePose.y());//+ global_odom.theta();
+            double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
 
 
             double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
@@ -199,7 +200,7 @@ public:
             // x_world = x_robot + range*np.cos(angle+rot_robot) #calculate x and y in terms of world frame
             // y_world = y_robot + range*np.sin(angle+rot_robot)
 
-            Pose2 global_cone(global_cone_x,global_cone_x,0); //calculate global position of the cone
+            Pose2 global_cone(global_cone_x,global_cone_y,0); //calculate global position of the cone
             // Pose2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y(),0);
 
             //for the current cone, we want to compare againt all other cones for data association
