@@ -35,14 +35,14 @@
 // using namespace std;
 using namespace gtsam;
 
-static const int M_DIST_TH = 15;
+static const float M_DIST_TH = 15;
+static const long SEC_TO_NANOSEC = 1000000000;
 
-static const float DT = 0.1;
-static const float SIM_TIME = 50.0;
-static const int LM_SIZE = 2;
-static const int STATE_SIZE = 3;
-
-static const int N_STEP = 100;
+// static const float DT = 0.1;
+// static const float SIM_TIME = 50.0;
+// static const int LM_SIZE = 2;
+// static const int STATE_SIZE = 3;
+// static const int N_STEP = 100;
 
 struct Landmark {
     int lm_id;
@@ -85,6 +85,7 @@ public:
 
     gtsam::Pose2 robot_est;
     std::vector<gtsam::Point2> landmark_est;
+    std::vector<Point2> orange_cones;
 
     slamISAM() {
         parameters = ISAM2Params(ISAM2DoglegParams(),0.01,1);
@@ -98,6 +99,9 @@ public:
         n_landmarks = 0;
         robot_est = gtsam::Pose2(0, 0, 0);
         landmark_est = std::vector<gtsam::Point2>();
+
+
+        orange_cones = std::vector<Point2> 
 
         // isam2.joint1(1,2);
     }
@@ -143,7 +147,7 @@ public:
         return min_id;
     }
 
-    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs) {
+    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
         Vector NoiseModel(3);
         NoiseModel(0) = 0;
         NoiseModel(1) = 0;
@@ -153,7 +157,7 @@ public:
         LandmarkNoiseModel(0) = 0;
         LandmarkNoiseModel(1) = 0;
         LandmarkNoiseModel(2) = 0;
-
+ 
         Pose2 prev_robot_est;
         if (x==0) {//if this is the first pose, add your inital pose to the factor graph
             //std::cout << "First pose\n" << std::endl;
@@ -165,6 +169,10 @@ public:
             values.insert(X(0), global_odom);
 
             prev_robot_est = Pose2(0, 0, 0);
+
+            //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
+            //Add orange cone left and right
+            orange_cones = orange_ref_cones;
         }
         else {
             //std::cout << "New Pose\n" << std::endl;
@@ -172,10 +180,23 @@ public:
             Pose2 prev_pos = isam2.calculateEstimate(X(x - 1)).cast<Pose2>();
             //create a factor between current and previous robot pose
             //add odometry estimates
-            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(x - 1), X(x), Pose2(global_odom.x() - prev_pos.x(), global_odom.y() - prev_pos.y(), global_odom.theta() - prev_pos.theta()), odom_model);
+            //Motion model
+
+            double time_s = time_ns/SEC_TO_NANOSEC;
+
+            Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
+
+            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(x - 1), X(x),Odometry, odom_model);
             graph.add(odom_factor);
             values.insert(X(x), global_odom);
             prev_robot_est = prev_pos;
+        }
+
+        if(loop_closure){
+            //left is 0, right is 1
+            //Do triangulation given the current cone positions and the previous saved orange cones
+
+
         }
 
         //todo only do this once after update
