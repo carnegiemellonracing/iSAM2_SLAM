@@ -100,9 +100,7 @@ public:
         robot_est = gtsam::Pose2(0, 0, 0);
         landmark_est = std::vector<gtsam::Point2>();
 
-
-        orange_cones = std::vector<Point2> 
-
+        orange_cones = std::vector<Point2>();
         // isam2.joint1(1,2);
     }
 
@@ -172,6 +170,7 @@ public:
 
             //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
             //Add orange cone left and right
+            //hopefully it's only 2 cones
             orange_cones = orange_ref_cones;
         }
         else {
@@ -192,11 +191,25 @@ public:
             prev_robot_est = prev_pos;
         }
 
-        if(loop_closure){
+        if(loopClosure){
+
+            // std::cout<<"loop closure constraint added"<<std::endl;
+
+            static noiseModel::Diagonal::shared_ptr loop_closure_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             //left is 0, right is 1
             //Do triangulation given the current cone positions and the previous saved orange cones
+            //take the orange cones, look at difference between 
+            //the left and right cones
+            Point2 diffLeft = orange_cones[0] - orange_ref_cones[0];
+            Point2 diffRight = orange_cones[1] - orange_ref_cones[1];
+            Point2 avgDiff = (diffLeft+diffRight)/2; //pose difference between first pose and last pose
+            double angle = atan2(avgDiff.y(), avgDiff.x());
+            Pose2 AvgPoseDiff = Pose2(avgDiff.x(), avgDiff.y(),angle);
+            // std::cout<<"loop closure pose diff:"<<AvgPoseDiff<<std::endl;
 
-
+            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(0), X(x),AvgPoseDiff, loop_closure_model);
+            graph.add(odom_factor);
+            values.insert(X(x), global_odom);
         }
 
         //todo only do this once after update
@@ -214,15 +227,10 @@ public:
             double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
             double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
 
-
             double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
             double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
 
-            // x_world = x_robot + range*np.cos(angle+rot_robot) #calculate x and y in terms of world frame
-            // y_world = y_robot + range*np.sin(angle+rot_robot)
-
             Pose2 global_cone(global_cone_x,global_cone_y,0); //calculate global position of the cone
-            // Pose2 global_cone(global_odom.x() + cone.x(), global_odom.y() + cone.y(),0);
 
             //for the current cone, we want to compare againt all other cones for data association
             //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
@@ -275,8 +283,8 @@ public:
 
         //calculate estimate of robot state
 
+        //Print to squirrel.txt
         std::ofstream ofs;
-
         std::ofstream out("squirrel.txt");
         std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
         std::cout.rdbuf(out.rdbuf());
@@ -285,11 +293,6 @@ public:
         estimate.print("Estimate:");
         ofs.close();
         std::cout.rdbuf(coutbuf); //reset to standard output again
-
-        // ofstream myfile;
-        // myfile.open (f"estimate%d.txt",i);
-        // myfile << "Writing this to a file.\n";
-        // myfile.close();
 
         robot_est = isam2.calculateEstimate().at(X(x)).cast<gtsam::Pose2>();//  (X(x)).cast<gtsam::Pose2>();
         // std::cout << "Robot Estimate:(" << robot_est.x() <<"," << robot_est.y() << ")" << std::endl;

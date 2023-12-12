@@ -79,6 +79,7 @@ class SLAMValidation : public rclcpp::Node
         if(orangeCones.size() == 0){
           orangeNotSeen++;
           if(orangeNotSeen >= 25){
+            // std::cout <<"orange not seen flag true" << std::endl;
             orangeNotSeenFlag = true;
           }
         }
@@ -86,7 +87,8 @@ class SLAMValidation : public rclcpp::Node
           orangeNotSeen = 0;
         }
 
-        if(orangeCones.size() >= 2){
+        if(orangeCones.size() == 2){ //what if there's more than 2?
+          // std::cout <<"Added two cones to orange cones"<<endl;
           bool left = false;
           bool right = false;
           vector<Point2> orangeLoopReferenceCones(2);
@@ -101,11 +103,12 @@ class SLAMValidation : public rclcpp::Node
               right = true;
               orangeLoopReferenceCones[1] = orangeCones[i];
             }
-
           }
+          orangeCones = orangeLoopReferenceCones;
         }
 
         if(orangeNotSeenFlag == true && orangeCones.size() >= 2){
+          // std::cout<<"found loop closure" << std::endl;
           loopClosure = true; //TODO: does not account for when there is only a single frame that it sees orange cones
         }
 
