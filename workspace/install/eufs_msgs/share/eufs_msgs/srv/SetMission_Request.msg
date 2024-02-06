@@ -1,1 +1,13 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_cmake/srv/SetMission_Request.msg
+int16 NOT_SELECTED=0             
+int16 ACCELERATION=1 
+int16 SKIDPAD=2
+int16 AUTOCROSS=3
+int16 TRACK_DRIVE=4
+int16 MANUAL_DRIVING=5
+int16 ADS_EBS_TEST=6
+int16 ADS_INSPECTION=7
+int16 DDT_INSPECTION_A=8
+int16 DDT_INSPECTION_B=9
+int16 DDT_AUTONOMOUS_DEMO=10  
+
+int16 mission

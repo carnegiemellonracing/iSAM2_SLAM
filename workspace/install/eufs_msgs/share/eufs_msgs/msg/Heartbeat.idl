@@ -1,1 +1,14 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/Heartbeat.idl
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from eufs_msgs/msg/Heartbeat.msg
+// generated code does not contain a copyright notice
+
+
+module eufs_msgs {
+  module msg {
+    struct Heartbeat {
+      uint8 id;
+
+      uint8 data;
+    };
+  };
+};

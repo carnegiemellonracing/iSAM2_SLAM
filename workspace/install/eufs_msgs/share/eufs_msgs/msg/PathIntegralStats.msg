@@ -1,1 +1,5 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/PathIntegralStats.msg
+std_msgs/Header header
+string tag
+
+PathIntegralParams params
+LapStats stats

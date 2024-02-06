@@ -22,6 +22,7 @@ endif()
 
 
 # find dependencies
+find_package(geometry_msgs REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(message_filters REQUIRED)
@@ -32,7 +33,7 @@ include_directories(${GTSAM_INCLUDE_DIR})
 add_executable(isam_test isam2Node.cpp)
 
 target_link_libraries(isam_test gtsam)
-ament_target_dependencies(isam_test rclcpp message_filters eufs_msgs)
+ament_target_dependencies(isam_test rclcpp message_filters eufs_msgs geometry_msgs)
 ament_export_include_directories(source)
 
 install(TARGETS

@@ -1,1 +1,5 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/PurePursuitCheckpointArrayStamped.msg
+#Stamped checkpoint array msg
+
+std_msgs/Header header
+
+PurePursuitCheckpoint[] checkpoints

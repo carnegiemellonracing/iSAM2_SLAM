@@ -1,1 +1,4 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/PlanningMode.msg
+int8 LOCAL=0             # Local planning mode
+int8 GLOBAL=1            # Global planning mode
+
+int8 mode                # modes enuerated above

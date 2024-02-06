@@ -1,1 +1,18 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_adapter/eufs_msgs/srv/SetTrack.idl
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from eufs_msgs/srv/SetTrack.srv
+// generated code does not contain a copyright notice
+
+#include "eufs_msgs/msg/ConeArrayWithCovariance.idl"
+
+module eufs_msgs {
+  module srv {
+    struct SetTrack_Request {
+      eufs_msgs::msg::ConeArrayWithCovariance data;
+    };
+    struct SetTrack_Response {
+      boolean success;
+
+      string message;
+    };
+  };
+};

@@ -181,9 +181,11 @@ public:
             //add odometry estimates
             //Motion model
 
-            double time_s = time_ns/SEC_TO_NANOSEC;
 
+            //TODO: change back to motion model with velocity
+            double time_s = time_ns/SEC_TO_NANOSEC;
             Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
+            // Pose2 Odometry =  Pose2(global_odom.x() - prev_pos.x(),global_odom.y() - prev_pos.y(), global_odom.theta() - prev_pos.theta());
 
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(x - 1), X(x),Odometry, odom_model);
             graph.add(odom_factor);

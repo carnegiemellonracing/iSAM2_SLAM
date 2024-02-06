@@ -1,1 +1,4 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/eufs_msgs/msg/ConeWithCovariance.msg
+# Cone information
+
+geometry_msgs/Point point
+float64[4] covariance
