@@ -88,7 +88,7 @@ public:
     std::vector<Point2> orange_cones;
 
     slamISAM() {
-        parameters = ISAM2Params(ISAM2DoglegParams(),0.01,1);
+        parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
         parameters.setFactorization("QR");
 
         isam2 = gtsam::ISAM2(parameters);
@@ -166,7 +166,7 @@ public:
             graph.add(prior_factor);
             values.insert(X(0), global_odom);
 
-            prev_robot_est = Pose2(0, 0, 0);
+            prev_robot_est = global_odom;
 
             //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
             //Add orange cone left and right
@@ -183,9 +183,14 @@ public:
 
 
             //TODO: change back to motion model with velocity
-            double time_s = time_ns/SEC_TO_NANOSEC;
-            Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
-            // Pose2 Odometry =  Pose2(global_odom.x() - prev_pos.x(),global_odom.y() - prev_pos.y(), global_odom.theta() - prev_pos.theta());
+            // double time_s = time_ns/SEC_TO_NANOSEC;
+            // Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
+            Pose2 Odometry =  Pose2(global_odom.x() - prev_pos.x(),global_odom.y() - prev_pos.y(), global_odom.theta() - prev_pos.theta());
+
+            static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
+            //add prior
+            graph.add(prior_factor);
 
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(x - 1), X(x),Odometry, odom_model);
             graph.add(odom_factor);
@@ -246,8 +251,6 @@ public:
                 //add cone to list
                 // observed.insert(enum_cone);
                 //std::cout << "New Landmark:\n"  << L(n_landmarks) << std::endl;
-
-
                 if (n_landmarks == 0) {
                     graph.addPrior(L(0),conePose);
 

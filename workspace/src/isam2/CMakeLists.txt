@@ -15,25 +15,21 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
-# find_package(GTSAMCMakeTools)
-
-
-
-
 # find dependencies
-find_package(geometry_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)  
+find_package(eufs_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(message_filters REQUIRED)
-find_package(eufs_msgs REQUIRED)
 find_package(GTSAM REQUIRED)
 include_directories(${GTSAM_INCLUDE_DIR})
 
 add_executable(isam_test isam2Node.cpp)
 
 target_link_libraries(isam_test gtsam)
-ament_target_dependencies(isam_test rclcpp message_filters eufs_msgs geometry_msgs)
+ament_target_dependencies(isam_test rclcpp message_filters eufs_msgs geometry_msgs sensor_msgs)
 ament_export_include_directories(source)
 
 install(TARGETS
