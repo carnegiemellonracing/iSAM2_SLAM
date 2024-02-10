@@ -314,7 +314,7 @@ TBB_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/TBB
 TinyXML2_DIR:PATH=TinyXML2_DIR-NOTFOUND
 
 //Path to a library.
-_lib:FILEPATH=/home/chip/Documents/iSAM2_SLAM/workspace/install/eufs_msgs/lib/libeufs_msgs__rosidl_typesupport_fastrtps_cpp.so
+_lib:FILEPATH=/opt/ros/foxy/lib/libmessage_filters.so
 
 //The directory containing a CMake configuration file for action_msgs.
 action_msgs_DIR:PATH=/opt/ros/foxy/share/action_msgs/cmake

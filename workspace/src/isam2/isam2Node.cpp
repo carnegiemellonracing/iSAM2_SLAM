@@ -31,7 +31,7 @@
 // #define CONE_DATA_TOPIC "/ground_truth/cones"
 // #define VEHICLE_DATA_TOPIC "/ground_truth/state"
 
-#define CONE_DATA_TOPIC "/lidar_node_cones"
+#define CONE_DATA_TOPIC "/perc_cones"
 #define VEHICLE_POS_TOPIC "/gnss"
 #define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
 #define VEHICLE_VEL_TOPIC "/filter/velocity"
@@ -55,6 +55,7 @@ class SLAMValidation : public rclcpp::Node
   public:
     SLAMValidation(): Node("slam_validation"){
       // cone_sub = this->create_subscription<eufs_msgs::msg::ConeArrayWithCovariance>(
+      rmw_qos_profile_t best_effort_qos = rmw_qos_profile_default;
       cone_sub = this->create_subscription<eufs_msgs::msg::ConeArray>(
       CONE_DATA_TOPIC, 10, std::bind(&SLAMValidation::cone_callback, this, _1));
 
@@ -85,7 +86,7 @@ class SLAMValidation : public rclcpp::Node
   private:
     // void cone_callback(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data){
     void cone_callback(const eufs_msgs::msg::ConeArray::SharedPtr cone_data){
-        // RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
+        RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
         cones.clear();
         orangeCones.clear();
         for(uint i = 0; i < cone_data->blue_cones.size(); i++){
@@ -139,6 +140,8 @@ class SLAMValidation : public rclcpp::Node
           loopClosure = true; //TODO: does not account for when there is only a single frame that it sees orange cones
         }
 
+        RCLCPP_INFO(this->get_logger(), "I FUCKING HATE FORD MOTOR COMPANY\n");
+
         //run every time you get a measurement
         // slam_instance.step(global_odom, cones);
         // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
@@ -161,7 +164,7 @@ class SLAMValidation : public rclcpp::Node
         veh_state.y = y_meters-init_odom.y();
 
         // RCLCPP_INFO(this->get_logger(), "vehicle gps:(%f,%f)",vehicle_pos_data->latitude,vehicle_pos_data->longitude);
-        // RCLCPP_INFO(this->get_logger(), "vehicle meters:(%f,%f)\n",veh_state.x,veh_state.y);
+        // RCLCPP_INFO(this->get_logger(), "vehicle meters:(%cone_callbackf,%f)\n",veh_state.x,veh_state.y);
     }
 
     void vehicle_vel_callback(const geometry_msgs::msg::TwistStamped::SharedPtr vehicle_vel_data){
@@ -196,7 +199,6 @@ class SLAMValidation : public rclcpp::Node
       dt = 69;
       RCLCPP_INFO(this->get_logger(), "Global Odom:(%f,%f,%f)",veh_state.x,veh_state.y,veh_state.yaw);
 
-
       // global_odom = gtsam::Pose2(vehicle_state_data>pose.pose.position.x, vehicle_state_data->pose.pose.position.y, yaw);
       // velocity = gtsam::Point2(vehicle_state_data->twist.twist.linear.x,vehicle_state_data->twist.twist.linear.y);
 
@@ -207,7 +209,7 @@ class SLAMValidation : public rclcpp::Node
     }
  
     void run_slam(){
-        slam_instance.step(global_odom, cones,orangeCones, velocity, dt, loopClosure);
+        slam_instance.step(this->get_logger(), global_odom, cones,orangeCones, velocity, dt, loopClosure);
         // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
     // ISAM2Params parameters;

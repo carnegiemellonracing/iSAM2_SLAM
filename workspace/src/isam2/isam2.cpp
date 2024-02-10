@@ -104,40 +104,56 @@ public:
         // isam2.joint1(1,2);
     }
 
-    double mahalanobisDist(Pose2 measurement,Pose2 landmark,Symbol landmark_key){
+    double mahalanobisDist(auto logger, Pose2 measurement,Pose2 landmark,Symbol landmark_key){
         //std::cout << "Landmark key: "  << landmark_key << std::endl;
         //std::cout << "Measurement:\n"  << measurement << std::endl;
         //std::cout << "landmark:\n"  << landmark << std::endl;
 
-        Eigen::MatrixXd diff(1, 2); 
-        diff << measurement.x()-landmark.x(),measurement.y()-landmark.y();
-        //std::cout << "Diff:\n"  << diff << std::endl;
+        Eigen::MatrixXd diff(1, 3); 
+        RCLCPP_INFO(logger, "here lmao\n");
+        // diff << measurement.x()-landmark.x(),measurement.y()-landmark.y(),measurement.theta()-landmark.theta();
+        diff << measurement.x()-landmark.x(),measurement.y()-landmark.y(),1;
 
         Matrix marginal_covariance = isam2.marginalCovariance(landmark_key);
-        //std::cout << "Covariance Matrix:\n"  << marginal_covariance << std::endl;
+        RCLCPP_INFO(logger, "past marginal cov\n");
+        RCLCPP_INFO(logger, "diff Matrix: (%d,%d)\n" ,diff.rows(),diff.cols());
+        RCLCPP_INFO(logger, "diff.transpose() Matrix: (%d,%d)\n",diff.transpose().rows(),diff.transpose().cols());
+        RCLCPP_INFO(logger, "Covariance Matrix: (%d,%d)\n",marginal_covariance.rows(),marginal_covariance.cols());
+
+        for(int i = 0; i < marginal_covariance.rows();i++){
+            for(int j = 0; j < marginal_covariance.cols();j++){
+                RCLCPP_INFO(logger, "Covariance Matrix: (%d,%d)= %f\n",i,j,marginal_covariance(i,j));
+            }
+        }
+
+        RCLCPP_INFO(logger, "i am going to bomb ford motor company:\n");
+
         Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
-        
+        RCLCPP_INFO(logger, "past this shit\n");
         // std::cout << "Mahalanobis result:\n"  << result << std::endl;
 
         return result(0);
     }
 
-    int associate(Pose2 measurement) {
+    int associate(auto logger, Pose2 measurement) {
         // Vector that will store mahalanobis distances
+        RCLCPP_INFO(logger, "in associate\n");
         std::vector<double> min_dist;
         for (int i = 0; i < n_landmarks; i++) {
             //only do when the landmark has been observed in the previous step
             if(!observed.exists(L(i))){
                 //Retrieve point from isam
                 gtsam::Pose2 landmark = isam2.calculateEstimate().at(L(i)).cast<Pose2>();
+                RCLCPP_INFO(logger, "past calcEstimate\n");
                 // std::cout << "Landmark\n"  << landmark << std::endl;
 
                 // Adding mahalanobis distance to minimum distance vector
                 // std::cout << "Before Mahalanobis key:\n"  << L(i) << std::endl;
-                double mahalanobis = mahalanobisDist(measurement,landmark,L(i));
+                double mahalanobis = mahalanobisDist(logger, measurement,landmark,L(i));
                 min_dist.push_back(mahalanobis);            
             }
         }
+        RCLCPP_INFO(logger, "past for lloops\n");
         min_dist.push_back(M_DIST_TH); // Add M_DIST_TH for new landmark
         // Find the index of the minimum element in 'min_dist'
         //min_id will be equal to num_landmarks if it didn't find anything under M_DIST_TH
@@ -145,7 +161,7 @@ public:
         return min_id;
     }
 
-    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
+    void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
         Vector NoiseModel(3);
         NoiseModel(0) = 0;
         NoiseModel(1) = 0;
@@ -155,6 +171,7 @@ public:
         LandmarkNoiseModel(0) = 0;
         LandmarkNoiseModel(1) = 0;
         LandmarkNoiseModel(2) = 0;
+
  
         Pose2 prev_robot_est;
         if (x==0) {//if this is the first pose, add your inital pose to the factor graph
@@ -229,23 +246,26 @@ public:
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
             // std::cout << "cone: "  << cone << std::endl;
-
+            RCLCPP_INFO(logger, "ferrari is goat\n");
             Pose2 conePose(cone.x(),cone.y(),0);
             double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
-            double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
 
+            double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
             double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
             double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
+            RCLCPP_INFO(logger, "tesla is goat\n");
 
             Pose2 global_cone(global_cone_x,global_cone_y,0); //calculate global position of the cone
-
+            RCLCPP_INFO(logger, "fiat is goat\n");
             //for the current cone, we want to compare againt all other cones for data association
             //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
             //This is jvc lmao
-            int associated_ID = associate(global_cone);
+            int associated_ID = associate(logger, global_cone);
+            RCLCPP_INFO(logger, "ur mom is goat\n");
             //std::cout << "Associated ID:\n"  << associated_ID << std::endl;
 
             static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
+            RCLCPP_INFO(logger, "lotus is goat\n");
             //If it is a new cone:
             if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
                 //add cone to list
@@ -273,9 +293,9 @@ public:
                 graph.add(BetweenFactor<Pose2>(X(x), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
                 // graph.add(BearingRangeFactor<Pose2, Point2, Rot2, double>(X(x), L(associated_ID), angle, range, landmark_model));
             }
-
+            RCLCPP_INFO(logger, "fuck ford\n");
         }
-
+        RCLCPP_INFO(logger, "ford is goat\n");
         // DATA ASSOCIATION END
 
         isam2.update(graph, values);
