@@ -125,9 +125,7 @@ public:
                 RCLCPP_INFO(logger, "Covariance Matrix: (%d,%d)= %f\n",i,j,marginal_covariance(i,j));
             }
         }
-
-        RCLCPP_INFO(logger, "i am going to bomb ford motor company:\n");
-
+        
         Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
         RCLCPP_INFO(logger, "past this shit\n");
         // std::cout << "Mahalanobis result:\n"  << result << std::endl;

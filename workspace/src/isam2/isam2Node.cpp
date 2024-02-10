@@ -140,8 +140,6 @@ class SLAMValidation : public rclcpp::Node
           loopClosure = true; //TODO: does not account for when there is only a single frame that it sees orange cones
         }
 
-        RCLCPP_INFO(this->get_logger(), "I FUCKING HATE FORD MOTOR COMPANY\n");
-
         //run every time you get a measurement
         // slam_instance.step(global_odom, cones);
         // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
