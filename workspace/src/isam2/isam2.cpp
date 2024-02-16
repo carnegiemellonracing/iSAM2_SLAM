@@ -240,30 +240,26 @@ public:
         values.clear();
 
         // std::cout << "global_odom: "  << global_odom << std::endl;
+        
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
             // std::cout << "cone: "  << cone << std::endl;
-            RCLCPP_INFO(logger, "ferrari is goat\n");
             Pose2 conePose(cone.x(),cone.y(),0);
             double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
 
             double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
             double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
             double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
-            RCLCPP_INFO(logger, "tesla is goat\n");
 
             Pose2 global_cone(global_cone_x,global_cone_y,0); //calculate global position of the cone
-            RCLCPP_INFO(logger, "fiat is goat\n");
             //for the current cone, we want to compare againt all other cones for data association
             //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
             //This is jvc lmao
             int associated_ID = associate(logger, global_cone);
-            RCLCPP_INFO(logger, "ur mom is goat\n");
             //std::cout << "Associated ID:\n"  << associated_ID << std::endl;
 
             static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
-            RCLCPP_INFO(logger, "lotus is goat\n");
             //If it is a new cone:
             if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
                 //add cone to list
@@ -293,7 +289,6 @@ public:
             }
             RCLCPP_INFO(logger, "fuck ford\n");
         }
-        RCLCPP_INFO(logger, "ford is goat\n");
         // DATA ASSOCIATION END
 
         isam2.update(graph, values);
