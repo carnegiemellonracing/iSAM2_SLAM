@@ -35,7 +35,7 @@
 // using namespace std;
 using namespace gtsam;
 
-static const float M_DIST_TH = 50; //used to be 45
+static const float M_DIST_TH = 0.0001; //used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 
 // static const float DT = 0.1;
@@ -111,16 +111,15 @@ public:
         Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
 
 
-        RCLCPP_INFO(logger, "M dist size:(%,%d)\n",static_cast<int>(result.rows()),static_cast<int>(result.cols()));
         // std::cout << "Mahalanobis result:\n"  << result << std::endl;
-        //make sure that the shape is 
+        //size of eigen matrix is (1,1)
         return result(0);
     }
     
     //returns associated landmark id or n_landmarks if there is no associated id
+    //returns zero on the first 
     int associate(auto logger, Pose2 measurement) {
         // Vector that will store mahalanobis distances
-        RCLCPP_INFO(logger, "in associate\n");
         std::vector<double> min_dist;
 
         // Previous one
@@ -128,10 +127,9 @@ public:
             gtsam::Pose2 landmark = isam2.calculateEstimate().at(L(i)).cast<Pose2>();
             // Adding mahalanobis distance to minimum distance vector
             double mahalanobis = mahalanobisDist(logger, measurement,landmark,L(i));
-            RCLCPP_INFO(logger, "L(%d)=%f",i,mahalanobis);
+            // RCLCPP_INFO(logger, "L(%d)=%f",i,mahalanobis);
             min_dist.push_back(mahalanobis);            
         }
-
 
         min_dist.push_back(M_DIST_TH); // Add M_DIST_TH for new landmark
         // Find the index of the minimum element in 'min_dist'
@@ -139,6 +137,8 @@ public:
 
         int min_id = std::distance(min_dist.begin(), std::min_element(min_dist.begin(), min_dist.end()));
         RCLCPP_INFO(logger, "Min_id %d\n",min_id);
+        RCLCPP_INFO(logger, "Min dist %f\n",min_dist[min_id]);
+
         return min_id;
     }
 
@@ -243,30 +243,29 @@ public:
 
             //If it is a new cone:
             if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
-                //add cone to list
-                //std::cout << "New Landmark:\n"  << L(n_landmarks) << std::endl;
-                if (n_landmarks == 0) {
-                    graph.addPrior(L(0),conePose); //TODO: how doe sthis prior make sense?
-                }
+                RCLCPP_INFO(logger, "adding cone to list");
+                //add cone to list  
                 //add factor between pose and landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
                 //this is how we model noise for the environmant
                 values.insert(L(n_landmarks), global_cone);
+
+                if (n_landmarks == 0) {
+                    graph.addPrior(L(0),conePose); //TODO: how doe sthis prior make sense?
+                }
+
                 n_landmarks++;
             } else {
                 //std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
                 //Add a factor to the associated landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
             }
+
+            isam2.update(graph, values);
+            graph.resize(0);
+            values.clear();
         }
         // DATA ASSOCIATION END
-
-        isam2.update(graph, values);
-        // isam2.update();  
-        // isam2.update();  
-        // isam2.update();  
-        graph.resize(0);
-        values.clear();
 
         //Print to squirrel.txt
         std::ofstream ofs;
