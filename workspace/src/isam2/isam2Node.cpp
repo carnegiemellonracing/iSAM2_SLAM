@@ -83,7 +83,8 @@ class SLAMValidation : public rclcpp::Node
       init_odom = gtsam::Pose2(-1,-1,-1);
     }
   private:
-    // void cone_callback(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data){
+    // positive y forward
+    // positive x right
     void cone_callback(const eufs_msgs::msg::ConeArray::SharedPtr cone_data){
         RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
         cones.clear();
@@ -179,7 +180,7 @@ class SLAMValidation : public rclcpp::Node
         double q3 = vehicle_angle_data->quaternion.z;
         double q0 = vehicle_angle_data->quaternion.w;
         double yaw = atan2(2*(q0*q3+q1*q2), pow(q0, 2)+pow(q1, 2)-pow(q2, 2)-pow(q3, 2));
-        // RCLCPP_INFO(this->get_logger(), "vehicle yaw:%f",veh_state.yaw);
+        RCLCPP_INFO(this->get_logger(), "vehicle yaw:%f",veh_state.yaw);
 
         if(init_odom.theta() == -1){
           init_odom = gtsam::Pose2(init_odom.x(),init_odom.y(),yaw);

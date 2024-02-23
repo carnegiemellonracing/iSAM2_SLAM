@@ -97,8 +97,6 @@ public:
         landmark_est = std::vector<gtsam::Point2>();
 
         orange_cones = std::vector<Point2>();
-
-
     }
 
     double mahalanobisDist(auto logger, Pose2 measurement,Pose2 landmark,Symbol landmark_key){
@@ -109,9 +107,6 @@ public:
 
         Matrix marginal_covariance = isam2.marginalCovariance(landmark_key);
         Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
-
-
-        // std::cout << "Mahalanobis result:\n"  << result << std::endl;
         //size of eigen matrix is (1,1)
         return result(0);
     }
@@ -155,17 +150,14 @@ public:
 
         static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
-        Pose2 prev_robot_est;
         if (pose_num==0) {//if this is the first pose, add your inital pose to the factor graph
             //std::cout << "First pose\n" << std::endl;
-
             static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
             //add prior
             graph.add(prior_factor);
             values.insert(X(0), global_odom);
 
-            prev_robot_est = global_odom;
 
             //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
             //Add orange cone left and right
@@ -194,7 +186,6 @@ public:
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),Odometry, odom_model);
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
-            prev_robot_est = prev_pos;
         }
 
         if(loopClosure){
@@ -220,19 +211,18 @@ public:
         isam2.update(graph, values);
         graph.resize(0);
         values.clear();
-
         // std::cout << "global_odom: "  << global_odom << std::endl;
         
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
-            // std::cout << "cone: "  << cone << std::endl;
             Pose2 conePose(cone.x(),cone.y(),0);
-            double range = norm2(cone);//std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+            double range = norm2(cone);
 
             double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
             double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
             double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
+            RCLCPP_INFO(logger, "cone yaw: %f\n",bearing);
 
             Pose2 global_cone(global_cone_x,global_cone_y,0); //calculate global position of the cone
             //for the current cone, we want to compare againt all other cones for data association
@@ -251,7 +241,7 @@ public:
                 values.insert(L(n_landmarks), global_cone);
 
                 if (n_landmarks == 0) {
-                    graph.addPrior(L(0),conePose); //TODO: how doe sthis prior make sense?
+                    graph.addPrior(L(0),conePose); //TODO: how does this prior make sense?
                 }
 
                 n_landmarks++;
