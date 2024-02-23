@@ -72,7 +72,6 @@ class SLAMValidation : public rclcpp::Node
       VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
 
       //TODO: need to initalize robot state?????
-    
       timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
       time_ns = 0; //Initialize time and dt
       dt = .1;
@@ -195,8 +194,7 @@ class SLAMValidation : public rclcpp::Node
       global_odom = gtsam::Pose2(veh_state.x, veh_state.y, veh_state.yaw);
       velocity = gtsam::Point2(veh_state.dx,veh_state.dy);
       dt = 69;
-      RCLCPP_INFO(this->get_logger(), "Global Odom:(%f,%f,%f)",veh_state.x,veh_state.y,veh_state.yaw);
-
+      // RCLCPP_INFO(this->get_logger(), "Global Odom:(%f,%f,%f)",veh_state.x,veh_state.y,veh_state.yaw);
       // global_odom = gtsam::Pose2(vehicle_state_data>pose.pose.position.x, vehicle_state_data->pose.pose.position.y, yaw);
       // velocity = gtsam::Point2(vehicle_state_data->twist.twist.linear.x,vehicle_state_data->twist.twist.linear.y);
 
