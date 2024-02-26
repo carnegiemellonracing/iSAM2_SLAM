@@ -32,10 +32,10 @@
 
 #include <iostream>
 #include <fstream>
-// using namespace std;
+// using namespace std;    
 using namespace gtsam;
 
-static const float M_DIST_TH = 0.0001; //used to be 45 lmao
+static const float M_DIST_TH = 0.00015; //used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 
 // static const float DT = 0.1;

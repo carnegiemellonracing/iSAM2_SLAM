@@ -1,8 +1,8 @@
-# Install script for directory: /home/chip/Documents/iSAM2_SLAM/workspace/build/eufs_msgs/eufs_msgs__py
+# Install script for directory: /home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/eufs_msgs/eufs_msgs__py
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/chip/Documents/iSAM2_SLAM/workspace/install/eufs_msgs")
+  set(CMAKE_INSTALL_PREFIX "/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

@@ -4,7 +4,7 @@
 # compile C with /usr/bin/cc
 C_DEFINES = -DRCUTILS_ENABLE_FAULT_INJECTION -DROS_PACKAGE_NAME=\"eufs_msgs\" -Deufs_msgs__python_EXPORTS
 
-C_INCLUDES = -I/home/chip/Documents/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_generator_c -I/home/chip/Documents/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_generator_py -I/usr/include/python3.8 -I/home/chip/Documents/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_typesupport_c -isystem /opt/ros/foxy/include
+C_INCLUDES = -I/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_generator_c -I/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_generator_py -I/home/dale/miniconda3/include/python3.8 -I/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_typesupport_c -isystem /opt/ros/foxy/include
 
 C_FLAGS = -fPIC -Wall -Wextra
 

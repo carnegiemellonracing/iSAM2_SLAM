@@ -7,10 +7,6 @@ from eufs_msgs.msg._chassis_state import ChassisState  # noqa: F401
 from eufs_msgs.msg._cone_array import ConeArray  # noqa: F401
 from eufs_msgs.msg._cone_array_with_covariance import ConeArrayWithCovariance  # noqa: F401
 from eufs_msgs.msg._cone_array_with_covariance_plus import ConeArrayWithCovariancePlus  # noqa: F401
-from eufs_msgs.msg._cone_association import ConeAssociation  # noqa: F401
-from eufs_msgs.msg._cone_association_array import ConeAssociationArray  # noqa: F401
-from eufs_msgs.msg._cone_association_array_array_stamped import ConeAssociationArrayArrayStamped  # noqa: F401
-from eufs_msgs.msg._cone_association_array_stamped import ConeAssociationArrayStamped  # noqa: F401
 from eufs_msgs.msg._cone_with_covariance import ConeWithCovariance  # noqa: F401
 from eufs_msgs.msg._cone_with_covariance_plus import ConeWithCovariancePlus  # noqa: F401
 from eufs_msgs.msg._costmap import Costmap  # noqa: F401
@@ -23,11 +19,6 @@ from eufs_msgs.msg._lap_stats import LapStats  # noqa: F401
 from eufs_msgs.msg._mpc_state import MPCState  # noqa: F401
 from eufs_msgs.msg._node_state import NodeState  # noqa: F401
 from eufs_msgs.msg._node_state_array import NodeStateArray  # noqa: F401
-from eufs_msgs.msg._oss import OSS  # noqa: F401
-from eufs_msgs.msg._particle import Particle  # noqa: F401
-from eufs_msgs.msg._particle_slam import ParticleSLAM  # noqa: F401
-from eufs_msgs.msg._particle_slam_stamped import ParticleSLAMStamped  # noqa: F401
-from eufs_msgs.msg._particle_stamped import ParticleStamped  # noqa: F401
 from eufs_msgs.msg._path_integral_params import PathIntegralParams  # noqa: F401
 from eufs_msgs.msg._path_integral_stats import PathIntegralStats  # noqa: F401
 from eufs_msgs.msg._path_integral_status import PathIntegralStatus  # noqa: F401
@@ -41,7 +32,6 @@ from eufs_msgs.msg._runstop import Runstop  # noqa: F401
 from eufs_msgs.msg._slam_err import SLAMErr  # noqa: F401
 from eufs_msgs.msg._slam_state import SLAMState  # noqa: F401
 from eufs_msgs.msg._state_machine_state import StateMachineState  # noqa: F401
-from eufs_msgs.msg._stereo_image import StereoImage  # noqa: F401
 from eufs_msgs.msg._system_status import SystemStatus  # noqa: F401
 from eufs_msgs.msg._topic_status import TopicStatus  # noqa: F401
 from eufs_msgs.msg._vehicle_commands import VehicleCommands  # noqa: F401

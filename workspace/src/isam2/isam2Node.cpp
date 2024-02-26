@@ -81,12 +81,14 @@ class SLAMValidation : public rclcpp::Node
 
 
       init_odom = gtsam::Pose2(-1,-1,-1);
+
     }
   private:
     // positive y forward
     // positive x right
     void cone_callback(const eufs_msgs::msg::ConeArray::SharedPtr cone_data){
-        RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
+        // RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
+        // return;
         cones.clear();
         orangeCones.clear();
         for(uint i = 0; i < cone_data->blue_cones.size(); i++){
@@ -161,6 +163,7 @@ class SLAMValidation : public rclcpp::Node
         veh_state.x = x_meters-init_odom.x();
         veh_state.y = y_meters-init_odom.y();
 
+        veh_state.yaw = atan2(veh_state.y - prev_veh_state.y, veh_state.x - prev_veh_state.x);
         // RCLCPP_INFO(this->get_logger(), "vehicle gps:(%f,%f)",vehicle_pos_data->latitude,vehicle_pos_data->longitude);
         // RCLCPP_INFO(this->get_logger(), "vehicle meters:(%cone_callbackf,%f)\n",veh_state.x,veh_state.y);
     }
@@ -175,24 +178,31 @@ class SLAMValidation : public rclcpp::Node
     //Takes Quaternion and translates to angle
     void vehicle_angle_callback(const geometry_msgs::msg::QuaternionStamped::SharedPtr vehicle_angle_data){
         // RCLCPP_INFO(this->get_logger(), "vehicle angle:(%f,%f,%f,%f)\n",vehicle_angle_data->quaternion.x,vehicle_angle_data->quaternion.y,vehicle_angle_data->quaternion.z,vehicle_angle_data->quaternion.w);
+        double q0 = vehicle_angle_data->quaternion.w;
         double q1 = vehicle_angle_data->quaternion.x;
         double q2 = vehicle_angle_data->quaternion.y;
         double q3 = vehicle_angle_data->quaternion.z;
-        double q0 = vehicle_angle_data->quaternion.w;
-        double yaw = atan2(2*(q0*q3+q1*q2), pow(q0, 2)+pow(q1, 2)-pow(q2, 2)-pow(q3, 2));
-        RCLCPP_INFO(this->get_logger(), "vehicle yaw:%f",veh_state.yaw);
 
+        double yaw   = atan2(2*(q3*q0 +q1*q2) , -1+2*(q0*q0 +q1*q1)) ; //rotate by 90 degrees? TODO: add to velocity
+        // RCLCPP_INFO(this->get_logger(), "vehicle yaw:%f",veh_state.yaw);
         if(init_odom.theta() == -1){
           init_odom = gtsam::Pose2(init_odom.x(),init_odom.y(),yaw);
+          veh_state.yaw = yaw; //-init_odom.theta(); 
         }
 
-        veh_state.yaw = yaw-init_odom.theta(); 
     }
 
- 
     void timer_callback(){
       // RCLCPP_INFO(this->get_logger(), "vehicle callback:\n");
       global_odom = gtsam::Pose2(veh_state.x, veh_state.y, veh_state.yaw);
+      RCLCPP_INFO(this->get_logger(), "(%f,%f,%f)",veh_state.x,veh_state.y,veh_state.yaw);
+
+      //PRINT POSES
+      // outfile.open("chipmunk.txt", std::ios_base::app);
+      // outfile << "(" << veh_state.x << ","<< veh_state.y << ","<< veh_state.yaw<< ")\n";
+      // outfile.close();
+      ////////////////////////////
+
       velocity = gtsam::Point2(veh_state.dx,veh_state.dy);
       dt = 69;
       // RCLCPP_INFO(this->get_logger(), "Global Odom:(%f,%f,%f)",veh_state.x,veh_state.y,veh_state.yaw);
@@ -203,11 +213,35 @@ class SLAMValidation : public rclcpp::Node
       // dt = time_ns - tempTime;
       // time_ns = tempTime;  
       run_slam();
+      prev_veh_state = veh_state;
     }
  
     void run_slam(){
-        slam_instance.step(this->get_logger(), global_odom, cones,orangeCones, velocity, dt, loopClosure);
-        // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
+      //print pose and cones
+      std::ofstream ofs;
+      std::ofstream out("urmom.txt");
+      std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+      std::cout.rdbuf(out.rdbuf());
+      ofs.open("urmom.txt", std::ofstream::out | std::ofstream::trunc);
+      ofs << "(" << veh_state.x << ","<< veh_state.y << ","<< veh_state.yaw<< ")\n";
+      for(auto cone: cones){
+
+          double range = norm2(cone);
+
+          double bearing = std::atan2(cone.y(), cone.x());//+ global_odom.theta();
+          double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
+          double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
+          ofs << "(" << global_cone_x << ","<< global_cone_y << ")\n";
+      }
+      ofs.close();
+      std::cout.rdbuf(coutbuf); //reset to standard output again
+      // pose_cones.open("pose_cones.txt", std::ios_base::app);
+      
+      // pose_cones.close();
+      ///////////
+
+      slam_instance.step(this->get_logger(), global_odom, cones,orangeCones, velocity, dt, loopClosure);
+      // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
     // ISAM2Params parameters;
     // parameters.RelinearizationThreshold = 0.01;
@@ -226,7 +260,7 @@ class SLAMValidation : public rclcpp::Node
 
 
     gtsam::Pose2 init_odom; // local variable to load odom into SLAM instance
-
+    VehiclePosition prev_veh_state = VehiclePosition();
     VehiclePosition veh_state = VehiclePosition();
 
     rclcpp::TimerBase::SharedPtr timer;
@@ -235,10 +269,12 @@ class SLAMValidation : public rclcpp::Node
     int orangeNotSeen;
     bool orangeNotSeenFlag;
     bool loopClosure;
+    //print files
+    std::ofstream outfile;
+    std::ofstream pose_cones;
 };
 
 int main(int argc, char * argv[]){
-
   std::ofstream out("squirrel.txt");
   std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
   std::cout.rdbuf(out.rdbuf());

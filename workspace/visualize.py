@@ -44,6 +44,7 @@ while True:
                     temp = temp.astype(float)
                     if(poses.size == 0):
                         poses = temp
+
                     else:
                         poses = np.vstack((poses,temp))
                     pose = 0

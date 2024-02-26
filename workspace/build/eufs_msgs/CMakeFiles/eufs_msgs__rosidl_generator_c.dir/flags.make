@@ -4,7 +4,7 @@
 # compile C with /usr/bin/cc
 C_DEFINES = -DRCUTILS_ENABLE_FAULT_INJECTION -DROS_PACKAGE_NAME=\"eufs_msgs\" -Deufs_msgs__rosidl_generator_c_EXPORTS
 
-C_INCLUDES = -I/home/chip/Documents/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_generator_c -isystem /opt/ros/foxy/include
+C_INCLUDES = -I/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/eufs_msgs/rosidl_generator_c -isystem /opt/ros/foxy/include
 
 C_FLAGS = -std=gnu11 -fPIC -Wall
 
