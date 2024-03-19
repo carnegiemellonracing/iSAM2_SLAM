@@ -35,7 +35,7 @@
 // using namespace std;    
 using namespace gtsam;
 
-static const float M_DIST_TH = 0.00015; //used to be 45 lmao
+static const float M_DIST_TH = 0.000100069; //used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 
 // static const float DT = 0.1;
@@ -131,8 +131,8 @@ public:
         //min_id will be equal to num_landmarks if it didn't find anything under M_DIST_TH
 
         int min_id = std::distance(min_dist.begin(), std::min_element(min_dist.begin(), min_dist.end()));
-        RCLCPP_INFO(logger, "Min_id %d\n",min_id);
-        RCLCPP_INFO(logger, "Min dist %f\n",min_dist[min_id]);
+        // RCLCPP_INFO(logger, "Min_id %d\n",min_id);
+        // RCLCPP_INFO(logger, "Min dist %f\n",min_dist[min_id]);
 
         return min_id;
     }
@@ -212,25 +212,29 @@ public:
         graph.resize(0);
         values.clear();
         // std::cout << "global_odom: "  << global_odom << std::endl;
-        
+
+        RCLCPP_INFO(logger, "DATA ASSOCIATION BEGIN");
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
+            RCLCPP_INFO(logger, "cone");
+
             Pose2 conePose(cone.x(),cone.y(),0);
             double range = norm2(cone);
 
             double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
             double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
             double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
-            RCLCPP_INFO(logger, "cone yaw: %f\n",bearing);
+            // RCLCPP_INFO(logger, "cone yaw: %f\n",bearing);
 
             Pose2 global_cone(global_cone_x,global_cone_y,0); //calculate global position of the cone
             //for the current cone, we want to compare againt all other cones for data association
             //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
             //This is jvc lmao
             int associated_ID = associate(logger, global_cone);
-            RCLCPP_INFO(logger, "Associated Landmark: %d\n",associated_ID);
+            // RCLCPP_INFO(logger, "Associated Landmark: %d\n",associated_ID);
 
+            RCLCPP_INFO(logger, "done associating");
             //If it is a new cone:
             if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
                 RCLCPP_INFO(logger, "adding cone to list");
@@ -246,10 +250,12 @@ public:
 
                 n_landmarks++;
             } else {
-                //std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
+                RCLCPP_INFO(logger, "Associated Landmark: %d", associated_ID);
+                // std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
                 //Add a factor to the associated landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
             }
+            RCLCPP_INFO(logger, "updating");
 
             isam2.update(graph, values);
             graph.resize(0);

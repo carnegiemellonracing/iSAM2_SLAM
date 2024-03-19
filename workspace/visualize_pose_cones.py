@@ -37,16 +37,19 @@ while True:
 
     if ((poses.ndim==2) and (poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and \
        ((cones.ndim==2) and (cones.shape[0]) != 0) and ((cones.shape[0]) != 0):
-        r = .2
-        changesx = r*np.cos(poses[:,2]) 
-        changesy = r*np.sin(poses[:,2]) 
+        print("squirrel")
+        
+        #MELINDA: CHANGED THE CONES GRAPHING TO BE x,y, also changed the heading angle to reflect angle wrt y axis
+        r = .5
+        # changesx = r*np.cos(poses[:,2]) 
+        # changesy = r*np.sin(poses[:,2]) 
+        changesx = -r*np.sin(poses[:,2]) 
+        changesy = r*np.cos(poses[:,2]) 
         # # function to add arrow on a graph
         
-        scatter2 = plt.scatter(cones[:,1],-1*cones[:,0], s=10, c='r', marker="o", label='landmark')
+        scatter2 = plt.scatter(cones[:,0],cones[:,1], s=10, c='r', marker="o", label='landmark')
         for i in range(len(changesx)):
             scatter = plt.arrow(poses[:,0][i],poses[:,1][i],changesx[i],changesy[i],width=0.05)
         plt.pause(.1)
         scatter2.remove()
         plt.clf()
-
-
