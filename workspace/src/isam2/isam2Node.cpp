@@ -1,21 +1,16 @@
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
-
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
-// #include "eufs_msgs/msg/cone_array_with_covariance.hpp"
-#include "eufs_msgs/msg/cone_array.hpp"
-#include "eufs_msgs/msg/car_state.hpp"
+#include "interfaces/msg/cone_array.hpp"
 
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/vector3_stamped.hpp"
 #include "geometry_msgs/msg/quaternion_stamped.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
-
-
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
 
 
@@ -54,12 +49,12 @@ class SLAMValidation : public rclcpp::Node
 {
   public:
     SLAMValidation(): Node("slam_validation"){
-      // cone_sub = this->create_subscription<eufs_msgs::msg::ConeArrayWithCovariance>(
+      // cone_sub = this->create_subscription<interfaces::msg::ConeArrayWithCovariance>(
       rmw_qos_profile_t best_effort_qos = rmw_qos_profile_default;
-      cone_sub = this->create_subscription<eufs_msgs::msg::ConeArray>(
-      CONE_DATA_TOPIC, 10, std::bind(&SLAMValidation::cone_callback, this, _1));
+      cone_sub = this->create_subscription<interfaces::msg::ConeArray>(
+          CONE_DATA_TOPIC, 10, std::bind(&SLAMValidation::cone_callback, this, _1));
 
-      // vehicle_state_sub = this->create_subscription<eufs_msgs::msg::CarState>(
+      // vehicle_state_sub = this->create_subscription<interfaces::msg::CarState>(
       // VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
 
       vehicle_pos_sub = this->create_subscription<sensor_msgs::msg::NavSatFix>(
@@ -72,7 +67,7 @@ class SLAMValidation : public rclcpp::Node
       VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
 
       //TODO: need to initalize robot state?????
-      timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
+      timer = this->create_wall_timer(20ms, std::bind(&SLAMValidation::timer_callback, this));
       time_ns = 0; //Initialize time and dt
       dt = .1;
       orangeNotSeen = 25;
@@ -86,67 +81,79 @@ class SLAMValidation : public rclcpp::Node
   private:
     // positive y forward
     // positive x right
-    void cone_callback(const eufs_msgs::msg::ConeArray::SharedPtr cone_data){
-        RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
-        // return;
-        cones.clear();
-        orangeCones.clear();
-        for(uint i = 0; i < cone_data->blue_cones.size(); i++){
-            gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->blue_cones[i].x, cone_data->blue_cones[i].y));
-            cones.push_back(to_add);
-        }
-        for(uint i = 0; i < cone_data->yellow_cones.size(); i++){
-            gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->yellow_cones[i].x, cone_data->yellow_cones[i].y));
-            cones.push_back(to_add);
-        }
-        for(uint i = 0; i < cone_data->big_orange_cones.size(); i++){
-            gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->big_orange_cones[i].x, cone_data->big_orange_cones[i].y));
-            cones.push_back(to_add);
-            orangeCones.push_back(to_add);
-        }   
+    void cone_callback(const interfaces::msg::ConeArray::SharedPtr cone_data)
+    {
+      RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
+      // return;
+      cones.clear();
+      orangeCones.clear();
+      for (uint i = 0; i < cone_data->blue_cones.size(); i++)
+      {
+        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->blue_cones[i].x, cone_data->blue_cones[i].y));
+        cones.push_back(to_add);
+      }
+      for (uint i = 0; i < cone_data->yellow_cones.size(); i++)
+      {
+        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->yellow_cones[i].x, cone_data->yellow_cones[i].y));
+        cones.push_back(to_add);
+      }
+      for (uint i = 0; i < cone_data->big_orange_cones.size(); i++)
+      {
+        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(cone_data->big_orange_cones[i].x, cone_data->big_orange_cones[i].y));
+        cones.push_back(to_add);
+        orangeCones.push_back(to_add);
+      }
 
-        //check to see if you've seen orange cones again
-        if(orangeCones.size() == 0){
-          orangeNotSeen++;
-          if(orangeNotSeen >= 25){
-            // std::cout <<"orange not seen flag true" << std::endl;
-            orangeNotSeenFlag = true;
+      // check to see if you've seen orange cones again
+      if (orangeCones.size() == 0)
+      {
+        orangeNotSeen++;
+        if (orangeNotSeen >= 25)
+        {
+          // std::cout <<"orange not seen flag true" << std::endl;
+          orangeNotSeenFlag = true;
+        }
+      }
+      else
+      {
+        orangeNotSeen = 0;
+      }
+
+      if (orangeCones.size() == 2)
+      { // what if there's more than 2?
+        // std::cout <<"Added two cones to orange cones"<<endl;
+        bool left = false;
+        bool right = false;
+        vector<Point2> orangeLoopReferenceCones(2);
+        for (uint i = 0; i < orangeCones.size(); i++)
+        {
+          if (left == false && orangeCones[i].y() < 0)
+          {
+            // add the left cone here
+            left = true;
+            orangeLoopReferenceCones[0] = orangeCones[i];
+          }
+          if (right == false && orangeCones[i].y() > 0)
+          {
+            // add the left cone here
+            right = true;
+            orangeLoopReferenceCones[1] = orangeCones[i];
           }
         }
-        else{
-          orangeNotSeen = 0;
-        }
+        orangeCones = orangeLoopReferenceCones;
+      }
 
-        if(orangeCones.size() == 2){ //what if there's more than 2?
-          // std::cout <<"Added two cones to orange cones"<<endl;
-          bool left = false;
-          bool right = false;
-          vector<Point2> orangeLoopReferenceCones(2);
-          for(uint i = 0; i <  orangeCones.size(); i++){
-            if(left == false && orangeCones[i].y() < 0 ){
-              //add the left cone here
-              left = true;
-              orangeLoopReferenceCones[0] = orangeCones[i];
-            }
-            if(right == false && orangeCones[i].y() > 0 ){
-              //add the left cone here
-              right = true;
-              orangeLoopReferenceCones[1] = orangeCones[i];
-            }
-          }
-          orangeCones = orangeLoopReferenceCones;
-        }
+      if (orangeNotSeenFlag == true && orangeCones.size() >= 2)
+      {
+        // std::cout<<"found loop closure" << std::endl;
+        loopClosure = true; // TODO: does not account for when there is only a single frame that it sees orange cones
+      }
 
-        if(orangeNotSeenFlag == true && orangeCones.size() >= 2){
-          // std::cout<<"found loop closure" << std::endl;
-          loopClosure = true; //TODO: does not account for when there is only a single frame that it sees orange cones
-        }
-
-        //run every time you get a measurement
-        // slam_instance.step(global_odom, cones);
-        // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
+      // run every time you get a measurement
+      //  slam_instance.step(global_odom, cones);
+      //  RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
-    // void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr vehicle_state_data){
+    // void vehicle_state_callback(const interfaces::msg::CarState::SharedPtr vehicle_state_data){
     void vehicle_pos_callback(const sensor_msgs::msg::NavSatFix::SharedPtr vehicle_pos_data){
         double LAT_TO_M = 111320;
         double LON_TO_M = 40075000;
@@ -267,8 +274,8 @@ class SLAMValidation : public rclcpp::Node
     // parameters.RelinearizationThreshold = 0.01;
     // parameters.relinearizeSkip = 1;
     slamISAM slam_instance = slamISAM();
-    // rclcpp::Subscription<eufs_msgs::msg::ConeArrayWithCovariance>::SharedPtr cone_sub;
-    rclcpp::Subscription<eufs_msgs::msg::ConeArray>::SharedPtr cone_sub;
+    // rclcpp::Subscription<interfaces::msg::ConeArrayWithCovariance>::SharedPtr cone_sub;
+    rclcpp::Subscription<interfaces::msg::ConeArray>::SharedPtr cone_sub;
     rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr vehicle_pos_sub;
     rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr vehicle_vel_sub;
     rclcpp::Subscription<geometry_msgs::msg::QuaternionStamped>::SharedPtr vehicle_angle_sub;

@@ -37,7 +37,6 @@ while True:
 
     if ((poses.ndim==2) and (poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and \
        ((cones.ndim==2) and (cones.shape[0]) != 0) and ((cones.shape[0]) != 0):
-        print("squirrel")
         
         #MELINDA: CHANGED THE CONES GRAPHING TO BE x,y, also changed the heading angle to reflect angle wrt y axis
         r = .5

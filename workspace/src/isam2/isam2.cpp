@@ -217,7 +217,7 @@ public:
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
-            RCLCPP_INFO(logger, "cone");
+            // RCLCPP_INFO(logger, "cone");
 
             Pose2 conePose(cone.x(),cone.y(),0);
             double range = norm2(cone);
@@ -234,10 +234,10 @@ public:
             int associated_ID = associate(logger, global_cone);
             // RCLCPP_INFO(logger, "Associated Landmark: %d\n",associated_ID);
 
-            RCLCPP_INFO(logger, "done associating");
+            // RCLCPP_INFO(logger, "done associating");
             //If it is a new cone:
             if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
-                RCLCPP_INFO(logger, "adding cone to list");
+                // RCLCPP_INFO(logger, "adding cone to list");
                 //add cone to list  
                 //add factor between pose and landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
@@ -250,17 +250,19 @@ public:
 
                 n_landmarks++;
             } else {
-                RCLCPP_INFO(logger, "Associated Landmark: %d", associated_ID);
+                // RCLCPP_INFO(logger, "Associated Landmark: %d", associated_ID);
                 // std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
                 //Add a factor to the associated landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
             }
-            RCLCPP_INFO(logger, "updating");
+            // RCLCPP_INFO(logger, "updating");
 
             isam2.update(graph, values);
             graph.resize(0);
             values.clear();
         }
+        RCLCPP_INFO(logger, "DATA ASSOCIATION END");
+
         // DATA ASSOCIATION END
 
         //Print to squirrel.txt

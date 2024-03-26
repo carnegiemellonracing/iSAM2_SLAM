@@ -421,6 +421,9 @@ foonathan_memory_DIR:PATH=/opt/ros/foxy/lib/foonathan_memory/cmake
 //The directory containing a CMake configuration file for geometry_msgs.
 geometry_msgs_DIR:PATH=/opt/ros/foxy/share/geometry_msgs/cmake
 
+//The directory containing a CMake configuration file for interfaces.
+interfaces_DIR:PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/interfaces/share/interfaces/cmake
+
 //Value Computed by CMake
 isam2_BINARY_DIR:STATIC=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/build/isam2
 
