@@ -6,7 +6,7 @@ fig = plt.figure()
 plt.ion()
 #plt.legend(loc='upper left')
 plt.show()
-
+#squirrel
 while True:
     # with open('src/isam2/data/estimate2.txt') as f:
     with open("squirrel.txt") as f:
