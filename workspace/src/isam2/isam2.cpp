@@ -37,7 +37,7 @@ using namespace gtsam;
 
 static const float M_DIST_TH = 0.000100069; //used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
-
+static int data_association_errors = 0;
 // static const float DT = 0.1;
 // static const float SIM_TIME = 50.0;
 // static const int LM_SIZE = 2;
