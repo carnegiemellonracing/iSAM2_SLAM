@@ -266,7 +266,7 @@ class SLAMValidation : public rclcpp::Node
         if(new_cone) {
           global_coords = gtsam::Pose2(global_cone_x, global_cone_y, xTruth.size());
           xTruth.push_back(global_coords);
-          RCLCPP_INFO(logger, "Size of xTruth: %d \t | \t Number of data_association_errors: %d\n\n", xTruth.size(), data_association_errors);
+          //RCLCPP_INFO(logger, "Size of xTruth: %d \t | \t Number of data_association_errors: %d\n\n", xTruth.size(), data_association_errors);
         }
         //std::tuple<int> tp(cone_id);
         annot_obs_cones.push_back(cone_id);
