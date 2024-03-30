@@ -137,6 +137,23 @@ public:
         return min_id;
     }
 
+
+    /* annot_obs_cones represents the ground truth cone IDs of the cones
+     * observed at the current time frame
+     *
+     * This function works by checking which ID mahalanobis distance outputs
+     * and whether it outputs the ID that we expected
+     */
+    int heuristicFunction(int associated_ID, int obs_idx, std::vector<int> annot_obs_cones) {
+        bool assoc_in_annot = false;
+        
+        if (associated_ID == annot_obs_cones[obs_idx]) { //correct cone_id prediction
+            return 0;
+        }
+        return 1;
+    }
+
+
     void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
         Vector NoiseModel(3);
         NoiseModel(0) = 0;
@@ -232,6 +249,8 @@ public:
             //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
             //This is jvc lmao
             int associated_ID = associate(logger, global_cone);
+            data_association_errors += heuristicFunction(associated_ID, i, annot_obs_cones);
+
             // RCLCPP_INFO(logger, "Associated Landmark: %d\n",associated_ID);
 
             // RCLCPP_INFO(logger, "done associating");

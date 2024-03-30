@@ -232,8 +232,60 @@ class SLAMValidation : public rclcpp::Node
       run_slam();
       prev_veh_state = veh_state;
     }
- 
+
+    bool almost_equal(Pose2 a, Pose2 b) {
+      double threshold = 0.05;
+      return std::fabs(a.x() - b.x()) < threshold && std::fabs(a.y() - b.y()) < threshold;
+    }
+                                                                                                                                               
+    std::vector<Pose2> xTruth;
+    //building xTruth
+    std::vector<int>append_cones() {
+      std::vector<int> annot_obs_cones;
+      bool new_cone = true;
+      int cone_id = -1;
+      for(Point2 cone: cones) {
+        new_cone = true;
+        double range = std::sqrt(cone.x() * cone.x() + cone.y() * cone.y());
+        double bearing = std::atan2(cone.y(), cone.x());
+                                                                                                                                               
+        double global_cone_x = global_odom.x() + range * cos(bearing+global_odom.theta());
+        double global_cone_y = global_odom.y() + range * sin(bearing+global_odom.theta());
+        
+        Pose2 global_coords(global_cone_x, global_cone_y, -1);
+        for(long unsigned int i = 0; i < xTruth.size(); i++) {
+          Pose2 other_cones = xTruth[i];
+          if(almost_equal(global_coords, other_cones)) {
+            new_cone = false;
+            cone_id = i;
+            break;
+          }
+        }
+                                                                                                                                               
+                                                                                                                                                   
+        if(new_cone) {
+          global_coords = gtsam::Pose2(global_cone_x, global_cone_y, xTruth.size());
+          xTruth.push_back(global_coords);
+          RCLCPP_INFO(logger, "Size of xTruth: %d \t | \t Number of data_association_errors: %d\n\n", xTruth.size(), data_association_errors);
+        }
+        //std::tuple<int> tp(cone_id);
+        annot_obs_cones.push_back(cone_id);
+        
+      }
+                                                                                                                                               
+                                                                                                                                               
+      return annot_obs_cones;
+    }
+
+
+
+
+
+
+
+
     void run_slam(){
+      vector<int> annot_obs_cones = append_cones();
 
       if(global_odom.x() == 0 || global_odom.y() == 0 || global_odom.theta() == 0){
         RCLCPP_INFO(this->get_logger(), "fucked pose: (%f,%f,%f)", global_odom.x(), global_odom.y(), global_odom.theta());
