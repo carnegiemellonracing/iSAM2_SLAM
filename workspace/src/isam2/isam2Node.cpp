@@ -36,7 +36,7 @@ using namespace std;
 using std::placeholders::_1;
 
 
-struct VehiclePosition{
+struct VehicleState{
   double x;
   double y;
   double yaw;
@@ -67,7 +67,7 @@ class SLAMValidation : public rclcpp::Node
       VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
 
       //TODO: need to initalize robot state?????
-      timer = this->create_wall_timer(20ms, std::bind(&SLAMValidation::timer_callback, this));
+      timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
       time_ns = 0; //Initialize time and dt
       dt = .1;
       orangeNotSeen = 25;
@@ -135,7 +135,7 @@ class SLAMValidation : public rclcpp::Node
           }
           if (right == false && orangeCones[i].y() > 0)
           {
-            // add the left cone here
+            // add the right cone here
             right = true;
             orangeLoopReferenceCones[1] = orangeCones[i];
           }
@@ -148,10 +148,6 @@ class SLAMValidation : public rclcpp::Node
         // std::cout<<"found loop closure" << std::endl;
         loopClosure = true; // TODO: does not account for when there is only a single frame that it sees orange cones
       }
-
-      // run every time you get a measurement
-      //  slam_instance.step(global_odom, cones);
-      //  RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
     // void vehicle_state_callback(const interfaces::msg::CarState::SharedPtr vehicle_state_data){
     void vehicle_pos_callback(const sensor_msgs::msg::NavSatFix::SharedPtr vehicle_pos_data){
@@ -160,6 +156,8 @@ class SLAMValidation : public rclcpp::Node
         double x_meters;
         double y_meters;
         //TODO: filter
+
+        //True measurement conversion for gps
         // x_meters = LAT_TO_M*vehicle_pos_data->longitude;
         // y_meters = LON_TO_M*cos(vehicle_pos_data->latitude)/360;
 
@@ -173,15 +171,18 @@ class SLAMValidation : public rclcpp::Node
         veh_state.x = x_meters-init_odom.x();
         veh_state.y = y_meters-init_odom.y();
 
-        veh_state.yaw = atan2(veh_state.y - prev_veh_state.y, veh_state.x - prev_veh_state.x) - (3.1415926535 / 2);
 
-        if (init_odom.theta() == -1)
-        {
-          init_odom = gtsam::Pose2(init_odom.x(), init_odom.y(), veh_state.yaw);
-        }
+        ///////////////////////////////////////
+        //Calculate heading based on position
+        // veh_state.yaw = atan2(veh_state.y - prev_veh_state.y, veh_state.x - prev_veh_state.x) - (3.1415926535 / 2);
+
+        // if (init_odom.theta() == -1)
+        // {
+        //   init_odom = gtsam::Pose2(init_odom.x(), init_odom.y(), veh_state.yaw);
+        // }
+        ///////////////////////////////////////
 
         // RCLCPP_INFO(this->get_logger(), "vehicle gps:(%f,%f)",vehicle_pos_data->latitude,vehicle_pos_data->longitude);
-        // RCLCPP_INFO(this->get_logger(), "vehicle meters:(%cone_callbackf,%f)\n",veh_state.x,veh_state.y);
     }
 
     void vehicle_vel_callback(const geometry_msgs::msg::TwistStamped::SharedPtr vehicle_vel_data){
@@ -201,24 +202,17 @@ class SLAMValidation : public rclcpp::Node
 
         double yaw   = atan2(2*(q3*q0 +q1*q2) , -1+2*(q0*q0 +q1*q1)) ; //rotate by 90 degrees? TODO: add to velocity
 
-        // RCLCPP_INFO(this->get_logger(), "vehicle yaw:%f",veh_state.yaw);
-        // if(init_odom.theta() == -1){
-        //   init_odom = gtsam::Pose2(init_odom.x(),init_odom.y(),yaw);
-        //   veh_state.yaw = yaw; //-init_odom.theta(); 
-        // }
-
+        if(init_odom.theta() == -1){
+          init_odom = gtsam::Pose2(init_odom.x(),init_odom.y(),yaw);
+        }
+        veh_state.yaw = yaw;
+        RCLCPP_INFO(this->get_logger(), "vehicle yaw:%f", veh_state.yaw);
     }
 
     void timer_callback(){
       // RCLCPP_INFO(this->get_logger(), "vehicle callback:\n");
       global_odom = gtsam::Pose2(veh_state.x, veh_state.y, veh_state.yaw);
       RCLCPP_INFO(this->get_logger(), "(%f,%f,%f)",veh_state.x,veh_state.y,veh_state.yaw);
-
-      //PRINT POSES
-      // outfile.open("chipmunk.txt", std::ios_base::app);
-      // outfile << "(" << veh_state.x << ","<< veh_state.y << ","<< veh_state.yaw<< ")\n";
-      // outfile.close();
-      ////////////////////////////
 
       velocity = gtsam::Point2(veh_state.dx,veh_state.dy);
       dt = 69;
@@ -255,18 +249,9 @@ class SLAMValidation : public rclcpp::Node
           double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
           double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
           ofs << "(" << global_cone_x << ","<< global_cone_y << ")\n"; //original
-          // ofs << "(" << cone.x() << "," << cone.y() << ")\n"; // local cones
-
-          // ofs << "global:(" << global_cone_x << ","<< global_cone_y << ")\n";
-          // ofs << "local:(" << cone.x() << "," << cone.y() << ")\n";
       }
       ofs.close();
       std::cout.rdbuf(coutbuf); //reset to standard output again
-      // pose_cones.open("pose_cones.txt", std::ios_base::app);
-      
-      // pose_cones.close();
-      ///////////
-
       slam_instance.step(this->get_logger(), global_odom, cones,orangeCones, velocity, dt, loopClosure);
       // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
@@ -285,10 +270,9 @@ class SLAMValidation : public rclcpp::Node
     vector<Point2> cones; // local variable to load cone observations into SLAM instance
     vector<Point2> orangeCones; // local variable to load cone observations into SLAM instance
 
-
     gtsam::Pose2 init_odom; // local variable to load odom into SLAM instance
-    VehiclePosition prev_veh_state = VehiclePosition();
-    VehiclePosition veh_state = VehiclePosition();
+    VehicleState prev_veh_state = VehicleState();
+    VehicleState veh_state = VehicleState();
 
     rclcpp::TimerBase::SharedPtr timer;
     long dt;

@@ -14,8 +14,8 @@ while True:
 
     # Don't do anything if the file is empty
     if len(lines) == 0:
+        print("squirrel")
         continue
-
     landmarks = np.array([])
     poses = np.array([])
 
@@ -58,9 +58,8 @@ while True:
                     else:
                         landmarks = np.vstack((landmarks,temp))
                     landmark = 0
-
-    if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2 and landmarks.ndim==2):
     # if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2):
+    if ((poses.shape[0]) != 0) and ((landmarks.shape[0]) != 0) and (poses.ndim==2 and landmarks.ndim==2):
         scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
         scatter2 = plt.scatter(landmarks[:,0],landmarks[:,1], s=10, c='r', marker="o", label='landmark')
         plt.pause(.1)

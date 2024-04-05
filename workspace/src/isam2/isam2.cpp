@@ -35,7 +35,8 @@
 // using namespace std;    
 using namespace gtsam;
 
-static const float M_DIST_TH = 0.000100069; //used to be 45 lmao
+static const float M_DIST_TH = 0.000151169; // used to be 45 lmao
+// static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 
 // static const float DT = 0.1;
@@ -228,7 +229,7 @@ public:
             // RCLCPP_INFO(logger, "cone yaw: %f\n",bearing);
 
             Pose2 global_cone(global_cone_x,global_cone_y,0); //calculate global position of the cone
-            //for the current cone, we want to compare againt all other cones for data association
+            //for the current cone, we want to compare against all other cones for data association
             //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
             //This is jvc lmao
             int associated_ID = associate(logger, global_cone);
