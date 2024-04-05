@@ -35,7 +35,7 @@
 // using namespace std;
 using namespace gtsam;
 
-static const float M_DIST_TH = 15;
+static const float M_DIST_TH = 20;
 static const long SEC_TO_NANOSEC = 1000000000;
 
 // static const float DT = 0.1;
@@ -85,7 +85,7 @@ public:
 
     gtsam::Pose2 robot_est;
     std::vector<gtsam::Point2> landmark_est;
-    std::vector<Point2> orange_cones;
+    std::vector<Point2> orange_loop_ref;
 
     slamISAM() {
         parameters = ISAM2Params(ISAM2DoglegParams(),0.01,1);
@@ -100,7 +100,7 @@ public:
         robot_est = gtsam::Pose2(0, 0, 0);
         landmark_est = std::vector<gtsam::Point2>();
 
-        orange_cones = std::vector<Point2>();
+        orange_loop_ref = std::vector<Point2>();
         // isam2.joint1(1,2);
     }
 
@@ -145,17 +145,25 @@ public:
         return min_id;
     }
 
-    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
+    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
         Vector NoiseModel(3);
         NoiseModel(0) = 0;
-        NoiseModel(1) = 0;
-        NoiseModel(2) = 0;
+        NoiseModel(1) = .0;
+        NoiseModel(2) = 0; 
+
+        //pose_noise = gtsam.noiseModel_Diagonal.Sigmas(np.array([0.3, 0.3, 0.3, 0.1, 0.1, 0.1]))
+/*
+        Vector LandmarkNoiseModel(3);
+        LandmarkNoiseModel(0) = 3;
+        LandmarkNoiseModel(1) = .2;
+        LandmarkNoiseModel(2) = .2;
+ 
+ */
 
         Vector LandmarkNoiseModel(3);
-        LandmarkNoiseModel(0) = 0;
-        LandmarkNoiseModel(1) = 0;
+        LandmarkNoiseModel(0) = 1;
+        LandmarkNoiseModel(1) = 1;
         LandmarkNoiseModel(2) = 0;
- 
         Pose2 prev_robot_est;
         if (x==0) {//if this is the first pose, add your inital pose to the factor graph
             //std::cout << "First pose\n" << std::endl;
@@ -171,7 +179,7 @@ public:
             //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
             //Add orange cone left and right
             //hopefully it's only 2 cones
-            orange_cones = orange_ref_cones;
+            orange_loop_ref = orange_cones;
         }
         else {
             //std::cout << "New Pose\n" << std::endl;
@@ -181,9 +189,15 @@ public:
             //add odometry estimates
             //Motion model
 
-            double time_s = time_ns/SEC_TO_NANOSEC;
+            //TODO: add back in
+            // double time_s = time_ns/SEC_TO_NANOSEC;
+            // Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
+            Pose2 Odometry =  Pose2(global_odom.x()-prev_pos.x(),global_odom.y()-prev_pos.y(),global_odom.theta()-prev_pos.theta());
 
-            Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
+
+            static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
+            graph.add(prior_factor);
 
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(x - 1), X(x),Odometry, odom_model);
             graph.add(odom_factor);
@@ -200,16 +214,41 @@ public:
             //Do triangulation given the current cone positions and the previous saved orange cones
             //take the orange cones, look at difference between 
             //the left and right cones
-            Point2 diffLeft = orange_cones[0] - orange_ref_cones[0];
-            Point2 diffRight = orange_cones[1] - orange_ref_cones[1];
+
+            //Rotate into the correct axes
+            Matrix2 rotationMatrix = Rot2::fromAngle(-global_odom.theta()).matrix(); //negative theta to rotate it back
+
+            // Eigen::Vector2d orange_left;
+            // Eigen::Vector2d orange_right;
+            // orange_left << orange_cones[0].x(),orange_cones[0].y();
+            // orange_right << orange_cones[1].x(),orange_cones[1].y();
+            // orange_left = rotationMatrix*orange_left;
+            // orange_right = rotationMatrix*orange_right;
+            
+
+            Point2 diffLeft = rotationMatrix*orange_cones[0] - orange_loop_ref[0];
+            Point2 diffRight = rotationMatrix*orange_cones[1] - orange_loop_ref[1];
             Point2 avgDiff = (diffLeft+diffRight)/2; //pose difference between first pose and last pose
             double angle = atan2(avgDiff.y(), avgDiff.x());
             Pose2 AvgPoseDiff = Pose2(avgDiff.x(), avgDiff.y(),angle);
             // std::cout<<"loop closure pose diff:"<<AvgPoseDiff<<std::endl;
 
-            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(0), X(x),AvgPoseDiff, loop_closure_model);
+            //Trilateration
+            // // Perform calculations assuming left cone is at (0,0) and right cone is at (b,0)
+            // double r_0 = distance2(orange_cones[0],Point2(0,0));
+            // double r_1 = distance2(orange_cones[1],Point2(0,0));
+            // double b = (orange_ref_cones[1]-orange_ref_cones[0]).x();
+            // double pose_x = (pow(r_0,2)-pow(r_1,2)+pow(b,2))/(2*b);
+            // // Assume that the cones are observed in front of the robot.
+            // double pose_y = -sqrt(pow(r_0,2)-pow(pose_x,2));
+
+            // // Add offset to the pose for position relative to origin.
+            // pose_x += orange_ref_cones[0].x();
+            // pose_y += orange_ref_cones[0].y();
+            // double angle = atan2(pose_y,pose_x);
+
+            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(0), X(x), AvgPoseDiff, loop_closure_model);
             graph.add(odom_factor);
-            values.insert(X(x), global_odom);
         }
 
         //todo only do this once after update

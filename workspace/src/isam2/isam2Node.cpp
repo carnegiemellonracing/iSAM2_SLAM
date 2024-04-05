@@ -87,12 +87,15 @@ class SLAMValidation : public rclcpp::Node
           orangeNotSeen = 0;
         }
 
-        if(orangeCones.size() == 2){ //what if there's more than 2?
+        if(orangeCones.size() >= 2){ //what if there's more than 2?
           // std::cout <<"Added two cones to orange cones"<<endl;
           bool left = false;
           bool right = false;
           vector<Point2> orangeLoopReferenceCones(2);
-          for(uint i = 0; i <  orangeCones.size(); i++){
+          for(uint i = 0; i < orangeCones.size(); i++){ //2 instead of orangeCones.size()
+            if(left && right){
+              break;
+            }
             if(left == false && orangeCones[i].y() < 0 ){
               //add the left cone here
               left = true;
@@ -104,6 +107,7 @@ class SLAMValidation : public rclcpp::Node
               orangeLoopReferenceCones[1] = orangeCones[i];
             }
           }
+          
           orangeCones = orangeLoopReferenceCones;
         }
 

@@ -1,0 +1,11 @@
+Estimate:
+Values with 3 values:
+Value x0: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x1: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x2: (gtsam::Pose2)
+(0, 0, 0)
+
