@@ -17,6 +17,7 @@ endif()
 
 # find dependencies
 find_package(geometry_msgs REQUIRED)  
+find_package(eufs_msgs REQUIRED)  
 find_package(interfaces REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
@@ -29,7 +30,7 @@ include_directories(${GTSAM_INCLUDE_DIR})
 add_executable(isam_test isam2Node.cpp)
 
 target_link_libraries(isam_test gtsam)
-ament_target_dependencies(isam_test rclcpp message_filters interfaces geometry_msgs sensor_msgs)
+ament_target_dependencies(isam_test rclcpp message_filters interfaces geometry_msgs sensor_msgs eufs_msgs)
 ament_export_include_directories(source)
 
 install(TARGETS

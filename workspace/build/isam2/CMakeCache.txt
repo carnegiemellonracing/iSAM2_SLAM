@@ -319,6 +319,9 @@ TinyXML2_DIR:PATH=TinyXML2_DIR-NOTFOUND
 //Path to a library.
 _lib:FILEPATH=/opt/ros/foxy/lib/libmessage_filters.so
 
+//The directory containing a CMake configuration file for action_msgs.
+action_msgs_DIR:PATH=/opt/ros/foxy/share/action_msgs/cmake
+
 //The directory containing a CMake configuration file for ament_cmake.
 ament_cmake_DIR:PATH=/opt/ros/foxy/share/ament_cmake/cmake
 
@@ -399,6 +402,9 @@ boost_timer_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_timer-1.71.0
 
 //The directory containing a CMake configuration file for builtin_interfaces.
 builtin_interfaces_DIR:PATH=/opt/ros/foxy/share/builtin_interfaces/cmake
+
+//The directory containing a CMake configuration file for eufs_msgs.
+eufs_msgs_DIR:PATH=/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/share/eufs_msgs/cmake
 
 //The directory containing a CMake configuration file for fastcdr.
 fastcdr_DIR:PATH=/opt/ros/foxy/lib/cmake/fastcdr
@@ -534,6 +540,9 @@ std_msgs_DIR:PATH=/opt/ros/foxy/share/std_msgs/cmake
 
 //The directory containing a CMake configuration file for tracetools.
 tracetools_DIR:PATH=/opt/ros/foxy/share/tracetools/cmake
+
+//The directory containing a CMake configuration file for unique_identifier_msgs.
+unique_identifier_msgs_DIR:PATH=/opt/ros/foxy/share/unique_identifier_msgs/cmake
 
 //The directory containing a CMake configuration file for yaml.
 yaml_DIR:PATH=/opt/ros/foxy/cmake

@@ -100,7 +100,7 @@ public:
         orange_cones = std::vector<Point2>();
     }
 
-    double mahalanobisDist(auto logger, Pose2 measurement,Pose2 landmark,Symbol landmark_key){
+    double mahalanobisDist(Pose2 measurement,Pose2 landmark,Symbol landmark_key){
         //mahalanobis distance with just x,y???
         Eigen::MatrixXd diff(1, 3); 
         // diff << measurement.x()-landmark.x(),measurement.y()-landmark.y(),measurement.theta()-landmark.theta();
@@ -114,7 +114,7 @@ public:
     
     //returns associated landmark id or n_landmarks if there is no associated id
     //returns zero on the first 
-    int associate(auto logger, Pose2 measurement) {
+    int associate(Pose2 measurement) {
         // Vector that will store mahalanobis distances
         std::vector<double> min_dist;
 
@@ -122,8 +122,7 @@ public:
         for (int i = 0; i < n_landmarks; i++) {
             gtsam::Pose2 landmark = isam2.calculateEstimate().at(L(i)).cast<Pose2>();
             // Adding mahalanobis distance to minimum distance vector
-            double mahalanobis = mahalanobisDist(logger, measurement,landmark,L(i));
-            // RCLCPP_INFO(logger, "L(%d)=%f",i,mahalanobis);
+            double mahalanobis = mahalanobisDist(measurement,landmark,L(i));
             min_dist.push_back(mahalanobis);            
         }
 
@@ -132,13 +131,10 @@ public:
         //min_id will be equal to num_landmarks if it didn't find anything under M_DIST_TH
 
         int min_id = std::distance(min_dist.begin(), std::min_element(min_dist.begin(), min_dist.end()));
-        // RCLCPP_INFO(logger, "Min_id %d\n",min_id);
-        // RCLCPP_INFO(logger, "Min dist %f\n",min_dist[min_id]);
-
         return min_id;
     }
 
-    void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
+    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
         Vector NoiseModel(3);
         NoiseModel(0) = 0;
         NoiseModel(1) = 0;
@@ -214,11 +210,9 @@ public:
         values.clear();
         // std::cout << "global_odom: "  << global_odom << std::endl;
 
-        RCLCPP_INFO(logger, "DATA ASSOCIATION BEGIN");
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
-            // RCLCPP_INFO(logger, "cone");
 
             Pose2 conePose(cone.x(),cone.y(),0);
             double range = norm2(cone);
@@ -226,19 +220,15 @@ public:
             double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
             double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
             double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
-            // RCLCPP_INFO(logger, "cone yaw: %f\n",bearing);
 
             Pose2 global_cone(global_cone_x,global_cone_y,0); //calculate global position of the cone
             //for the current cone, we want to compare against all other cones for data association
             //TODO: instead of iterating through all of the landmarks, see if there is a way to do this with a single operation
             //This is jvc lmao
-            int associated_ID = associate(logger, global_cone);
-            // RCLCPP_INFO(logger, "Associated Landmark: %d\n",associated_ID);
+            int associated_ID = associate(global_cone);
 
-            // RCLCPP_INFO(logger, "done associating");
             //If it is a new cone:
             if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
-                // RCLCPP_INFO(logger, "adding cone to list");
                 //add cone to list  
                 //add factor between pose and landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
@@ -251,18 +241,15 @@ public:
 
                 n_landmarks++;
             } else {
-                // RCLCPP_INFO(logger, "Associated Landmark: %d", associated_ID);
                 // std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
                 //Add a factor to the associated landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(), conePose.y(), bearing), landmark_model));
             }
-            // RCLCPP_INFO(logger, "updating");
 
             isam2.update(graph, values);
             graph.resize(0);
             values.clear();
         }
-        RCLCPP_INFO(logger, "DATA ASSOCIATION END");
 
         // DATA ASSOCIATION END
 

@@ -54,7 +54,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/isam_test")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/isam_test"
-         OLD_RPATH "/usr/local/lib:/opt/ros/foxy/lib:/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/interfaces/lib:"
+         OLD_RPATH "/usr/local/lib:/opt/ros/foxy/lib:/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/interfaces/lib:/home/dale/Documents/isam2/iSAM2_SLAM/workspace/install/eufs_msgs/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/isam_test")
