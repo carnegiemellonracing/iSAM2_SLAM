@@ -35,7 +35,7 @@
 // using namespace std;    
 using namespace gtsam;
 
-static const float M_DIST_TH = 0.000151169; // used to be 45 lmao
+static const float M_DIST_TH = 0.0000101169; // used to be 45 lmao
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 
