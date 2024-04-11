@@ -103,7 +103,6 @@ public:
     double mahalanobisDist(auto logger, Pose2 measurement,Pose2 landmark,Symbol landmark_key){
         //mahalanobis distance with just x,y???
         Eigen::MatrixXd diff(1, 3); 
-        // diff << measurement.x()-landmark.x(),measurement.y()-landmark.y(),measurement.theta()-landmark.theta();
         diff << measurement.x()-landmark.x(),measurement.y()-landmark.y(),1;
 
         Matrix marginal_covariance = isam2.marginalCovariance(landmark_key);
@@ -149,6 +148,12 @@ public:
         LandmarkNoiseModel(1) = 0.01;
         LandmarkNoiseModel(2) = 0.01;
 
+        // No noise kinda good??
+        // LandmarkNoiseModel(0) = 0.0;
+        // LandmarkNoiseModel(1) = 0.0;
+        // LandmarkNoiseModel(2) = 0.0;
+
+
         static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         if (pose_num==0) {//if this is the first pose, add your inital pose to the factor graph
@@ -186,7 +191,7 @@ public:
 
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),Odometry, odom_model);
             graph.add(odom_factor);
-            values.insert(X(pose_num), global_odom);
+            values.insert(X(pose_num), global_odom); 
         }
 
         if(loopClosure){

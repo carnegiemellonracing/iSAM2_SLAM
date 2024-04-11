@@ -161,7 +161,7 @@ class SLAMValidation : public rclcpp::Node
 
       else{
 
-        global_odom = gtsam::Pose2(cone_data->pose.x - init_odom.x(), cone_data->pose.y - init_odom.y(), cone_data->pose.theta - init_odom.theta());
+        global_odom = gtsam::Pose2(cone_data->pose.x - init_odom.x(), cone_data->pose.y - init_odom.y(), cone_data->pose.theta);
         RCLCPP_INFO(this->get_logger(), "definitely fucked pose: (%f,%f,%f)", global_odom.x(), global_odom.y(), global_odom.theta());
 
         run_slam();

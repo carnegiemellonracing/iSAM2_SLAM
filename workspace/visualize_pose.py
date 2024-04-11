@@ -60,8 +60,8 @@ while True:
     # if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2 and landmarks.ndim==2):
     if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2):
         r = .2
-        changesx = r*np.cos(poses[:,2]) 
-        changesy = r*np.sin(poses[:,2]) 
+        changesx = -r*np.sin(poses[:,2]) 
+        changesy = r*np.cos(poses[:,2]) 
         # # function to add arrow on a graph
         for i in range(len(changesx)):
             scatter = plt.arrow(poses[:,0][i],poses[:,1][i],changesx[i],changesy[i],width=0.05)
