@@ -14,7 +14,6 @@ while True:
 
     # Don't do anything if the file is empty
     if len(lines) == 0:
-        print("squirrel")
         continue
     landmarks = np.array([])
     poses = np.array([])

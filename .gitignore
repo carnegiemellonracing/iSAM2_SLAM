@@ -1,9 +1,12 @@
 **/build/*
 **/install/*
 **/log/*
-/workspace/build/*
-/workspace/install/*
-/workspace/log/*
+workspace/build/
+workspace/install/
+workspace/log/
 eufs/build/*
 eufs/install/*
 eufs/log/*
+build/*
+install/*
+log/*

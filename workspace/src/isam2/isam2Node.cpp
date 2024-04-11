@@ -154,7 +154,6 @@ class SLAMValidation : public rclcpp::Node
 
 
       //process pose
-
       if (init_odom.x() == -1 && init_odom.y() == -1)
       {
         init_odom = gtsam::Pose2(cone_data->pose.x, cone_data->pose.y, cone_data->pose.theta);
