@@ -214,7 +214,7 @@ public:
         values.clear();
         // std::cout << "global_odom: "  << global_odom << std::endl;
 
-        RCLCPP_INFO(logger, "DATA ASSOCIATION BEGIN");
+        // RCLCPP_INFO(logger, "DATA ASSOCIATION BEGIN");
         // DATA ASSOCIATION BEGIN
         for (Point2 cone : cone_obs) { // go through each observed cone
             //cones are with respect to the car
@@ -262,7 +262,7 @@ public:
             graph.resize(0);
             values.clear();
         }
-        RCLCPP_INFO(logger, "DATA ASSOCIATION END");
+        // RCLCPP_INFO(logger, "DATA ASSOCIATION END");
 
         // DATA ASSOCIATION END
 
