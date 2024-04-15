@@ -35,7 +35,8 @@
 // using namespace std;    
 using namespace gtsam;
 
-static const float M_DIST_TH = 0.0000101169; // used to be 45 lmao
+static const float M_DIST_TH = 0.0000411169; // used to be 45 lmao
+// static const float M_DIST_TH = 0.0000111169; // used to be 45 lmao
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 
@@ -141,9 +142,9 @@ public:
         NoiseModel(2) = 0;
 
         Vector LandmarkNoiseModel(3);
-        LandmarkNoiseModel(0) = 0.01;
-        LandmarkNoiseModel(1) = 0.01;
-        LandmarkNoiseModel(2) = 0.01;
+        LandmarkNoiseModel(0) = 0.0;
+        LandmarkNoiseModel(1) = 0.0;
+        LandmarkNoiseModel(2) = 0.0;
 
         static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 

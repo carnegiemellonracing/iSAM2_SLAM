@@ -4,6 +4,7 @@ import time
 
 fig = plt.figure()
 plt.ion()
+plt.style.use('dark_background')
 #plt.legend(loc='upper left')
 plt.show()
 
@@ -60,8 +61,8 @@ while True:
                     landmark = 0
     # if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2):
     if ((poses.shape[0]) != 0) and ((landmarks.shape[0]) != 0) and (poses.ndim==2 and landmarks.ndim==2):
-        scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
-        scatter2 = plt.scatter(landmarks[:,0],landmarks[:,1], s=10, c='r', marker="o", label='landmark')
+        scatter = plt.scatter(poses[:,0], poses[:,1], s=40, c='g', marker="x", label='pose')
+        scatter2 = plt.scatter(landmarks[:,0],landmarks[:,1], s=50, c='r', marker="o", label='landmark')
         plt.pause(.1)
         scatter.remove()
         scatter2.remove()
