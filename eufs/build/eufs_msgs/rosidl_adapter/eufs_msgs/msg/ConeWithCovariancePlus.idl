@@ -20,6 +20,8 @@ module eufs_msgs {
 
       double big_orange_prob;
 
+      double unknown_prob;
+
       geometry_msgs::msg::Point point;
 
       double__4 covariance;

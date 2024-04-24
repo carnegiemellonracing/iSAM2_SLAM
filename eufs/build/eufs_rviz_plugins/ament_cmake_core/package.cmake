@@ -1,6 +1,6 @@
 set(_AMENT_PACKAGE_NAME "eufs_rviz_plugins")
-set(eufs_rviz_plugins_VERSION "0.0.0")
-set(eufs_rviz_plugins_MAINTAINER "Keane Quigley <keaneq@protonmail.com>")
+set(eufs_rviz_plugins_VERSION "0.1.0")
+set(eufs_rviz_plugins_MAINTAINER "Niklas Burggraaff <niklasburggraaff@gmail.com>")
 set(eufs_rviz_plugins_BUILD_DEPENDS "eigen3_cmake_module" "pluginlib" "rviz_common" "rviz_default_plugins" "std_msgs" "visualization_msgs" "eufs_msgs" "eigen" "geometry_msgs" "libqt5-widgets")
 set(eufs_rviz_plugins_BUILDTOOL_DEPENDS "ament_cmake")
 set(eufs_rviz_plugins_BUILD_EXPORT_DEPENDS "eigen3_cmake_module" "pluginlib" "rviz_common" "rviz_default_plugins" "std_msgs" "visualization_msgs" "eufs_msgs" "eigen" "geometry_msgs" "libqt5-widgets")

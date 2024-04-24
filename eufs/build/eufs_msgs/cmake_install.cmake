@@ -403,6 +403,22 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/ConeAssociation.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/ConeAssociationArray.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/ConeAssociationArrayArrayStamped.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/ConeAssociationArrayStamped.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/Costmap.idl")
 endif()
 
@@ -440,6 +456,26 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/NodeStateArray.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/OSS.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/Particle.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/ParticleSLAM.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/ParticleSLAMStamped.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/ParticleStamped.idl")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -495,6 +531,10 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/StereoImage.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/msg/SystemStatus.idl")
 endif()
 
@@ -535,6 +575,14 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/srv/RecordStart.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/srv/RecordStop.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/srv/Register.idl")
 endif()
 
@@ -552,6 +600,10 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/srv/SetMission.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_adapter/eufs_msgs/srv/GetMap.idl")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -599,6 +651,22 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/ConeAssociation.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/ConeAssociationArray.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/ConeAssociationArrayArrayStamped.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/ConeAssociationArrayStamped.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/Costmap.msg")
 endif()
 
@@ -636,6 +704,26 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/NodeStateArray.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/OSS.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/Particle.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/ParticleSLAM.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/ParticleSLAMStamped.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/ParticleStamped.msg")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -691,6 +779,10 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/StereoImage.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/msg" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/msg/SystemStatus.msg")
 endif()
 
@@ -728,6 +820,30 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/action" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/action/CheckForObjects.action")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/srv/RecordStart.srv")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_cmake/srv/RecordStart_Request.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_cmake/srv/RecordStart_Response.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/srv/RecordStop.srv")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_cmake/srv/RecordStop_Request.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_cmake/srv/RecordStop_Response.msg")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -788,6 +904,18 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_cmake/srv/SetMission_Response.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_msgs/srv/GetMap.srv")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_cmake/srv/GetMap_Request.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_msgs/srv" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_msgs/rosidl_cmake/srv/GetMap_Response.msg")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)

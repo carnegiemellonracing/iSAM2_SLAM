@@ -37,7 +37,7 @@ void ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovaria
   eufs_msgs__msg__ConeWithCovariancePlus__fini(message_memory);
 }
 
-static rosidl_typesupport_introspection_c__MessageMember ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_message_member_array[7] = {
+static rosidl_typesupport_introspection_c__MessageMember ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_message_member_array[8] = {
   {
     "id",  // name
     rosidl_typesupport_introspection_c__ROS_TYPE_INT32,  // type
@@ -114,6 +114,21 @@ static rosidl_typesupport_introspection_c__MessageMember ConeWithCovariancePlus_
     NULL  // resize(index) function pointer
   },
   {
+    "unknown_prob",  // name
+    rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE,  // type
+    0,  // upper bound of string
+    NULL,  // members of sub message
+    false,  // is array
+    0,  // array size
+    false,  // is upper bound
+    offsetof(eufs_msgs__msg__ConeWithCovariancePlus, unknown_prob),  // bytes offset in struct
+    NULL,  // default value
+    NULL,  // size() function pointer
+    NULL,  // get_const(index) function pointer
+    NULL,  // get(index) function pointer
+    NULL  // resize(index) function pointer
+  },
+  {
     "point",  // name
     rosidl_typesupport_introspection_c__ROS_TYPE_MESSAGE,  // type
     0,  // upper bound of string
@@ -148,7 +163,7 @@ static rosidl_typesupport_introspection_c__MessageMember ConeWithCovariancePlus_
 static const rosidl_typesupport_introspection_c__MessageMembers ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_message_members = {
   "eufs_msgs__msg",  // message namespace
   "ConeWithCovariancePlus",  // message name
-  7,  // number of fields
+  8,  // number of fields
   sizeof(eufs_msgs__msg__ConeWithCovariancePlus),
   ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_message_member_array,  // message members
   ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_init_function,  // function to initialize message memory (memory has to be allocated)
@@ -166,7 +181,7 @@ static rosidl_message_type_support_t ConeWithCovariancePlus__rosidl_typesupport_
 ROSIDL_TYPESUPPORT_INTROSPECTION_C_EXPORT_eufs_msgs
 const rosidl_message_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_c, eufs_msgs, msg, ConeWithCovariancePlus)() {
-  ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_message_member_array[5].members_ =
+  ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_message_member_array[6].members_ =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_c, geometry_msgs, msg, Point)();
   if (!ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_message_type_support_handle.typesupport_identifier) {
     ConeWithCovariancePlus__rosidl_typesupport_introspection_c__ConeWithCovariancePlus_message_type_support_handle.typesupport_identifier =

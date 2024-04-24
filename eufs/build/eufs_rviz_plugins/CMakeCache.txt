@@ -656,7 +656,7 @@ eufs_rviz_plugins_BINARY_DIR:STATIC=/home/andrewwhong/classes/16833/iSAM2_SLAM/e
 eufs_rviz_plugins_LIB_DEPENDS:STATIC=general;rviz_common::rviz_common;general;rviz_default_plugins::rviz_default_plugins;general;geometry_msgs::geometry_msgs__rosidl_generator_c;general;geometry_msgs::geometry_msgs__rosidl_typesupport_introspection_c;general;geometry_msgs::geometry_msgs__rosidl_typesupport_c;general;geometry_msgs::geometry_msgs__rosidl_typesupport_introspection_cpp;general;geometry_msgs::geometry_msgs__rosidl_typesupport_cpp;general;std_msgs::std_msgs__rosidl_generator_c;general;std_msgs::std_msgs__rosidl_typesupport_introspection_c;general;std_msgs::std_msgs__rosidl_typesupport_c;general;std_msgs::std_msgs__rosidl_typesupport_introspection_cpp;general;std_msgs::std_msgs__rosidl_typesupport_cpp;general;visualization_msgs::visualization_msgs__rosidl_generator_c;general;visualization_msgs::visualization_msgs__rosidl_typesupport_introspection_c;general;visualization_msgs::visualization_msgs__rosidl_typesupport_c;general;visualization_msgs::visualization_msgs__rosidl_typesupport_introspection_cpp;general;visualization_msgs::visualization_msgs__rosidl_typesupport_cpp;general;eufs_msgs::eufs_msgs__rosidl_generator_c;general;eufs_msgs::eufs_msgs__rosidl_typesupport_introspection_c;general;eufs_msgs::eufs_msgs__rosidl_typesupport_c;general;eufs_msgs::eufs_msgs__rosidl_typesupport_introspection_cpp;general;eufs_msgs::eufs_msgs__rosidl_typesupport_cpp;
 
 //Value Computed by CMake
-eufs_rviz_plugins_SOURCE_DIR:STATIC=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/eufs_rviz_plugins
+eufs_rviz_plugins_SOURCE_DIR:STATIC=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins
 
 //The directory containing a CMake configuration file for fastcdr.
 fastcdr_DIR:PATH=/opt/ros/foxy/lib/cmake/fastcdr
@@ -989,7 +989,7 @@ CMAKE_HAVE_REMOVE:INTERNAL=1
 CMAKE_HAVE_SHMAT:INTERNAL=1
 //Source directory with the top level CMakeLists.txt file for this
 // project
-CMAKE_HOME_DIRECTORY:INTERNAL=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/eufs_rviz_plugins
+CMAKE_HOME_DIRECTORY:INTERNAL=/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins
 //Install .so files without execute permission.
 CMAKE_INSTALL_SO_NO_EXE:INTERNAL=1
 //Have library ICE

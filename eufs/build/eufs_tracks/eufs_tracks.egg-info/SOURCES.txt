@@ -1,3 +1,4 @@
+README.md
 package.xml
 plugin.xml
 setup.cfg
@@ -22,13 +23,6 @@ csv/rectangle.csv
 csv/skidpad.csv
 csv/small_track.csv
 eufs_tracks/__init__.py
-eufs_tracks.egg-info/PKG-INFO
-eufs_tracks.egg-info/SOURCES.txt
-eufs_tracks.egg-info/dependency_links.txt
-eufs_tracks.egg-info/entry_points.txt
-eufs_tracks.egg-info/requires.txt
-eufs_tracks.egg-info/top_level.txt
-eufs_tracks.egg-info/zip-safe
 eufs_tracks/cli/__init__.py
 eufs_tracks/cli/convert.py
 eufs_tracks/cli/create.py

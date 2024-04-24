@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../../../../../eufs_rviz_plugins/eufs_rviz_plugins/include/eufs_rviz_plugins/displays/cone_array_with_covariance/cone_array_with_covariance_display.hpp"
+#include "../../../../../../eufs_rviz_plugins/include/eufs_rviz_plugins/displays/cone_array_with_covariance/cone_array_with_covariance_display.hpp"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)

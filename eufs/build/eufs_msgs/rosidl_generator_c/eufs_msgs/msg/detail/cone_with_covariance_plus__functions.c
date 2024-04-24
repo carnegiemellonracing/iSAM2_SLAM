@@ -26,6 +26,7 @@ eufs_msgs__msg__ConeWithCovariancePlus__init(eufs_msgs__msg__ConeWithCovarianceP
   // yellow_prob
   // orange_prob
   // big_orange_prob
+  // unknown_prob
   // point
   if (!geometry_msgs__msg__Point__init(&msg->point)) {
     eufs_msgs__msg__ConeWithCovariancePlus__fini(msg);
@@ -46,6 +47,7 @@ eufs_msgs__msg__ConeWithCovariancePlus__fini(eufs_msgs__msg__ConeWithCovarianceP
   // yellow_prob
   // orange_prob
   // big_orange_prob
+  // unknown_prob
   // point
   geometry_msgs__msg__Point__fini(&msg->point);
   // covariance
@@ -75,6 +77,10 @@ eufs_msgs__msg__ConeWithCovariancePlus__are_equal(const eufs_msgs__msg__ConeWith
   }
   // big_orange_prob
   if (lhs->big_orange_prob != rhs->big_orange_prob) {
+    return false;
+  }
+  // unknown_prob
+  if (lhs->unknown_prob != rhs->unknown_prob) {
     return false;
   }
   // point
@@ -110,6 +116,8 @@ eufs_msgs__msg__ConeWithCovariancePlus__copy(
   output->orange_prob = input->orange_prob;
   // big_orange_prob
   output->big_orange_prob = input->big_orange_prob;
+  // unknown_prob
+  output->unknown_prob = input->unknown_prob;
   // point
   if (!geometry_msgs__msg__Point__copy(
       &(input->point), &(output->point)))

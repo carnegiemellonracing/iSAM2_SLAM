@@ -102,6 +102,15 @@ bool eufs_msgs__msg__cone_with_covariance_plus__convert_from_py(PyObject * _pyms
     ros_message->big_orange_prob = PyFloat_AS_DOUBLE(field);
     Py_DECREF(field);
   }
+  {  // unknown_prob
+    PyObject * field = PyObject_GetAttrString(_pymsg, "unknown_prob");
+    if (!field) {
+      return false;
+    }
+    assert(PyFloat_Check(field));
+    ros_message->unknown_prob = PyFloat_AS_DOUBLE(field);
+    Py_DECREF(field);
+  }
   {  // point
     PyObject * field = PyObject_GetAttrString(_pymsg, "point");
     if (!field) {
@@ -208,6 +217,17 @@ PyObject * eufs_msgs__msg__cone_with_covariance_plus__convert_to_py(void * raw_r
     field = PyFloat_FromDouble(ros_message->big_orange_prob);
     {
       int rc = PyObject_SetAttrString(_pymessage, "big_orange_prob", field);
+      Py_DECREF(field);
+      if (rc) {
+        return NULL;
+      }
+    }
+  }
+  {  // unknown_prob
+    PyObject * field = NULL;
+    field = PyFloat_FromDouble(ros_message->unknown_prob);
+    {
+      int rc = PyObject_SetAttrString(_pymessage, "unknown_prob", field);
       Py_DECREF(field);
       if (rc) {
         return NULL;

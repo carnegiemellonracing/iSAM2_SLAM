@@ -1,4 +1,4 @@
-# Install script for directory: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/eufs_rviz_plugins
+# Install script for directory: /home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -62,13 +62,13 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_rviz_plugins" TYPE DIRECTORY FILES
-    "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/eufs_rviz_plugins/icons"
-    "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/eufs_rviz_plugins/meshes"
+    "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/icons"
+    "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/meshes"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_rviz_plugins" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/eufs_rviz_plugins/plugins.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_rviz_plugins" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/plugins.xml")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -162,7 +162,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_rviz_plugins" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/eufs_rviz_plugins/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eufs_rviz_plugins" TYPE FILE FILES "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/eufs_rviz_plugins/package.xml")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)

@@ -16,7 +16,7 @@ set(_eufs_rviz_plugins_CONFIG_INCLUDED TRUE)
 
 # output package information
 if(NOT eufs_rviz_plugins_FIND_QUIETLY)
-  message(STATUS "Found eufs_rviz_plugins: 0.0.0 (${eufs_rviz_plugins_DIR})")
+  message(STATUS "Found eufs_rviz_plugins: 0.1.0 (${eufs_rviz_plugins_DIR})")
 endif()
 
 # warn when using a deprecated package

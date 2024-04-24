@@ -88,6 +88,11 @@ static bool _ConeWithCovariancePlus__cdr_serialize(
     cdr << ros_message->big_orange_prob;
   }
 
+  // Field name: unknown_prob
+  {
+    cdr << ros_message->unknown_prob;
+  }
+
   // Field name: point
   {
     const message_type_support_callbacks_t * callbacks =
@@ -144,6 +149,11 @@ static bool _ConeWithCovariancePlus__cdr_deserialize(
   // Field name: big_orange_prob
   {
     cdr >> ros_message->big_orange_prob;
+  }
+
+  // Field name: unknown_prob
+  {
+    cdr >> ros_message->unknown_prob;
   }
 
   // Field name: point
@@ -214,6 +224,12 @@ size_t get_serialized_size_eufs_msgs__msg__ConeWithCovariancePlus(
     current_alignment += item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
   }
+  // field.name unknown_prob
+  {
+    size_t item_size = sizeof(ros_message->unknown_prob);
+    current_alignment += item_size +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
+  }
   // field.name point
 
   current_alignment += get_serialized_size_geometry_msgs__msg__Point(
@@ -280,6 +296,13 @@ size_t max_serialized_size_eufs_msgs__msg__ConeWithCovariancePlus(
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint64_t));
   }
   // member: big_orange_prob
+  {
+    size_t array_size = 1;
+
+    current_alignment += array_size * sizeof(uint64_t) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint64_t));
+  }
+  // member: unknown_prob
   {
     size_t array_size = 1;
 

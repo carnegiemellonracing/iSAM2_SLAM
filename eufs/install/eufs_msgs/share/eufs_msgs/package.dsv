@@ -7,3 +7,8 @@ source;share/eufs_msgs/hook/ld_library_path_lib.sh
 source;share/eufs_msgs/hook/pythonpath.ps1
 source;share/eufs_msgs/hook/pythonpath.dsv
 source;share/eufs_msgs/hook/pythonpath.sh
+source;share/eufs_msgs/local_setup.bash
+source;share/eufs_msgs/local_setup.dsv
+source;share/eufs_msgs/local_setup.ps1
+source;share/eufs_msgs/local_setup.sh
+source;share/eufs_msgs/local_setup.zsh
