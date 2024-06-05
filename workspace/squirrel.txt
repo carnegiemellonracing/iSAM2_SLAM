@@ -1,0 +1,527 @@
+Estimate:
+Values with 175 values:
+Value l0: (gtsam::Pose2)
+(12.8688, 3.0125, 0.229953)
+
+Value l1: (gtsam::Pose2)
+(8.93448, 3.0637, 0.330342)
+
+Value l2: (gtsam::Pose2)
+(6.10938, 2.7757, 0.426452)
+
+Value l3: (gtsam::Pose2)
+(12.9402, -1.92409, -0.147609)
+
+Value l4: (gtsam::Pose2)
+(8.98305, -1.79678, -0.197414)
+
+Value l5: (gtsam::Pose2)
+(6.09002, -1.85546, -0.397288)
+
+Value l6: (gtsam::Pose2)
+(3.09298, -2.02916, -0.530684)
+
+Value l7: (gtsam::Pose2)
+(3.11233, 2.80192, 0.702467)
+
+Value l8: (gtsam::Pose2)
+(16.4357, -1.63313, -0.0252243)
+
+Value l9: (gtsam::Pose2)
+(16.5365, 3.4245, 0)
+
+Value l10: (gtsam::Pose2)
+(20.0938, -0.41584, -0.00717209)
+
+Value l11: (gtsam::Pose2)
+(20.0093, 4.38431, 0.0439501)
+
+Value l12: (gtsam::Pose2)
+(22.6766, 5.6042, 0)
+
+Value l13: (gtsam::Pose2)
+(23.5015, 0.569063, 0)
+
+Value l14: (gtsam::Pose2)
+(25.539, 6.82925, 0)
+
+Value l15: (gtsam::Pose2)
+(28.0418, 1.08495, 0)
+
+Value l16: (gtsam::Pose2)
+(26.0395, 1.59275, 0)
+
+Value l17: (gtsam::Pose2)
+(30.6018, 5.10652, 0)
+
+Value l18: (gtsam::Pose2)
+(32.5831, 3.36142, 0)
+
+Value l19: (gtsam::Pose2)
+(28.2186, 6.22781, 0)
+
+Value l20: (gtsam::Pose2)
+(28.9557, -6.79562, 0)
+
+Value l21: (gtsam::Pose2)
+(29.786, -4.16696, 0)
+
+Value l22: (gtsam::Pose2)
+(29.6851, -1.15433, 0)
+
+Value l23: (gtsam::Pose2)
+(34.061, -5.03293, 0)
+
+Value l24: (gtsam::Pose2)
+(34.5495, -1.5154, 0)
+
+Value l25: (gtsam::Pose2)
+(33.9751, 1.39196, 0)
+
+Value l26: (gtsam::Pose2)
+(32.9346, -8.14489, 0)
+
+Value l27: (gtsam::Pose2)
+(31.9299, -10.3939, 0)
+
+Value l28: (gtsam::Pose2)
+(33.9242, -5.15189, 0)
+
+Value l29: (gtsam::Pose2)
+(34.4635, -1.64179, 0)
+
+Value l30: (gtsam::Pose2)
+(29.9742, -13.5955, 0)
+
+Value l31: (gtsam::Pose2)
+(24.8954, -11.7031, 0)
+
+Value l32: (gtsam::Pose2)
+(26.5219, -10.2984, 0)
+
+Value l33: (gtsam::Pose2)
+(27.9759, -8.81938, 0)
+
+Value l34: (gtsam::Pose2)
+(27.2623, -15.6487, 0)
+
+Value l35: (gtsam::Pose2)
+(24.0932, -17.1284, 0)
+
+Value l36: (gtsam::Pose2)
+(20.2421, -14.3251, 0)
+
+Value l37: (gtsam::Pose2)
+(22.3988, -13.2317, 0)
+
+Value l38: (gtsam::Pose2)
+(28.8552, -6.90527, 0)
+
+Value l39: (gtsam::Pose2)
+(21.1713, -18.8739, 0)
+
+Value l40: (gtsam::Pose2)
+(17.5888, -15.4694, 0)
+
+Value l41: (gtsam::Pose2)
+(17.8972, -20.3993, 0)
+
+Value l42: (gtsam::Pose2)
+(14.6669, -16.8708, 0)
+
+Value l43: (gtsam::Pose2)
+(14.3366, -22.3123, 0)
+
+Value l44: (gtsam::Pose2)
+(10.9361, -18.9122, 0)
+
+Value l45: (gtsam::Pose2)
+(10.4195, -24.3786, 0)
+
+Value l46: (gtsam::Pose2)
+(7.7358, -20.9036, 0)
+
+Value l47: (gtsam::Pose2)
+(7.15389, -26.4783, 0)
+
+Value l48: (gtsam::Pose2)
+(3.13865, -23.0647, 0)
+
+Value l49: (gtsam::Pose2)
+(5.3321, -22.4691, 0)
+
+Value l50: (gtsam::Pose2)
+(0.642906, -26.8819, 0)
+
+Value l51: (gtsam::Pose2)
+(3.50233, -27.4108, 0)
+
+Value l52: (gtsam::Pose2)
+(0.854691, -21.9092, 0)
+
+Value l53: (gtsam::Pose2)
+(-3.33478, -23.7383, 0)
+
+Value l54: (gtsam::Pose2)
+(-1.54181, -25.3733, 0)
+
+Value l55: (gtsam::Pose2)
+(-1.30802, -16.2195, 0)
+
+Value l56: (gtsam::Pose2)
+(-1.05536, -19.4273, 0)
+
+Value l57: (gtsam::Pose2)
+(-5.25381, -21.5659, 0)
+
+Value l58: (gtsam::Pose2)
+(-5.72405, -17.9252, 0)
+
+Value l59: (gtsam::Pose2)
+(-5.91383, -15.3139, 0)
+
+Value l60: (gtsam::Pose2)
+(-5.49774, -12.7327, 0)
+
+Value l61: (gtsam::Pose2)
+(-5.03933, -10.1926, 0)
+
+Value l62: (gtsam::Pose2)
+(-0.435674, -10.2454, 0)
+
+Value l63: (gtsam::Pose2)
+(-0.883092, -12.867, 0)
+
+Value l64: (gtsam::Pose2)
+(-1.09829, -16.0067, 0)
+
+Value l65: (gtsam::Pose2)
+(-4.59219, -7.14438, 0)
+
+Value l66: (gtsam::Pose2)
+(-0.156241, -7.20178, 0)
+
+Value l67: (gtsam::Pose2)
+(-4.78026, -3.94126, 0)
+
+Value l68: (gtsam::Pose2)
+(-0.285071, -4.44692, 0)
+
+Value x0: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x1: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x2: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x3: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x4: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x5: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x6: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x7: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x8: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x9: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x10: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x11: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x12: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x13: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x14: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x15: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x16: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x17: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x18: (gtsam::Pose2)
+(-0.00949139, -0.0597905, 0.00423784)
+
+Value x19: (gtsam::Pose2)
+(-0.00944351, -0.0597972, 0.00375852)
+
+Value x20: (gtsam::Pose2)
+(0.0223298, -0.0603436, 0.00559886)
+
+Value x21: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x22: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x23: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x24: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x25: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x26: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x27: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x28: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x29: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x30: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x31: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x32: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x33: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x34: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x35: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x36: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x37: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x38: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x39: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x40: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x41: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x42: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x43: (gtsam::Pose2)
+(0, 0, 0)
+
+Value x44: (gtsam::Pose2)
+(0.00198999, 0, 0)
+
+Value x45: (gtsam::Pose2)
+(0.0145527, 0, 0)
+
+Value x46: (gtsam::Pose2)
+(0.0356571, 0, 0)
+
+Value x47: (gtsam::Pose2)
+(0.066061, 0, 0)
+
+Value x48: (gtsam::Pose2)
+(0.103592, 0, 0)
+
+Value x49: (gtsam::Pose2)
+(0.157406, 0, 0)
+
+Value x50: (gtsam::Pose2)
+(0.213041, 0, 0)
+
+Value x51: (gtsam::Pose2)
+(0.274722, 0, 0)
+
+Value x52: (gtsam::Pose2)
+(0.353462, 0, 0)
+
+Value x53: (gtsam::Pose2)
+(0.454055, 0, 0)
+
+Value x54: (gtsam::Pose2)
+(0.558821, 0, 0)
+
+Value x55: (gtsam::Pose2)
+(0.670762, 0, 0)
+
+Value x56: (gtsam::Pose2)
+(0.822974, 0, 0)
+
+Value x57: (gtsam::Pose2)
+(0.97519, 0, 0)
+
+Value x58: (gtsam::Pose2)
+(0.990105, -0.0292349, -5.77597e-05)
+
+Value x59: (gtsam::Pose2)
+(1.26745, 0, 0)
+
+Value x60: (gtsam::Pose2)
+(1.36917, 0.00906302, -0.00323083)
+
+Value x61: (gtsam::Pose2)
+(1.56081, 0.0180904, -0.0083612)
+
+Value x62: (gtsam::Pose2)
+(1.62348, 0.0495004, -0.00366624)
+
+Value x63: (gtsam::Pose2)
+(1.94197, 0.0194836, -0.0101859)
+
+Value x64: (gtsam::Pose2)
+(2.14134, 0.03557, -0.00377234)
+
+Value x65: (gtsam::Pose2)
+(2.40999, 0.0168195, -0.00450338)
+
+Value x66: (gtsam::Pose2)
+(2.70754, 0.0155563, -0.00429792)
+
+Value x67: (gtsam::Pose2)
+(2.95883, 0.0135714, -0.00376477)
+
+Value x68: (gtsam::Pose2)
+(3.26661, 0.0116416, -0.00245478)
+
+Value x69: (gtsam::Pose2)
+(3.50486, 0.010653, -0.00322237)
+
+Value x70: (gtsam::Pose2)
+(3.92624, 0.00910626, -0.00212957)
+
+Value x71: (gtsam::Pose2)
+(4.18209, 0.00807741, -0.00321436)
+
+Value x72: (gtsam::Pose2)
+(4.65464, 0.00639275, -0.00211639)
+
+Value x73: (gtsam::Pose2)
+(4.90659, 0.00533285, -0.00315977)
+
+Value x74: (gtsam::Pose2)
+(5.32616, 0.00416955, -0.00260438)
+
+Value x75: (gtsam::Pose2)
+(5.78516, 0.00266756, -0.0105023)
+
+Value x76: (gtsam::Pose2)
+(6.2661, 0.000781752, -0.00672707)
+
+Value x77: (gtsam::Pose2)
+(8.4602, 0, 0)
+
+Value x78: (gtsam::Pose2)
+(10.7063, 0.167288, 0.107555)
+
+Value x79: (gtsam::Pose2)
+(13.695, 0.932541, 0.30367)
+
+Value x80: (gtsam::Pose2)
+(17.6592, 2.19408, 0.307491)
+
+Value x81: (gtsam::Pose2)
+(23.1454, 3.93331, 0.303646)
+
+Value x82: (gtsam::Pose2)
+(28.028, 4.03662, -0.201392)
+
+Value x83: (gtsam::Pose2)
+(30.5545, 2.475, -0.715223)
+
+Value x84: (gtsam::Pose2)
+(31.781, -0.332475, -1.32504)
+
+Value x85: (gtsam::Pose2)
+(31.0444, -4.44228, -1.81224)
+
+Value x86: (gtsam::Pose2)
+(29.8434, -9.23928, -1.83423)
+
+Value x87: (gtsam::Pose2)
+(27.4977, -13.0217, -2.32911)
+
+Value x88: (gtsam::Pose2)
+(24.1486, -15.0984, -2.61586)
+
+Value x89: (gtsam::Pose2)
+(20.4554, -17.2412, -2.61586)
+
+Value x90: (gtsam::Pose2)
+(17.5456, -18.9295, -2.61586)
+
+Value x91: (gtsam::Pose2)
+(14.0167, -20.403, -2.83049)
+
+Value x92: (gtsam::Pose2)
+(10.5868, -21.6384, -2.72018)
+
+Value x93: (gtsam::Pose2)
+(9.259, -22.3913, -2.6217)
+
+Value x94: (gtsam::Pose2)
+(8.00006, -23.1647, -2.5987)
+
+Value x95: (gtsam::Pose2)
+(6.5562, -23.9337, -2.67016)
+
+Value x96: (gtsam::Pose2)
+(5.21273, -24.3556, -2.84571)
+
+Value x97: (gtsam::Pose2)
+(3.67289, -24.511, -3.05263)
+
+Value x98: (gtsam::Pose2)
+(2.35439, -24.3911, 3.05467)
+
+Value x99: (gtsam::Pose2)
+(1.10397, -24.0529, 2.88334)
+
+Value x100: (gtsam::Pose2)
+(-0.173577, -23.4469, 2.697)
+
+Value x101: (gtsam::Pose2)
+(-1.33977, -22.5751, 2.48778)
+
+Value x102: (gtsam::Pose2)
+(-2.19185, -21.4205, 2.20315)
+
+Value x103: (gtsam::Pose2)
+(-2.72211, -19.8939, 1.88434)
+
+Value x104: (gtsam::Pose2)
+(-2.96811, -18.4137, 1.74649)
+
+Value x105: (gtsam::Pose2)
+(-3.09932, -16.5827, 1.62848)
+

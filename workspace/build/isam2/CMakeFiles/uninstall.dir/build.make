@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2
+CMAKE_SOURCE_DIR = /home/danielnguyen/cmr/iSAM2_SLAM/workspace/src/isam2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2
+CMAKE_BINARY_DIR = /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2
 
 # Utility rule file for uninstall.
 
@@ -67,6 +67,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2 /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/src/isam2 /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2 /home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/danielnguyen/cmr/iSAM2_SLAM/workspace/src/isam2 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/src/isam2 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/uninstall.dir/depend
 

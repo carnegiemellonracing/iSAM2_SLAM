@@ -2,7 +2,7 @@
 
 # since this file is sourced use either the provided AMENT_CURRENT_PREFIX
 # or fall back to the destination set at configure time
-: ${AMENT_CURRENT_PREFIX:="/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2"}
+: ${AMENT_CURRENT_PREFIX:="/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/isam2"}
 if [ ! -d "$AMENT_CURRENT_PREFIX" ]; then
   if [ -z "$COLCON_CURRENT_PREFIX" ]; then
     echo "The compile time prefix path '$AMENT_CURRENT_PREFIX' doesn't " \

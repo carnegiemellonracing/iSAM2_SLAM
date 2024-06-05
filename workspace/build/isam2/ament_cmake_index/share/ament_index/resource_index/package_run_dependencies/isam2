@@ -1,1 +1,1 @@
-geometry_msgs;interfaces;sensor_msgs;rclcpp;message_filters;GTSAM;rosidl_default_runtime;ament_lint_auto;ament_lint_common
+eufs_msgs;geometry_msgs;interfaces;sensor_msgs;rclcpp;message_filters;GTSAM;rosidl_default_runtime;ament_lint_auto;ament_lint_common

@@ -6,12 +6,11 @@ fig = plt.figure()
 plt.ion()
 #plt.legend(loc='upper left')
 plt.show()
-
-while True:
+run = True
+while run:
     # with open('src/isam2/data/estimate2.txt') as f:
     with open("squirrel.txt") as f:
         lines = f.readlines() # list containing lines of file
-
     # Don't do anything if the file is empty
     if len(lines) == 0:
         continue
@@ -52,15 +51,20 @@ while True:
                     temp = line[1:len(line)-1]
                     temp = np.array(temp.split(','))
                     temp = temp.astype(float)
+
                     if(landmarks.size == 0):
                         landmarks = temp
+
+                        print("found landmark")
                     else:
                         landmarks = np.vstack((landmarks,temp))
                     landmark = 0
+                    print(landmarks.ndim)
     # if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2):
     if ((poses.shape[0]) != 0) and ((landmarks.shape[0]) != 0) and (poses.ndim==2 and landmarks.ndim==2):
         scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
         scatter2 = plt.scatter(landmarks[:,0],landmarks[:,1], s=10, c='r', marker="o", label='landmark')
-        plt.pause(.1)
+        print("plotting")
+        plt.pause(1)
         scatter.remove()
         scatter2.remove()
