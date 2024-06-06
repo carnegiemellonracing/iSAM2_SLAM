@@ -29,11 +29,12 @@
 #include <gtsam/slam/BearingRangeFactor.h>
 
 #include <vector>
-
+#include <chrono>
 #include <iostream>
 #include <fstream>
 using namespace std;
 using namespace gtsam;
+using namespace std::chrono;
 
 //static const float M_DIST_TH = 0.000151169; // for real data
 static const float M_DIST_TH = 20;
@@ -59,9 +60,7 @@ public:
 };
 
 class slamISAM {
-private:
-    ISAM2Params parameters;
-
+private: ISAM2Params parameters;
     ISAM2 isam2;
     //Create a factor graph and values for new data
     NonlinearFactorGraph graph;
@@ -121,8 +120,8 @@ public:
         //shouldn't this be inverse?
 
         Eigen::MatrixXd test = diff * marginal_covariance;
-        RCLCPP_INFO(logger, "\n%f | %f | %f\n ",
-                test(0, 0), test(0, 1), test(0, 2));
+        //RCLCPP_INFO(logger, "\n%f | %f | %f\n ",
+        //        test(0, 0), test(0, 1), test(0, 2));
 
         Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
         //size of eigen matrix is (1,1)
@@ -143,7 +142,7 @@ public:
         //vectorize this
         //Eigen::VectorXd v_m_dist = v_associate(logger, measurement);
 
-        RCLCPP_INFO(logger, "printing m_dist");
+        //RCLCPP_INFO(logger, "printing m_dist");
         for (int i = 0; i < n_landmarks; i++) {
             gtsam::Pose2 landmark = isam2.calculateEstimate(L(i)).cast<Pose2>();
 
@@ -159,13 +158,13 @@ public:
             // RCLCPP_INFO(logger, "L(%d)=%f",i,mahalanobis);
 
             //this will already be calculated, so there's no reason to push back
-            RCLCPP_INFO(logger, "p: (%f, %f) | \t m_dist: %f", landmark.x(), landmark.y(), mahalanobis);
+            //RCLCPP_INFO(logger, "p: (%f, %f) | \t m_dist: %f", landmark.x(), landmark.y(), mahalanobis);
             min_dist.push_back(mahalanobis); //i
             //assert(v_m_dist(i) == mahalanobis);
         }
-        RCLCPP_INFO(logger, "min_id: %d | \t M_DIST_TH: %f", n_landmarks, M_DIST_TH);
+        //RCLCPP_INFO(logger, "min_id: %d | \t M_DIST_TH: %f", n_landmarks, M_DIST_TH);
 
-        RCLCPP_INFO(logger, "m_dist print done");
+        //RCLCPP_INFO(logger, "m_dist print done");
 
         //TODO: you can add this beforehand
         min_dist.push_back(M_DIST_TH); // Add M_DIST_TH for new landmark
@@ -313,6 +312,7 @@ public:
         //Vectorized implementation
 
         //Calculate the positions of all cones current
+        /*
         landmark_est.clear();
         for (int i = 0; i < n_landmarks; i++) {
             gtsam::Pose2 landmark = isam2.calculateEstimate().at(L(i)).cast<Pose2>();
@@ -354,22 +354,24 @@ public:
 
         global_cone_x = global_odom.x() + range.array()*totalBearing_cos.array();
         global_cone_y = global_odom.y() + range.array()*totalBearing_sin.array();
+        */
 
 
 
         RCLCPP_INFO(logger, "Printing global obs: (n_landmarks: %d)", n_landmarks);
         /* iterate through observed cones: given as relative distance wrt car */
-        for (int i = 0; i < cone_obs.size(); i++) {
+        auto start = high_resolution_clock::now();
+        for (auto cone : cone_obs) {
 
-            Pose2 conePose(cone_obs.at(i).x(),cone_obs.at(i).y(),0);
-            //double range = norm2(cone);
+            Pose2 conePose(cone.x(),cone.y(),0);
+            double range = norm2(cone);
 
-            //double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
-            //double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
-            //double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
+            double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
+            double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
+            double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
 
             /* calculate global position of the cone */
-            Pose2 global_cone(global_cone_x(i),global_cone_y(i),0);
+            Pose2 global_cone(global_cone_x,global_cone_y,0);
 
             /* vectorize associate()
              *
@@ -389,7 +391,6 @@ public:
              */
             /*
             */
-            RCLCPP_INFO(logger, "associating\n");
 
             //int associated_ID = associate(logger, global_cone);
             int associated_ID = associate(logger, global_cone);
@@ -400,10 +401,9 @@ public:
                 //add cone to list
                 //add factor between pose and landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID),
-                                                Pose2(conePose.x(), conePose.y(), bearing(i)),
+                                                Pose2(conePose.x(), conePose.y(), bearing),
                                                         landmark_model));
                 //this is how we model noise for the environmant
-                RCLCPP_INFO(logger, "new landmark\n");
                 values.insert(L(n_landmarks), global_cone);
 
                 if (n_landmarks == 0) {
@@ -416,7 +416,7 @@ public:
                 // std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
                 //Add a factor to the associated landmark
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(),
-                                                    conePose.y(), bearing(i)), landmark_model));
+                                                    conePose.y(), bearing), landmark_model));
             }
             // RCLCPP_INFO(logger, "updating");
 
@@ -427,8 +427,12 @@ public:
             //RCLCPP_INFO(logger,"isam2 est: (%f, %f)\n", est.x(), est.y());
 
         }
+        auto end = high_resolution_clock::now();
 
-        RCLCPP_INFO(logger, "DATA ASSOCIATION END\n");
+        auto duration = duration_cast<microseconds>(end - start);
+
+
+        RCLCPP_INFO(logger, "DATA ASSOCIATION END; TIME: %d \n", duration.count());
 
         // DATA ASSOCIATION END
 
