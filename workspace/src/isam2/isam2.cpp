@@ -1,6 +1,6 @@
 // #include "isam2.hpp"
 #include <type_traits>
-
+#include <bits/stdc++.h>
 // Camera observations of landmarks will be stored as Point2 (x, y).
 #include <gtsam/geometry/Point2.h>
 #include <gtsam/geometry/Pose2.h>
@@ -40,6 +40,7 @@ using namespace std::chrono;
 static const float M_DIST_TH = 20;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
+static mutex global_obs_cones_mutex;
 
 // static const float DT = 0.1;
 // static const float SIM_TIME = 50.0;
@@ -142,7 +143,7 @@ public:
         //vectorize this
         //Eigen::VectorXd v_m_dist = v_associate(logger, measurement);
 
-        //RCLCPP_INFO(logger, "printing m_dist");
+        RCLCPP_INFO(logger, "printing m_dist");
         for (int i = 0; i < n_landmarks; i++) {
             gtsam::Pose2 landmark = isam2.calculateEstimate(L(i)).cast<Pose2>();
 
@@ -201,21 +202,123 @@ public:
         RCLCPP_INFO(logger, "done printing\n\n");
     }
 
-    void print_matrix(auto logger, Eigen::MatrixXd m)
+    /**
+     * @brief t_associate is a function called by threads that will
+     * perform data association on the observed cones stored as Point2
+     * inside vector cone_obs.
+     *
+     * the thread will operate on cones indicated by the indices in the
+     * range of [lo, hi)
+     */
+    void t_associate(auto logger, vector<Point2> *cone_obs, vector<Pose2> *global_obs_cones, Pose2 global_odom,
+                                        vector<float> *m_dist, int lo, int hi)
     {
-        for (int r = 0; r < m.rows(); r++)
+        int i = lo;
+        int landmark_idx = lo % (n_landmarks + 1);
+        int obs_id = (int)(lo / (n_landmarks + 1));
+        //RCLCPP_INFO(logger, "lo: %d | hi: %d", lo, hi);
+
+        while (i < hi && obs_id < cone_obs->size())
         {
-            for (int c = 0; c < m.cols(); c++)
+
+            double bearing = std::atan2(cone_obs->at(obs_id).y(),
+                                        cone_obs->at(obs_id).x());
+
+            double range = norm2(cone_obs->at(obs_id));
+
+            double global_cone_x = (global_odom.x() + range *
+                                            cos(bearing + global_odom.theta()));
+
+            double global_cone_y = (global_odom.y() + range *
+                                            sin(bearing + global_odom.theta()));
+            /* TODO: "valid bit" for whether global pose has already been calculated at obs_id */
+
+            //TODO
+            /* add a mutex here*/
+            global_obs_cones_mutex.lock();
+            global_obs_cones->at(obs_id) = Pose2(global_cone_x, global_cone_y, bearing);
+            global_obs_cones_mutex.unlock();
+            /* add a mutex */
+
+            /**
+             * calculate for how many previous cone estimates to calculate
+             * mahalanobis distance for, with respect to the current observation.
+             *
+             */
+
+            /**
+             * n_landmarks + 1: add 1 for M_DIST_TH
+             *
+             * -1: subtract 1 for last landmark index and to exclude M_DIST_TH
+             *
+             */
+
+            int last_est_for_cur_obs = (obs_id + 1) * (n_landmarks + 1) - 1;
+            //RCLCPP_INFO(logger, "Obs_id: %d",obs_id);
+            for (; i < last_est_for_cur_obs && i < hi; i++)
             {
-                cout << m(r, c) << " | ";
+                //assert(i < hi);
+
+                Eigen::MatrixXd diff(1, 3);
+                //RCLCPP_INFO(logger, "Last est idx: %d | Cur lm_idx: %d | i: %d | hi: %d", last_est_for_cur_obs, landmark_idx, i, hi);
+                assert(landmark_idx < n_landmarks);
+
+                Pose2 prev_est = isam2.calculateEstimate(L(landmark_idx)).cast<Pose2>();
+                RCLCPP_INFO(logger, "accessed est. pose | i: %d | x: %f, y%f ", i, prev_est.x(), prev_est.y());
+                diff << global_cone_x - prev_est.x(),
+                        global_cone_y - prev_est.y(),
+                        1;
+
+
+                //RCLCPP_INFO(logger, "calculated estimate and diff");
+                m_dist->at(i) = (diff * isam2.marginalCovariance(L(landmark_idx)) * diff.transpose())(0, 0);
+                RCLCPP_INFO(logger, "accessed marg.cov. | i: %d", i);
+                //RCLCPP_INFO(logger, "calculated mahal distance");
+
+                landmark_idx++;
             }
-            cout << endl;
+
+            if (i == hi)
+            {
+                return;
+            }
+            assert(last_est_for_cur_obs < m_dist->size());
+            m_dist->at(last_est_for_cur_obs) = M_DIST_TH;
+            i++; /* skip 1 element (reserved for M_DIST_TH */
+            obs_id++;
+            landmark_idx = 0;
         }
+
+        ///////////////////////////////////////////////////////////////////////
+        /*
+        for (int i = lo; i < hi; i++)
+        {
+            double bearing = std::atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
+            double range = norm2(cone_obs.at(i));
+            double global_cone_x = global_odom.x() + range * cos(bearing + global_odom.theta());
+            double global_cone_y = global_odom.y() + range * sin(bearing + global_odom.theta());
+            Pose2 global_cone(global_cone_x, global_cone_y, 0);
+
+            float m_dist[n_landmarks+1];
+            for (int n = 0; n < n_landmarks; n++)
+            {
+                Pose2 nth_est = isam2.calculateEstimate(L(n)).cast<Pose2>();
+                Eigen::MatrixXd diff(1, 3);
+                diff << global_cone_x - nth_est.x(), global_cone_y - nth_est.y(), 1;
+                m_dist[lo * n_landmarks + n] = (diff * isam2.marginalCovariance(L(n)) * diff.transpose())(0, 0);
+            }
+            m_dist[n_landmarks] = M_DIST_TH;
+            min_id[i] = std::distance(min_dist.begin(), std::min_element(min_dist.begin(), min_dist.end()));
+
+        }
+        */
     }
+
+
 
     void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
 
-        //RCLCPP_INFO(logger, "stepping\n");
+        RCLCPP_INFO(logger, "stepping\n");
 
 
         Vector NoiseModel(3);
@@ -278,6 +381,7 @@ public:
             values.insert(X(pose_num), global_odom);
         }
 
+        RCLCPP_INFO(logger, "beginning loop closure");
         if(loopClosure){
             // std::cout<<"loop closure constraint added"<<std::endl;
             static noiseModel::Diagonal::shared_ptr loop_closure_model = noiseModel::Diagonal::Sigmas(NoiseModel);
@@ -296,6 +400,7 @@ public:
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
         }
+        RCLCPP_INFO(logger, "end loop closure");
 
         //todo only do this once after update
         isam2.update(graph, values);
@@ -356,77 +461,172 @@ public:
         global_cone_y = global_odom.y() + range.array()*totalBearing_sin.array();
         */
 
+        RCLCPP_INFO(logger, "Printing global obs: (n_landmarks: %d; num_obs: %d)",
+                                                    n_landmarks, cone_obs.size());
 
-
-        RCLCPP_INFO(logger, "Printing global obs: (n_landmarks: %d)", n_landmarks);
-        /* iterate through observed cones: given as relative distance wrt car */
         auto start = high_resolution_clock::now();
-        for (auto cone : cone_obs) {
+        if (n_landmarks != 0 && cone_obs.size() > 0)
+        {
+            const int num_threads = 3;
+            thread all_t[num_threads];
+            const int m_dist_len = (n_landmarks + 1) * cone_obs.size(); //110
+            const int multiple_size = m_dist_len / num_threads; //110/3
+            vector<float> m_dist(m_dist_len, 0.0);
+            vector<Pose2> global_obs_cones = vector(cone_obs.size(), Pose2(0, 0, 0));
 
-            Pose2 conePose(cone.x(),cone.y(),0);
-            double range = norm2(cone);
-
-            double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
-            double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
-            double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
-
-            /* calculate global position of the cone */
-            Pose2 global_cone(global_cone_x,global_cone_y,0);
-
-            /* vectorize associate()
+            /* spawn num_threads that will are responsible for performing data
+             * association on subset of the observed cones
              *
-             * 1.) get the isam2 estimate for previously seen landmark
-             * 2.) calculate the difference in global position
-             * - bearing set to 1
-             * 3.) in the meantime, stack up marginal covariance matrices
-             *
-             * */
-
-            /* each row represents difference between global position of
-             * observed cone and previous cone estimate
-             * -there are n_landmarks previous cone estimates
-             *
-             * the difference is a 3 element vector, which is why the columns
-             * must be 3 * n_landmarks
+             * populate m_dist
              */
-            /*
-            */
+            for (int i = 0; i < num_threads; i++)
+            {
+                /* not a good idea, should do by the total noumber of m_dist calculations */
+                /*
+                all_t[i] = thread(&slamISAM::t_associate, this, &cone_obs, &global_obs_cones,
+                        global_odom, &m_dist, i * multiple_size, (i+1) * multiple_size);
+                */
+                //Debugging: not multi thread
+                t_associate(logger, &cone_obs, &global_obs_cones, global_odom,
+                            &m_dist, i * multiple_size, (i+1) * multiple_size);
 
-            //int associated_ID = associate(logger, global_cone);
-            int associated_ID = associate(logger, global_cone);
-
-            //RCLCPP_INFO(logger, "cur obs: (%f, %f) | min_id: %d", global_cone_x, global_cone_y, associated_ID);
-            //If it is a new cone:
-            if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
-                //add cone to list
-                //add factor between pose and landmark
-                graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID),
-                                                Pose2(conePose.x(), conePose.y(), bearing),
-                                                        landmark_model));
-                //this is how we model noise for the environmant
-                values.insert(L(n_landmarks), global_cone);
-
-                if (n_landmarks == 0) {
-                    graph.addPrior(L(0),conePose); //TODO: how does this prior make sense?
-                }
-
-                n_landmarks++;
-            } else {
-                // RCLCPP_INFO(logger, "Associated Landmark: %d", associated_ID);
-                // std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
-                //Add a factor to the associated landmark
-                graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(),
-                                                    conePose.y(), bearing), landmark_model));
             }
-            // RCLCPP_INFO(logger, "updating");
+            //for (auto &t : all_t)
+            //{
+            //    t.join();
+            //}
 
-            isam2.update(graph, values);
-            graph.resize(0);
-            values.clear();
-            Pose2 est = isam2.calculateEstimate(L(associated_ID)).cast<Pose2>();
-            //RCLCPP_INFO(logger,"isam2 est: (%f, %f)\n", est.x(), est.y());
+            t_associate(logger, &cone_obs, &global_obs_cones, global_odom, &m_dist,
+                                    num_threads * multiple_size, m_dist_len);
+            RCLCPP_INFO(logger, "finished populating m_dist\n");
+
+            /* find min_dist; do this in n_landmarks + 1 sub-sections of m_dist*/
+
+            for (int i = 0; i < (int)cone_obs.size(); i++)
+            {
+                int start_idx = i*(n_landmarks + 1);
+                vector<float>::iterator start_iter = m_dist.begin() + start_idx;
+                int min_id = std::distance(start_iter,
+                                        std::min_element(start_iter,
+                                                   start_iter + (n_landmarks + 1)));
+
+
+                graph.add(BetweenFactor<Pose2>(X(pose_num), L(min_id),
+                            Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(), global_obs_cones.at(i).theta()),
+                            landmark_model));
+
+                if (n_landmarks == min_id) /* new landmark */
+                {
+                    values.insert(L(n_landmarks), Pose2(global_obs_cones.at(i).x(), global_obs_cones.at(i).y(), 0));
+                    n_landmarks++;
+                    RCLCPP_INFO(logger, "n_lm: %d", n_landmarks);
+                }
+            }
 
         }
+        else if (n_landmarks == 0 && cone_obs.size() > 0)
+        {
+
+            /* register all observations as new landmarks */
+            for (int i = 0; i < cone_obs.size(); i++)
+            {
+                double bearing = std::atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
+                double range = norm2(cone_obs.at(i));
+                double global_cone_x = global_odom.x() + range * cos(bearing + global_odom.theta());
+                double global_cone_y = global_odom.y() + range * sin(bearing + global_odom.theta());
+
+                Pose2 global_cone(global_cone_x, global_cone_y, 0);
+                /* add factor node between pose and landmark node */
+                graph.add(BetweenFactor<Pose2>(X(pose_num), L(i),
+                            Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(), bearing),
+                            landmark_model));
+                values.insert(L(i), global_cone);
+                n_landmarks++;
+            }
+
+
+            graph.addPrior(L(0),Pose2(cone_obs.at(0).x(), cone_obs.at(0).y(), 0));
+
+        }
+        isam2.update(graph, values);
+        graph.resize(0);
+        values.clear();
+
+        /* checking */
+        for (int i = 0; i < n_landmarks; i++)
+        {
+            Pose2 cur_est = isam2.calculateEstimate(L(i)).cast<Pose2>();
+            RCLCPP_INFO(logger, "i: %d | x: %f, y: %f ", i, cur_est.x(), cur_est.y());
+        }
+
+
+        /* iterate through observed cones: given as relative distance wrt car */
+        //for (auto cone : cone_obs) {
+
+        //    Pose2 conePose(cone.x(),cone.y(),0);
+        //    double range = norm2(cone);
+
+        //    double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
+        //    double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
+        //    double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
+
+        //    /* calculate global position of the cone */
+        //    Pose2 global_cone(global_cone_x,global_cone_y,0);
+
+        //    /* vectorize associate()
+        //     *
+        //     * 1.) get the isam2 estimate for previously seen landmark
+        //     * 2.) calculate the difference in global position
+        //     * - bearing set to 1
+        //     * 3.) in the meantime, stack up marginal covariance matrices
+        //     *
+        //     * */
+
+        //    /* each row represents difference between global position of
+        //     * observed cone and previous cone estimate
+        //     * -there are n_landmarks previous cone estimates
+        //     *
+        //     * the difference is a 3 element vector, which is why the columns
+        //     * must be 3 * n_landmarks
+        //     */
+        //    /*
+        //    */
+
+        //    //int associated_ID = associate(logger, global_cone);
+        //    //int associated_ID = associate(logger, global_cone);
+
+        //    //RCLCPP_INFO(logger, "cur obs: (%f, %f) | min_id: %d", global_cone_x, global_cone_y, associated_ID);
+        //    //If it is a new cone:
+        //    if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
+        //        //add cone to list
+        //        //add factor between pose and landmark
+        //        graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID),
+        //                                        Pose2(conePose.x(), conePose.y(), bearing),
+        //                                                landmark_model));
+        //        //this is how we model noise for the environmant
+        //        values.insert(L(n_landmarks), global_cone);
+
+        //        if (n_landmarks == 0) {
+        //            graph.addPrior(L(0),conePose); //TODO: how does this prior make sense?
+        //        }
+
+        //        n_landmarks++;
+        //    } else {
+        //        // RCLCPP_INFO(logger, "Associated Landmark: %d", associated_ID);
+        //        // std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
+        //        //Add a factor to the associated landmark
+        //        graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(),
+        //                                            conePose.y(), bearing), landmark_model));
+        //    }
+        //    // RCLCPP_INFO(logger, "updating");
+
+        //    isam2.update(graph, values);
+        //    graph.resize(0);
+        //    values.clear();
+        //    Pose2 est = isam2.calculateEstimate(L(associated_ID)).cast<Pose2>();
+        //    //RCLCPP_INFO(logger,"isam2 est: (%f, %f)\n", est.x(), est.y());
+
+        //}
         auto end = high_resolution_clock::now();
 
         auto duration = duration_cast<microseconds>(end - start);
