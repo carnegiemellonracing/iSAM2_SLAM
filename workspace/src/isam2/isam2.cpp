@@ -40,7 +40,8 @@ using namespace std::chrono;
 static const float M_DIST_TH = 20;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
-static mutex global_obs_cones_mutex;
+//static mutex global_obs_cones_mutex;
+static mutex isam2_mutex;
 
 // static const float DT = 0.1;
 // static const float SIM_TIME = 50.0;
@@ -210,8 +211,9 @@ public:
      * the thread will operate on cones indicated by the indices in the
      * range of [lo, hi)
      */
-    void t_associate(auto logger, vector<Point2> *cone_obs, vector<Pose2> *global_obs_cones, Pose2 global_odom,
-                                        vector<float> *m_dist, int lo, int hi)
+    void t_associate(vector<Point2> *cone_obs, vector<Pose2> *global_obs_cones,
+            vector<Pose2> *all_cone_est, Pose2 global_odom, vector<float> *m_dist,
+            int lo, int hi)
     {
         int i = lo;
         int landmark_idx = lo % (n_landmarks + 1);
@@ -235,9 +237,9 @@ public:
 
             //TODO
             /* add a mutex here*/
-            global_obs_cones_mutex.lock();
+            //global_obs_cones_mutex.lock();
             global_obs_cones->at(obs_id) = Pose2(global_cone_x, global_cone_y, bearing);
-            global_obs_cones_mutex.unlock();
+            //global_obs_cones_mutex.unlock();
             /* add a mutex */
 
             /**
@@ -262,9 +264,10 @@ public:
                 Eigen::MatrixXd diff(1, 3);
                 //RCLCPP_INFO(logger, "Last est idx: %d | Cur lm_idx: %d | i: %d | hi: %d", last_est_for_cur_obs, landmark_idx, i, hi);
                 assert(landmark_idx < n_landmarks);
-
-                Pose2 prev_est = isam2.calculateEstimate(L(landmark_idx)).cast<Pose2>();
-                RCLCPP_INFO(logger, "accessed est. pose | i: %d | x: %f, y%f ", i, prev_est.x(), prev_est.y());
+                isam2_mutex.lock();
+                Pose2 prev_est = all_cone_est->at(landmark_idx);
+                isam2_mutex.unlock();
+                //RCLCPP_INFO(logger, "accessed est. pose | i: %d | x: %f, y%f ", i, prev_est.x(), prev_est.y());
                 diff << global_cone_x - prev_est.x(),
                         global_cone_y - prev_est.y(),
                         1;
@@ -272,7 +275,7 @@ public:
 
                 //RCLCPP_INFO(logger, "calculated estimate and diff");
                 m_dist->at(i) = (diff * isam2.marginalCovariance(L(landmark_idx)) * diff.transpose())(0, 0);
-                RCLCPP_INFO(logger, "accessed marg.cov. | i: %d", i);
+                //RCLCPP_INFO(logger, "accessed marg.cov. | i: %d", i);
                 //RCLCPP_INFO(logger, "calculated mahal distance");
 
                 landmark_idx++;
@@ -479,24 +482,49 @@ public:
              *
              * populate m_dist
              */
+
+            /* this should not work at the beginning */
+            /*Pose2 bad = isam2.calculateEstimate(L(11)).cast<Pose2>();
+             Exception thrown: std::out_of_range; requested variable 'l11' is
+             not in this VectorValues */
+
+            /*
+             * Eigen::MatrixXd bad_mCov = isam2.marginalCovariance(L(i));
+            Eigen::MatrixXd test = Eigen:MatrixXd::Zero(1, 3);
+            test = test * mCov;
+            RCLCPP_INFO(logger, "nonexistent pose: x: %f, y: %f \n", bad.x(), bad.y());
+            */
+
+            vector<Pose2> all_cone_est = vector(n_landmarks, Pose2(0, 0, 0));
+            for (int i = 0; i < n_landmarks; i++)
+            {
+                /* make the calculation (eigen is lazy) */
+                /*Pose2 temp = isam2.calculateEstimate(L(i)).cast<Pose2>();
+                all_cone_est.at(i) = Pose2(temp.x(), temp.y(), 0);*/
+                all_cone_est.at(i) = isam2.calculateEstimate(L(i)).cast<Pose2>();
+                //RCLCPP_INFO(logger, "x: %f | y: %f", temp.x(), temp.y());
+            }
+            auto end_temp = high_resolution_clock::now();
+            auto duration_temp = duration_cast<microseconds>(end_temp - start);
+            RCLCPP_INFO(logger, "temp time: %d", duration_temp.count());
+
             for (int i = 0; i < num_threads; i++)
             {
-                /* not a good idea, should do by the total noumber of m_dist calculations */
-                /*
                 all_t[i] = thread(&slamISAM::t_associate, this, &cone_obs, &global_obs_cones,
-                        global_odom, &m_dist, i * multiple_size, (i+1) * multiple_size);
-                */
+                                    &all_cone_est, global_odom, &m_dist, i * multiple_size,
+                                    (i+1) * multiple_size);
                 //Debugging: not multi thread
-                t_associate(logger, &cone_obs, &global_obs_cones, global_odom,
+                /*t_associate(logger, &cone_obs, &global_obs_cones, global_odom,
                             &m_dist, i * multiple_size, (i+1) * multiple_size);
+                            */
 
             }
-            //for (auto &t : all_t)
-            //{
-            //    t.join();
-            //}
+            for (auto &t : all_t)
+            {
+                t.join();
+            }
 
-            t_associate(logger, &cone_obs, &global_obs_cones, global_odom, &m_dist,
+            t_associate(&cone_obs, &global_obs_cones, &all_cone_est, global_odom, &m_dist,
                                     num_threads * multiple_size, m_dist_len);
             RCLCPP_INFO(logger, "finished populating m_dist\n");
 
@@ -553,11 +581,11 @@ public:
         values.clear();
 
         /* checking */
-        for (int i = 0; i < n_landmarks; i++)
-        {
-            Pose2 cur_est = isam2.calculateEstimate(L(i)).cast<Pose2>();
-            RCLCPP_INFO(logger, "i: %d | x: %f, y: %f ", i, cur_est.x(), cur_est.y());
-        }
+        //for (int i = 0; i < n_landmarks; i++)
+        //{
+        //    Pose2 cur_est = isam2.calculateEstimate(L(i)).cast<Pose2>();
+        //    RCLCPP_INFO(logger, "i: %d | x: %f, y: %f ", i, cur_est.x(), cur_est.y());
+        //}
 
 
         /* iterate through observed cones: given as relative distance wrt car */
