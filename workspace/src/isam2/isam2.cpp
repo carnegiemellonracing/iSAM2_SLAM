@@ -43,12 +43,6 @@ static const long SEC_TO_NANOSEC = 1000000000;
 //static mutex global_obs_cones_mutex;
 static mutex isam2_mutex;
 
-// static const float DT = 0.1;
-// static const float SIM_TIME = 50.0;
-// static const int LM_SIZE = 2;
-// static const int STATE_SIZE = 3;
-// static const int N_STEP = 100;
-
 struct Landmark {
     int lm_id;
     gtsam::Pose2 lm_pos;
@@ -64,7 +58,6 @@ public:
 class slamISAM {
 private: ISAM2Params parameters;
     ISAM2 isam2;
-    //Create a factor graph and values for new data
     NonlinearFactorGraph graph;
     Values values;
 
@@ -100,97 +93,18 @@ public:
         orange_cones = std::vector<Point2>();
     }
 
-    /**
-     * @brief
-     *
-     * @param measurement: the global position of the observed cone at
-     * current time step
-     *
-     * @param landmark; the isam2 estimate for global position of previously
-     * seen cone. we want the covariance of this cone
-     */
-    double mahalanobisDist(auto logger, Pose2 measurement,Pose2 landmark,Symbol landmark_key){
-        //mahalanobis distance with just x,y???
-        Eigen::MatrixXd diff(1, 3);
-        diff << measurement.x()-landmark.x(),measurement.y()-landmark.y(),1;
-        Eigen::MatrixXd marginal_covariance = isam2.marginalCovariance(landmark_key);
-        /*RCLCPP_INFO(logger, "\n%f | %f | %f\n %f | %f | %f\n %f | %f | %f\n ",
-                    marginal_covariance(0, 0), marginal_covariance(0, 1), marginal_covariance(0, 2),
-                    marginal_covariance(1, 0), marginal_covariance(1, 1), marginal_covariance(1, 2),
-                    marginal_covariance(2, 0), marginal_covariance(2, 1), marginal_covariance(2, 2));*/
 
-        //shouldn't this be inverse?
-
-        Eigen::MatrixXd test = diff * marginal_covariance;
-        //RCLCPP_INFO(logger, "\n%f | %f | %f\n ",
-        //        test(0, 0), test(0, 1), test(0, 2));
-
-        Eigen::MatrixXd result = diff*marginal_covariance*diff.transpose();
-        //size of eigen matrix is (1,1)
-        return result(0);
-    }
-
-
-
-
-
-    //returns associated landmark id or n_landmarks if there is no associated id
-    //returns zero on the first
-    int associate(auto logger, Pose2 measurement) {
-        // Vector that will store mahalanobis distances
-        std::vector<double> min_dist;
-
-        // Previous one
-        //vectorize this
-        //Eigen::VectorXd v_m_dist = v_associate(logger, measurement);
-
-        RCLCPP_INFO(logger, "printing m_dist");
-        for (int i = 0; i < n_landmarks; i++) {
-            gtsam::Pose2 landmark = isam2.calculateEstimate(L(i)).cast<Pose2>();
-
-            // Adding mahalanobis distance to minimum distance vector
-
-            //TODO:make this into a matrix and do a single operation on this
-            /*RCLCPP_INFO(logger, "actual diff %d: dx: %f \t dy: %f \t d0: %f", i,
-                                                                     measurement.x() - landmark.x(),
-                                                                     measurement.y() - landmark.y(),
-                                                                     1.0);*/
-
-            double mahalanobis = mahalanobisDist(logger, measurement,landmark,L(i));
-            // RCLCPP_INFO(logger, "L(%d)=%f",i,mahalanobis);
-
-            //this will already be calculated, so there's no reason to push back
-            //RCLCPP_INFO(logger, "p: (%f, %f) | \t m_dist: %f", landmark.x(), landmark.y(), mahalanobis);
-            min_dist.push_back(mahalanobis); //i
-            //assert(v_m_dist(i) == mahalanobis);
-        }
-        //RCLCPP_INFO(logger, "min_id: %d | \t M_DIST_TH: %f", n_landmarks, M_DIST_TH);
-
-        //RCLCPP_INFO(logger, "m_dist print done");
-
-        //TODO: you can add this beforehand
-        min_dist.push_back(M_DIST_TH); // Add M_DIST_TH for new landmark
-        // Find the index of the minimum element in 'min_dist'
-        //min_id will be equal to num_landmarks if it didn't find anything under M_DIST_TH
-
-
-
-        //TODO:find min
-        int min_id = std::distance(min_dist.begin(), std::min_element(min_dist.begin(), min_dist.end()));
-        //RCLCPP_INFO(logger, "Min_id: %d \t | \t n_lm: %d\n",min_id, n_landmarks);
-        // RCLCPP_INFO(logger, "Min dist %f\n",min_dist[min_id]);
-
-        return min_id;
-    }
 
     /**
      * @brief print_cones will print the positions of the
-     * observed cones stored within the vector cone_obs
+     * observed cones stored within the vector cone_obs.
+     * For DEBUGGING purposes
      *
      * @param cone_obs is a memory address to the vector
      * containing the Point2 positions of the observed cones
      * - you can just pass in the variable, but the type is
      *   std::vector<Point2> &
+     *
      */
     void print_cones(auto logger, std::vector<Point2> &cone_obs)
     {
@@ -205,11 +119,50 @@ public:
 
     /**
      * @brief t_associate is a function called by threads that will
-     * perform data association on the observed cones stored as Point2
+     * perform data association on the observed Point2 cones stored
      * inside vector cone_obs.
      *
-     * the thread will operate on cones indicated by the indices in the
-     * range of [lo, hi)
+     * All calculated mahalanobis distances will be stored in vector
+     * m_dist. For a given time stamp, multiple threads will be spawned
+     * to calculate a subsection of the the mahalanobis distances
+     * from indices [lo, hi)
+     *
+     * @param global_obs_cones A vector containing the global position
+     *                         for the Point2 cones observed in the
+     *                         current time stamp
+     *
+     * @param all_cone_est A vector containing the estimates for the poses
+     *                     of previously seen cones, calculated by the
+     *                     iSAM2 model
+     *
+     * @param global_odom A Pose2 variable representing the global pose
+     *                    of the car.
+     *
+     * @param m_dist A vector containing all the mahalanobis distance
+     *               calculations that will need to be calculated for the
+     *               current time stamp.
+     *
+     *               Let n_landmarks represent the number of previously
+     *               seen landmarks, m_dist is organized such that each
+     *               set/multiple of n_landmarks + 1 elements corresponds to
+     *               the mahalanobis distance between an observed cone and
+     *               the global positions of all previously seen cones. The +1
+     *               represents the mahalanobis distance threshold (M_DIST_TH)
+     *
+     *               These mahalanobis distances will be used to perform
+     *               data association on the observed landmarks, by observing
+     *               which previously seen cone had the smallest mahalanobis
+     *               distance from the current observed cone. If the smallest
+     *               distance is M_DIST_TH, then the current observed cone is
+     *               a new cone
+     *
+     * @param lo An integer representing the index in m_dist the current
+     *           thread should start populating m_dist
+     *
+     * @param hi An integer representing the index in m_dist the current
+     *           thread should stop populating m_dist. Does not calculate
+     *           the element at index hi
+     *
      */
     void t_associate(vector<Point2> *cone_obs, vector<Pose2> *global_obs_cones,
             vector<Pose2> *all_cone_est, Pose2 global_odom, vector<float> *m_dist,
@@ -235,48 +188,41 @@ public:
                                             sin(bearing + global_odom.theta()));
             /* TODO: "valid bit" for whether global pose has already been calculated at obs_id */
 
-            //TODO
-            /* add a mutex here*/
-            //global_obs_cones_mutex.lock();
+            //TODO: move this outside of t_associate, and before threads are spawned
             global_obs_cones->at(obs_id) = Pose2(global_cone_x, global_cone_y, bearing);
-            //global_obs_cones_mutex.unlock();
-            /* add a mutex */
+
 
             /**
              * calculate for how many previous cone estimates to calculate
              * mahalanobis distance for, with respect to the current observation.
              *
-             */
-
-            /**
-             * n_landmarks + 1: add 1 for M_DIST_TH
+             * This is because the thread starts calculating mahalanobis distances
+             * starting at index lo, which may not be a multiple of n_landmarks + 1
              *
-             * -1: subtract 1 for last landmark index and to exclude M_DIST_TH
+             * (obs_id + 1): which multiple of (n_landmarks +1) depends on which
+             *                observed cone
              *
+             * (n_landmarks + 1): n_landmarks for all previous landmarks and
+             *                    +1 for M_DIST_TH.
              */
-
             int last_est_for_cur_obs = (obs_id + 1) * (n_landmarks + 1) - 1;
-            //RCLCPP_INFO(logger, "Obs_id: %d",obs_id);
+
+
+            /* calculating the mahalanobis distances */
             for (; i < last_est_for_cur_obs && i < hi; i++)
             {
-                //assert(i < hi);
-
+                /**
+                 * calculate difference between pose of current observed cone
+                 * and previously seen cone
+                 */
                 Eigen::MatrixXd diff(1, 3);
-                //RCLCPP_INFO(logger, "Last est idx: %d | Cur lm_idx: %d | i: %d | hi: %d", last_est_for_cur_obs, landmark_idx, i, hi);
-                assert(landmark_idx < n_landmarks);
-                isam2_mutex.lock();
                 Pose2 prev_est = all_cone_est->at(landmark_idx);
-                isam2_mutex.unlock();
-                //RCLCPP_INFO(logger, "accessed est. pose | i: %d | x: %f, y%f ", i, prev_est.x(), prev_est.y());
                 diff << global_cone_x - prev_est.x(),
                         global_cone_y - prev_est.y(),
                         1;
 
-
-                //RCLCPP_INFO(logger, "calculated estimate and diff");
+                /* calculate the mahalanobis distance */
                 m_dist->at(i) = (diff * isam2.marginalCovariance(L(landmark_idx)) * diff.transpose())(0, 0);
-                //RCLCPP_INFO(logger, "accessed marg.cov. | i: %d", i);
-                //RCLCPP_INFO(logger, "calculated mahal distance");
 
                 landmark_idx++;
             }
@@ -285,41 +231,22 @@ public:
             {
                 return;
             }
-            assert(last_est_for_cur_obs < m_dist->size());
+
             m_dist->at(last_est_for_cur_obs) = M_DIST_TH;
-            i++; /* skip 1 element (reserved for M_DIST_TH */
+            i++; /* skip 1 element (reserved for M_DIST_TH) */
             obs_id++;
+
+            /* new multiple of (n_landmarks+1) means calculating for previous cone/landmark 0 */
             landmark_idx = 0;
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        /*
-        for (int i = lo; i < hi; i++)
-        {
-            double bearing = std::atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
-            double range = norm2(cone_obs.at(i));
-            double global_cone_x = global_odom.x() + range * cos(bearing + global_odom.theta());
-            double global_cone_y = global_odom.y() + range * sin(bearing + global_odom.theta());
-            Pose2 global_cone(global_cone_x, global_cone_y, 0);
-
-            float m_dist[n_landmarks+1];
-            for (int n = 0; n < n_landmarks; n++)
-            {
-                Pose2 nth_est = isam2.calculateEstimate(L(n)).cast<Pose2>();
-                Eigen::MatrixXd diff(1, 3);
-                diff << global_cone_x - nth_est.x(), global_cone_y - nth_est.y(), 1;
-                m_dist[lo * n_landmarks + n] = (diff * isam2.marginalCovariance(L(n)) * diff.transpose())(0, 0);
-            }
-            m_dist[n_landmarks] = M_DIST_TH;
-            min_id[i] = std::distance(min_dist.begin(), std::min_element(min_dist.begin(), min_dist.end()));
-
-        }
-        */
     }
 
 
 
-    void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
+    void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
+            vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
+            long time_ns, bool loopClosure) {
 
         RCLCPP_INFO(logger, "stepping\n");
 
@@ -339,14 +266,13 @@ public:
         LandmarkNoiseModel(0) = 0.0;
         LandmarkNoiseModel(1) = 0.0;
         LandmarkNoiseModel(2) = 0.0;
-        //print_cones(logger, cone_obs);
         static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
-        if (pose_num==0) {//if this is the first pose, add your inital pose to the factor graph
-            //std::cout << "First pose\n" << std::endl;
+        if (pose_num==0) { /* first pose */
             static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
-            //add prior
+
+            /* Add prior (This is how the iSAM2 factor graph begins) */
             graph.add(prior_factor);
             values.insert(X(0), global_odom);
 
@@ -357,18 +283,23 @@ public:
             orange_cones = orange_ref_cones;
         }
         else {
-            //std::cout << "New Pose\n" << std::endl;
+            /**
+             * Use the previous pose estimate from iSAM2, and velocity odometry
+             * info to calculate the current pose
+             *
+             * Using a velocity-based motion model
+             *
+             */
             static noiseModel::Diagonal::shared_ptr odom_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             Pose2 prev_pos = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
-            //create a factor between current and previous robot pose
-            //add odometry estimates
-            //Motion model
 
-
-            //TODO: change back to motion model with velocity
             double time_s = time_ns/SEC_TO_NANOSEC;
 
-            Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
+
+            Pose2 Odometry =  Pose2(velocity.x()*time_s,
+                                    velocity.y()*time_s,
+                                    global_odom.theta() - prev_pos.theta());
+
             /*real data motion model?
             Pose2 Odometry =  Pose2(global_odom.x() - prev_pos.x(),global_odom.y() - prev_pos.y(),
                                     global_odom.theta() - prev_pos.theta());
@@ -376,17 +307,16 @@ public:
 
             static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
-            //add prior
             graph.add(prior_factor);
 
-            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),Odometry, odom_model);
+            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),
+                                                                                    Odometry, odom_model);
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
         }
 
-        RCLCPP_INFO(logger, "beginning loop closure");
+
         if(loopClosure){
-            // std::cout<<"loop closure constraint added"<<std::endl;
             static noiseModel::Diagonal::shared_ptr loop_closure_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             //left is 0, right is 1
             //Do triangulation given the current cone positions and the previous saved orange cones
@@ -397,72 +327,20 @@ public:
             Point2 avgDiff = (diffLeft+diffRight)/2; //pose difference between first pose and last pose
             double angle = atan2(avgDiff.y(), avgDiff.x());
             Pose2 AvgPoseDiff = Pose2(avgDiff.x(), avgDiff.y(),angle);
-            // std::cout<<"loop closure pose diff:"<<AvgPoseDiff<<std::endl;
 
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(0), X(pose_num),AvgPoseDiff, loop_closure_model);
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
         }
-        RCLCPP_INFO(logger, "end loop closure");
 
         //todo only do this once after update
         isam2.update(graph, values);
         graph.resize(0);
         values.clear();
-        // std::cout << "global_odom: "  << global_odom << std::endl;
 
         RCLCPP_INFO(logger, "DATA ASSOCIATION BEGIN: Pose: (%f, %f)", global_odom.x(),
                                                                         global_odom.y());
         // DATA ASSOCIATION BEGIN
-
-
-////////////////////////////////////////////////////////////////
-        //Vectorized implementation
-
-        //Calculate the positions of all cones current
-        /*
-        landmark_est.clear();
-        for (int i = 0; i < n_landmarks; i++) {
-            gtsam::Pose2 landmark = isam2.calculateEstimate().at(L(i)).cast<Pose2>();
-            landmark_est.push_back(landmark);
-            //TODO:maybe make this into a matrix as well
-        }
-
-        //Make the incoming cones into an eigen matrix
-        Eigen::MatrixXd cone_meas(cone_obs.size(),2);
-        //TODO: make sure this actually works
-        for (int i = 0; i < cone_obs.size(); i++) {
-            cone_meas(i) = cone_obs.at(i).x(),cone_obs.at(i).y();
-        }
-
-        //Range
-        Eigen::MatrixXd range(cone_obs.size(),1);
-        //range = cone_meas.rowwise().norm();
-        for (int i = 0; i < cone_obs.size(); i++)
-        {
-            range(i) = norm2(cone_obs.at(i));
-        }
-
-        //Angle: eigen atan2 is sus
-        //TODO: find a faster way to do this
-        Eigen::MatrixXd bearing(cone_obs.size(),1);
-        for (int i = 0; i < cone_obs.size(); i++) {
-            bearing(i) = atan2(cone_obs.at(i).y(),cone_obs.at(i).x());
-        }
-
-        Eigen::MatrixXd totalBearing = bearing.array()+global_odom.theta();
-        Eigen::MatrixXd global_cone_x(cone_obs.size(),1);
-        Eigen::MatrixXd global_cone_y(cone_obs.size(),1);
-
-        Eigen::MatrixXd totalBearing_cos(cone_obs.size(),1);
-        Eigen::MatrixXd totalBearing_sin(cone_obs.size(),1);
-        totalBearing_cos = totalBearing.array().cos();
-        totalBearing_sin = totalBearing.array().sin();
-
-
-        global_cone_x = global_odom.x() + range.array()*totalBearing_cos.array();
-        global_cone_y = global_odom.y() + range.array()*totalBearing_sin.array();
-        */
 
         RCLCPP_INFO(logger, "Printing global obs: (n_landmarks: %d; num_obs: %d)",
                                                     n_landmarks, cone_obs.size());
@@ -477,33 +355,35 @@ public:
             vector<float> m_dist(m_dist_len, 0.0);
             vector<Pose2> global_obs_cones = vector(cone_obs.size(), Pose2(0, 0, 0));
 
-            /* spawn num_threads that will are responsible for performing data
+            /**
+             * Spawn num_threads that will are responsible for performing data
              * association on subset of the observed cones
              *
-             * populate m_dist
+             * Populate m_dist
              */
 
-            /* this should not work at the beginning */
-            /*Pose2 bad = isam2.calculateEstimate(L(11)).cast<Pose2>();
-             Exception thrown: std::out_of_range; requested variable 'l11' is
-             not in this VectorValues */
-
-            /*
-             * Eigen::MatrixXd bad_mCov = isam2.marginalCovariance(L(i));
-            Eigen::MatrixXd test = Eigen:MatrixXd::Zero(1, 3);
-            test = test * mCov;
-            RCLCPP_INFO(logger, "nonexistent pose: x: %f, y: %f \n", bad.x(), bad.y());
-            */
-
+            /**
+             * Why are we obtaining all the estimates for the global position
+             * of previously seen cones sequentially instead of using threads?
+             *
+             * a.) When using threads, we will have to calculate the estimate
+             *     for the same previously seen cone multiple times, for each
+             *     observed cone. (wasted computation)
+             *
+             * b.) Issue with multiple threads calculating estimates at once.
+             *     This is a critical section in the code. Therefore, it is
+             *     safer to calculate all estimates in a vector, where multiple
+             *     threads can safely read from the the vector (even if reading
+             *     the same element)
+             *
+             */
             vector<Pose2> all_cone_est = vector(n_landmarks, Pose2(0, 0, 0));
             for (int i = 0; i < n_landmarks; i++)
             {
-                /* make the calculation (eigen is lazy) */
-                /*Pose2 temp = isam2.calculateEstimate(L(i)).cast<Pose2>();
-                all_cone_est.at(i) = Pose2(temp.x(), temp.y(), 0);*/
                 all_cone_est.at(i) = isam2.calculateEstimate(L(i)).cast<Pose2>();
-                //RCLCPP_INFO(logger, "x: %f | y: %f", temp.x(), temp.y());
             }
+
+
             auto end_temp = high_resolution_clock::now();
             auto duration_temp = duration_cast<microseconds>(end_temp - start);
             RCLCPP_INFO(logger, "temp time: %d", duration_temp.count());
@@ -528,7 +408,18 @@ public:
                                     num_threads * multiple_size, m_dist_len);
             RCLCPP_INFO(logger, "finished populating m_dist\n");
 
-            /* find min_dist; do this in n_landmarks + 1 sub-sections of m_dist*/
+            /**
+             * Find min_dist; do this for each (n_landmarks + 1) sub-section of m_dist
+             *
+             * Finding the previously seen cone that is the most similar to the
+             * current observed cone by finding the previously seen cone that
+             * had the smallest mahalanobis distance with the observed cone.
+             *
+             * If the smallest mahalanobis distance is M_DIST_TH (the last
+             * element in each (n_landmarks + 1) subsection of m_dist), then
+             * the current landmark/cone is a new cone
+             *
+             */
 
             for (int i = 0; i < (int)cone_obs.size(); i++)
             {
@@ -580,81 +471,6 @@ public:
         graph.resize(0);
         values.clear();
 
-        /* checking */
-        //for (int i = 0; i < n_landmarks; i++)
-        //{
-        //    Pose2 cur_est = isam2.calculateEstimate(L(i)).cast<Pose2>();
-        //    RCLCPP_INFO(logger, "i: %d | x: %f, y: %f ", i, cur_est.x(), cur_est.y());
-        //}
-
-
-        /* iterate through observed cones: given as relative distance wrt car */
-        //for (auto cone : cone_obs) {
-
-        //    Pose2 conePose(cone.x(),cone.y(),0);
-        //    double range = norm2(cone);
-
-        //    double bearing = std::atan2(conePose.y(), conePose.x());//+ global_odom.theta();
-        //    double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
-        //    double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
-
-        //    /* calculate global position of the cone */
-        //    Pose2 global_cone(global_cone_x,global_cone_y,0);
-
-        //    /* vectorize associate()
-        //     *
-        //     * 1.) get the isam2 estimate for previously seen landmark
-        //     * 2.) calculate the difference in global position
-        //     * - bearing set to 1
-        //     * 3.) in the meantime, stack up marginal covariance matrices
-        //     *
-        //     * */
-
-        //    /* each row represents difference between global position of
-        //     * observed cone and previous cone estimate
-        //     * -there are n_landmarks previous cone estimates
-        //     *
-        //     * the difference is a 3 element vector, which is why the columns
-        //     * must be 3 * n_landmarks
-        //     */
-        //    /*
-        //    */
-
-        //    //int associated_ID = associate(logger, global_cone);
-        //    //int associated_ID = associate(logger, global_cone);
-
-        //    //RCLCPP_INFO(logger, "cur obs: (%f, %f) | min_id: %d", global_cone_x, global_cone_y, associated_ID);
-        //    //If it is a new cone:
-        //    if (associated_ID == n_landmarks) { //if you can't find it in the list of landmarks
-        //        //add cone to list
-        //        //add factor between pose and landmark
-        //        graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID),
-        //                                        Pose2(conePose.x(), conePose.y(), bearing),
-        //                                                landmark_model));
-        //        //this is how we model noise for the environmant
-        //        values.insert(L(n_landmarks), global_cone);
-
-        //        if (n_landmarks == 0) {
-        //            graph.addPrior(L(0),conePose); //TODO: how does this prior make sense?
-        //        }
-
-        //        n_landmarks++;
-        //    } else {
-        //        // RCLCPP_INFO(logger, "Associated Landmark: %d", associated_ID);
-        //        // std::cout << "Associated Landmark:\n"  << L(n_landmarks) << std::endl;
-        //        //Add a factor to the associated landmark
-        //        graph.add(BetweenFactor<Pose2>(X(pose_num), L(associated_ID), Pose2(conePose.x(),
-        //                                            conePose.y(), bearing), landmark_model));
-        //    }
-        //    // RCLCPP_INFO(logger, "updating");
-
-        //    isam2.update(graph, values);
-        //    graph.resize(0);
-        //    values.clear();
-        //    Pose2 est = isam2.calculateEstimate(L(associated_ID)).cast<Pose2>();
-        //    //RCLCPP_INFO(logger,"isam2 est: (%f, %f)\n", est.x(), est.y());
-
-        //}
         auto end = high_resolution_clock::now();
 
         auto duration = duration_cast<microseconds>(end - start);
@@ -664,10 +480,13 @@ public:
 
         // DATA ASSOCIATION END
 
-        //Print to squirrel.txt
-        //Every single time you run step, you reprint the isam2 estimates
-        //Remove the previous estimates (trunc)
-        //RCLCPP_INFO(logger, "graphing\n");
+        /**
+         * Print to squirrel.txt
+         * Every single time you run step, you reprint the isam2 estimates
+         * Remove the previous estimates (trunc)
+         * RCLCPP_INFO(logger, "graphing\n");
+         */
+
         std::ofstream ofs;
         std::ofstream out("squirrel.txt");
         std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
@@ -682,6 +501,5 @@ public:
         //calculate estimate of robot state
         robot_est = isam2.calculateEstimate().at(X(pose_num)).cast<gtsam::Pose2>();
         pose_num++;
-        // std::cout << "Robot Estimate:(" << robot_est.x() <<"," << robot_est.y() << ")" << std::endl;
     }
 };
