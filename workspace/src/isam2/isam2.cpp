@@ -413,10 +413,10 @@ public:
         auto start = high_resolution_clock::now();
         if (n_landmarks != 0 && cone_obs.size() > 0)
         {
-            int num_threads = 8;
+            int num_threads = 12;
 
             const int m_dist_len = (n_landmarks + 1) * cone_obs.size(); //110
-	    if (n_landmarks < 30)
+	    if (m_dist_len < 500)
 	    {
 		num_threads = 6;
 	    }
