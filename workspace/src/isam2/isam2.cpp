@@ -233,14 +233,8 @@ public:
 
             double global_cone_y = (global_odom.y() + range *
                                             sin(bearing + global_odom.theta()));
-            /* TODO: "valid bit" for whether global pose has already been calculated at obs_id */
 
-            //TODO
-            /* add a mutex here*/
-            //global_obs_cones_mutex.lock();
             global_obs_cones->at(obs_id) = Pose2(global_cone_x, global_cone_y, bearing);
-            //global_obs_cones_mutex.unlock();
-            /* add a mutex */
 
             /**
              * calculate for how many previous cone estimates to calculate
@@ -264,9 +258,7 @@ public:
                 Eigen::MatrixXd diff(1, 3);
                 //RCLCPP_INFO(logger, "Last est idx: %d | Cur lm_idx: %d | i: %d | hi: %d", last_est_for_cur_obs, landmark_idx, i, hi);
                 assert(landmark_idx < n_landmarks);
-                isam2_mutex.lock();
                 Pose2 prev_est = all_cone_est->at(landmark_idx);
-                isam2_mutex.unlock();
                 //RCLCPP_INFO(logger, "accessed est. pose | i: %d | x: %f, y%f ", i, prev_est.x(), prev_est.y());
                 diff << global_cone_x - prev_est.x(),
                         global_cone_y - prev_est.y(),
@@ -321,7 +313,6 @@ public:
 
     void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
 
-        RCLCPP_INFO(logger, "stepping\n");
 
 
         Vector NoiseModel(3);
@@ -416,63 +407,21 @@ public:
         // DATA ASSOCIATION BEGIN
 
 
-////////////////////////////////////////////////////////////////
-        //Vectorized implementation
-
-        //Calculate the positions of all cones current
-        /*
-        landmark_est.clear();
-        for (int i = 0; i < n_landmarks; i++) {
-            gtsam::Pose2 landmark = isam2.calculateEstimate().at(L(i)).cast<Pose2>();
-            landmark_est.push_back(landmark);
-            //TODO:maybe make this into a matrix as well
-        }
-
-        //Make the incoming cones into an eigen matrix
-        Eigen::MatrixXd cone_meas(cone_obs.size(),2);
-        //TODO: make sure this actually works
-        for (int i = 0; i < cone_obs.size(); i++) {
-            cone_meas(i) = cone_obs.at(i).x(),cone_obs.at(i).y();
-        }
-
-        //Range
-        Eigen::MatrixXd range(cone_obs.size(),1);
-        //range = cone_meas.rowwise().norm();
-        for (int i = 0; i < cone_obs.size(); i++)
-        {
-            range(i) = norm2(cone_obs.at(i));
-        }
-
-        //Angle: eigen atan2 is sus
-        //TODO: find a faster way to do this
-        Eigen::MatrixXd bearing(cone_obs.size(),1);
-        for (int i = 0; i < cone_obs.size(); i++) {
-            bearing(i) = atan2(cone_obs.at(i).y(),cone_obs.at(i).x());
-        }
-
-        Eigen::MatrixXd totalBearing = bearing.array()+global_odom.theta();
-        Eigen::MatrixXd global_cone_x(cone_obs.size(),1);
-        Eigen::MatrixXd global_cone_y(cone_obs.size(),1);
-
-        Eigen::MatrixXd totalBearing_cos(cone_obs.size(),1);
-        Eigen::MatrixXd totalBearing_sin(cone_obs.size(),1);
-        totalBearing_cos = totalBearing.array().cos();
-        totalBearing_sin = totalBearing.array().sin();
-
-
-        global_cone_x = global_odom.x() + range.array()*totalBearing_cos.array();
-        global_cone_y = global_odom.y() + range.array()*totalBearing_sin.array();
-        */
-
         RCLCPP_INFO(logger, "Printing global obs: (n_landmarks: %d; num_obs: %d)",
                                                     n_landmarks, cone_obs.size());
 
         auto start = high_resolution_clock::now();
         if (n_landmarks != 0 && cone_obs.size() > 0)
         {
-            const int num_threads = 3;
-            thread all_t[num_threads];
+            int num_threads = 8;
+
             const int m_dist_len = (n_landmarks + 1) * cone_obs.size(); //110
+	    if (n_landmarks < 30)
+	    {
+		num_threads = 6;
+	    }
+
+            thread all_t[num_threads];
             const int multiple_size = m_dist_len / num_threads; //110/3
             vector<float> m_dist(m_dist_len, 0.0);
             vector<Pose2> global_obs_cones = vector(cone_obs.size(), Pose2(0, 0, 0));
