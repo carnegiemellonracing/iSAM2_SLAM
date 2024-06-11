@@ -50,50 +50,47 @@ struct VehicleState{
 
 class SLAMValidation : public rclcpp::Node
 {
-  public:
+    public:
+
     SLAMValidation(): Node("slam_validation"){
-      rmw_qos_profile_t best_effort_qos = rmw_qos_profile_default;
-      cone_sub = this->create_subscription<eufs_msgs::msg::ConeArrayWithCovariance>(
-          CONE_DATA_TOPIC, 10, std::bind(&SLAMValidation::cone_callback, this, _1));
-      vehicle_state_sub = this->create_subscription<eufs_msgs::msg::CarState>(
-             VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
-
-      timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
-      // For sim
-      // vehicle_state_sub = this->create_subscription<interfaces::msg::CarState>(
-      // VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
-
-      //bring back///////////////
-      // vehicle_pos_sub = this->create_subscription<sensor_msgs::msg::NavSatFix>(
-      // VEHICLE_POS_TOPIC, 10, std::bind(&SLAMValidation::vehicle_pos_callback, this, _1));
-
-      // vehicle_angle_sub = this->create_subscription<geometry_msgs::msg::QuaternionStamped>(
-      // VEHICLE_ANGLE_TOPIC, 10, std::bind(&SLAMValidation::vehicle_angle_callback, this, _1));
-
-      // vehicle_vel_sub = this->create_subscription<geometry_msgs::msg::TwistStamped>(
-      // VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
-      ////////////////////////
-
-      //TODO: need to initalize robot state?????
-      dt = .1;
-      orangeNotSeen = 25;
-      orangeNotSeenFlag = false;
-      loopClosure = false;
 
 
-      init_odom = gtsam::Pose2(-1,-1,-1);
-      file_opened = true;
+        rmw_qos_profile_t best_effort_qos = rmw_qos_profile_default;
+        cone_sub = this->create_subscription<eufs_msgs::msg::ConeArrayWithCovariance>(
+            CONE_DATA_TOPIC, 10, std::bind(&SLAMValidation::cone_callback, this, _1));
+        vehicle_state_sub = this->create_subscription<eufs_msgs::msg::CarState>(
+               VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
+
+        timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
+
+
+        dt = .1;
+        orangeNotSeen = 25;
+        orangeNotSeenFlag = false;
+        loopClosure = false;
+
+
+        init_odom = gtsam::Pose2(-1,-1,-1);
+        file_opened = true;
 
 
     }
-  private:
 
-    // positive y forward
-    // positive x right
+    private:
+
+    /**
+     * @brief cone_callback is the function called when a message is received
+     * by the subscriber, cone_sub. Based on whether orange cones were
+     * observed, cone_callback will determine whether loop closure has
+     * occurred.
+     *
+     * @param cone_data The message received by cone_sub. This message will
+     *                  be parsed into arrays of blue, yello, and orange cones.
+     *
+     */
     void cone_callback(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data)
     {
-      // RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
-      // return;
+
       cones.clear();
       orangeCones.clear();
       auto b_cones = cone_data->blue_cones;
@@ -169,6 +166,18 @@ class SLAMValidation : public rclcpp::Node
     }
 
 
+    /**
+     * @brief vehicle_state_callback is the function called when
+     * the vehicle_state_sub receives a message for the pose data
+     * of the car. The motion and odometry data parsed by this function
+     * will be used to calculate the global position of the cones as
+     * well as the global pose of the car
+     *
+     * @param pose_data Message received by vehicle_state_sub containing
+     *                  motion information such as velocity and the
+     *                  orientation of the car in quaternion form
+     *
+     */
     void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr pose_data)
     {
         double pos_x = pose_data->pose.pose.position.x;
