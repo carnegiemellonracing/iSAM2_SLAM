@@ -431,10 +431,14 @@ public:
             int num_threads = 12;
 
             const int m_dist_len = (n_landmarks + 1) * cone_obs.size(); //110
-	        if (m_dist_len < 500)
-	        {
-		        num_threads = 6;
-	        }
+	    if (m_dist_len < 200)
+	    {
+		num_threads = 5;
+	    }
+	    else if (m_dist_len < 500)
+	    {
+		num_threads = 6;
+	    }
 
             thread all_t[num_threads];
             const int multiple_size = m_dist_len / num_threads; //110/3
@@ -524,6 +528,7 @@ public:
                 if (remainder > 0)
                 {
                     next_cone_obs_idx++;
+		    remainder--;
                 }
 
                 all_t2[threads_idx] = thread(&slamISAM::t_find_min_ids, this, &m_dist,
@@ -537,10 +542,12 @@ public:
             {
                 t2.join();
             }
+	    RCLCPP_INFO(logger, "calc'd min_ids");
 
             /**
              * With the calculated min_ids, determine how to update the graph
              */
+	    RCLCPP_INFO(logger, "updating graph");
             for (int i = 0; i < (int)cone_obs.size(); i++)
             {
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(min_ids[i]),
