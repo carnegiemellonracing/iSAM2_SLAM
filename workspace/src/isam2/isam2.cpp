@@ -284,17 +284,7 @@ public:
             landmark_idx = 0;
         }
 
-        void t_find_min_ids(vector<float> *m_dist, vector<int> *min_ids int cone_obs_lo, int cone_obs_hi)
-        {
-            for (int i = cone_obs_lo, i < cone_obs_hi; i++)
-            {
-                int start_offset = i * (n_landmarks + 1);
-                vector<float>::iterator start_iter = m_dist.begin() + start_offset;
-                min_ids->at(i) = std::distance(start_iter,
-                                            std::min_element(start_iter,
-                                                start_iter + (n_landmarks+1)));
-            }
-        }
+
 
         ///////////////////////////////////////////////////////////////////////
         /*
@@ -321,9 +311,22 @@ public:
         */
     }
 
+    void t_find_min_ids(vector<float> *m_dist, vector<int> *min_ids,
+                                    int cone_obs_lo, int cone_obs_hi)
+    {
+        for (int i = cone_obs_lo; i < cone_obs_hi; i++)
+        {
+            int start_offset = i * (n_landmarks + 1);
+            vector<float>::iterator start_iter = m_dist->begin() + start_offset;
+            min_ids->at(i) = std::distance(start_iter,
+                                        std::min_element(start_iter,
+                                            start_iter + (n_landmarks+1)));
+        }
+    }
 
-
-    void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs, std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,long time_ns, bool loopClosure) {
+    void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
+                std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
+                long time_ns, bool loopClosure) {
 
 
 
@@ -481,15 +484,15 @@ public:
 
             vector<int> min_ids = vector(cone_obs.size(), 0);
 
-            num_threads = (int)cone_obs.size();
-            multiple_size = 1;
+            int num_threads2 = (int)cone_obs.size();
+            int multiple_size2 = 1;
             if ((int)cone_obs.size() > 12)
             {
-                num_threads = 8;
-                multiple_size = cone_obs.size() / num_threads;
+                num_threads2 = 8;
+                multiple_size2 = cone_obs.size() / num_threads2;
             }
 
-            thread all_t2[num_threads];
+            thread all_t2[num_threads2];
             /**
              * Should you have another thread compute the min_id of the remainder cones?
              * - Worst case: cone_obs.size() == 13
@@ -500,7 +503,7 @@ public:
              * - all threads calc. min_id for 1 + 1 cone, last thread calc. for 1 cone
              */
 
-            int remainder = (int)cone_obs.size() - num_threads * multiple_size;
+            int remainder = (int)cone_obs.size() - num_threads2 * multiple_size2;
             int cone_obs_idx = 0;
             int threads_idx = 0;
 
@@ -514,9 +517,9 @@ public:
 
             while (cone_obs_idx < cone_obs.size())
             {
-                assert(threads_idx < num_threads);
+                assert(threads_idx < num_threads2);
 
-                int next_cone_obs_idx = cone_obs_idx + multiple_size;
+                int next_cone_obs_idx = cone_obs_idx + multiple_size2;
 
                 if (remainder > 0)
                 {
