@@ -284,6 +284,18 @@ public:
             landmark_idx = 0;
         }
 
+        void t_find_min_ids(vector<float> *m_dist, vector<int> *min_ids int cone_obs_lo, int cone_obs_hi)
+        {
+            for (int i = cone_obs_lo, i < cone_obs_hi; i++)
+            {
+                int start_offset = i * (n_landmarks + 1);
+                vector<float>::iterator start_iter = m_dist.begin() + start_offset;
+                min_ids->at(i) = std::distance(start_iter,
+                                            std::min_element(start_iter,
+                                                start_iter + (n_landmarks+1)));
+            }
+        }
+
         ///////////////////////////////////////////////////////////////////////
         /*
         for (int i = lo; i < hi; i++)
@@ -416,10 +428,10 @@ public:
             int num_threads = 12;
 
             const int m_dist_len = (n_landmarks + 1) * cone_obs.size(); //110
-	    if (m_dist_len < 500)
-	    {
-		num_threads = 6;
-	    }
+	        if (m_dist_len < 500)
+	        {
+		        num_threads = 6;
+	        }
 
             thread all_t[num_threads];
             const int multiple_size = m_dist_len / num_threads; //110/3
@@ -432,26 +444,10 @@ public:
              * populate m_dist
              */
 
-            /* this should not work at the beginning */
-            /*Pose2 bad = isam2.calculateEstimate(L(11)).cast<Pose2>();
-             Exception thrown: std::out_of_range; requested variable 'l11' is
-             not in this VectorValues */
-
-            /*
-             * Eigen::MatrixXd bad_mCov = isam2.marginalCovariance(L(i));
-            Eigen::MatrixXd test = Eigen:MatrixXd::Zero(1, 3);
-            test = test * mCov;
-            RCLCPP_INFO(logger, "nonexistent pose: x: %f, y: %f \n", bad.x(), bad.y());
-            */
-
             vector<Pose2> all_cone_est = vector(n_landmarks, Pose2(0, 0, 0));
             for (int i = 0; i < n_landmarks; i++)
             {
-                /* make the calculation (eigen is lazy) */
-                /*Pose2 temp = isam2.calculateEstimate(L(i)).cast<Pose2>();
-                all_cone_est.at(i) = Pose2(temp.x(), temp.y(), 0);*/
                 all_cone_est.at(i) = isam2.calculateEstimate(L(i)).cast<Pose2>();
-                //RCLCPP_INFO(logger, "x: %f | y: %f", temp.x(), temp.y());
             }
             auto end_temp = high_resolution_clock::now();
             auto duration_temp = duration_cast<microseconds>(end_temp - start);
@@ -468,17 +464,100 @@ public:
                             */
 
             }
+
             for (auto &t : all_t)
             {
                 t.join();
             }
 
+            //Compute the remainders
             t_associate(&cone_obs, &global_obs_cones, &all_cone_est, global_odom, &m_dist,
                                     num_threads * multiple_size, m_dist_len);
+
             RCLCPP_INFO(logger, "finished populating m_dist\n");
+
 
             /* find min_dist; do this in n_landmarks + 1 sub-sections of m_dist*/
 
+            vector<int> min_ids = vector(cone_obs.size(), 0);
+
+            num_threads = (int)cone_obs.size();
+            multiple_size = 1;
+            if ((int)cone_obs.size() > 12)
+            {
+                num_threads = 8;
+                multiple_size = cone_obs.size() / num_threads;
+            }
+
+            thread all_t2[num_threads];
+            /**
+             * Should you have another thread compute the min_id of the remainder cones?
+             * - Worst case: cone_obs.size() == 13
+             * - all threads calc. min_id for 1 cone, last thread calc. for 5 cones
+             *
+             * Should you add the remainder cones to the existing threads?
+             * - Worst case: cone_obs.size() == 15
+             * - all threads calc. min_id for 1 + 1 cone, last thread calc. for 1 cone
+             */
+
+            int remainder = (int)cone_obs.size() - num_threads * multiple_size;
+            int cone_obs_idx = 0;
+            int threads_idx = 0;
+
+            /**
+             * Calculate the lower bound index and assign the thread the cones
+             * with indices between cone_obs_idx and next_cone_obs_idx
+             *
+             * There are no remainders because you disperse the remainders
+             * amongs the existing threads
+             */
+
+            while (cone_obs_idx < cone_obs.size())
+            {
+                assert(threads_idx < num_threads);
+
+                int next_cone_obs_idx = cone_obs_idx + multiple_size;
+
+                if (remainder > 0)
+                {
+                    next_cone_obs_idx++;
+                }
+
+                all_t2[threads_idx] = thread(&slamISAM::t_find_min_ids, this, &m_dist,
+                                        &min_ids, cone_obs_idx, next_cone_obs_idx);
+
+                cone_obs_idx = next_cone_obs_idx;
+                threads_idx++;
+            }
+
+            for (auto& t2 : all_t2)
+            {
+                t2.join();
+            }
+
+            /**
+             * With the calculated min_ids, determine how to update the graph
+             */
+            for (int i = 0; i < (int)cone_obs.size(); i++)
+            {
+                graph.add(BetweenFactor<Pose2>(X(pose_num), L(min_ids[i]),
+                            Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(),
+                                global_obs_cones.at(i).theta()),
+                                landmark_model));
+
+                if (min_ids[i] == n_landmarks) // new_landmark
+                {
+                    values.insert(L(n_landmarks), Pose2(global_obs_cones.at(i).x(),
+                                                        global_obs_cones.at(i).y(),
+                                                        0));
+                    n_landmarks++;
+                }
+            }
+
+
+
+
+            /*
             for (int i = 0; i < (int)cone_obs.size(); i++)
             {
                 int start_idx = i*(n_landmarks + 1);
@@ -492,13 +571,17 @@ public:
                             Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(), global_obs_cones.at(i).theta()),
                             landmark_model));
 
-                if (n_landmarks == min_id) /* new landmark */
+                if (n_landmarks == min_id)
                 {
                     values.insert(L(n_landmarks), Pose2(global_obs_cones.at(i).x(), global_obs_cones.at(i).y(), 0));
                     n_landmarks++;
                     RCLCPP_INFO(logger, "n_lm: %d", n_landmarks);
                 }
             }
+            */
+
+
+
 
         }
         else if (n_landmarks == 0 && cone_obs.size() > 0)
