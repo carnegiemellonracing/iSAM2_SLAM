@@ -37,7 +37,7 @@ using namespace gtsam;
 using namespace std::chrono;
 
 //static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 20;
+static const float M_DIST_TH = 70;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 //static mutex global_obs_cones_mutex;
@@ -311,6 +311,7 @@ public:
         */
     }
 
+
     void t_find_min_ids(vector<float> *m_dist, vector<int> *min_ids,
                                     int cone_obs_lo, int cone_obs_hi)
     {
@@ -425,6 +426,14 @@ public:
         RCLCPP_INFO(logger, "Printing global obs: (n_landmarks: %d; num_obs: %d)",
                                                     n_landmarks, cone_obs.size());
 
+	/*Eigen::MatrixXd cone_xy(cone_obs.size(), 2);
+	Eigen::MatrixXd range(cone_obs.size(), 1);
+	int num_obs = (int)cone_obs.size();
+	for (int i = 0; i < num_obs; i++)
+	{
+	    cone_xy(i) = cone_obs.at(i).x(), cone_obs.at(i).y();
+	    range(i) = norm2(cone_obs.at(i));
+	}*/
         auto start = high_resolution_clock::now();
         if (n_landmarks != 0 && cone_obs.size() > 0)
         {
@@ -433,7 +442,7 @@ public:
             const int m_dist_len = (n_landmarks + 1) * cone_obs.size(); //110
 	    if (m_dist_len < 200)
 	    {
-		num_threads = 5;
+		num_threads = 4;
 	    }
 	    else if (m_dist_len < 500)
 	    {
@@ -533,7 +542,6 @@ public:
 
                 all_t2[threads_idx] = thread(&slamISAM::t_find_min_ids, this, &m_dist,
                                         &min_ids, cone_obs_idx, next_cone_obs_idx);
-
                 cone_obs_idx = next_cone_obs_idx;
                 threads_idx++;
             }
@@ -544,18 +552,49 @@ public:
             }
 	    RCLCPP_INFO(logger, "calc'd min_ids");
 
+	    /* correctness checker for min_id calculation
+	    for (int i =0; i < (int)cone_obs.size(); i++)
+	    {
+		int start_idx = i*(n_landmarks + 1);
+                vector<float>::iterator start_iter = m_dist.begin() + start_idx;
+                int min_id = std::distance(start_iter,
+                                        std::min_element(start_iter,
+                                                   start_iter + (n_landmarks + 1)));
+		assert(min_id == min_ids.at(i));
+	    }
+	    RCLCPP_INFO(logger, "min_ids correct"); */
+
+
             /**
              * With the calculated min_ids, determine how to update the graph
              */
 	    RCLCPP_INFO(logger, "updating graph");
+	    /* the highest min_id could only be prev_n_landmarks */
+	    int prev_n_landmarks = n_landmarks;
+	    RCLCPP_INFO(logger, "reading min_ids");
             for (int i = 0; i < (int)cone_obs.size(); i++)
             {
-                graph.add(BetweenFactor<Pose2>(X(pose_num), L(min_ids[i]),
+		int l_idx = min_ids.at(i);
+		if (min_ids.at(i) == prev_n_landmarks)
+		{
+		    l_idx = n_landmarks;
+		}
+
+		/**
+		 * Why wasn't everything blowing up before fixing L(l_idx)
+		 * Probably because when you only add 1 new cone at each iteration,
+		 * you don't have enough for things to just blow up
+		 */
+                graph.add(BetweenFactor<Pose2>(X(pose_num), L(l_idx),
                             Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(),
                                 global_obs_cones.at(i).theta()),
                                 landmark_model));
 
-                if (min_ids[i] == n_landmarks) // new_landmark
+		/**
+		 * the M_DIST_TH distance from the beginning should be 
+		 * n_landmark BEFORE the n_landmarks++ happens in this if statement
+		 */
+                if (min_ids.at(i) == prev_n_landmarks) // new_landmark
                 {
                     values.insert(L(n_landmarks), Pose2(global_obs_cones.at(i).x(),
                                                         global_obs_cones.at(i).y(),
