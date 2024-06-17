@@ -37,7 +37,7 @@ using namespace gtsam;
 using namespace std::chrono;
 
 //static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 70;
+static const float M_DIST_TH = 30;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 //static mutex global_obs_cones_mutex;
@@ -211,9 +211,9 @@ public:
      * the thread will operate on cones indicated by the indices in the
      * range of [lo, hi)
      */
-    void t_associate(vector<Point2> *cone_obs, vector<Pose2> *global_obs_cones,
-            vector<Pose2> *all_cone_est, Pose2 global_odom, vector<float> *m_dist,
-            int lo, int hi)
+    void t_associate(vector<Point2> *cone_obs, Eigen::MatrixXd* global_cone_x,
+	    Eigen::MatrixXd* global_cone_y, vector<Pose2> *all_cone_est, 
+	    Pose2 global_odom, vector<float> *m_dist, int lo, int hi)
     {
         int i = lo;
         int landmark_idx = lo % (n_landmarks + 1);
@@ -223,6 +223,7 @@ public:
         while (i < hi && obs_id < cone_obs->size())
         {
 
+	    /* not needed after vectorization 
             double bearing = std::atan2(cone_obs->at(obs_id).y(),
                                         cone_obs->at(obs_id).x());
 
@@ -235,6 +236,8 @@ public:
                                             sin(bearing + global_odom.theta()));
 
             global_obs_cones->at(obs_id) = Pose2(global_cone_x, global_cone_y, bearing);
+	    */
+	
 
             /**
              * calculate for how many previous cone estimates to calculate
@@ -260,8 +263,8 @@ public:
                 assert(landmark_idx < n_landmarks);
                 Pose2 prev_est = all_cone_est->at(landmark_idx);
                 //RCLCPP_INFO(logger, "accessed est. pose | i: %d | x: %f, y%f ", i, prev_est.x(), prev_est.y());
-                diff << global_cone_x - prev_est.x(),
-                        global_cone_y - prev_est.y(),
+                diff << (*global_cone_x)(obs_id) - prev_est.x(),
+                        (*global_cone_y)(obs_id) - prev_est.y(),
                         1;
 
 
@@ -426,33 +429,77 @@ public:
         RCLCPP_INFO(logger, "Printing global obs: (n_landmarks: %d; num_obs: %d)",
                                                     n_landmarks, cone_obs.size());
 
-	/*Eigen::MatrixXd cone_xy(cone_obs.size(), 2);
+	Eigen::MatrixXd cone_xy(cone_obs.size(), 2);
 	Eigen::MatrixXd range(cone_obs.size(), 1);
+	Eigen::MatrixXd bearing(cone_obs.size(), 1);
+
 	int num_obs = (int)cone_obs.size();
 	for (int i = 0; i < num_obs; i++)
 	{
 	    cone_xy(i) = cone_obs.at(i).x(), cone_obs.at(i).y();
+	}
+
+	for (int i = 0; i < num_obs; i++)
+	{
 	    range(i) = norm2(cone_obs.at(i));
-	}*/
+	}
+
+	for (int i = 0; i < num_obs; i++)
+	{
+	    bearing(i) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
+	}
+
+	Eigen::MatrixXd totalBearing = bearing.array()+global_odom.theta();
+	Eigen::MatrixXd global_cone_x(cone_obs.size(),1);
+	Eigen::MatrixXd global_cone_y(cone_obs.size(),1);
+
+	Eigen::MatrixXd totalBearing_cos(cone_obs.size(),1);
+	Eigen::MatrixXd totalBearing_sin(cone_obs.size(),1);
+	totalBearing_cos = totalBearing.array().cos();
+	totalBearing_sin = totalBearing.array().sin();
+
+	global_cone_x = global_odom.x() + range.array()*totalBearing_cos.array();
+        global_cone_y = global_odom.y() + range.array()*totalBearing_sin.array();
+
+	/*checking correctness of vectorization*/
+	/*for (int i = 0; i < num_obs; i++)
+	{
+	    float true_global_x = global_odom.x() + norm2(cone_obs.at(i)) * cos(global_odom.theta() + bearing(i));
+	    float true_global_y = global_odom.y() + norm2(cone_obs.at(i)) * sin(global_odom.theta() + bearing(i));
+	    RCLCPP_INFO(logger, "\ntrue: %f, %f \nvect: %f, %f", cos(global_odom.theta() + bearing(i)),
+									sin(global_odom.theta() + bearing(i)),
+									totalBearing_cos(i), 
+								    	totalBearing_sin(i));
+
+	    assert(cos(global_odom.theta() + bearing(i)) == totalBearing_cos(i));
+	    assert(sin(global_odom.theta() + bearing(i)) == totalBearing_sin(i));
+	    RCLCPP_INFO(logger, "true: %f, %f \nvect: %f, %f", true_global_x, global_cone_x(i, 0), true_global_y, global_cone_y(i, 0));
+	    assert((true_global_x - global_cone_x(i, 0)) < 0.00001);
+	    assert((true_global_y - global_cone_y(i, 0)) < 0.00001);
+    	}*/
+
+
+
         auto start = high_resolution_clock::now();
         if (n_landmarks != 0 && cone_obs.size() > 0)
         {
             int num_threads = 12;
 
             const int m_dist_len = (n_landmarks + 1) * cone_obs.size(); //110
-	    if (m_dist_len < 200)
-	    {
-		num_threads = 4;
-	    }
-	    else if (m_dist_len < 500)
+	    //if (m_dist_len < 350)
+	    //{
+	    //    num_threads = 1;
+	    //}
+	    //else 
+	    if (m_dist_len < 650)
 	    {
 		num_threads = 6;
 	    }
-
+	    
+	    RCLCPP_INFO(logger, "num threads: %d", num_threads);
             thread all_t[num_threads];
             const int multiple_size = m_dist_len / num_threads; //110/3
             vector<float> m_dist(m_dist_len, 0.0);
-            vector<Pose2> global_obs_cones = vector(cone_obs.size(), Pose2(0, 0, 0));
 
             /* spawn num_threads that will are responsible for performing data
              * association on subset of the observed cones
@@ -471,7 +518,8 @@ public:
 
             for (int i = 0; i < num_threads; i++)
             {
-                all_t[i] = thread(&slamISAM::t_associate, this, &cone_obs, &global_obs_cones,
+                all_t[i] = thread(&slamISAM::t_associate, this, &cone_obs, 
+				    &global_cone_x, &global_cone_y,
                                     &all_cone_est, global_odom, &m_dist, i * multiple_size,
                                     (i+1) * multiple_size);
                 //Debugging: not multi thread
@@ -487,7 +535,7 @@ public:
             }
 
             //Compute the remainders
-            t_associate(&cone_obs, &global_obs_cones, &all_cone_est, global_odom, &m_dist,
+            t_associate(&cone_obs, &global_cone_x, &global_cone_y, &all_cone_est, global_odom, &m_dist,
                                     num_threads * multiple_size, m_dist_len);
 
             RCLCPP_INFO(logger, "finished populating m_dist\n");
@@ -527,7 +575,8 @@ public:
              * There are no remainders because you disperse the remainders
              * amongs the existing threads
              */
-
+	    
+	    
             while (cone_obs_idx < cone_obs.size())
             {
                 assert(threads_idx < num_threads2);
@@ -551,18 +600,20 @@ public:
                 t2.join();
             }
 	    RCLCPP_INFO(logger, "calc'd min_ids");
+	    
 
-	    /* correctness checker for min_id calculation
-	    for (int i =0; i < (int)cone_obs.size(); i++)
+	    /* correctness checker for min_id calculation */
+	    /*for (int i =0; i < (int)cone_obs.size(); i++)
 	    {
 		int start_idx = i*(n_landmarks + 1);
                 vector<float>::iterator start_iter = m_dist.begin() + start_idx;
                 int min_id = std::distance(start_iter,
                                         std::min_element(start_iter,
                                                    start_iter + (n_landmarks + 1)));
-		assert(min_id == min_ids.at(i));
+		min_ids.at(i) = min_id;
+		//assert(min_id == min_ids.at(i));
 	    }
-	    RCLCPP_INFO(logger, "min_ids correct"); */
+	    RCLCPP_INFO(logger, "min_ids correct");*/ 
 
 
             /**
@@ -575,10 +626,12 @@ public:
             for (int i = 0; i < (int)cone_obs.size(); i++)
             {
 		int l_idx = min_ids.at(i);
+		/*
 		if (min_ids.at(i) == prev_n_landmarks)
 		{
 		    l_idx = n_landmarks;
 		}
+		*/
 
 		/**
 		 * Why wasn't everything blowing up before fixing L(l_idx)
@@ -587,49 +640,26 @@ public:
 		 */
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(l_idx),
                             Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(),
-                                global_obs_cones.at(i).theta()),
+                                bearing(i, 0)),
                                 landmark_model));
 
 		/**
 		 * the M_DIST_TH distance from the beginning should be 
 		 * n_landmark BEFORE the n_landmarks++ happens in this if statement
 		 */
-                if (min_ids.at(i) == prev_n_landmarks) // new_landmark
+                if (min_ids.at(i) == n_landmarks) // new_landmark (should be prev_n_landmarks?)
                 {
-                    values.insert(L(n_landmarks), Pose2(global_obs_cones.at(i).x(),
-                                                        global_obs_cones.at(i).y(),
+                    values.insert(L(n_landmarks), Pose2(global_cone_x(i),
+                                                        global_cone_y(i),
                                                         0));
                     n_landmarks++;
+		    /*
+		    isam2.update(graph, values);
+		    values.clear();
+		    graph.resize(0);
+		    */
                 }
             }
-
-
-
-
-            /*
-            for (int i = 0; i < (int)cone_obs.size(); i++)
-            {
-                int start_idx = i*(n_landmarks + 1);
-                vector<float>::iterator start_iter = m_dist.begin() + start_idx;
-                int min_id = std::distance(start_iter,
-                                        std::min_element(start_iter,
-                                                   start_iter + (n_landmarks + 1)));
-
-
-                graph.add(BetweenFactor<Pose2>(X(pose_num), L(min_id),
-                            Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(), global_obs_cones.at(i).theta()),
-                            landmark_model));
-
-                if (n_landmarks == min_id)
-                {
-                    values.insert(L(n_landmarks), Pose2(global_obs_cones.at(i).x(), global_obs_cones.at(i).y(), 0));
-                    n_landmarks++;
-                    RCLCPP_INFO(logger, "n_lm: %d", n_landmarks);
-                }
-            }
-            */
-
-
 
 
         }
@@ -639,27 +669,45 @@ public:
             /* register all observations as new landmarks */
             for (int i = 0; i < cone_obs.size(); i++)
             {
-                double bearing = std::atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
-                double range = norm2(cone_obs.at(i));
-                double global_cone_x = global_odom.x() + range * cos(bearing + global_odom.theta());
-                double global_cone_y = global_odom.y() + range * sin(bearing + global_odom.theta());
+                if (n_landmarks == 0) /* This is for setting the scale in iSAM2*/
+		{
+		    static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+		    gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(L(0),
+					    Pose2(cone_obs.at(0).x(), cone_obs.at(0).y(), 0),
+				    					prior_model);
+			
+		    graph.add(prior_factor);
+		}
 
-                Pose2 global_cone(global_cone_x, global_cone_y, 0);
+                Pose2 global_cone(global_cone_x(i), global_cone_y(i), 0);
                 /* add factor node between pose and landmark node */
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(i),
-                            Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(), bearing),
+                            Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(), bearing(i, 0)),
                             landmark_model));
                 values.insert(L(i), global_cone);
+
+		/*isam2.update(graph, values);
+	        values.clear();
+		graph.resize(0);*/
+
                 n_landmarks++;
             }
 
 
-            graph.addPrior(L(0),Pose2(cone_obs.at(0).x(), cone_obs.at(0).y(), 0));
 
         }
-        isam2.update(graph, values);
-        graph.resize(0);
+	RCLCPP_INFO(logger, "updating");
+	isam2.update(graph, values);
+	isam2.update();
         values.clear();
+        graph.resize(0);
+	//auto update_s = high_resolution_clock::now();
+        //isam2.update(graph, values);
+	//auto update_e = high_resolution_clock::now();
+	//auto update_duration = duration_cast<microseconds>(update_e - update_s);
+	//RCLCPP_INFO(logger, "update time: %d", update_duration.count());
+        //graph.resize(0);
+        //values.clear();
 
         /* checking */
         //for (int i = 0; i < n_landmarks; i++)
