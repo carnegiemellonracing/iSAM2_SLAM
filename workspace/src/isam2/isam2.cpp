@@ -37,7 +37,7 @@ using namespace gtsam;
 using namespace std::chrono;
 
 //static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 30;
+static const float M_DIST_TH = 25;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 //static mutex global_obs_cones_mutex;
@@ -491,7 +491,7 @@ public:
 	    //    num_threads = 1;
 	    //}
 	    //else 
-	    if (m_dist_len < 650)
+	    if (m_dist_len < 1000)
 	    {
 		num_threads = 6;
 	    }
@@ -512,10 +512,8 @@ public:
             {
                 all_cone_est.at(i) = isam2.calculateEstimate(L(i)).cast<Pose2>();
             }
-            auto end_temp = high_resolution_clock::now();
-            auto duration_temp = duration_cast<microseconds>(end_temp - start);
-            RCLCPP_INFO(logger, "temp time: %d", duration_temp.count());
 
+	    auto start_t = high_resolution_clock::now();
             for (int i = 0; i < num_threads; i++)
             {
                 all_t[i] = thread(&slamISAM::t_associate, this, &cone_obs, 
@@ -526,8 +524,8 @@ public:
                 /*t_associate(logger, &cone_obs, &global_obs_cones, global_odom,
                             &m_dist, i * multiple_size, (i+1) * multiple_size);
                             */
+	    }
 
-            }
 
             for (auto &t : all_t)
             {
@@ -621,17 +619,18 @@ public:
              */
 	    RCLCPP_INFO(logger, "updating graph");
 	    /* the highest min_id could only be prev_n_landmarks */
+	    /* update isam2 with any new factors and values */
 	    int prev_n_landmarks = n_landmarks;
 	    RCLCPP_INFO(logger, "reading min_ids");
             for (int i = 0; i < (int)cone_obs.size(); i++)
             {
 		int l_idx = min_ids.at(i);
-		/*
+		
 		if (min_ids.at(i) == prev_n_landmarks)
 		{
 		    l_idx = n_landmarks;
 		}
-		*/
+	
 
 		/**
 		 * Why wasn't everything blowing up before fixing L(l_idx)
@@ -647,20 +646,25 @@ public:
 		 * the M_DIST_TH distance from the beginning should be 
 		 * n_landmark BEFORE the n_landmarks++ happens in this if statement
 		 */
-                if (min_ids.at(i) == n_landmarks) // new_landmark (should be prev_n_landmarks?)
+                if (min_ids.at(i) == prev_n_landmarks) // new_landmark (should be prev_n_landmarks?)
                 {
                     values.insert(L(n_landmarks), Pose2(global_cone_x(i),
                                                         global_cone_y(i),
                                                         0));
                     n_landmarks++;
-		    /*
+		    
 		    isam2.update(graph, values);
+		    isam2.update();
 		    values.clear();
 		    graph.resize(0);
-		    */
+		    
                 }
             }
-
+	    RCLCPP_INFO(logger, "updating");
+	    isam2.update(graph, values);
+	    isam2.update();
+	    values.clear();
+	    graph.resize(0);
 
         }
         else if (n_landmarks == 0 && cone_obs.size() > 0)
@@ -686,9 +690,10 @@ public:
                             landmark_model));
                 values.insert(L(i), global_cone);
 
-		/*isam2.update(graph, values);
+		isam2.update(graph, values);
+		isam2.update();
 	        values.clear();
-		graph.resize(0);*/
+		graph.resize(0);
 
                 n_landmarks++;
             }
@@ -696,11 +701,12 @@ public:
 
 
         }
-	RCLCPP_INFO(logger, "updating");
-	isam2.update(graph, values);
-	isam2.update();
-        values.clear();
-        graph.resize(0);
+	
+	
+	
+        
+        
+	
 	//auto update_s = high_resolution_clock::now();
         //isam2.update(graph, values);
 	//auto update_e = high_resolution_clock::now();
