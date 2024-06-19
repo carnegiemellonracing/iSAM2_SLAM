@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.11.0" xml:lang="en-US">
+  <compounddef id="structVehicleState" kind="struct" language="C++" prot="public">
+    <compoundname>VehicleState</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structVehicleState_1a09e3ce345b1400a5c045ca3d23015c26" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double VehicleState::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <qualifiedname>VehicleState::x</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="43" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structVehicleState_1a0ba1588cc195b0787c46388477d2c70e" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double VehicleState::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>VehicleState::y</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="44" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structVehicleState_1a9c8b2e1e77f082bd4bc648ddf0f2f0cf" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double VehicleState::yaw</definition>
+        <argsstring></argsstring>
+        <name>yaw</name>
+        <qualifiedname>VehicleState::yaw</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="45" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structVehicleState_1aea0e16ebeaa1311eba9d918f66a0df1a" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double VehicleState::dx</definition>
+        <argsstring></argsstring>
+        <name>dx</name>
+        <qualifiedname>VehicleState::dx</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="46" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structVehicleState_1adce8c5dd8b5fc4280c3612a0d6f31287" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double VehicleState::dy</definition>
+        <argsstring></argsstring>
+        <name>dy</name>
+        <qualifiedname>VehicleState::dy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="47" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structVehicleState_1ae353f3a3312b29fe956f101b9ed0d387" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double VehicleState::dyaw</definition>
+        <argsstring></argsstring>
+        <name>dyaw</name>
+        <qualifiedname>VehicleState::dyaw</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="48" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="workspace/src/isam2/isam2Node.cpp" line="42" column="1" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="42" bodyend="49"/>
+    <listofallmembers>
+      <member refid="structVehicleState_1aea0e16ebeaa1311eba9d918f66a0df1a" prot="public" virt="non-virtual"><scope>VehicleState</scope><name>dx</name></member>
+      <member refid="structVehicleState_1adce8c5dd8b5fc4280c3612a0d6f31287" prot="public" virt="non-virtual"><scope>VehicleState</scope><name>dy</name></member>
+      <member refid="structVehicleState_1ae353f3a3312b29fe956f101b9ed0d387" prot="public" virt="non-virtual"><scope>VehicleState</scope><name>dyaw</name></member>
+      <member refid="structVehicleState_1a09e3ce345b1400a5c045ca3d23015c26" prot="public" virt="non-virtual"><scope>VehicleState</scope><name>x</name></member>
+      <member refid="structVehicleState_1a0ba1588cc195b0787c46388477d2c70e" prot="public" virt="non-virtual"><scope>VehicleState</scope><name>y</name></member>
+      <member refid="structVehicleState_1a9c8b2e1e77f082bd4bc648ddf0f2f0cf" prot="public" virt="non-virtual"><scope>VehicleState</scope><name>yaw</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.11.0" xml:lang="en-US">
+  <compounddef id="structLandmark" kind="struct" language="C++" prot="public">
+    <compoundname>Landmark</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structLandmark_1aee3e29034f8f79860ad6ffde6e73d6a4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int Landmark::lm_id</definition>
+        <argsstring></argsstring>
+        <name>lm_id</name>
+        <qualifiedname>Landmark::lm_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2.cpp" line="47" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structLandmark_1a22653343cb15af53ff11bb015d93c736" prot="public" static="no" mutable="no">
+        <type>gtsam::Pose2</type>
+        <definition>gtsam::Pose2 Landmark::lm_pos</definition>
+        <argsstring></argsstring>
+        <name>lm_pos</name>
+        <qualifiedname>Landmark::lm_pos</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2.cpp" line="48" column="18" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="workspace/src/isam2/isam2.cpp" line="46" column="1" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="46" bodyend="49"/>
+    <listofallmembers>
+      <member refid="structLandmark_1aee3e29034f8f79860ad6ffde6e73d6a4" prot="public" virt="non-virtual"><scope>Landmark</scope><name>lm_id</name></member>
+      <member refid="structLandmark_1a22653343cb15af53ff11bb015d93c736" prot="public" virt="non-virtual"><scope>Landmark</scope><name>lm_pos</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

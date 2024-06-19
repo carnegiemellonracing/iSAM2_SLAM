@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.11.0" xml:lang="en-US">
+  <compounddef id="classCompare" kind="class" language="C++" prot="public">
+    <compoundname>Compare</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classCompare_1a41808d0576a958bc304d2ec18a92e3d8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Compare::operator()</definition>
+        <argsstring>(Landmark lm1, Landmark lm2) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>Compare::operator()</qualifiedname>
+        <param>
+          <type><ref refid="structLandmark" kindref="compound">Landmark</ref></type>
+          <declname>lm1</declname>
+        </param>
+        <param>
+          <type><ref refid="structLandmark" kindref="compound">Landmark</ref></type>
+          <declname>lm2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2.cpp" line="53" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="53" bodyend="55"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="workspace/src/isam2/isam2.cpp" line="51" column="1" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="51" bodyend="56"/>
+    <listofallmembers>
+      <member refid="classCompare_1a41808d0576a958bc304d2ec18a92e3d8" prot="public" virt="non-virtual"><scope>Compare</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,387 @@
+\doxysection{isam2.\+cpp}
+\hypertarget{isam2_8cpp_source}{}\label{isam2_8cpp_source}\index{workspace/src/isam2/isam2.cpp@{workspace/src/isam2/isam2.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ \#include\ "{}isam2.hpp"{}}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <bits/stdc++.h>}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Camera\ observations\ of\ landmarks\ will\ be\ stored\ as\ Point2\ (x,\ y).}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <gtsam/geometry/Point2.h>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <gtsam/geometry/Pose2.h>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <Eigen/Dense>}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ Each\ variable\ in\ the\ system\ (sposes\ and\ landmarks)\ must\ be\ identified\ with\ a}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ unique\ key.\ We\ can\ either\ use\ simple\ integer\ keys\ (1,\ 2,\ 3,\ ...)\ or\ symbols}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ (X1,\ X2,\ L1).\ Here\ we\ will\ use\ Symbols}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <gtsam/inference/Symbol.h>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{comment}{//\ We\ want\ to\ use\ iSAM2\ to\ solve\ the\ structure-\/from-\/motion\ problem}}
+\DoxyCodeLine{00014\ \textcolor{comment}{//\ incrementally,\ so\ include\ iSAM2\ here}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <gtsam/nonlinear/ISAM2.h>}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{comment}{//\ iSAM2\ requires\ as\ input\ a\ set\ of\ new\ factors\ to\ be\ added\ stored\ in\ a\ factor}}
+\DoxyCodeLine{00018\ \textcolor{comment}{//\ graph,\ and\ initial\ guesses\ for\ any\ new\ variables\ used\ in\ the\ added\ factors}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <gtsam/nonlinear/NonlinearFactorGraph.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <gtsam/nonlinear/Values.h>}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{comment}{//\ In\ GTSAM,\ measurement\ functions\ are\ represented\ as\ 'factors'.\ Several\ common}}
+\DoxyCodeLine{00023\ \textcolor{comment}{//\ factors\ have\ been\ provided\ with\ the\ library\ for\ solving\ robotics/SLAM/Bundle}}
+\DoxyCodeLine{00024\ \textcolor{comment}{//\ Adjustment\ problems.\ Here\ we\ will\ use\ Projection\ factors\ to\ model\ the}}
+\DoxyCodeLine{00025\ \textcolor{comment}{//\ camera's\ landmark\ observations.\ Also,\ we\ will\ initialize\ the\ robot\ at\ some}}
+\DoxyCodeLine{00026\ \textcolor{comment}{//\ location\ using\ a\ Prior\ factor.}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <gtsam/slam/ProjectionFactor.h>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <gtsam/slam/BetweenFactor.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <gtsam/slam/BearingRangeFactor.h>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{using\ namespace\ }gtsam;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{using\ namespace\ }std::chrono;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{//static\ const\ float\ M\_DIST\_TH\ =\ 0.000151169;\ //\ for\ real\ data}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ M\_DIST\_TH\ =\ 20;}
+\DoxyCodeLine{00041\ \textcolor{comment}{//\ static\ const\ float\ M\_DIST\_TH\ =\ 45;\ //\ used\ to\ be\ 45\ lmao}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{long}\ SEC\_TO\_NANOSEC\ =\ 1000000000;}
+\DoxyCodeLine{00043\ \textcolor{comment}{//static\ mutex\ global\_obs\_cones\_mutex;}}
+\DoxyCodeLine{00044\ \textcolor{keyword}{static}\ mutex\ isam2\_mutex;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structLandmark}{Landmark}}\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{int}\ lm\_id;}
+\DoxyCodeLine{00048\ \ \ \ \ gtsam::Pose2\ lm\_pos;}
+\DoxyCodeLine{00049\ \};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classCompare}{Compare}}\ \{}
+\DoxyCodeLine{00052\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator()(\mbox{\hyperlink{structLandmark}{Landmark}}\ lm1,\ \mbox{\hyperlink{structLandmark}{Landmark}}\ lm2)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (lm1.lm\_pos.x()\ >\ lm2.lm\_pos.x()\ \&\&\ lm1.lm\_pos.y()\ >\ lm2.lm\_pos.y());}
+\DoxyCodeLine{00055\ \ \ \ \ \}}
+\DoxyCodeLine{00056\ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classslamISAM}{slamISAM}}\ \{}
+\DoxyCodeLine{00059\ \textcolor{keyword}{private}:\ ISAM2Params\ parameters;}
+\DoxyCodeLine{00060\ \ \ \ \ ISAM2\ isam2;}
+\DoxyCodeLine{00061\ \ \ \ \ NonlinearFactorGraph\ graph;}
+\DoxyCodeLine{00062\ \ \ \ \ Values\ values;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{int}\ pose\_num;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ gtsam::Symbol\ X(\textcolor{keywordtype}{int}\ robot\_pose\_id)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Symbol(\textcolor{charliteral}{'x'},\ robot\_pose\_id);}
+\DoxyCodeLine{00069\ \ \ \ \ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ gtsam::Symbol\ L(\textcolor{keywordtype}{int}\ cone\_pose\_id)\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Symbol(\textcolor{charliteral}{'l'},\ cone\_pose\_id);}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{int}\ n\_landmarks;\ gtsam::Pose2\ robot\_est;}
+\DoxyCodeLine{00078\ \ \ \ \ std::vector<gtsam::Pose2>\ landmark\_est;}
+\DoxyCodeLine{00079\ \ \ \ \ std::vector<Point2>\ orange\_cones;}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{classslamISAM}{slamISAM}}()\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ parameters\ =\ ISAM2Params(ISAM2DoglegParams(),0.1,10,\textcolor{keyword}{true});}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ parameters.setFactorization(\textcolor{stringliteral}{"{}QR"{}});}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ isam2\ =\ gtsam::ISAM2(parameters);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ graph\ =\ gtsam::NonlinearFactorGraph();}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ values\ =\ gtsam::Values();}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ pose\_num\ =\ 0;}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ n\_landmarks\ =\ 0;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ robot\_est\ =\ gtsam::Pose2(0,\ 0,\ 0);}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ landmark\_est\ =\ std::vector<gtsam::Pose2>();}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ orange\_cones\ =\ std::vector<Point2>();}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classslamISAM_a0a0a8309cd7ce17d5256b5e8435af151}{print\_cones}}(\textcolor{keyword}{auto}\ logger,\ std::vector<Point2>\ \&cone\_obs)}
+\DoxyCodeLine{00110\ \ \ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}Printing\ cones"{}});}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ cone\_obs.size();\ i++)}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}(\%f,\ \%f)\(\backslash\)n"{}},\ cone\_obs.at(i).x(),}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cone\_obs.at(i).y());}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}done\ printing\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{00118\ \ \ \ \ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classslamISAM_ab07c8f29237621e0b929d4a7098bfd4f}{t\_associate}}(vector<Point2>\ *cone\_obs,\ vector<Pose2>\ *global\_obs\_cones,}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ vector<Pose2>\ *all\_cone\_est,\ Pose2\ global\_odom,\ vector<float>\ *m\_dist,}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ lo,\ \textcolor{keywordtype}{int}\ hi)}
+\DoxyCodeLine{00170\ \ \ \ \ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i\ =\ lo;}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ landmark\_idx\ =\ lo\ \%\ (n\_landmarks\ +\ 1);}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ obs\_id\ =\ (int)(lo\ /\ (n\_landmarks\ +\ 1));}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{comment}{//RCLCPP\_INFO(logger,\ "{}lo:\ \%d\ |\ hi:\ \%d"{},\ lo,\ hi);}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (i\ <\ hi\ \&\&\ obs\_id\ <\ cone\_obs-\/>size())}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bearing\ =\ std::atan2(cone\_obs-\/>at(obs\_id).y(),}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cone\_obs-\/>at(obs\_id).x());}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ range\ =\ norm2(cone\_obs-\/>at(obs\_id));}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ global\_cone\_x\ =\ (global\_odom.x()\ +\ range\ *}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cos(bearing\ +\ global\_odom.theta()));}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ global\_cone\_y\ =\ (global\_odom.y()\ +\ range\ *}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sin(bearing\ +\ global\_odom.theta()));}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ TODO:\ "{}valid\ bit"{}\ for\ whether\ global\ pose\ has\ already\ been\ calculated\ at\ obs\_id\ */}}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//TODO:\ move\ this\ outside\ of\ t\_associate,\ and\ before\ threads\ are\ spawned}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ global\_obs\_cones-\/>at(obs\_id)\ =\ Pose2(global\_cone\_x,\ global\_cone\_y,\ bearing);}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ last\_est\_for\_cur\_obs\ =\ (obs\_id\ +\ 1)\ *\ (n\_landmarks\ +\ 1)\ -\/\ 1;}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ calculating\ the\ mahalanobis\ distances\ */}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ i\ <\ last\_est\_for\_cur\_obs\ \&\&\ i\ <\ hi;\ i++)}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Eigen::MatrixXd\ diff(1,\ 3);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Pose2\ prev\_est\ =\ all\_cone\_est-\/>at(landmark\_idx);}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ diff\ <<\ global\_cone\_x\ -\/\ prev\_est.x(),}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ global\_cone\_y\ -\/\ prev\_est.y(),}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1;}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ calculate\ the\ mahalanobis\ distance\ */}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_dist-\/>at(i)\ =\ (diff\ *\ isam2.marginalCovariance(L(landmark\_idx))\ *\ diff.transpose())(0,\ 0);}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ landmark\_idx++;}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ ==\ hi)}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ m\_dist-\/>at(last\_est\_for\_cur\_obs)\ =\ M\_DIST\_TH;}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ i++;\ \textcolor{comment}{/*\ skip\ 1\ element\ (reserved\ for\ M\_DIST\_TH)\ */}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ obs\_id++;}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ new\ multiple\ of\ (n\_landmarks+1)\ means\ calculating\ for\ previous\ cone/landmark\ 0\ */}}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ landmark\_idx\ =\ 0;}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classslamISAM_a00e82e306602f32451124afb29364365}{step}}(\textcolor{keyword}{auto}\ logger,\ gtsam::Pose2\ global\_odom,\ std::vector<Point2>\ \&cone\_obs,}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ vector<Point2>\ \&orange\_ref\_cones,\ gtsam::Point2\ velocity,}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{long}\ time\_ns,\ \textcolor{keywordtype}{bool}\ loopClosure)\ \{}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}stepping\(\backslash\)n"{}});}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ Vector\ NoiseModel(3);}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ NoiseModel(0)\ =\ 0;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ NoiseModel(1)\ =\ 0;}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ NoiseModel(2)\ =\ 0;}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ Vector\ LandmarkNoiseModel(3);}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{comment}{//used\ to\ be\ 0.01\ for\ real\ data}}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{comment}{//LandmarkNoiseModel(0)\ =\ 0.01;}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{comment}{//LandmarkNoiseModel(1)\ =\ 0.01;}}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \textcolor{comment}{//LandmarkNoiseModel(2)\ =\ 0.01;}}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ No\ noise\ kinda\ good??}}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ LandmarkNoiseModel(0)\ =\ 0.0;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ LandmarkNoiseModel(1)\ =\ 0.0;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ LandmarkNoiseModel(2)\ =\ 0.0;}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{auto}\ landmark\_model\ =\ noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);}
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pose\_num==0)\ \{\ \textcolor{comment}{/*\ first\ pose\ */}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ noiseModel::Diagonal::shared\_ptr\ prior\_model\ =\ noiseModel::Diagonal::Sigmas(NoiseModel);}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ gtsam::PriorFactor<Pose2>\ prior\_factor\ =\ gtsam::PriorFactor<Pose2>(X(0),\ global\_odom,\ prior\_model);}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Add\ prior\ (This\ is\ how\ the\ iSAM2\ factor\ graph\ begins)\ */}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ graph.add(prior\_factor);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ values.insert(X(0),\ global\_odom);}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//ASSUMES\ THAT\ YOU\ SEE\ ORANGE\ CONES\ ON\ YOUR\ FIRST\ MEASUREMENT\ OF\ LANDMARKS}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Add\ orange\ cone\ left\ and\ right}}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//hopefully\ it's\ only\ 2\ cones}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ orange\_cones\ =\ orange\_ref\_cones;}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ noiseModel::Diagonal::shared\_ptr\ odom\_model\ =\ noiseModel::Diagonal::Sigmas(NoiseModel);}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ Pose2\ prev\_pos\ =\ isam2.calculateEstimate(X(pose\_num\ -\/\ 1)).cast<Pose2>();}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ time\_s\ =\ time\_ns/SEC\_TO\_NANOSEC;}
+\DoxyCodeLine{00297\ }
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ Pose2\ Odometry\ =\ \ Pose2(velocity.x()*time\_s,}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ velocity.y()*time\_s,}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ global\_odom.theta()\ -\/\ prev\_pos.theta());}
+\DoxyCodeLine{00302\ }
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*real\ data\ motion\ model?}}
+\DoxyCodeLine{00304\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ Pose2\ Odometry\ =\ \ Pose2(global\_odom.x()\ -\/\ prev\_pos.x(),global\_odom.y()\ -\/\ prev\_pos.y(),}}
+\DoxyCodeLine{00305\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ global\_odom.theta()\ -\/\ prev\_pos.theta());}}
+\DoxyCodeLine{00306\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00307\ }
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ noiseModel::Diagonal::shared\_ptr\ prior\_model\ =\ noiseModel::Diagonal::Sigmas(NoiseModel);}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ gtsam::PriorFactor<Pose2>\ prior\_factor\ =\ gtsam::PriorFactor<Pose2>(X(0),\ global\_odom,\ prior\_model);}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ graph.add(prior\_factor);}
+\DoxyCodeLine{00311\ }
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ gtsam::BetweenFactor<Pose2>\ odom\_factor\ =\ gtsam::BetweenFactor<Pose2>(X(pose\_num\ -\/\ 1),\ X(pose\_num),}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Odometry,\ odom\_model);}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ graph.add(odom\_factor);}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ values.insert(X(pose\_num),\ global\_odom);}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ }
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(loopClosure)\{}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ noiseModel::Diagonal::shared\_ptr\ loop\_closure\_model\ =\ noiseModel::Diagonal::Sigmas(NoiseModel);}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//left\ is\ 0,\ right\ is\ 1}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Do\ triangulation\ given\ the\ current\ cone\ positions\ and\ the\ previous\ saved\ orange\ cones}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//take\ the\ orange\ cones,\ look\ at\ difference\ between}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//the\ left\ and\ right\ cones}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ Point2\ diffLeft\ =\ orange\_cones[0]\ -\/\ orange\_ref\_cones[0];}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ Point2\ diffRight\ =\ orange\_cones[1]\ -\/\ orange\_ref\_cones[1];}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ Point2\ avgDiff\ =\ (diffLeft+diffRight)/2;\ \textcolor{comment}{//pose\ difference\ between\ first\ pose\ and\ last\ pose}}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ angle\ =\ atan2(avgDiff.y(),\ avgDiff.x());}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ Pose2\ AvgPoseDiff\ =\ Pose2(avgDiff.x(),\ avgDiff.y(),angle);}
+\DoxyCodeLine{00330\ }
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ gtsam::BetweenFactor<Pose2>\ odom\_factor\ =\ gtsam::BetweenFactor<Pose2>(X(0),\ X(pose\_num),AvgPoseDiff,\ loop\_closure\_model);}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ graph.add(odom\_factor);}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ values.insert(X(pose\_num),\ global\_odom);}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \textcolor{comment}{//todo\ only\ do\ this\ once\ after\ update}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ isam2.update(graph,\ values);}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ graph.resize(0);}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ values.clear();}
+\DoxyCodeLine{00340\ }
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}DATA\ ASSOCIATION\ BEGIN:\ Pose:\ (\%f,\ \%f)"{}},\ global\_odom.x(),}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ global\_odom.y());}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ DATA\ ASSOCIATION\ BEGIN}}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}Printing\ global\ obs:\ (n\_landmarks:\ \%d;\ num\_obs:\ \%d)"{}},}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n\_landmarks,\ cone\_obs.size());}
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ start\ =\ high\_resolution\_clock::now();}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n\_landmarks\ !=\ 0\ \&\&\ cone\_obs.size()\ >\ 0)}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ num\_threads\ =\ 3;}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ thread\ all\_t[num\_threads];}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ m\_dist\_len\ =\ (n\_landmarks\ +\ 1)\ *\ cone\_obs.size();\ \textcolor{comment}{//110}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ multiple\_size\ =\ m\_dist\_len\ /\ num\_threads;\ \textcolor{comment}{//110/3}}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ vector<float>\ m\_dist(m\_dist\_len,\ 0.0);}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ vector<Pose2>\ global\_obs\_cones\ =\ vector(cone\_obs.size(),\ Pose2(0,\ 0,\ 0));}
+\DoxyCodeLine{00357\ }
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ vector<Pose2>\ all\_cone\_est\ =\ vector(n\_landmarks,\ Pose2(0,\ 0,\ 0));}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ n\_landmarks;\ i++)}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ all\_cone\_est.at(i)\ =\ isam2.calculateEstimate(L(i)).cast<Pose2>();}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ }
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\_temp\ =\ high\_resolution\_clock::now();}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ duration\_temp\ =\ duration\_cast<microseconds>(end\_temp\ -\/\ start);}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}temp\ time:\ \%d"{}},\ duration\_temp.count());}
+\DoxyCodeLine{00390\ }
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ num\_threads;\ i++)}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ all\_t[i]\ =\ thread(\&\mbox{\hyperlink{classslamISAM_ab07c8f29237621e0b929d4a7098bfd4f}{slamISAM::t\_associate}},\ \textcolor{keyword}{this},\ \&cone\_obs,\ \&global\_obs\_cones,}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&all\_cone\_est,\ global\_odom,\ \&m\_dist,\ i\ *\ multiple\_size,}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (i+1)\ *\ multiple\_size);}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Debugging:\ not\ multi\ thread}}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*t\_associate(logger,\ \&cone\_obs,\ \&global\_obs\_cones,\ global\_odom,}}
+\DoxyCodeLine{00398\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&m\_dist,\ i\ *\ multiple\_size,\ (i+1)\ *\ multiple\_size);}}
+\DoxyCodeLine{00399\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \&t\ :\ all\_t)}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t.join();}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00406\ }
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classslamISAM_ab07c8f29237621e0b929d4a7098bfd4f}{t\_associate}}(\&cone\_obs,\ \&global\_obs\_cones,\ \&all\_cone\_est,\ global\_odom,\ \&m\_dist,}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ num\_threads\ *\ multiple\_size,\ m\_dist\_len);}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}finished\ populating\ m\_dist\(\backslash\)n"{}});}
+\DoxyCodeLine{00410\ }
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ (int)cone\_obs.size();\ i++)}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ start\_idx\ =\ i*(n\_landmarks\ +\ 1);}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vector<float>::iterator\ start\_iter\ =\ m\_dist.begin()\ +\ start\_idx;}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ min\_id\ =\ std::distance(start\_iter,}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::min\_element(start\_iter,}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start\_iter\ +\ (n\_landmarks\ +\ 1)));}
+\DoxyCodeLine{00431\ }
+\DoxyCodeLine{00432\ }
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ graph.add(BetweenFactor<Pose2>(X(pose\_num),\ L(min\_id),}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Pose2(cone\_obs.at(i).x(),\ cone\_obs.at(i).y(),\ global\_obs\_cones.at(i).theta()),}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ landmark\_model));}
+\DoxyCodeLine{00436\ }
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n\_landmarks\ ==\ min\_id)\ \textcolor{comment}{/*\ new\ landmark\ */}}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values.insert(L(n\_landmarks),\ Pose2(global\_obs\_cones.at(i).x(),\ global\_obs\_cones.at(i).y(),\ 0));}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n\_landmarks++;}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}n\_lm:\ \%d"{}},\ n\_landmarks);}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (n\_landmarks\ ==\ 0\ \&\&\ cone\_obs.size()\ >\ 0)}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00448\ }
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ register\ all\ observations\ as\ new\ landmarks\ */}}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ cone\_obs.size();\ i++)}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bearing\ =\ std::atan2(cone\_obs.at(i).y(),\ cone\_obs.at(i).x());}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ range\ =\ norm2(cone\_obs.at(i));}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ global\_cone\_x\ =\ global\_odom.x()\ +\ range\ *\ cos(bearing\ +\ global\_odom.theta());}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ global\_cone\_y\ =\ global\_odom.y()\ +\ range\ *\ sin(bearing\ +\ global\_odom.theta());}
+\DoxyCodeLine{00456\ }
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Pose2\ global\_cone(global\_cone\_x,\ global\_cone\_y,\ 0);}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ add\ factor\ node\ between\ pose\ and\ landmark\ node\ */}}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ graph.add(BetweenFactor<Pose2>(X(pose\_num),\ L(i),}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Pose2(cone\_obs.at(i).x(),\ cone\_obs.at(i).y(),\ bearing),}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ landmark\_model));}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values.insert(L(i),\ global\_cone);}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n\_landmarks++;}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00466\ }
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ graph.addPrior(L(0),Pose2(cone\_obs.at(0).x(),\ cone\_obs.at(0).y(),\ 0));}
+\DoxyCodeLine{00468\ }
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ isam2.update(graph,\ values);}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ graph.resize(0);}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ values.clear();}
+\DoxyCodeLine{00473\ }
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ high\_resolution\_clock::now();}
+\DoxyCodeLine{00475\ }
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ duration\ =\ duration\_cast<microseconds>(end\ -\/\ start);}
+\DoxyCodeLine{00477\ }
+\DoxyCodeLine{00478\ }
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ RCLCPP\_INFO(logger,\ \textcolor{stringliteral}{"{}DATA\ ASSOCIATION\ END;\ TIME:\ \%d\ \(\backslash\)n"{}},\ duration.count());}
+\DoxyCodeLine{00480\ }
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ DATA\ ASSOCIATION\ END}}
+\DoxyCodeLine{00482\ }
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ std::ofstream\ ofs;}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ std::ofstream\ out(\textcolor{stringliteral}{"{}squirrel.txt"{}});}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ std::streambuf\ *coutbuf\ =\ std::cout.rdbuf();\ \textcolor{comment}{//save\ old\ buf}}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ std::cout.rdbuf(out.rdbuf());}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ ofs.open(\textcolor{stringliteral}{"{}squirrel.txt"{}},\ std::ofstream::out\ |\ std::ofstream::trunc);}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ estimate\ =\ isam2.calculateEstimate();}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ estimate.print(\textcolor{stringliteral}{"{}Estimate:"{}});}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ ofs.close();}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ std::cout.rdbuf(coutbuf);\ \textcolor{comment}{//reset\ to\ standard\ output\ again}}
+\DoxyCodeLine{00499\ }
+\DoxyCodeLine{00500\ }
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \textcolor{comment}{//calculate\ estimate\ of\ robot\ state}}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ robot\_est\ =\ isam2.calculateEstimate().at(X(pose\_num)).cast<gtsam::Pose2>();}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ pose\_num++;}
+\DoxyCodeLine{00504\ \ \ \ \ \}}
+\DoxyCodeLine{00505\ \};}
+
+\end{DoxyCode}

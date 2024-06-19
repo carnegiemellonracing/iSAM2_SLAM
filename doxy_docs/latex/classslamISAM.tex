@@ -1,0 +1,120 @@
+\doxysection{slam\+ISAM Class Reference}
+\hypertarget{classslamISAM}{}\label{classslamISAM}\index{slamISAM@{slamISAM}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classslamISAM_a0a0a8309cd7ce17d5256b5e8435af151}{print\+\_\+cones}} (auto logger, std\+::vector$<$ Point2 $>$ \&cone\+\_\+obs)
+\begin{DoxyCompactList}\small\item\em print\+\_\+cones will print the positions of the observed cones stored within the vector cone\+\_\+obs. For DEBUGGING purposes \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classslamISAM_ab07c8f29237621e0b929d4a7098bfd4f}{t\+\_\+associate}} (vector$<$ Point2 $>$ \texorpdfstring{$\ast$}{*}cone\+\_\+obs, vector$<$ Pose2 $>$ \texorpdfstring{$\ast$}{*}global\+\_\+obs\+\_\+cones, vector$<$ Pose2 $>$ \texorpdfstring{$\ast$}{*}all\+\_\+cone\+\_\+est, Pose2 global\+\_\+odom, vector$<$ float $>$ \texorpdfstring{$\ast$}{*}m\+\_\+dist, int lo, int hi)
+\begin{DoxyCompactList}\small\item\em t\+\_\+associate is a function called by threads that will perform data association on the observed Point2 cones stored inside vector cone\+\_\+obs. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classslamISAM_a00e82e306602f32451124afb29364365}{step}} (auto logger, gtsam\+::\+Pose2 global\+\_\+odom, std\+::vector$<$ Point2 $>$ \&cone\+\_\+obs, vector$<$ Point2 $>$ \&orange\+\_\+ref\+\_\+cones, gtsam\+::\+Point2 velocity, long time\+\_\+ns, bool loop\+Closure)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classslamISAM_a9a7bf54fb68cd6ad39cf2be656f1da4c}\label{classslamISAM_a9a7bf54fb68cd6ad39cf2be656f1da4c} 
+int {\bfseries n\+\_\+landmarks}
+\item 
+\Hypertarget{classslamISAM_a557bf4cb56eae4be97a60f5ce65c365a}\label{classslamISAM_a557bf4cb56eae4be97a60f5ce65c365a} 
+gtsam\+::\+Pose2 {\bfseries robot\+\_\+est}
+\item 
+\Hypertarget{classslamISAM_a12db7db0ac15a3eeacba9330e922c9b7}\label{classslamISAM_a12db7db0ac15a3eeacba9330e922c9b7} 
+std\+::vector$<$ gtsam\+::\+Pose2 $>$ {\bfseries landmark\+\_\+est}
+\item 
+\Hypertarget{classslamISAM_a1f6520c125e1db548f1a088ace7a042e}\label{classslamISAM_a1f6520c125e1db548f1a088ace7a042e} 
+std\+::vector$<$ Point2 $>$ {\bfseries orange\+\_\+cones}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classslamISAM_a0a0a8309cd7ce17d5256b5e8435af151}\index{slamISAM@{slamISAM}!print\_cones@{print\_cones}}
+\index{print\_cones@{print\_cones}!slamISAM@{slamISAM}}
+\doxysubsubsection{\texorpdfstring{print\_cones()}{print\_cones()}}
+{\footnotesize\ttfamily \label{classslamISAM_a0a0a8309cd7ce17d5256b5e8435af151} 
+void slam\+ISAM\+::print\+\_\+cones (\begin{DoxyParamCaption}\item[{auto}]{logger}{, }\item[{std\+::vector$<$ Point2 $>$ \&}]{cone\+\_\+obs}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+print\+\_\+cones will print the positions of the observed cones stored within the vector cone\+\_\+obs. For DEBUGGING purposes 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cone\+\_\+obs} & is a memory address to the vector containing the Point2 positions of the observed cones
+\begin{DoxyItemize}
+\item you can just pass in the variable, but the type is std\+::vector$<$\+Point2$>$ \& 
+\end{DoxyItemize}\\
+\hline
+\end{DoxyParams}
+\Hypertarget{classslamISAM_a00e82e306602f32451124afb29364365}\index{slamISAM@{slamISAM}!step@{step}}
+\index{step@{step}!slamISAM@{slamISAM}}
+\doxysubsubsection{\texorpdfstring{step()}{step()}}
+{\footnotesize\ttfamily \label{classslamISAM_a00e82e306602f32451124afb29364365} 
+void slam\+ISAM\+::step (\begin{DoxyParamCaption}\item[{auto}]{logger}{, }\item[{gtsam\+::\+Pose2}]{global\+\_\+odom}{, }\item[{std\+::vector$<$ Point2 $>$ \&}]{cone\+\_\+obs}{, }\item[{vector$<$ Point2 $>$ \&}]{orange\+\_\+ref\+\_\+cones}{, }\item[{gtsam\+::\+Point2}]{velocity}{, }\item[{long}]{time\+\_\+ns}{, }\item[{bool}]{loop\+Closure}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Use the previous pose estimate from i\+SAM2, and velocity odometry info to calculate the current pose
+
+Using a velocity-\/based motion model
+
+Spawn num\+\_\+threads that will are responsible for performing data association on subset of the observed cones
+
+Populate m\+\_\+dist
+
+Why are we obtaining all the estimates for the global position of previously seen cones sequentially instead of using threads?
+
+a.) When using threads, we will have to calculate the estimate for the same previously seen cone multiple times, for each observed cone. (wasted computation)
+
+b.) Issue with multiple threads calculating estimates at once. This is a critical section in the code. Therefore, it is safer to calculate all estimates in a vector, where multiple threads can safely read from the the vector (even if reading the same element)
+
+Find min\+\_\+dist; do this for each (n\+\_\+landmarks + 1) sub-\/section of m\+\_\+dist
+
+Finding the previously seen cone that is the most similar to the current observed cone by finding the previously seen cone that had the smallest mahalanobis distance with the observed cone.
+
+If the smallest mahalanobis distance is M\+\_\+\+DIST\+\_\+\+TH (the last element in each (n\+\_\+landmarks + 1) subsection of m\+\_\+dist), then the current landmark/cone is a new cone
+
+Print to squirrel.\+txt Every single time you run step, you reprint the isam2 estimates Remove the previous estimates (trunc) RCLCPP\+\_\+\+INFO(logger, "{}graphing\textbackslash{}n"{});\Hypertarget{classslamISAM_ab07c8f29237621e0b929d4a7098bfd4f}\index{slamISAM@{slamISAM}!t\_associate@{t\_associate}}
+\index{t\_associate@{t\_associate}!slamISAM@{slamISAM}}
+\doxysubsubsection{\texorpdfstring{t\_associate()}{t\_associate()}}
+{\footnotesize\ttfamily \label{classslamISAM_ab07c8f29237621e0b929d4a7098bfd4f} 
+void slam\+ISAM\+::t\+\_\+associate (\begin{DoxyParamCaption}\item[{vector$<$ Point2 $>$ \texorpdfstring{$\ast$}{*}}]{cone\+\_\+obs}{, }\item[{vector$<$ Pose2 $>$ \texorpdfstring{$\ast$}{*}}]{global\+\_\+obs\+\_\+cones}{, }\item[{vector$<$ Pose2 $>$ \texorpdfstring{$\ast$}{*}}]{all\+\_\+cone\+\_\+est}{, }\item[{Pose2}]{global\+\_\+odom}{, }\item[{vector$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{m\+\_\+dist}{, }\item[{int}]{lo}{, }\item[{int}]{hi}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+t\+\_\+associate is a function called by threads that will perform data association on the observed Point2 cones stored inside vector cone\+\_\+obs. 
+
+All calculated mahalanobis distances will be stored in vector m\+\_\+dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices \mbox{[}lo, hi)
+
+
+\begin{DoxyParams}{Parameters}
+{\em global\+\_\+obs\+\_\+cones} & A vector containing the global position for the Point2 cones observed in the current time stamp\\
+\hline
+{\em all\+\_\+cone\+\_\+est} & A vector containing the estimates for the poses of previously seen cones, calculated by the i\+SAM2 model\\
+\hline
+{\em global\+\_\+odom} & A Pose2 variable representing the global pose of the car.\\
+\hline
+{\em m\+\_\+dist} & A vector containing all the mahalanobis distance calculations that will need to be calculated for the current time stamp.\\
+\hline
+\end{DoxyParams}
+Let n\+\_\+landmarks represent the number of previously seen landmarks, m\+\_\+dist is organized such that each set/multiple of n\+\_\+landmarks + 1 elements corresponds to the mahalanobis distance between an observed cone and the global positions of all previously seen cones. The +1 represents the mahalanobis distance threshold (M\+\_\+\+DIST\+\_\+\+TH)
+
+These mahalanobis distances will be used to perform data association on the observed landmarks, by observing which previously seen cone had the smallest mahalanobis distance from the current observed cone. If the smallest distance is M\+\_\+\+DIST\+\_\+\+TH, then the current observed cone is a new cone
+
+
+\begin{DoxyParams}{Parameters}
+{\em lo} & An integer representing the index in m\+\_\+dist the current thread should start populating m\+\_\+dist\\
+\hline
+{\em hi} & An integer representing the index in m\+\_\+dist the current thread should stop populating m\+\_\+dist. Does not calculate the element at index hi \\
+\hline
+\end{DoxyParams}
+calculate for how many previous cone estimates to calculate mahalanobis distance for, with respect to the current observation.
+
+This is because the thread starts calculating mahalanobis distances starting at index lo, which may not be a multiple of n\+\_\+landmarks + 1
+
+(obs\+\_\+id + 1)\+: which multiple of (n\+\_\+landmarks +1) depends on which observed cone
+
+(n\+\_\+landmarks + 1)\+: n\+\_\+landmarks for all previous landmarks and +1 for M\+\_\+\+DIST\+\_\+\+TH.
+
+calculate difference between pose of current observed cone and previously seen cone
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+workspace/src/isam2/isam2.\+cpp\end{DoxyCompactItemize}
