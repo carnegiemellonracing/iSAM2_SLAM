@@ -23,14 +23,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="53" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="53" bodyend="55"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="56" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="56" bodyend="58"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="workspace/src/isam2/isam2.cpp" line="51" column="1" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="51" bodyend="56"/>
+    <location file="workspace/src/isam2/isam2.cpp" line="54" column="1" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="54" bodyend="59"/>
     <listofallmembers>
       <member refid="classCompare_1a41808d0576a958bc304d2ec18a92e3d8" prot="public" virt="non-virtual"><scope>Compare</scope><name>operator()</name></member>
     </listofallmembers>

@@ -1,6 +1,9 @@
-// #include "isam2.hpp"
+/**@file isam2.cpp
+ */
+
 #include <type_traits>
 #include <bits/stdc++.h>
+
 // Camera observations of landmarks will be stored as Point2 (x, y).
 #include <gtsam/geometry/Point2.h>
 #include <gtsam/geometry/Pose2.h>
@@ -96,14 +99,14 @@ public:
 
 
     /**
-     * @brief print_cones will print the positions of the
-     * observed cones stored within the vector cone_obs.
-     * For DEBUGGING purposes
+     * @brief Prints the positions of the
+     *        observed cones stored within the vector cone_obs.
+     *        For DEBUGGING purposes
      *
-     * @param cone_obs is a memory address to the vector
-     * containing the Point2 positions of the observed cones
-     * - you can just pass in the variable, but the type is
-     *   std::vector<Point2> &
+     * @param cone_obs  A memory address to the vector
+     *                  containing the Point2 positions of the observed cones
+     *                  (You can just pass in the variable, but the type is
+     *                  std::vector<Point2> &)
      *
      */
     void print_cones(auto logger, std::vector<Point2> &cone_obs)
@@ -118,14 +121,13 @@ public:
     }
 
     /**
-     * @brief t_associate is a function called by threads that will
-     * perform data association on the observed Point2 cones stored
-     * inside vector cone_obs.
-     *
-     * All calculated mahalanobis distances will be stored in vector
-     * m_dist. For a given time stamp, multiple threads will be spawned
-     * to calculate a subsection of the the mahalanobis distances
-     * from indices [lo, hi)
+     * @brief   A function called by threads that will
+     *          perform data association on the observed Point2 cones stored
+     *          inside vector cone_obs.
+     *          All calculated mahalanobis distances will be stored in vector
+     *          m_dist. For a given time stamp, multiple threads will be spawned
+     *          to calculate a subsection of the the mahalanobis distances
+     *          from indices [lo, hi)
      *
      * @param global_obs_cones A vector containing the global position
      *                         for the Point2 cones observed in the
@@ -141,14 +143,12 @@ public:
      * @param m_dist A vector containing all the mahalanobis distance
      *               calculations that will need to be calculated for the
      *               current time stamp.
-     *
      *               Let n_landmarks represent the number of previously
      *               seen landmarks, m_dist is organized such that each
      *               set/multiple of n_landmarks + 1 elements corresponds to
      *               the mahalanobis distance between an observed cone and
      *               the global positions of all previously seen cones. The +1
      *               represents the mahalanobis distance threshold (M_DIST_TH)
-     *
      *               These mahalanobis distances will be used to perform
      *               data association on the observed landmarks, by observing
      *               which previously seen cone had the smallest mahalanobis
@@ -162,7 +162,6 @@ public:
      * @param hi An integer representing the index in m_dist the current
      *           thread should stop populating m_dist. Does not calculate
      *           the element at index hi
-     *
      */
     void t_associate(vector<Point2> *cone_obs, vector<Pose2> *global_obs_cones,
             vector<Pose2> *all_cone_est, Pose2 global_odom, vector<float> *m_dist,
@@ -243,7 +242,41 @@ public:
     }
 
 
-
+    /**
+     * @brief   Updates iSAM2 model by first performing data association on
+     *          the cones observed from current time stamp. After
+     *          determining which of the observed cones are new cones, the
+     *          new cones are added to the factor graph which will be used
+     *          to update the iSAM2 model.
+     *
+     * @param logger            RCLCPP logger used to print information to the
+     *                          terminal
+     *
+     * @param global_odom       Pose2 type representing the global pose of the
+     *                          car as predicted by the motion model. This will
+     *                          be updated by step to hold the global pose of
+     *                          the car after the current time step.
+     *
+     * @param cone_obs          The memory address of the vector containing the
+     *                          relative positions (with respect to the car) of
+     *                          the cones observed at the current time step.
+     *
+     * @param orange_ref_cones  The memory address of the vector containing the
+     *                          positions of the orange cones observed at the
+     *                          start of the track. Will be used for loop
+     *                          closure
+     *
+     * @param velocity          The velocity of the car at the current time
+     *                          step. Used as a part of the motion model
+     *                          to calculate the current pose of the car.
+     *
+     * @param time_ns           The time elapsed from the previous time step.
+     *                          Used as a part of the motion model to
+     *                          calculate the current pose of the car.
+     *
+     * @param loopClosure       Boolean that will be updated if loop closure
+     *                          has been detected.
+     */
     void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
             vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
             long time_ns, bool loopClosure) {

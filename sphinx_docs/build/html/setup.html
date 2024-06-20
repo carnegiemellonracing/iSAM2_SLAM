@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to run iSAM2 on the EUFS simulator &mdash; iSAM2 SLAM 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=359c27e9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="isam2.cpp" href="isam2cpp.html" />
+    <link rel="prev" title="What is iSAM2" href="isam2.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            iSAM2 SLAM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is iSAM2</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How to run iSAM2 on the EUFS simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="isam2cpp.html">isam2.cpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isam2Nodecpp.html">isam2Node.cpp</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">iSAM2 SLAM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">How to run iSAM2 on the EUFS simulator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/setup.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="how-to-run-isam2-on-the-eufs-simulator">
+<h1>How to run iSAM2 on the EUFS simulator<a class="headerlink" href="#how-to-run-isam2-on-the-eufs-simulator" title="Permalink to this heading"></a></h1>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Install ROS Foxy</p></li>
+<li><p>Install colcon</p></li>
+<li><p>Install Ubuntu 20.04 LTS</p></li>
+</ul>
+</section>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading"></a></h2>
+<p>1.) <strong>Clone the git repository</strong>
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">[url-of-repository]</span></code></p>
+<dl class="simple">
+<dt>2.) <strong>Change directories to the eufs directory clone the necessary repositories</strong></dt><dd><ul class="simple">
+<li><p>If the following directories already exist but are empty, make sure to remove them before cloning</p></li>
+<li><p>eufs_sim: <a class="reference external" href="https://gitlab.com/eufs/eufs_sim.git">https://gitlab.com/eufs/eufs_sim.git</a></p></li>
+<li><p>eufs_msgs: <a class="reference external" href="https://gitlab.com/eufs/eufs_msgs.git">https://gitlab.com/eufs/eufs_msgs.git</a></p></li>
+<li><p>eufs_rviz_plugins: <a class="reference external" href="https://gitlab.com/eufs/eufs_rviz_plugins.git">https://gitlab.com/eufs/eufs_rviz_plugins.git</a></p></li>
+</ul>
+</dd>
+</dl>
+<p>3.) <strong>Install colcon extensions and set the EUFS_MASTER environment variable</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">colcon</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="n">extensions</span> <span class="o">-</span><span class="n">U</span>
+<span class="n">echo</span> <span class="s1">&#39;export EUFS_MASTER=/path/to/iSAM2_SLAM/eufs&#39;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bashrc</span>
+<span class="n">source</span> <span class="o">~/.</span><span class="n">bashrc</span>
+</pre></div>
+</div>
+<p>4.) <strong>Install dependencies for the EUFS simulator using rosdep</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sudo apt-get install python3-rosdep
+sudo rosdep init
+rosdep update
+rosdep install --from-paths $EUFS_MASTER --ignore-src -r -y
+</pre></div>
+</div>
+<p>5.) <strong>Build the eufs package and source it</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Change directories to /path/to/iSAM2_SLAM/eufs</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">colcon</span> <span class="pre">build</span></code></p></li>
+<li><p>If the directories <code class="docutils literal notranslate"><span class="pre">build</span></code>, <code class="docutils literal notranslate"><span class="pre">log</span></code>, or <code class="docutils literal notranslate"><span class="pre">install</span></code>, currently exist in eufs, make sure to remove them before building</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">install/setup.bash</span></code> from <code class="docutils literal notranslate"><span class="pre">/path/to/iSAM2_SLAM/eufs</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>6.) <strong>Change directories into /path/to/iSAM2_SLAM/workspace/src and make sure that the eufs_msgs has been built</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If the directory exists but is empty, remove the directory, and then clone eufs_msgs: <a class="reference external" href="https://gitlab.com/eufs/eufs_msgs.git">https://gitlab.com/eufs/eufs_msgs.git</a></p></li>
+</ul>
+</div></blockquote>
+<p>7.) <strong>Build the iSAM2 package and source it</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Change directories to <code class="docutils literal notranslate"><span class="pre">/path/to/iSAM2_SLAM/workspace</span></code></p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">colcon</span> <span class="pre">build</span></code></p></li>
+<li><p>If the directories <code class="docutils literal notranslate"><span class="pre">build</span></code>, <code class="docutils literal notranslate"><span class="pre">log</span></code>, or <code class="docutils literal notranslate"><span class="pre">install</span></code>, currently exist in eufs, make sure to remove them before building</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">install/setup.bash</span></code> from <code class="docutils literal notranslate"><span class="pre">/path/to/iSAM2_SLAM/workspace</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>8.) <strong>Run the EUFS simulator</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Open start_sim.txt using a text editor</p></li>
+<li><p>This file is responsible for running the simulator by first changing directories to the eufs directory.</p></li>
+<li><p>Make sure to change this path to the your <code class="docutils literal notranslate"><span class="pre">/path/to/iSAM2_SLAM/eufs</span></code></p></li>
+<li><p>Save the changes made</p></li>
+<li><p>To run the simulator, call <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">start_sim.txt</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>9.) <strong>In another terminal run the iSAM2 node</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Make sure to build and source the package (from step 5)</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">run</span> <span class="pre">isam2</span> <span class="pre">isam_test</span></code></p></li>
+<li><p>isam2 is the name of the package</p></li>
+<li><p>isam_test is the executable name</p></li>
+<li><p>For more information, see the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whenever you open a new terminal, you must source the package you plan to run</p>
+<ul class="simple">
+<li><p>When running the simulator, remember to change directories to /path/to/iSAM2_SLAM/eufs first and run source install/setup.bash before running bash start_sim.txt</p></li>
+<li><p>When running the iSAM2, remember to change directories to /path/to/iSAM2_SLAM/workspace first and run source install/setup.bash before running <code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">run</span> <span class="pre">isam2</span> <span class="pre">isam_test</span></code></p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="isam2.html" class="btn btn-neutral float-left" title="What is iSAM2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="isam2cpp.html" class="btn btn-neutral float-right" title="isam2.cpp" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Carnegie Mellon Racing.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

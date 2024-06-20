@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['slamisam_0',['slamISAM',['../classslamISAM.html',1,'']]],
-  ['slamvalidation_1',['SLAMValidation',['../classSLAMValidation.html',1,'']]],
-  ['step_2',['step',['../classslamISAM.html#a00e82e306602f32451124afb29364365',1,'slamISAM']]]
+  ['print_5fcones_0',['print_cones',['../classslamISAM.html#a0a0a8309cd7ce17d5256b5e8435af151',1,'slamISAM']]]
 ];

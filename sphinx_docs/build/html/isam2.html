@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What is iSAM2 &mdash; iSAM2 SLAM 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=359c27e9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to run iSAM2 on the EUFS simulator" href="setup.html" />
+    <link rel="prev" title="Carnegie Mellon Racing Path Planning Library" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            iSAM2 SLAM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What is iSAM2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">How to run iSAM2 on the EUFS simulator</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="isam2cpp.html">isam2.cpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isam2Nodecpp.html">isam2Node.cpp</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">iSAM2 SLAM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">What is iSAM2</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/isam2.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="what-is-isam2">
+<h1>What is iSAM2<a class="headerlink" href="#what-is-isam2" title="Permalink to this heading"></a></h1>
+<p>iSAM2 (Incremental Smoothing and Mapping) is a SLAM (Simultaneous Localization and Mapping) algorithm used to construct a map of the track from the car’s position and the cones observed around the track. iSAM2 does this by constructing and optimizing a factor graph containing variables nodes (which represent either landmark poses or car poses) and factor nodes.</p>
+<p><strong>The Factor Graph</strong>
+As stated previously, iSAM2 relies on a factor graph containing variable nodes and factor nodes. Factor nodes are connected to variables nodes and represents a joint probability distribution on the variables nodes connected to it. This joint probability distribution represents how certain iSAM2 is of the corresponding variables’ positions.</p>
+<img alt="_images/factor_graph.png" class="align-center" src="_images/factor_graph.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A variable node cannot be adjacent to another variable node and a factor node cannot be adjacent to to another factor node. Blue nodes represent variable nodes (X variable nodes represent car poses, L variable nodes represent landmark positions). Gray nodes represent factor nodes. Factor node <span class="math notranslate nohighlight">\(f_{0}\)</span> is called a prior factor node; prior factor nodes are added to the first pose and sometimes the first landmark for iSAM2 to use as reference when localizing and mapping future poses and landmarks.</p>
+</div>
+<p>For example, observe how in Figure 1, factor node <span class="math notranslate nohighlight">\(f_{1}\)</span> is connected to variable node <span class="math notranslate nohighlight">\(x_{0}\)</span>, representing the first car pose, and <span class="math notranslate nohighlight">\(l_{0}\)</span>, representing the first landmark. <span class="math notranslate nohighlight">\(f_{1}\)</span> represents a joint probabilistic distribution function over <span class="math notranslate nohighlight">\(x_{0}\)</span> and <span class="math notranslate nohighlight">\(l_{0}\)</span>, which indicates how certain iSAM2 is of the positions for <span class="math notranslate nohighlight">\(x_{0}\)</span> and <span class="math notranslate nohighlight">\(l_{0}\)</span>. Altogether, the entire factor graph represents a joint probabilistic distribution function F on all landmark positions and car poses. This function F is equal to the product of all factors <span class="math notranslate nohighlight">\(f_{n}\)</span>, the joint probabilistic distribution function represented by each factor node in the graph.</p>
+<p><strong>Goal with respect to the Factor Graph</strong>
+The goal of iSAM2 is to maximize the joint probabilistic distribution function F by maximizing its factors. Intuitively, iSAM2 is seeking to maximize its certainty of landmark positions and car poses by updating its estimates for car poses and landmark positions over time (with the help of incoming observations). Considering the previous example, iSAM2 can maximize this function F by maximizing the joint probability distribution function represented by <span class="math notranslate nohighlight">\(f_{1}\)</span>.</p>
+<p><strong>Implementation</strong></p>
+<img alt="_images/observation_step.png" class="align-center" src="_images/observation_step.png" />
+<p>The iSAM2 node first parses the cones received by perceptions into separate vectors by color. This vector of observed cones and other odometry information is the used to update the iSAM2 model (<a class="reference internal" href="isam2Nodecpp.html#isam2node-cpp"><span class="std std-ref">See isam2Node.cpp</span></a>). Using the odometry information, the iSAM2 node predicts the car’s current pose using the received odometry information. Variable node <span class="math notranslate nohighlight">\(x_{n}\)</span>, representing the car pose at the current time stamp, is added alongside a factor node connecting <span class="math notranslate nohighlight">\(x_{n}\)</span> to <span class="math notranslate nohighlight">\(x_{n-1}\)</span>, the variable node representing the previous car pose.</p>
+<img alt="_images/data_association.png" class="align-center" src="_images/data_association.png" />
+<p>After determining the car pose, data association is performed on the cones observed at the current timestamp to determine which of the observed cones are new. To perform this data association, the Mahalanobis distance is calculated between 1 observed cone, and all iSAM2 estimates for the previously seen cones. Intuitively, the Mahalanobis distance represents how much the observed cone resembles a previously seen cone (the smaller the distance, the more the observed cone resembles the previously seen cone). If the smallest distance is greater than the Mahalanobis Distance Threshold, then the observed cone is a new cone (<a class="reference internal" href="isam2cpp.html#isam2-cpp"><span class="std std-ref">See isam2.cpp</span></a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Mahalanobis distance threshold is generally found through tuning and trial and error.</p>
+</div>
+<img alt="_images/updated_factor_graph.png" class="align-center" src="_images/updated_factor_graph.png" />
+<p>This process is repeated for all observed cones. Each detected new cone must be added to the factor graph as a variable node with a factor node connected to <span class="math notranslate nohighlight">\(x_{n}\)</span>, the variable node representing the current car pose.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Carnegie Mellon Racing Path Planning Library" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-right" title="How to run iSAM2 on the EUFS simulator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Carnegie Mellon Racing.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

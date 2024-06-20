@@ -96,12 +96,13 @@ $(function(){ initResizable(false); });
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0a0a8309cd7ce17d5256b5e8435af151" id="r_a0a0a8309cd7ce17d5256b5e8435af151"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a0a8309cd7ce17d5256b5e8435af151">print_cones</a> (auto logger, std::vector&lt; Point2 &gt; &amp;cone_obs)</td></tr>
-<tr class="memdesc:a0a0a8309cd7ce17d5256b5e8435af151"><td class="mdescLeft">&#160;</td><td class="mdescRight">print_cones will print the positions of the observed cones stored within the vector cone_obs. For DEBUGGING purposes  <br /></td></tr>
+<tr class="memdesc:a0a0a8309cd7ce17d5256b5e8435af151"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the positions of the observed cones stored within the vector cone_obs. For DEBUGGING purposes.  <br /></td></tr>
 <tr class="separator:a0a0a8309cd7ce17d5256b5e8435af151"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab07c8f29237621e0b929d4a7098bfd4f" id="r_ab07c8f29237621e0b929d4a7098bfd4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab07c8f29237621e0b929d4a7098bfd4f">t_associate</a> (vector&lt; Point2 &gt; *cone_obs, vector&lt; Pose2 &gt; *global_obs_cones, vector&lt; Pose2 &gt; *all_cone_est, Pose2 global_odom, vector&lt; float &gt; *m_dist, int lo, int hi)</td></tr>
-<tr class="memdesc:ab07c8f29237621e0b929d4a7098bfd4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">t_associate is a function called by threads that will perform data association on the observed Point2 cones stored inside vector cone_obs.  <br /></td></tr>
+<tr class="memdesc:ab07c8f29237621e0b929d4a7098bfd4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A function called by threads that will perform data association on the observed Point2 cones stored inside vector cone_obs. All calculated mahalanobis distances will be stored in vector m_dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices [lo, hi)  <br /></td></tr>
 <tr class="separator:ab07c8f29237621e0b929d4a7098bfd4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00e82e306602f32451124afb29364365" id="r_a00e82e306602f32451124afb29364365"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00e82e306602f32451124afb29364365">step</a> (auto logger, gtsam::Pose2 global_odom, std::vector&lt; Point2 &gt; &amp;cone_obs, vector&lt; Point2 &gt; &amp;orange_ref_cones, gtsam::Point2 velocity, long time_ns, bool loopClosure)</td></tr>
+<tr class="memdesc:a00e82e306602f32451124afb29364365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates iSAM2 model by first performing data association on the cones observed from current time stamp. After determining which of the observed cones are new cones, the new cones are added to the factor graph which will be used to update the iSAM2 model.  <br /></td></tr>
 <tr class="separator:a00e82e306602f32451124afb29364365"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -147,13 +148,10 @@ std::vector&lt; Point2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 
-<p>print_cones will print the positions of the observed cones stored within the vector cone_obs. For DEBUGGING purposes </p>
+<p>Prints the positions of the observed cones stored within the vector cone_obs. For DEBUGGING purposes. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cone_obs</td><td>is a memory address to the vector containing the Point2 positions of the observed cones<ul>
-<li>you can just pass in the variable, but the type is std::vector&lt;Point2&gt; &amp; </li>
-</ul>
-</td></tr>
+    <tr><td class="paramname">cone_obs</td><td>A memory address to the vector containing the Point2 positions of the observed cones (You can just pass in the variable, but the type is std::vector&lt;Point2&gt; &amp;) </td></tr>
   </table>
   </dd>
 </dl>
@@ -211,6 +209,20 @@ std::vector&lt; Point2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Updates iSAM2 model by first performing data association on the cones observed from current time stamp. After determining which of the observed cones are new cones, the new cones are added to the factor graph which will be used to update the iSAM2 model. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">logger</td><td>RCLCPP logger used to print information to the terminal</td></tr>
+    <tr><td class="paramname">global_odom</td><td>Pose2 type representing the global pose of the car as predicted by the motion model. This will be updated by step to hold the global pose of the car after the current time step.</td></tr>
+    <tr><td class="paramname">cone_obs</td><td>The memory address of the vector containing the relative positions (with respect to the car) of the cones observed at the current time step.</td></tr>
+    <tr><td class="paramname">orange_ref_cones</td><td>The memory address of the vector containing the positions of the orange cones observed at the start of the track. Will be used for loop closure</td></tr>
+    <tr><td class="paramname">velocity</td><td>The velocity of the car at the current time step. Used as a part of the motion model to calculate the current pose of the car.</td></tr>
+    <tr><td class="paramname">time_ns</td><td>The time elapsed from the previous time step. Used as a part of the motion model to calculate the current pose of the car.</td></tr>
+    <tr><td class="paramname">loopClosure</td><td>Boolean that will be updated if loop closure has been detected. </td></tr>
+  </table>
+  </dd>
+</dl>
 <p>Use the previous pose estimate from iSAM2, and velocity odometry info to calculate the current pose</p>
 <p>Using a velocity-based motion model</p>
 <p>Spawn num_threads that will are responsible for performing data association on subset of the observed cones</p>
@@ -277,21 +289,13 @@ std::vector&lt; Point2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 
-<p>t_associate is a function called by threads that will perform data association on the observed Point2 cones stored inside vector cone_obs. </p>
-<p>All calculated mahalanobis distances will be stored in vector m_dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices [lo, hi)</p>
+<p>A function called by threads that will perform data association on the observed Point2 cones stored inside vector cone_obs. All calculated mahalanobis distances will be stored in vector m_dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices [lo, hi) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">global_obs_cones</td><td>A vector containing the global position for the Point2 cones observed in the current time stamp</td></tr>
     <tr><td class="paramname">all_cone_est</td><td>A vector containing the estimates for the poses of previously seen cones, calculated by the iSAM2 model</td></tr>
     <tr><td class="paramname">global_odom</td><td>A Pose2 variable representing the global pose of the car.</td></tr>
-    <tr><td class="paramname">m_dist</td><td>A vector containing all the mahalanobis distance calculations that will need to be calculated for the current time stamp.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Let n_landmarks represent the number of previously seen landmarks, m_dist is organized such that each set/multiple of n_landmarks + 1 elements corresponds to the mahalanobis distance between an observed cone and the global positions of all previously seen cones. The +1 represents the mahalanobis distance threshold (M_DIST_TH)</p>
-<p>These mahalanobis distances will be used to perform data association on the observed landmarks, by observing which previously seen cone had the smallest mahalanobis distance from the current observed cone. If the smallest distance is M_DIST_TH, then the current observed cone is a new cone</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
+    <tr><td class="paramname">m_dist</td><td>A vector containing all the mahalanobis distance calculations that will need to be calculated for the current time stamp. Let n_landmarks represent the number of previously seen landmarks, m_dist is organized such that each set/multiple of n_landmarks + 1 elements corresponds to the mahalanobis distance between an observed cone and the global positions of all previously seen cones. The +1 represents the mahalanobis distance threshold (M_DIST_TH) These mahalanobis distances will be used to perform data association on the observed landmarks, by observing which previously seen cone had the smallest mahalanobis distance from the current observed cone. If the smallest distance is M_DIST_TH, then the current observed cone is a new cone</td></tr>
     <tr><td class="paramname">lo</td><td>An integer representing the index in m_dist the current thread should start populating m_dist</td></tr>
     <tr><td class="paramname">hi</td><td>An integer representing the index in m_dist the current thread should stop populating m_dist. Does not calculate the element at index hi </td></tr>
   </table>

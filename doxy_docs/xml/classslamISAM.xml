@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="59" column="22" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="59" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="62" column="22" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="62" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1ad40bdcfcafb135f52b3968a81744df0f" prot="private" static="no" mutable="no">
         <type>ISAM2</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="60" column="11" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="60" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="63" column="11" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="63" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1aaff5414a2a404c29811ae269b7c1769b" prot="private" static="no" mutable="no">
         <type>NonlinearFactorGraph</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="61" column="26" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="61" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="64" column="26" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="64" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1a8c3fd1e88200d8230bfc48b28404ccc1" prot="private" static="no" mutable="no">
         <type>Values</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="62" column="12" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="62" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="65" column="12" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="65" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1aa1bbd820665ee45fa2d03804d61b92ba" prot="private" static="no" mutable="no">
         <type>int</type>
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="64" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="64" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="67" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="67" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="77" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="77" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="80" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="80" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1a557bf4cb56eae4be97a60f5ce65c365a" prot="public" static="no" mutable="no">
         <type>gtsam::Pose2</type>
@@ -101,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="77" column="34" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="77" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="80" column="34" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="80" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1a12db7db0ac15a3eeacba9330e922c9b7" prot="public" static="no" mutable="no">
         <type>std::vector&lt; gtsam::Pose2 &gt;</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="78" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="78" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="81" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="81" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1a1f6520c125e1db548f1a088ace7a042e" prot="public" static="no" mutable="no">
         <type>std::vector&lt; Point2 &gt;</type>
@@ -129,7 +129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="79" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="79" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="82" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="82" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -149,7 +149,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="67" column="19" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="67" bodyend="69"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="70" column="19" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="70" bodyend="72"/>
       </memberdef>
       <memberdef kind="function" id="classslamISAM_1a9aa5e2c7ac1424c97711c9a5734282d9" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>gtsam::Symbol</type>
@@ -167,7 +167,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="71" column="19" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="71" bodyend="73"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="74" column="19" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="74" bodyend="76"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -183,7 +183,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="81" column="5" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="81" bodyend="94"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="84" column="5" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="84" bodyend="97"/>
       </memberdef>
       <memberdef kind="function" id="classslamISAM_1a0a0a8309cd7ce17d5256b5e8435af151" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -200,7 +200,7 @@
           <declname>cone_obs</declname>
         </param>
         <briefdescription>
-<para>print_cones will print the positions of the observed cones stored within the vector cone_obs. For DEBUGGING purposes </para>
+<para>Prints the positions of the observed cones stored within the vector cone_obs. For DEBUGGING purposes. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -208,10 +208,7 @@
 <parametername>cone_obs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a memory address to the vector containing the Point2 positions of the observed cones<itemizedlist>
-<listitem><para>you can just pass in the variable, but the type is std::vector&lt;Point2&gt; &amp; </para>
-</listitem></itemizedlist>
-</para>
+<para>A memory address to the vector containing the Point2 positions of the observed cones (You can just pass in the variable, but the type is std::vector&lt;Point2&gt; &amp;) </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -219,7 +216,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="109" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="109" bodyend="118"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="112" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="112" bodyend="121"/>
       </memberdef>
       <memberdef kind="function" id="classslamISAM_1ab07c8f29237621e0b929d4a7098bfd4f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -256,10 +253,9 @@
           <declname>hi</declname>
         </param>
         <briefdescription>
-<para>t_associate is a function called by threads that will perform data association on the observed Point2 cones stored inside vector cone_obs. </para>
+<para>A function called by threads that will perform data association on the observed Point2 cones stored inside vector cone_obs. All calculated mahalanobis distances will be stored in vector m_dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices [lo, hi) </para>
         </briefdescription>
         <detaileddescription>
-<para>All calculated mahalanobis distances will be stored in vector m_dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices [lo, hi)</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>global_obs_cones</parametername>
@@ -289,13 +285,10 @@
 <parametername>m_dist</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>A vector containing all the mahalanobis distance calculations that will need to be calculated for the current time stamp.</para>
+<para>A vector containing all the mahalanobis distance calculations that will need to be calculated for the current time stamp. Let n_landmarks represent the number of previously seen landmarks, m_dist is organized such that each set/multiple of n_landmarks + 1 elements corresponds to the mahalanobis distance between an observed cone and the global positions of all previously seen cones. The +1 represents the mahalanobis distance threshold (M_DIST_TH) These mahalanobis distances will be used to perform data association on the observed landmarks, by observing which previously seen cone had the smallest mahalanobis distance from the current observed cone. If the smallest distance is M_DIST_TH, then the current observed cone is a new cone</para>
 </parameterdescription>
 </parameteritem>
-</parameterlist>
-Let n_landmarks represent the number of previously seen landmarks, m_dist is organized such that each set/multiple of n_landmarks + 1 elements corresponds to the mahalanobis distance between an observed cone and the global positions of all previously seen cones. The +1 represents the mahalanobis distance threshold (M_DIST_TH)</para>
-<para>These mahalanobis distances will be used to perform data association on the observed landmarks, by observing which previously seen cone had the smallest mahalanobis distance from the current observed cone. If the smallest distance is M_DIST_TH, then the current observed cone is a new cone</para>
-<para><parameterlist kind="param"><parameteritem>
+<parameteritem>
 <parameternamelist>
 <parametername>lo</parametername>
 </parameternamelist>
@@ -321,7 +314,7 @@ Let n_landmarks represent the number of previously seen landmarks, m_dist is org
 <para>(n_landmarks + 1): n_landmarks for all previous landmarks and +1 for M_DIST_TH.</para>
 <para>calculate difference between pose of current observed cone and previously seen cone</para>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="167" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="167" bodyend="243"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="166" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="166" bodyend="242"/>
       </memberdef>
       <memberdef kind="function" id="classslamISAM_1a00e82e306602f32451124afb29364365" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -358,8 +351,67 @@ Let n_landmarks represent the number of previously seen landmarks, m_dist is org
           <declname>loopClosure</declname>
         </param>
         <briefdescription>
+<para>Updates iSAM2 model by first performing data association on the cones observed from current time stamp. After determining which of the observed cones are new cones, the new cones are added to the factor graph which will be used to update the iSAM2 model. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>logger</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>RCLCPP logger used to print information to the terminal</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>global_odom</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pose2 type representing the global pose of the car as predicted by the motion model. This will be updated by step to hold the global pose of the car after the current time step.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cone_obs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The memory address of the vector containing the relative positions (with respect to the car) of the cones observed at the current time step.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>orange_ref_cones</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The memory address of the vector containing the positions of the orange cones observed at the start of the track. Will be used for loop closure</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>velocity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The velocity of the car at the current time step. Used as a part of the motion model to calculate the current pose of the car.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>time_ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The time elapsed from the previous time step. Used as a part of the motion model to calculate the current pose of the car.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>loopClosure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Boolean that will be updated if loop closure has been detected. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
 <para>Use the previous pose estimate from iSAM2, and velocity odometry info to calculate the current pose</para>
@@ -374,14 +426,14 @@ Let n_landmarks represent the number of previously seen landmarks, m_dist is org
 <para>If the smallest mahalanobis distance is M_DIST_TH (the last element in each (n_landmarks + 1) subsection of m_dist), then the current landmark/cone is a new cone</para>
 <para>Print to squirrel.txt Every single time you run step, you reprint the isam2 estimates Remove the previous estimates (trunc) RCLCPP_INFO(logger, &quot;graphing\n&quot;);</para>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="247" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="247" bodyend="504"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="280" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="280" bodyend="537"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="workspace/src/isam2/isam2.cpp" line="58" column="1" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="58" bodyend="505"/>
+    <location file="workspace/src/isam2/isam2.cpp" line="61" column="1" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="61" bodyend="538"/>
     <listofallmembers>
       <member refid="classslamISAM_1aaff5414a2a404c29811ae269b7c1769b" prot="private" virt="non-virtual"><scope>slamISAM</scope><name>graph</name></member>
       <member refid="classslamISAM_1ad40bdcfcafb135f52b3968a81744df0f" prot="private" virt="non-virtual"><scope>slamISAM</scope><name>isam2</name></member>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carnegie Mellon Racing Path Planning Library &mdash; iSAM2 SLAM 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=359c27e9"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="What is iSAM2" href="isam2.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            iSAM2 SLAM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is iSAM2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">How to run iSAM2 on the EUFS simulator</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="isam2cpp.html">isam2.cpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isam2Nodecpp.html">isam2Node.cpp</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">iSAM2 SLAM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Carnegie Mellon Racing Path Planning Library</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="carnegie-mellon-racing-path-planning-library">
+<h1>Carnegie Mellon Racing Path Planning Library<a class="headerlink" href="#carnegie-mellon-racing-path-planning-library" title="Permalink to this heading"></a></h1>
+<section id="what-is-path-planning">
+<h2>What is Path Planning?<a class="headerlink" href="#what-is-path-planning" title="Permalink to this heading"></a></h2>
+<p>Path planning is responsible for determining a route for the car to take in order to navigate the track. This process involves two primary parts: determining the midline and employing SLAM (Simultaneous Localization and Mapping) to determine the structure of the racetrack. Determining the midline refers to the process of generating a route between the cones observed at the current time step. The midline is necessary when the car is competing its first lap around the track because without knowledge of the track’s layout, the car is forced to naively navigate the track. As the car completes its first lap, a SLAM algorithm is employed to refine its position in the track and the position of previously seen cones (localization) based on newly observed cones while also mapping out the racetrack (mapping).</p>
+<p>This is made possible by processing observed cone positions received from our Perceptions pipeline into a path the car can follow. The Planning pipelines is then responsible for a.) determining the midline in the form of a spline, a series of points representing the path the car should take b.) SLAM. The spline is published and received by the Controls Pipeline where control actions will be determined to instruct the car to follow the path indicated by the spline. The map of the racetrack generated by SLAM will be used in the laps following the first lap to navigate the track.</p>
+</section>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is iSAM2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">How to run iSAM2 on the EUFS simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#setup">Setup</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="source-files">
+<h2>Source files<a class="headerlink" href="#source-files" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="isam2cpp.html">isam2.cpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isam2Nodecpp.html">isam2Node.cpp</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="isam2.html" class="btn btn-neutral float-right" title="What is iSAM2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Carnegie Mellon Racing.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
