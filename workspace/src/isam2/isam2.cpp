@@ -486,11 +486,7 @@ public:
             int num_threads = 12;
 
             const int m_dist_len = (n_landmarks + 1) * cone_obs.size(); //110
-	    //if (m_dist_len < 350)
-	    //{
-	    //    num_threads = 1;
-	    //}
-	    //else 
+	     
 	    if (m_dist_len < 1000)
 	    {
 		num_threads = 6;
@@ -600,23 +596,7 @@ public:
 	    RCLCPP_INFO(logger, "calc'd min_ids");
 	    
 
-	    /* correctness checker for min_id calculation */
-	    /*for (int i =0; i < (int)cone_obs.size(); i++)
-	    {
-		int start_idx = i*(n_landmarks + 1);
-                vector<float>::iterator start_iter = m_dist.begin() + start_idx;
-                int min_id = std::distance(start_iter,
-                                        std::min_element(start_iter,
-                                                   start_iter + (n_landmarks + 1)));
-		min_ids.at(i) = min_id;
-		//assert(min_id == min_ids.at(i));
-	    }
-	    RCLCPP_INFO(logger, "min_ids correct");*/ 
-
-
-            /**
-             * With the calculated min_ids, determine how to update the graph
-             */
+	    
 	    RCLCPP_INFO(logger, "updating graph");
 	    /* the highest min_id could only be prev_n_landmarks */
 	    /* update isam2 with any new factors and values */
