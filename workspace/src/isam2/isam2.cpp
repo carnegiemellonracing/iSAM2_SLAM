@@ -1,4 +1,8 @@
 /**@file isam2.cpp
+ *
+ * @brief This file is where the iSAM2 model is updated and where
+ *        data association is employed on the observed cones at
+ *        the current time stamp
  */
 
 #include <type_traits>
@@ -39,64 +43,53 @@ using namespace std;
 using namespace gtsam;
 using namespace std::chrono;
 
-//static const float M_DIST_TH = 0.000151169; // for real data
+/**
+ * @brief The Mahalanobis distance threshold to indicate whether an observed
+ *        resembles a previously seen cone or a new cone. When performing
+ *        data association, if the smallest Mahalanobis distance is greater
+ *        than the threshold, then the observed cone is a new cone.
+ */
 static const float M_DIST_TH = 20;
-// static const float M_DIST_TH = 45; // used to be 45 lmao
+
+
 static const long SEC_TO_NANOSEC = 1000000000;
-//static mutex global_obs_cones_mutex;
-static mutex isam2_mutex;
 
-struct Landmark {
-    int lm_id;
-    gtsam::Pose2 lm_pos;
-};
-
-class Compare {
-public:
-    bool operator()(Landmark lm1, Landmark lm2) const {
-        return (lm1.lm_pos.x() > lm2.lm_pos.x() && lm1.lm_pos.y() > lm2.lm_pos.y());
-    }
-};
-
+/**
+ * @brief A class that uses data association to discern new cones from previously
+ *        seen cones and utilizes the iSAM2 model to perform SLAM.
+ */
 class slamISAM {
-private: ISAM2Params parameters;
+private:
+    ISAM2Params parameters;
     ISAM2 isam2;
     NonlinearFactorGraph graph;
     Values values;
 
     int pose_num;
 
-
+    /**
+     * @brief A function that returns a Symbol representing the nth pose where
+     *        n = robot_pose_id. This function is used to represent a key for
+     *        the accessing the nth car pose estimate from the iSAM2 model
+     *
+     * @param robot_pose_id The ID of the car pose
+     *
+     */
     gtsam::Symbol X(int robot_pose_id) {
         return Symbol('x', robot_pose_id);
     }
 
+    /**
+     * @brief A function that returns a Symbol representing the nth landmark where
+     *        n = cone_pose_id. This function is used to represent a key for
+     *        the accessing the nth car pose estimate from the iSAM2 model
+     *
+     * @param cone_pose_id The ID of the cone pose
+     *
+     */
     gtsam::Symbol L(int cone_pose_id) {
         return Symbol('l', cone_pose_id);
     }
-
-public:
-
-    int n_landmarks; gtsam::Pose2 robot_est;
-    std::vector<gtsam::Pose2> landmark_est;
-    std::vector<Point2> orange_cones;
-
-    slamISAM() {
-        parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
-        parameters.setFactorization("QR");
-
-        isam2 = gtsam::ISAM2(parameters);
-        graph = gtsam::NonlinearFactorGraph();
-        values = gtsam::Values();
-        pose_num = 0;
-        n_landmarks = 0;
-        robot_est = gtsam::Pose2(0, 0, 0);
-        landmark_est = std::vector<gtsam::Pose2>();
-
-        orange_cones = std::vector<Point2>();
-    }
-
-
 
     /**
      * @brief Prints the positions of the
@@ -119,6 +112,32 @@ public:
         }
         RCLCPP_INFO(logger, "done printing\n\n");
     }
+
+
+public:
+
+    int n_landmarks;
+    gtsam::Pose2 robot_est;
+    std::vector<gtsam::Pose2> landmark_est;
+    std::vector<Point2> orange_cones;
+
+    slamISAM() {
+        parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
+        parameters.setFactorization("QR");
+
+        isam2 = gtsam::ISAM2(parameters);
+        graph = gtsam::NonlinearFactorGraph();
+        values = gtsam::Values();
+        pose_num = 0;
+        n_landmarks = 0;
+        robot_est = gtsam::Pose2(0, 0, 0);
+        landmark_est = std::vector<gtsam::Pose2>();
+
+        orange_cones = std::vector<Point2>();
+    }
+
+
+
 
     /**
      * @brief   A function called by threads that will
@@ -221,7 +240,8 @@ public:
                         1;
 
                 /* calculate the mahalanobis distance */
-                m_dist->at(i) = (diff * isam2.marginalCovariance(L(landmark_idx)) * diff.transpose())(0, 0);
+                m_dist->at(i) = (diff*isam2.marginalCovariance(L(landmark_idx))
+                                * diff.transpose())(0, 0);
 
                 landmark_idx++;
             }
@@ -290,20 +310,18 @@ public:
         NoiseModel(2) = 0;
 
         Vector LandmarkNoiseModel(3);
-        //used to be 0.01 for real data
-        //LandmarkNoiseModel(0) = 0.01;
-        //LandmarkNoiseModel(1) = 0.01;
-        //LandmarkNoiseModel(2) = 0.01;
 
-        // No noise kinda good??
         LandmarkNoiseModel(0) = 0.0;
         LandmarkNoiseModel(1) = 0.0;
         LandmarkNoiseModel(2) = 0.0;
         static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         if (pose_num==0) { /* first pose */
-            static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
-            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
+            static noiseModel::Diagonal::shared_ptr prior_model =
+                                        noiseModel::Diagonal::Sigmas(NoiseModel);
+
+            gtsam::PriorFactor<Pose2> prior_factor =
+                        gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
 
             /* Add prior (This is how the iSAM2 factor graph begins) */
             graph.add(prior_factor);
@@ -338,19 +356,26 @@ public:
                                     global_odom.theta() - prev_pos.theta());
                                     */
 
-            static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
-            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
+            static noiseModel::Diagonal::shared_ptr prior_model =
+                                        noiseModel::Diagonal::Sigmas(NoiseModel);
+
+            gtsam::PriorFactor<Pose2> prior_factor =
+                        gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
+
             graph.add(prior_factor);
 
-            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),
-                                                                                    Odometry, odom_model);
+            gtsam::BetweenFactor<Pose2> odom_factor =
+                gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num), Odometry, odom_model);
+
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
         }
 
 
         if(loopClosure){
-            static noiseModel::Diagonal::shared_ptr loop_closure_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+            static noiseModel::Diagonal::shared_ptr loop_closure_model =
+                noiseModel::Diagonal::Sigmas(NoiseModel);
+
             //left is 0, right is 1
             //Do triangulation given the current cone positions and the previous saved orange cones
             //take the orange cones, look at difference between
@@ -464,12 +489,13 @@ public:
 
 
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(min_id),
-                            Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(), global_obs_cones.at(i).theta()),
+                    Pose2(cone_obs.at(i).x(), cone_obs.at(i).y(), global_obs_cones.at(i).theta()),
                             landmark_model));
 
                 if (n_landmarks == min_id) /* new landmark */
                 {
-                    values.insert(L(n_landmarks), Pose2(global_obs_cones.at(i).x(), global_obs_cones.at(i).y(), 0));
+                    values.insert(L(n_landmarks),
+                            Pose2(global_obs_cones.at(i).x(), global_obs_cones.at(i).y(), 0));
                     n_landmarks++;
                     RCLCPP_INFO(logger, "n_lm: %d", n_landmarks);
                 }

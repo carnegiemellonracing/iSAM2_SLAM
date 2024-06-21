@@ -1,4 +1,8 @@
 /** @file isam2Node.cpp
+ *
+ * @brief This initializes the subscribers that listen for 1.) recently observed
+ *        cone positions on the current time step (from the Perceptions
+ *        pipeline) and 2.) odometry information.
  */
 
 #include <memory>
@@ -215,13 +219,13 @@ class SLAMValidation : public rclcpp::Node
     }
 
 
+    /**
+     * @brief Takes the observed cones from the current time step and the
+     *        car pose (calculated from a motion model based on the odometry
+     *        data) and updates the iSAM2 model by calling step (see isam2.cpp)
+     *
+     */
     void run_slam(){
-      //if(global_odom.x() == 0 || global_odom.y() == 0 || global_odom.theta() == 0){
-      //  RCLCPP_INFO(this->get_logger(), "fucked pose: (%f,%f,%f)", global_odom.x(), global_odom.y(), global_odom.theta());
-      //  return;
-      //}
-
-      // print pose and cones
       std::ofstream ofs;
       std::ofstream out("urmom.txt");
       std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
@@ -229,7 +233,6 @@ class SLAMValidation : public rclcpp::Node
 
       if (!file_opened)
       {
-
           //RCLCPP_INFO(this->get_logger(), "running SLAM; new\n");
           ofs.open("urmom.txt", std::ofstream::out | std::ofstream::trunc);
           file_opened = true;
