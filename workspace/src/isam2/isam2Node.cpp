@@ -68,7 +68,7 @@ class SLAMValidation : public rclcpp::Node
         vehicle_state_sub = this->create_subscription<eufs_msgs::msg::CarState>(
                VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
 
-        timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
+        timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::run_slam, this));
 
 
         dt = .1;
@@ -259,10 +259,7 @@ class SLAMValidation : public rclcpp::Node
       // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
 
-    void timer_callback()
-    {
-        run_slam();
-    }
+
 
     slamISAM slam_instance = slamISAM();
     rclcpp::Subscription<eufs_msgs::msg::ConeArrayWithCovariance>::SharedPtr cone_sub;
