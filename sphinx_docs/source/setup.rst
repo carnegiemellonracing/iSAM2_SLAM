@@ -20,7 +20,8 @@ Prerequisites
 
 Setup
 -----
-EUFS setup taken from
+EUFS setup taken from https://gitlab.com/eufs/eufs_sim/-/wikis/Getting-Started-Guide
+
 
 1.) **Clone the git repository**
 ``git clone [url-of-repository]``
@@ -86,7 +87,7 @@ EUFS setup taken from
 .. note::
     Whenever you open a new terminal, you must source the package you plan to run
 
-    - When running the simulator, remember to change directories to /path/to/iSAM2_SLAM/eufs first and run source install/setup.bash before running bash start_sim.txt
-    - When running the iSAM2, remember to change directories to /path/to/iSAM2_SLAM/workspace first and run source install/setup.bash before running ``ros2 run isam2 isam_test``
+    - When running the simulator, remember to change directories to ``/path/to/iSAM2_SLAM/eufs`` first and run ``source install/setup.bash`` before running ``bash start_sim.txt``
+    - When running the iSAM2, remember to change directories to ``/path/to/iSAM2_SLAM/workspace`` first and run ``source install/setup.bash`` before running ``ros2 run isam2 isam_test``
 
 

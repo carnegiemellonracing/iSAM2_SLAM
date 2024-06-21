@@ -55,6 +55,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="isam2cpp.html">isam2.cpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="isam2Nodecpp.html">isam2Node.cpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a></li>
 </ul>
 
         </div>
@@ -99,7 +100,7 @@
 </section>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading"></a></h2>
-<p>EUFS setup taken from</p>
+<p>EUFS setup taken from <a class="reference external" href="https://gitlab.com/eufs/eufs_sim/-/wikis/Getting-Started-Guide">https://gitlab.com/eufs/eufs_sim/-/wikis/Getting-Started-Guide</a></p>
 <p>1.) <strong>Clone the git repository</strong>
 <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">[url-of-repository]</span></code></p>
 <dl class="simple">
@@ -172,8 +173,8 @@ rosdep install --from-paths $EUFS_MASTER --ignore-src -r -y
 <p class="admonition-title">Note</p>
 <p>Whenever you open a new terminal, you must source the package you plan to run</p>
 <ul class="simple">
-<li><p>When running the simulator, remember to change directories to /path/to/iSAM2_SLAM/eufs first and run source install/setup.bash before running bash start_sim.txt</p></li>
-<li><p>When running the iSAM2, remember to change directories to /path/to/iSAM2_SLAM/workspace first and run source install/setup.bash before running <code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">run</span> <span class="pre">isam2</span> <span class="pre">isam_test</span></code></p></li>
+<li><p>When running the simulator, remember to change directories to <code class="docutils literal notranslate"><span class="pre">/path/to/iSAM2_SLAM/eufs</span></code> first and run <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">install/setup.bash</span></code> before running <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">start_sim.txt</span></code></p></li>
+<li><p>When running the iSAM2, remember to change directories to <code class="docutils literal notranslate"><span class="pre">/path/to/iSAM2_SLAM/workspace</span></code> first and run <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">install/setup.bash</span></code> before running <code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">run</span> <span class="pre">isam2</span> <span class="pre">isam_test</span></code></p></li>
 </ul>
 </div>
 </section>
