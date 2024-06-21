@@ -1,0 +1,59 @@
+\doxysection{workspace/src/isam2/isam2\+Node.cpp File Reference}
+\hypertarget{isam2Node_8cpp}{}\label{isam2Node_8cpp}\index{workspace/src/isam2/isam2Node.cpp@{workspace/src/isam2/isam2Node.cpp}}
+
+
+This initializes the subscribers that listen for 1.) recently observed cone positions on the current time step (from the Perceptions pipeline) and 2.) odometry information.  
+
+
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include "{}rclcpp/rclcpp.\+hpp"{}}\newline
+{\ttfamily \#include $<$message\+\_\+filters/subscriber.\+h$>$}\newline
+{\ttfamily \#include $<$message\+\_\+filters/sync\+\_\+policies/approximate\+\_\+time.\+h$>$}\newline
+{\ttfamily \#include "{}interfaces/msg/cone\+\_\+array.\+hpp"{}}\newline
+{\ttfamily \#include "{}geometry\+\_\+msgs/msg/point.\+hpp"{}}\newline
+{\ttfamily \#include "{}geometry\+\_\+msgs/msg/vector3\+\_\+stamped.\+hpp"{}}\newline
+{\ttfamily \#include "{}geometry\+\_\+msgs/msg/quaternion\+\_\+stamped.\+hpp"{}}\newline
+{\ttfamily \#include "{}geometry\+\_\+msgs/msg/twist\+\_\+with\+\_\+covariance.\+hpp"{}}\newline
+{\ttfamily \#include "{}geometry\+\_\+msgs/msg/twist.\+hpp"{}}\newline
+{\ttfamily \#include "{}sensor\+\_\+msgs/msg/nav\+\_\+sat\+\_\+fix.\+hpp"{}}\newline
+{\ttfamily \#include "{}eufs\+\_\+msgs/msg/cone\+\_\+array\+\_\+with\+\_\+covariance.\+hpp"{}}\newline
+{\ttfamily \#include "{}eufs\+\_\+msgs/msg/car\+\_\+state.\+hpp"{}}\newline
+{\ttfamily \#include $<$gtsam/nonlinear/\+ISAM2\+Params.\+h$>$}\newline
+{\ttfamily \#include "{}isam2.\+cpp"{}}\newline
+{\ttfamily \#include $<$boost/shared\+\_\+ptr.\+hpp$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structVehicleState}{Vehicle\+State}}
+\item 
+class \mbox{\hyperlink{classSLAMValidation}{SLAMValidation}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{isam2Node_8cpp_a50f2284b3a728c5e3f21b1dc123f73d1}\label{isam2Node_8cpp_a50f2284b3a728c5e3f21b1dc123f73d1} 
+\#define {\bfseries CONE\+\_\+\+DATA\+\_\+\+TOPIC}~"{}/ground\+\_\+truth/cones"{}
+\item 
+\Hypertarget{isam2Node_8cpp_a114593cff28f4538c234c9309d6980a1}\label{isam2Node_8cpp_a114593cff28f4538c234c9309d6980a1} 
+\#define {\bfseries VEHICLE\+\_\+\+DATA\+\_\+\+TOPIC}~"{}/ground\+\_\+truth/state"{}
+\item 
+\Hypertarget{isam2Node_8cpp_aa72895e38a46c6b052c2a7258029498e}\label{isam2Node_8cpp_aa72895e38a46c6b052c2a7258029498e} 
+\#define {\bfseries VEHICLE\+\_\+\+ANGLE\+\_\+\+TOPIC}~"{}/filter/quaternion"{}
+\item 
+\Hypertarget{isam2Node_8cpp_a7e5680a9836ef0bfa1a7f58a10a90788}\label{isam2Node_8cpp_a7e5680a9836ef0bfa1a7f58a10a90788} 
+\#define {\bfseries VEHICLE\+\_\+\+VEL\+\_\+\+TOPIC}~"{}/filter/velocity"{}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{isam2Node_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{isam2Node_8cpp_a0ddf1224851353fc92bfbff6f499fa97} 
+int {\bfseries main} (int argc, char \texorpdfstring{$\ast$}{*}argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This initializes the subscribers that listen for 1.) recently observed cone positions on the current time step (from the Perceptions pipeline) and 2.) odometry information. 
+

@@ -1,6 +1,15 @@
 ======================================
 How to run iSAM2 on the EUFS simulator
 ======================================
+.. raw:: html
+
+    <h1 align="center">
+      <div>
+        <div style="position: relative; padding-bottom: 0%; overflow: hidden; max-width: 100%; height: auto;">
+          <iframe width="450" height="300" src=../../source/rec/isam2_demo.mp4 frameborder="1" allowfullscreen></iframe>
+        </div>
+      </div>
+    </h1>
 
 Prerequisites
 -------------
@@ -11,6 +20,8 @@ Prerequisites
 
 Setup
 -----
+EUFS setup taken from
+
 1.) **Clone the git repository**
 ``git clone [url-of-repository]``
 

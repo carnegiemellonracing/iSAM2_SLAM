@@ -1,5 +1,10 @@
 \doxysection{workspace/src/isam2/isam2.cpp File Reference}
 \hypertarget{isam2_8cpp}{}\label{isam2_8cpp}\index{workspace/src/isam2/isam2.cpp@{workspace/src/isam2/isam2.cpp}}
+
+
+This file is where the i\+SAM2 model is updated and where data association is employed on the observed cones at the current time stamp.  
+
+
 {\ttfamily \#include $<$type\+\_\+traits$>$}\newline
 {\ttfamily \#include $<$bits/stdc++.\+h$>$}\newline
 {\ttfamily \#include $<$gtsam/geometry/\+Point2.\+h$>$}\newline
@@ -19,9 +24,10 @@
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-struct \mbox{\hyperlink{structLandmark}{Landmark}}
-\item 
-class \mbox{\hyperlink{classCompare}{Compare}}
-\item 
 class \mbox{\hyperlink{classslamISAM}{slam\+ISAM}}
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em A class that uses data association to discern new cones from previously seen cones and utilizes the i\+SAM2 model to perform SLAM. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This file is where the i\+SAM2 model is updated and where data association is employed on the observed cones at the current time stamp. 
+

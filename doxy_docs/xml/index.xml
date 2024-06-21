@@ -1,12 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.11.0" xml:lang="en-US">
-  <compound refid="classCompare" kind="class"><name>Compare</name>
-    <member refid="classCompare_1a41808d0576a958bc304d2ec18a92e3d8" kind="function"><name>operator()</name></member>
-  </compound>
-  <compound refid="structLandmark" kind="struct"><name>Landmark</name>
-    <member refid="structLandmark_1aee3e29034f8f79860ad6ffde6e73d6a4" kind="variable"><name>lm_id</name></member>
-    <member refid="structLandmark_1a22653343cb15af53ff11bb015d93c736" kind="variable"><name>lm_pos</name></member>
-  </compound>
   <compound refid="classslamISAM" kind="class"><name>slamISAM</name>
     <member refid="classslamISAM_1a5ea2ef42008a40071357a9b2286565b1" kind="variable"><name>parameters</name></member>
     <member refid="classslamISAM_1ad40bdcfcafb135f52b3968a81744df0f" kind="variable"><name>isam2</name></member>
@@ -19,8 +12,8 @@
     <member refid="classslamISAM_1a1f6520c125e1db548f1a088ace7a042e" kind="variable"><name>orange_cones</name></member>
     <member refid="classslamISAM_1aec2ba37dcd63ad9e413e4c0f6d781065" kind="function"><name>X</name></member>
     <member refid="classslamISAM_1a9aa5e2c7ac1424c97711c9a5734282d9" kind="function"><name>L</name></member>
-    <member refid="classslamISAM_1ad2830c6d162c4387d2296e47acdbc7eb" kind="function"><name>slamISAM</name></member>
     <member refid="classslamISAM_1a0a0a8309cd7ce17d5256b5e8435af151" kind="function"><name>print_cones</name></member>
+    <member refid="classslamISAM_1ad2830c6d162c4387d2296e47acdbc7eb" kind="function"><name>slamISAM</name></member>
     <member refid="classslamISAM_1ab07c8f29237621e0b929d4a7098bfd4f" kind="function"><name>t_associate</name></member>
     <member refid="classslamISAM_1a00e82e306602f32451124afb29364365" kind="function"><name>step</name></member>
   </compound>
@@ -47,7 +40,6 @@
     <member refid="classSLAMValidation_1a82aa46b297550a08bb4684e8a160672a" kind="function"><name>vehicle_state_callback</name></member>
     <member refid="classSLAMValidation_1ab35299d3d4e1f9b206611bafaffea244" kind="function"><name>synced_callback</name></member>
     <member refid="classSLAMValidation_1aff6db41484568f6182a929e8ff3a17c0" kind="function"><name>run_slam</name></member>
-    <member refid="classSLAMValidation_1ac84173290a3ef42be429bd4f99401b96" kind="function"><name>timer_callback</name></member>
   </compound>
   <compound refid="structVehicleState" kind="struct"><name>VehicleState</name>
     <member refid="structVehicleState_1a09e3ce345b1400a5c045ca3d23015c26" kind="variable"><name>x</name></member>
@@ -70,7 +62,6 @@
   <compound refid="isam2_8cpp" kind="file"><name>isam2.cpp</name>
     <member refid="isam2_8cpp_1a9f169cb893208ccc0c932847934d4fd6" kind="variable"><name>M_DIST_TH</name></member>
     <member refid="isam2_8cpp_1aced4f87a1ef626095f8e65bde118704d" kind="variable"><name>SEC_TO_NANOSEC</name></member>
-    <member refid="isam2_8cpp_1ae9123f39c78712124c515c8bc5561760" kind="variable"><name>isam2_mutex</name></member>
   </compound>
   <compound refid="isam2Node_8cpp" kind="file"><name>isam2Node.cpp</name>
     <member refid="isam2Node_8cpp_1a50f2284b3a728c5e3f21b1dc123f73d1" kind="define"><name>CONE_DATA_TOPIC</name></member>

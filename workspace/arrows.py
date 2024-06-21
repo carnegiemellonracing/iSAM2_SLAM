@@ -259,8 +259,8 @@ poses = np.array(
 
 r = .2
 
-changesx = r*np.cos(poses[:,2]+np.pi/2) 
-changesy = r*np.sin(poses[:,2]+np.pi/2) 
+changesx = r*np.cos(poses[:,2]+np.pi/2)
+changesy = r*np.sin(poses[:,2]+np.pi/2)
 
 # scatter2 = plt.scatter(changesx, changesx, s=10, c='b', marker="x", label='pose')
 

@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="43" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="43" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="50" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="50" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structVehicleState_1a0ba1588cc195b0787c46388477d2c70e" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="44" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="44" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="51" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="51" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structVehicleState_1a9c8b2e1e77f082bd4bc648ddf0f2f0cf" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="45" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="45" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="52" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="52" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structVehicleState_1aea0e16ebeaa1311eba9d918f66a0df1a" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="46" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="46" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="53" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="53" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structVehicleState_1adce8c5dd8b5fc4280c3612a0d6f31287" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="47" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="47" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="54" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="54" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structVehicleState_1ae353f3a3312b29fe956f101b9ed0d387" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -85,14 +85,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="48" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="48" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="55" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="55" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="workspace/src/isam2/isam2Node.cpp" line="42" column="1" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="42" bodyend="49"/>
+    <location file="workspace/src/isam2/isam2Node.cpp" line="49" column="1" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="49" bodyend="56"/>
     <listofallmembers>
       <member refid="structVehicleState_1aea0e16ebeaa1311eba9d918f66a0df1a" prot="public" virt="non-virtual"><scope>VehicleState</scope><name>dx</name></member>
       <member refid="structVehicleState_1adce8c5dd8b5fc4280c3612a0d6f31287" prot="public" virt="non-virtual"><scope>VehicleState</scope><name>dy</name></member>

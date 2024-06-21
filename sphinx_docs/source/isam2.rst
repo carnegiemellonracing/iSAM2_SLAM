@@ -4,7 +4,7 @@ What is iSAM2
 iSAM2 (Incremental Smoothing and Mapping) is a SLAM (Simultaneous Localization and Mapping) algorithm used to construct a map of the track from the car's position and the cones observed around the track. iSAM2 does this by constructing and optimizing a factor graph containing variables nodes (which represent either landmark poses or car poses) and factor nodes.
 
 **The Factor Graph**
-As stated previously, iSAM2 relies on a factor graph containing variable nodes and factor nodes. Factor nodes are connected to variables nodes and represents a joint probability distribution on the variables nodes connected to it. This joint probability distribution represents how certain iSAM2 is of the corresponding variables' positions.
+As stated previously, iSAM2 relies on a factor graph containing variable nodes and factor nodes. Factor nodes, akin to labeled edges between the variable nodes, represent a joint probability distribution on the variables nodes connected to it. This joint probability distribution represents how certain iSAM2 is of the corresponding variables' positions.
 
 .. image:: ./img/factor_graph.png
     :align: center
@@ -32,6 +32,10 @@ After determining the car pose, data association is performed on the cones obser
 
 
 .. note:: The Mahalanobis distance threshold is generally found through tuning and trial and error.
+
+.. note:: Mahalanobis distance is used instead of Euclidean distance because where Euclidean distance can calculate the distance between two points, Mahalanobis distance can calculate the distance between a point and a distribution. This is important because the cone positions come with uncertainty which is represented by a distribution (See `more`_)
+
+.. _more: https://www.machinelearningplus.com/statistics/mahalanobis-distance/
 
 .. image:: ./img/updated_factor_graph.png
     :align: center

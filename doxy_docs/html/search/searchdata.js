@@ -1,9 +1,9 @@
 var indexSectionsWithContent =
 {
-  0: "cilpstv",
-  1: "clsv",
+  0: "istv",
+  1: "sv",
   2: "i",
-  3: "pst"
+  3: "st"
 };
 
 var indexSectionNames =

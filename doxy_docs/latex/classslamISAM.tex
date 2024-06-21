@@ -1,10 +1,13 @@
 \doxysection{slam\+ISAM Class Reference}
 \hypertarget{classslamISAM}{}\label{classslamISAM}\index{slamISAM@{slamISAM}}
+
+
+A class that uses data association to discern new cones from previously seen cones and utilizes the i\+SAM2 model to perform SLAM.  
+
+
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-void \mbox{\hyperlink{classslamISAM_a0a0a8309cd7ce17d5256b5e8435af151}{print\+\_\+cones}} (auto logger, std\+::vector$<$ Point2 $>$ \&cone\+\_\+obs)
-\begin{DoxyCompactList}\small\item\em Prints the positions of the observed cones stored within the vector cone\+\_\+obs. For DEBUGGING purposes. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classslamISAM_ab07c8f29237621e0b929d4a7098bfd4f}{t\+\_\+associate}} (vector$<$ Point2 $>$ \texorpdfstring{$\ast$}{*}cone\+\_\+obs, vector$<$ Pose2 $>$ \texorpdfstring{$\ast$}{*}global\+\_\+obs\+\_\+cones, vector$<$ Pose2 $>$ \texorpdfstring{$\ast$}{*}all\+\_\+cone\+\_\+est, Pose2 global\+\_\+odom, vector$<$ float $>$ \texorpdfstring{$\ast$}{*}m\+\_\+dist, int lo, int hi)
 \begin{DoxyCompactList}\small\item\em A function called by threads that will perform data association on the observed Point2 cones stored inside vector cone\+\_\+obs. All calculated mahalanobis distances will be stored in vector m\+\_\+dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices \mbox{[}lo, hi) \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classslamISAM_a00e82e306602f32451124afb29364365}{step}} (auto logger, gtsam\+::\+Pose2 global\+\_\+odom, std\+::vector$<$ Point2 $>$ \&cone\+\_\+obs, vector$<$ Point2 $>$ \&orange\+\_\+ref\+\_\+cones, gtsam\+::\+Point2 velocity, long time\+\_\+ns, bool loop\+Closure)
@@ -26,22 +29,10 @@ std\+::vector$<$ Point2 $>$ {\bfseries orange\+\_\+cones}
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+A class that uses data association to discern new cones from previously seen cones and utilizes the i\+SAM2 model to perform SLAM. 
+
 \doxysubsection{Member Function Documentation}
-\Hypertarget{classslamISAM_a0a0a8309cd7ce17d5256b5e8435af151}\index{slamISAM@{slamISAM}!print\_cones@{print\_cones}}
-\index{print\_cones@{print\_cones}!slamISAM@{slamISAM}}
-\doxysubsubsection{\texorpdfstring{print\_cones()}{print\_cones()}}
-{\footnotesize\ttfamily \label{classslamISAM_a0a0a8309cd7ce17d5256b5e8435af151} 
-void slam\+ISAM\+::print\+\_\+cones (\begin{DoxyParamCaption}\item[{auto}]{logger}{, }\item[{std\+::vector$<$ Point2 $>$ \&}]{cone\+\_\+obs}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Prints the positions of the observed cones stored within the vector cone\+\_\+obs. For DEBUGGING purposes. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em cone\+\_\+obs} & A memory address to the vector containing the Point2 positions of the observed cones (You can just pass in the variable, but the type is std\+::vector$<$\+Point2$>$ \&) \\
-\hline
-\end{DoxyParams}
 \Hypertarget{classslamISAM_a00e82e306602f32451124afb29364365}\index{slamISAM@{slamISAM}!step@{step}}
 \index{step@{step}!slamISAM@{slamISAM}}
 \doxysubsubsection{\texorpdfstring{step()}{step()}}

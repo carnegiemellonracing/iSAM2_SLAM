@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="261" column="14" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="261" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="264" column="14" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="264" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a0ba3ad4b3cc2233dee3848e9dd1041a7" prot="private" static="no" mutable="no">
         <type>rclcpp::Subscription&lt; eufs_msgs::msg::ConeArrayWithCovariance &gt;::SharedPtr</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="262" column="38" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="262" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="265" column="38" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="265" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a73551a09ab1bc8cfc16ee7a18c1f43f9" prot="private" static="no" mutable="no">
         <type>rclcpp::Subscription&lt; eufs_msgs::msg::CarState &gt;::SharedPtr</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="263" column="38" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="263" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="266" column="38" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="266" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1aa5fcf5418a7a815c9f732b300920bebd" prot="private" static="no" mutable="no">
         <type>gtsam::Point2</type>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="272" column="19" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="272" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="275" column="19" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="275" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a9245b3dbf0b977827ea618d74c3d8326" prot="private" static="no" mutable="no">
         <type>gtsam::Pose2</type>
@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="273" column="18" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="273" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="276" column="18" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="276" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a6e57ef03f1b24aa8a3cd889fe02a744c" prot="private" static="no" mutable="no">
         <type>vector&lt; Point2 &gt;</type>
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="274" column="12" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="274" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="277" column="12" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="277" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1aa7b8ec0ad0f0bff05df76fd627df15ab" prot="private" static="no" mutable="no">
         <type>vector&lt; Point2 &gt;</type>
@@ -101,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="275" column="12" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="275" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="278" column="12" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="278" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1ae97265b99cf4ae7586c37d943640d5e2" prot="private" static="no" mutable="no">
         <type>gtsam::Pose2</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="277" column="18" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="277" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="280" column="18" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="280" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a76965c6fecca593e63463c52499c9fcf" prot="private" static="no" mutable="no">
         <type>bool</type>
@@ -129,7 +129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="281" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="281" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="284" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="284" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1ab091066797d819b968bc00490e907bd7" prot="private" static="no" mutable="no">
         <type>rclcpp::TimerBase::SharedPtr</type>
@@ -143,7 +143,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="283" column="34" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="283" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="286" column="34" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="286" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1acecabf0ed9b01c6ca3431322cd664b9a" prot="private" static="no" mutable="no">
         <type>long</type>
@@ -157,7 +157,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="284" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="284" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="287" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="287" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a106811c1b73dd6a156c7fa8dd58fb263" prot="private" static="no" mutable="no">
         <type>long</type>
@@ -171,7 +171,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="285" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="285" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="288" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="288" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a69eceee26b21ea1c9aee426f85f5f400" prot="private" static="no" mutable="no">
         <type>int</type>
@@ -185,7 +185,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="286" column="9" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="286" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="289" column="9" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="289" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a378c0364d2dc996a85fd3a27a86cdb9b" prot="private" static="no" mutable="no">
         <type>bool</type>
@@ -199,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="287" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="287" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="290" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="290" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1ae41ae7157e6f8bcbea2724cfeb761ae5" prot="private" static="no" mutable="no">
         <type>bool</type>
@@ -213,7 +213,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="288" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="288" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="291" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="291" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1ae323155dd29c6dffe56903ccd7ddbcd7" prot="private" static="no" mutable="no">
         <type>std::ofstream</type>
@@ -227,7 +227,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="291" column="19" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="291" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="294" column="19" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="294" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classSLAMValidation_1a8db30e76060c38e4324d91e96ee1968a" prot="private" static="no" mutable="no">
         <type>std::ofstream</type>
@@ -241,7 +241,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="292" column="19" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="292" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="295" column="19" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="295" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -257,7 +257,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="55" column="5" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="55" bodyend="77"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="62" column="5" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="62" bodyend="84"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -288,7 +288,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="91" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="91" bodyend="166"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="98" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="98" bodyend="173"/>
       </memberdef>
       <memberdef kind="function" id="classSLAMValidation_1a82aa46b297550a08bb4684e8a160672a" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -317,7 +317,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="181" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="181" bodyend="205"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="188" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="188" bodyend="212"/>
       </memberdef>
       <memberdef kind="function" id="classSLAMValidation_1ab35299d3d4e1f9b206611bafaffea244" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -339,7 +339,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="207" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="207" bodyend="212"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="214" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="214" bodyend="219"/>
       </memberdef>
       <memberdef kind="function" id="classSLAMValidation_1aff6db41484568f6182a929e8ff3a17c0" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -348,26 +348,13 @@
         <name>run_slam</name>
         <qualifiedname>SLAMValidation::run_slam</qualifiedname>
         <briefdescription>
+<para>Takes the observed cones from the current time step and the car pose (calculated from a motion model based on the odometry data) and updates the iSAM2 model by calling step (see <ref refid="isam2_8cpp" kindref="compound">isam2.cpp</ref>) </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="215" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="215" bodyend="254"/>
-      </memberdef>
-      <memberdef kind="function" id="classSLAMValidation_1ac84173290a3ef42be429bd4f99401b96" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
-        <definition>void SLAMValidation::timer_callback</definition>
-        <argsstring>()</argsstring>
-        <name>timer_callback</name>
-        <qualifiedname>SLAMValidation::timer_callback</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="workspace/src/isam2/isam2Node.cpp" line="256" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="256" bodyend="259"/>
+        <location file="workspace/src/isam2/isam2Node.cpp" line="228" column="10" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="228" bodyend="260"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -396,7 +383,7 @@
         <label>rclcpp::Node</label>
       </node>
     </collaborationgraph>
-    <location file="workspace/src/isam2/isam2Node.cpp" line="51" column="1" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="52" bodyend="293"/>
+    <location file="workspace/src/isam2/isam2Node.cpp" line="58" column="1" bodyfile="workspace/src/isam2/isam2Node.cpp" bodystart="59" bodyend="296"/>
     <listofallmembers>
       <member refid="classSLAMValidation_1a23dd07c97cb9c21e468940624e3c7185" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>cone_callback</name></member>
       <member refid="classSLAMValidation_1a0ba3ad4b3cc2233dee3848e9dd1041a7" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>cone_sub</name></member>
@@ -417,7 +404,6 @@
       <member refid="classSLAMValidation_1ab35299d3d4e1f9b206611bafaffea244" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>synced_callback</name></member>
       <member refid="classSLAMValidation_1a106811c1b73dd6a156c7fa8dd58fb263" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>time_ns</name></member>
       <member refid="classSLAMValidation_1ab091066797d819b968bc00490e907bd7" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>timer</name></member>
-      <member refid="classSLAMValidation_1ac84173290a3ef42be429bd4f99401b96" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>timer_callback</name></member>
       <member refid="classSLAMValidation_1a82aa46b297550a08bb4684e8a160672a" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>vehicle_state_callback</name></member>
       <member refid="classSLAMValidation_1a73551a09ab1bc8cfc16ee7a18c1f43f9" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>vehicle_state_sub</name></member>
       <member refid="classSLAMValidation_1aa5fcf5418a7a815c9f732b300920bebd" prot="private" virt="non-virtual"><scope>SLAMValidation</scope><name>velocity</name></member>

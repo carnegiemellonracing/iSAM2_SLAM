@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="62" column="22" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="62" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="63" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="63" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1ad40bdcfcafb135f52b3968a81744df0f" prot="private" static="no" mutable="no">
         <type>ISAM2</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="63" column="11" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="63" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="64" column="11" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="64" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1aaff5414a2a404c29811ae269b7c1769b" prot="private" static="no" mutable="no">
         <type>NonlinearFactorGraph</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="64" column="26" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="64" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="65" column="26" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="65" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1a8c3fd1e88200d8230bfc48b28404ccc1" prot="private" static="no" mutable="no">
         <type>Values</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="65" column="12" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="65" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="66" column="12" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="66" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1aa1bbd820665ee45fa2d03804d61b92ba" prot="private" static="no" mutable="no">
         <type>int</type>
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="67" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="67" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="68" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="68" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="80" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="80" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="119" column="9" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="119" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1a557bf4cb56eae4be97a60f5ce65c365a" prot="public" static="no" mutable="no">
         <type>gtsam::Pose2</type>
@@ -101,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="80" column="34" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="80" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="120" column="18" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="120" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1a12db7db0ac15a3eeacba9330e922c9b7" prot="public" static="no" mutable="no">
         <type>std::vector&lt; gtsam::Pose2 &gt;</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="81" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="81" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="121" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="121" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classslamISAM_1a1f6520c125e1db548f1a088ace7a042e" prot="public" static="no" mutable="no">
         <type>std::vector&lt; Point2 &gt;</type>
@@ -129,7 +129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="82" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="82" bodyend="-1"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="122" column="17" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="122" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -144,12 +144,23 @@
           <declname>robot_pose_id</declname>
         </param>
         <briefdescription>
+<para>A function that returns a Symbol representing the nth pose where n = robot_pose_id. This function is used to represent a key for the accessing the nth car pose estimate from the iSAM2 model. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>robot_pose_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ID of the car pose </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="70" column="19" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="70" bodyend="72"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="78" column="19" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="78" bodyend="80"/>
       </memberdef>
       <memberdef kind="function" id="classslamISAM_1a9aa5e2c7ac1424c97711c9a5734282d9" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>gtsam::Symbol</type>
@@ -162,30 +173,25 @@
           <declname>cone_pose_id</declname>
         </param>
         <briefdescription>
+<para>A function that returns a Symbol representing the nth landmark where n = cone_pose_id. This function is used to represent a key for the accessing the nth car pose estimate from the iSAM2 model. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>cone_pose_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ID of the cone pose </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="74" column="19" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="74" bodyend="76"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="90" column="19" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="90" bodyend="92"/>
       </memberdef>
-    </sectiondef>
-    <sectiondef kind="public-func">
-      <memberdef kind="function" id="classslamISAM_1ad2830c6d162c4387d2296e47acdbc7eb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type></type>
-        <definition>slamISAM::slamISAM</definition>
-        <argsstring>()</argsstring>
-        <name>slamISAM</name>
-        <qualifiedname>slamISAM::slamISAM</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="84" column="5" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="84" bodyend="97"/>
-      </memberdef>
-      <memberdef kind="function" id="classslamISAM_1a0a0a8309cd7ce17d5256b5e8435af151" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classslamISAM_1a0a0a8309cd7ce17d5256b5e8435af151" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void slamISAM::print_cones</definition>
         <argsstring>(auto logger, std::vector&lt; Point2 &gt; &amp;cone_obs)</argsstring>
@@ -216,7 +222,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="112" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="112" bodyend="121"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="105" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="105" bodyend="114"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classslamISAM_1ad2830c6d162c4387d2296e47acdbc7eb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>slamISAM::slamISAM</definition>
+        <argsstring>()</argsstring>
+        <name>slamISAM</name>
+        <qualifiedname>slamISAM::slamISAM</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="workspace/src/isam2/isam2.cpp" line="124" column="5" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="124" bodyend="137"/>
       </memberdef>
       <memberdef kind="function" id="classslamISAM_1ab07c8f29237621e0b929d4a7098bfd4f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -314,7 +336,7 @@
 <para>(n_landmarks + 1): n_landmarks for all previous landmarks and +1 for M_DIST_TH.</para>
 <para>calculate difference between pose of current observed cone and previously seen cone</para>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="166" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="166" bodyend="242"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="185" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="185" bodyend="262"/>
       </memberdef>
       <memberdef kind="function" id="classslamISAM_1a00e82e306602f32451124afb29364365" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -426,14 +448,15 @@
 <para>If the smallest mahalanobis distance is M_DIST_TH (the last element in each (n_landmarks + 1) subsection of m_dist), then the current landmark/cone is a new cone</para>
 <para>Print to squirrel.txt Every single time you run step, you reprint the isam2 estimates Remove the previous estimates (trunc) RCLCPP_INFO(logger, &quot;graphing\n&quot;);</para>
         </inbodydescription>
-        <location file="workspace/src/isam2/isam2.cpp" line="280" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="280" bodyend="537"/>
+        <location file="workspace/src/isam2/isam2.cpp" line="300" column="10" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="300" bodyend="563"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
+<para>A class that uses data association to discern new cones from previously seen cones and utilizes the iSAM2 model to perform SLAM. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="workspace/src/isam2/isam2.cpp" line="61" column="1" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="61" bodyend="538"/>
+    <location file="workspace/src/isam2/isam2.cpp" line="61" column="1" bodyfile="workspace/src/isam2/isam2.cpp" bodystart="61" bodyend="564"/>
     <listofallmembers>
       <member refid="classslamISAM_1aaff5414a2a404c29811ae269b7c1769b" prot="private" virt="non-virtual"><scope>slamISAM</scope><name>graph</name></member>
       <member refid="classslamISAM_1ad40bdcfcafb135f52b3968a81744df0f" prot="private" virt="non-virtual"><scope>slamISAM</scope><name>isam2</name></member>
@@ -443,7 +466,7 @@
       <member refid="classslamISAM_1a1f6520c125e1db548f1a088ace7a042e" prot="public" virt="non-virtual"><scope>slamISAM</scope><name>orange_cones</name></member>
       <member refid="classslamISAM_1a5ea2ef42008a40071357a9b2286565b1" prot="private" virt="non-virtual"><scope>slamISAM</scope><name>parameters</name></member>
       <member refid="classslamISAM_1aa1bbd820665ee45fa2d03804d61b92ba" prot="private" virt="non-virtual"><scope>slamISAM</scope><name>pose_num</name></member>
-      <member refid="classslamISAM_1a0a0a8309cd7ce17d5256b5e8435af151" prot="public" virt="non-virtual"><scope>slamISAM</scope><name>print_cones</name></member>
+      <member refid="classslamISAM_1a0a0a8309cd7ce17d5256b5e8435af151" prot="private" virt="non-virtual"><scope>slamISAM</scope><name>print_cones</name></member>
       <member refid="classslamISAM_1a557bf4cb56eae4be97a60f5ce65c365a" prot="public" virt="non-virtual"><scope>slamISAM</scope><name>robot_est</name></member>
       <member refid="classslamISAM_1ad2830c6d162c4387d2296e47acdbc7eb" prot="public" virt="non-virtual"><scope>slamISAM</scope><name>slamISAM</name></member>
       <member refid="classslamISAM_1a00e82e306602f32451124afb29364365" prot="public" virt="non-virtual"><scope>slamISAM</scope><name>step</name></member>
