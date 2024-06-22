@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import sys
 sys.path.append("/home/me/docproj/ext/breathe/")
-project = 'iSAM2 SLAM'
+project = 'Path Planning'
 copyright = '2024, Carnegie Mellon Racing'
 author = 'Carnegie Mellon Racing'
 release = '1.0'

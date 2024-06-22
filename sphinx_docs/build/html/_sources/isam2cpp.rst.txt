@@ -17,5 +17,5 @@ isam2.cpp
 .. doxygenfunction:: L
     :project: iSAM2 SLAM
 
-.. doxygenvariable:: M_DIST_TH
-    :project: iSAM2 SLAM
+
+

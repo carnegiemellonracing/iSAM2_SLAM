@@ -7,3 +7,5 @@ eufs/log/*
 build/*
 install/*
 log/*
+workspace/*
+eufs/*

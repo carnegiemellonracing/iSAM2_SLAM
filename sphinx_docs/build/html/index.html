@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carnegie Mellon Racing Path Planning Library &mdash; iSAM2 SLAM 1.0 documentation</title>
+  <title>Carnegie Mellon Racing Path Planning Library &mdash; Path Planning 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="What is iSAM2" href="isam2.html" /> 
+    <link rel="next" title="What is Factor Graph SLAM?" href="isam2.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +33,7 @@
           
           
           <a href="#" class="icon icon-home">
-            iSAM2 SLAM
+            Path Planning
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,7 +44,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is iSAM2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is Factor Graph SLAM?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">How to run iSAM2 on the EUFS simulator</a></li>
 </ul>
 <ul>
@@ -59,7 +59,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">iSAM2 SLAM</a>
+          <a href="#">Path Planning</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -82,13 +82,21 @@
 <section id="what-is-path-planning">
 <h2>What is Path Planning?<a class="headerlink" href="#what-is-path-planning" title="Permalink to this heading"></a></h2>
 <p>Path planning is responsible for determining a route for the car to take in order to navigate the track. This process involves two primary parts: determining the midline and employing SLAM (Simultaneous Localization and Mapping) to determine the structure of the racetrack and the location of the car. Determining the midline refers to the process of generating a route between the blue and yellow cones observed at the current time step. The midline is necessary when the car is competing its first lap around the track because without knowledge of the track’s layout, the car is forced to naively navigate the track. As the car completes its first lap, a SLAM algorithm is employed to refine its position in the track and the position of previously seen cones (localization) based on newly observed cones while also mapping out the racetrack (mapping).</p>
+</section>
+<section id="our-implementation">
+<h2>Our Implementation<a class="headerlink" href="#our-implementation" title="Permalink to this heading"></a></h2>
+<p>Our midline calculation relies on Support Vector Machines (SVMs). Using the cones received from our lidar, the SVM generates a decision boundary using a cubic polynomial kernel. This decision boundary is converted into a series of points that represents the path the car should take. The SLAM algorithm used is iSAM2, a form of factor graph SLAM. We chose this algorithm after considering 1.) iSAM2 is capable of incrementally optimizing its estimates for previous cone position esimates and pose estimates, as opposed to optimizing only at loop closure, 2.) iSAM2’s performance made it a clear choice for SLAM, and 3.) we are able to work closely with the author of iSAM2, Professor Michael Kaess. Thus, we would like to take this opportunity to thank Profesor Michael Kaess for dedicating his time and efforts to assisting our implementation of SLAM. For more information on SVMs, see the Perceptions Pipeline documentation. For more information on iSAM2, <a class="reference internal" href="isam2.html#what-is-factor-graph-slam"><span class="std std-ref">See “What is Factor Graph SLAM?”</span></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Midline calculation is written in Python, and because perceptions is written in python, midline is written in the Perceptions pipeline and compiled in the Perceptions package. SLAM on the other hand is done in C++ and is compiled in the Path Planning package.</p>
+</div>
 <p>This is made possible by processing observed cone positions received from our Perceptions pipeline into a path the car can follow. The Planning pipelines is then responsible for a.) determining the midline, a series of points representing the path the car should take b.) SLAM. The path is published and received by the Controls Pipeline where control actions will be determined to instruct the car to follow the route indicated by the spline. The map of the racetrack generated by SLAM will be used in the laps following the first lap to navigate the track.</p>
 </section>
 <section id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is iSAM2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is Factor Graph SLAM?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">How to run iSAM2 on the EUFS simulator</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#setup">Setup</a></li>
@@ -113,7 +121,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="isam2.html" class="btn btn-neutral float-right" title="What is iSAM2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="isam2.html" class="btn btn-neutral float-right" title="What is Factor Graph SLAM?" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

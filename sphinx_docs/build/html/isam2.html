@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>What is iSAM2 &mdash; iSAM2 SLAM 1.0 documentation</title>
+  <title>What is Factor Graph SLAM? &mdash; Path Planning 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -35,7 +35,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            iSAM2 SLAM
+            Path Planning
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -46,7 +46,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">What is iSAM2</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What is Factor Graph SLAM?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">How to run iSAM2 on the EUFS simulator</a></li>
 </ul>
 <ul>
@@ -61,7 +61,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">iSAM2 SLAM</a>
+          <a href="index.html">Path Planning</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -69,7 +69,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">What is iSAM2</li>
+      <li class="breadcrumb-item active">What is Factor Graph SLAM?</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/isam2.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -79,8 +79,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="what-is-isam2">
-<h1>What is iSAM2<a class="headerlink" href="#what-is-isam2" title="Permalink to this heading"></a></h1>
+  <section id="what-is-factor-graph-slam">
+<h1>What is Factor Graph SLAM?<a class="headerlink" href="#what-is-factor-graph-slam" title="Permalink to this heading"></a></h1>
 <p>iSAM2 (Incremental Smoothing and Mapping) is a SLAM (Simultaneous Localization and Mapping) algorithm used to construct a map of the track from the car’s position and the cones observed around the track. iSAM2 does this by constructing and optimizing a factor graph containing variables nodes (which represent either landmark poses or car poses) and factor nodes.</p>
 <p><strong>The Factor Graph</strong>
 As stated previously, iSAM2 relies on a factor graph containing variable nodes and factor nodes. Factor nodes, akin to labeled edges between the variable nodes, represent a joint probability distribution on the variables nodes connected to it. This joint probability distribution represents how certain iSAM2 is of the corresponding variables’ positions.</p>

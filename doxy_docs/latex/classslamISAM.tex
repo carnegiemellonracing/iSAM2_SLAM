@@ -8,6 +8,8 @@ A class that uses data association to discern new cones from previously seen con
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
+\mbox{\hyperlink{classslamISAM_ad2830c6d162c4387d2296e47acdbc7eb}{slam\+ISAM}} ()
+\item 
 void \mbox{\hyperlink{classslamISAM_ab07c8f29237621e0b929d4a7098bfd4f}{t\+\_\+associate}} (vector$<$ Point2 $>$ \texorpdfstring{$\ast$}{*}cone\+\_\+obs, vector$<$ Pose2 $>$ \texorpdfstring{$\ast$}{*}global\+\_\+obs\+\_\+cones, vector$<$ Pose2 $>$ \texorpdfstring{$\ast$}{*}all\+\_\+cone\+\_\+est, Pose2 global\+\_\+odom, vector$<$ float $>$ \texorpdfstring{$\ast$}{*}m\+\_\+dist, int lo, int hi)
 \begin{DoxyCompactList}\small\item\em A function called by threads that will perform data association on the observed Point2 cones stored inside vector cone\+\_\+obs. All calculated mahalanobis distances will be stored in vector m\+\_\+dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices \mbox{[}lo, hi) \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classslamISAM_a00e82e306602f32451124afb29364365}{step}} (auto logger, gtsam\+::\+Pose2 global\+\_\+odom, std\+::vector$<$ Point2 $>$ \&cone\+\_\+obs, vector$<$ Point2 $>$ \&orange\+\_\+ref\+\_\+cones, gtsam\+::\+Point2 velocity, long time\+\_\+ns, bool loop\+Closure)
@@ -15,22 +17,27 @@ void \mbox{\hyperlink{classslamISAM_a00e82e306602f32451124afb29364365}{step}} (a
 \doxysubsubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
-\Hypertarget{classslamISAM_a9a7bf54fb68cd6ad39cf2be656f1da4c}\label{classslamISAM_a9a7bf54fb68cd6ad39cf2be656f1da4c} 
-int {\bfseries n\+\_\+landmarks}
+int \mbox{\hyperlink{classslamISAM_a9a7bf54fb68cd6ad39cf2be656f1da4c}{n\+\_\+landmarks}}
 \item 
-\Hypertarget{classslamISAM_a557bf4cb56eae4be97a60f5ce65c365a}\label{classslamISAM_a557bf4cb56eae4be97a60f5ce65c365a} 
-gtsam\+::\+Pose2 {\bfseries robot\+\_\+est}
+gtsam\+::\+Pose2 \mbox{\hyperlink{classslamISAM_a557bf4cb56eae4be97a60f5ce65c365a}{robot\+\_\+est}}
 \item 
-\Hypertarget{classslamISAM_a12db7db0ac15a3eeacba9330e922c9b7}\label{classslamISAM_a12db7db0ac15a3eeacba9330e922c9b7} 
-std\+::vector$<$ gtsam\+::\+Pose2 $>$ {\bfseries landmark\+\_\+est}
+std\+::vector$<$ gtsam\+::\+Pose2 $>$ \mbox{\hyperlink{classslamISAM_a12db7db0ac15a3eeacba9330e922c9b7}{landmark\+\_\+est}}
 \item 
-\Hypertarget{classslamISAM_a1f6520c125e1db548f1a088ace7a042e}\label{classslamISAM_a1f6520c125e1db548f1a088ace7a042e} 
-std\+::vector$<$ Point2 $>$ {\bfseries orange\+\_\+cones}
+std\+::vector$<$ Point2 $>$ \mbox{\hyperlink{classslamISAM_a1f6520c125e1db548f1a088ace7a042e}{orange\+\_\+cones}}
 \end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
 A class that uses data association to discern new cones from previously seen cones and utilizes the i\+SAM2 model to perform SLAM. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classslamISAM_ad2830c6d162c4387d2296e47acdbc7eb}\index{slamISAM@{slamISAM}!slamISAM@{slamISAM}}
+\index{slamISAM@{slamISAM}!slamISAM@{slamISAM}}
+\doxysubsubsection{\texorpdfstring{slamISAM()}{slamISAM()}}
+{\footnotesize\ttfamily \label{classslamISAM_ad2830c6d162c4387d2296e47acdbc7eb} 
+slam\+ISAM\+::slam\+ISAM (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
 
 \doxysubsection{Member Function Documentation}
 \Hypertarget{classslamISAM_a00e82e306602f32451124afb29364365}\index{slamISAM@{slamISAM}!step@{step}}
@@ -114,6 +121,33 @@ This is because the thread starts calculating mahalanobis distances starting at 
 (n\+\_\+landmarks + 1)\+: n\+\_\+landmarks for all previous landmarks and +1 for M\+\_\+\+DIST\+\_\+\+TH.
 
 calculate difference between pose of current observed cone and previously seen cone
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classslamISAM_a12db7db0ac15a3eeacba9330e922c9b7}\index{slamISAM@{slamISAM}!landmark\_est@{landmark\_est}}
+\index{landmark\_est@{landmark\_est}!slamISAM@{slamISAM}}
+\doxysubsubsection{\texorpdfstring{landmark\_est}{landmark\_est}}
+{\footnotesize\ttfamily \label{classslamISAM_a12db7db0ac15a3eeacba9330e922c9b7} 
+std\+::vector$<$gtsam\+::\+Pose2$>$ slam\+ISAM\+::landmark\+\_\+est}
+
+\Hypertarget{classslamISAM_a9a7bf54fb68cd6ad39cf2be656f1da4c}\index{slamISAM@{slamISAM}!n\_landmarks@{n\_landmarks}}
+\index{n\_landmarks@{n\_landmarks}!slamISAM@{slamISAM}}
+\doxysubsubsection{\texorpdfstring{n\_landmarks}{n\_landmarks}}
+{\footnotesize\ttfamily \label{classslamISAM_a9a7bf54fb68cd6ad39cf2be656f1da4c} 
+int slam\+ISAM\+::n\+\_\+landmarks}
+
+\Hypertarget{classslamISAM_a1f6520c125e1db548f1a088ace7a042e}\index{slamISAM@{slamISAM}!orange\_cones@{orange\_cones}}
+\index{orange\_cones@{orange\_cones}!slamISAM@{slamISAM}}
+\doxysubsubsection{\texorpdfstring{orange\_cones}{orange\_cones}}
+{\footnotesize\ttfamily \label{classslamISAM_a1f6520c125e1db548f1a088ace7a042e} 
+std\+::vector$<$Point2$>$ slam\+ISAM\+::orange\+\_\+cones}
+
+\Hypertarget{classslamISAM_a557bf4cb56eae4be97a60f5ce65c365a}\index{slamISAM@{slamISAM}!robot\_est@{robot\_est}}
+\index{robot\_est@{robot\_est}!slamISAM@{slamISAM}}
+\doxysubsubsection{\texorpdfstring{robot\_est}{robot\_est}}
+{\footnotesize\ttfamily \label{classslamISAM_a557bf4cb56eae4be97a60f5ce65c365a} 
+gtsam\+::\+Pose2 slam\+ISAM\+::robot\+\_\+est}
+
+
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

@@ -98,6 +98,8 @@ $(function(){ initResizable(false); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ad2830c6d162c4387d2296e47acdbc7eb" id="r_ad2830c6d162c4387d2296e47acdbc7eb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2830c6d162c4387d2296e47acdbc7eb">slamISAM</a> ()</td></tr>
+<tr class="separator:ad2830c6d162c4387d2296e47acdbc7eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab07c8f29237621e0b929d4a7098bfd4f" id="r_ab07c8f29237621e0b929d4a7098bfd4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab07c8f29237621e0b929d4a7098bfd4f">t_associate</a> (vector&lt; Point2 &gt; *cone_obs, vector&lt; Pose2 &gt; *global_obs_cones, vector&lt; Pose2 &gt; *all_cone_est, Pose2 global_odom, vector&lt; float &gt; *m_dist, int lo, int hi)</td></tr>
 <tr class="memdesc:ab07c8f29237621e0b929d4a7098bfd4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A function called by threads that will perform data association on the observed Point2 cones stored inside vector cone_obs. All calculated mahalanobis distances will be stored in vector m_dist. For a given time stamp, multiple threads will be spawned to calculate a subsection of the the mahalanobis distances from indices [lo, hi)  <br /></td></tr>
 <tr class="separator:ab07c8f29237621e0b929d4a7098bfd4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,22 +109,44 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a9a7bf54fb68cd6ad39cf2be656f1da4c" id="r_a9a7bf54fb68cd6ad39cf2be656f1da4c"><td class="memItemLeft" align="right" valign="top"><a id="a9a7bf54fb68cd6ad39cf2be656f1da4c" name="a9a7bf54fb68cd6ad39cf2be656f1da4c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>n_landmarks</b></td></tr>
+<tr class="memitem:a9a7bf54fb68cd6ad39cf2be656f1da4c" id="r_a9a7bf54fb68cd6ad39cf2be656f1da4c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a7bf54fb68cd6ad39cf2be656f1da4c">n_landmarks</a></td></tr>
 <tr class="separator:a9a7bf54fb68cd6ad39cf2be656f1da4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a557bf4cb56eae4be97a60f5ce65c365a" id="r_a557bf4cb56eae4be97a60f5ce65c365a"><td class="memItemLeft" align="right" valign="top"><a id="a557bf4cb56eae4be97a60f5ce65c365a" name="a557bf4cb56eae4be97a60f5ce65c365a"></a>
-gtsam::Pose2&#160;</td><td class="memItemRight" valign="bottom"><b>robot_est</b></td></tr>
+<tr class="memitem:a557bf4cb56eae4be97a60f5ce65c365a" id="r_a557bf4cb56eae4be97a60f5ce65c365a"><td class="memItemLeft" align="right" valign="top">gtsam::Pose2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a557bf4cb56eae4be97a60f5ce65c365a">robot_est</a></td></tr>
 <tr class="separator:a557bf4cb56eae4be97a60f5ce65c365a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12db7db0ac15a3eeacba9330e922c9b7" id="r_a12db7db0ac15a3eeacba9330e922c9b7"><td class="memItemLeft" align="right" valign="top"><a id="a12db7db0ac15a3eeacba9330e922c9b7" name="a12db7db0ac15a3eeacba9330e922c9b7"></a>
-std::vector&lt; gtsam::Pose2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>landmark_est</b></td></tr>
+<tr class="memitem:a12db7db0ac15a3eeacba9330e922c9b7" id="r_a12db7db0ac15a3eeacba9330e922c9b7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; gtsam::Pose2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12db7db0ac15a3eeacba9330e922c9b7">landmark_est</a></td></tr>
 <tr class="separator:a12db7db0ac15a3eeacba9330e922c9b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f6520c125e1db548f1a088ace7a042e" id="r_a1f6520c125e1db548f1a088ace7a042e"><td class="memItemLeft" align="right" valign="top"><a id="a1f6520c125e1db548f1a088ace7a042e" name="a1f6520c125e1db548f1a088ace7a042e"></a>
-std::vector&lt; Point2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>orange_cones</b></td></tr>
+<tr class="memitem:a1f6520c125e1db548f1a088ace7a042e" id="r_a1f6520c125e1db548f1a088ace7a042e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Point2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f6520c125e1db548f1a088ace7a042e">orange_cones</a></td></tr>
 <tr class="separator:a1f6520c125e1db548f1a088ace7a042e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class that uses data association to discern new cones from previously seen cones and utilizes the iSAM2 model to perform SLAM. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ad2830c6d162c4387d2296e47acdbc7eb" name="ad2830c6d162c4387d2296e47acdbc7eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2830c6d162c4387d2296e47acdbc7eb">&#9670;&#160;</a></span>slamISAM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">slamISAM::slamISAM </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a00e82e306602f32451124afb29364365" name="a00e82e306602f32451124afb29364365"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a00e82e306602f32451124afb29364365">&#9670;&#160;</a></span>step()</h2>
 
@@ -271,6 +295,63 @@ std::vector&lt; Point2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>(obs_id + 1): which multiple of (n_landmarks +1) depends on which observed cone</p>
 <p>(n_landmarks + 1): n_landmarks for all previous landmarks and +1 for M_DIST_TH.</p>
 <p>calculate difference between pose of current observed cone and previously seen cone</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a12db7db0ac15a3eeacba9330e922c9b7" name="a12db7db0ac15a3eeacba9330e922c9b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12db7db0ac15a3eeacba9330e922c9b7">&#9670;&#160;</a></span>landmark_est</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;gtsam::Pose2&gt; slamISAM::landmark_est</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9a7bf54fb68cd6ad39cf2be656f1da4c" name="a9a7bf54fb68cd6ad39cf2be656f1da4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a7bf54fb68cd6ad39cf2be656f1da4c">&#9670;&#160;</a></span>n_landmarks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int slamISAM::n_landmarks</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1f6520c125e1db548f1a088ace7a042e" name="a1f6520c125e1db548f1a088ace7a042e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f6520c125e1db548f1a088ace7a042e">&#9670;&#160;</a></span>orange_cones</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;Point2&gt; slamISAM::orange_cones</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a557bf4cb56eae4be97a60f5ce65c365a" name="a557bf4cb56eae4be97a60f5ce65c365a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a557bf4cb56eae4be97a60f5ce65c365a">&#9670;&#160;</a></span>robot_est</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gtsam::Pose2 slamISAM::robot_est</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
