@@ -13,9 +13,9 @@ How to run iSAM2 on the EUFS simulator
 
 Prerequisites
 -------------
+* Install Ubuntu 20.04 LTS
 * Install ROS Foxy
 * Install colcon
-* Install Ubuntu 20.04 LTS
 
 
 Setup
