@@ -20,6 +20,7 @@ Contents
 
     isam2
     setup
+    more
 
 Source files
 ------------
