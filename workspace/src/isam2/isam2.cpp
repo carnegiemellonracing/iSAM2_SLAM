@@ -40,8 +40,6 @@ using namespace std::chrono;
 static const float M_DIST_TH = 25;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
-//static mutex global_obs_cones_mutex;
-static mutex isam2_mutex;
 
 // static const float DT = 0.1;
 // static const float SIM_TIME = 50.0;
@@ -49,9 +47,69 @@ static mutex isam2_mutex;
 // static const int STATE_SIZE = 3;
 // static const int N_STEP = 100;
 
+class Func_Args
+{
+    public:
+    vector<float> *m_dist;
+    int lo;
+    int hi;
+
+    bool is_minID_args = false;
+    bool is_assoc_args = false;
+
+    Func_Args (vector<float> *m_dist, int lo, int hi)
+    {
+        this->m_dist = m_dist;
+        this->lo = lo;
+        this->hi = hi;
+    }
+};
+
+class Assoc_Args : public Func_Args
+{
+    public:
+
+    vector<Point2> *cone_obs;
+    Eigen::MatrixXd* global_cone_x;
+    Eigen::MatrixXd* global_cone_y;
+    vector<Pose2> *all_cone_est;
+    Pose2 global_odom;
+
+    Assoc_Args(vector<Point2> *cone_obs, Eigen::MatrixXd* global_cone_x,
+	    Eigen::MatrixXd* global_cone_y, vector<Pose2> *all_cone_est,
+	    Pose2 global_odom, vector<float> *m_dist, int lo, int hi)
+        : Func_Args (m_dist, lo, hi)
+    {
+        this->cone_obs = cone_obs;
+        this->global_cone_x = global_cone_x;
+        this->global_cone_y = global_cone_y;
+        this->all_cone_est = all_cone_est;
+        this->global_odom = global_odom;
+
+        this->is_assoc_args = true;
+        this->is_minID_args = false;
+    }
+};
+
+class MinID_Args : public Func_Args
+{
+    public:
+    vector<int> *min_ids;
+
+    MinID_Args (vector<int> *min_ids, vector<float> *m_dist,
+                int lo, int hi)
+        : Func_Args (m_dist, lo, hi)
+    {
+        this->min_ids = min_ids;
+        this->is_assoc_args = false;
+        this->is_minID_args = true;
+    }
+
+};
 
 
 class slamISAM {
+
 private: ISAM2Params parameters;
     ISAM2 isam2;
     //Create a factor graph and values for new data
@@ -140,6 +198,23 @@ public:
         RCLCPP_INFO(logger, "done printing\n\n");
     }
 
+    void test_func(Func_Args A)
+    {
+        if (A.is_assoc_args)
+        {
+            Assoc_Args *casted_A = static_cast<Assoc_Args*>(&A);
+            Pose2 g_o = casted_A->global_odom;
+            //cout << "Is assoc arg: x: " << g_o.x() << endl;
+        }
+        else if (A.is_minID_args)
+        {
+            MinID_Args *casted_A = static_cast<MinID_Args*>(&A);
+
+            //cout << "Is minID arg: ptr: " << &(casted_A->min_ids) << endl;
+
+        }
+    }
+
     /**
      * @brief t_associate is a function called by threads that will
      * perform data association on the observed cones stored as Point2
@@ -156,6 +231,7 @@ public:
         int landmark_idx = lo % (n_landmarks + 1);
         int obs_id = (int)(lo / (n_landmarks + 1));
         //RCLCPP_INFO(logger, "lo: %d | hi: %d", lo, hi);
+
 
         while (i < hi && obs_id < cone_obs->size())
         {
@@ -227,6 +303,7 @@ public:
     void step(auto logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
                 long time_ns, bool loopClosure) {
+
 
 
 
@@ -405,7 +482,7 @@ public:
                 all_cone_est.at(i) = isam2.calculateEstimate(L(i)).cast<Pose2>();
             }
 
-	    auto start_t = high_resolution_clock::now();
+            auto start_t = high_resolution_clock::now();
             for (int i = 0; i < num_threads; i++)
             {
                 all_t[i] = thread(&slamISAM::t_associate, this, &cone_obs,
@@ -416,7 +493,7 @@ public:
                 /*t_associate(logger, &cone_obs, &global_obs_cones, global_odom,
                             &m_dist, i * multiple_size, (i+1) * multiple_size);
                             */
-	    }
+            }
 
 
             for (auto &t : all_t)
@@ -427,6 +504,12 @@ public:
             //Compute the remainders
             t_associate(&cone_obs, &global_cone_x, &global_cone_y, &all_cone_est, global_odom, &m_dist,
                                     num_threads * multiple_size, m_dist_len);
+
+            Assoc_Args A = Assoc_Args(&cone_obs, &global_cone_x, &global_cone_y, &all_cone_est,
+                                global_odom, &m_dist, num_threads * multiple_size, m_dist_len);
+
+
+            test_func(A);
 
             RCLCPP_INFO(logger, "finished populating m_dist\n");
 
