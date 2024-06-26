@@ -22,9 +22,8 @@ Contents
     setup
     more
 
-Source files
-------------
 .. toctree::
+    :caption: Source Files
 
     isam2cpp
     isam2Nodecpp
