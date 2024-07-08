@@ -92,16 +92,20 @@ class SLAMValidation : public rclcpp::Node
     // positive x right
     void cone_callback(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data)
     {
-      // RCLCPP_INFO(this->get_logger(), "CONECALLBACK: B: %i| Y: %i| O: %i", cone_data->blue_cones.size(), cone_data->yellow_cones.size(), cone_data->orange_cones.size());
-      // return;
       cones.clear();
+
+      blue_cones.clear();
+      yellow_cones.clear();
       orangeCones.clear();
+
+
       auto b_cones = cone_data->blue_cones;
       for (uint i = 0; i < b_cones.size(); i++)
       {
         gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(b_cones[i].point.x,
                                                              b_cones[i].point.y));
         cones.push_back(to_add);
+        blue_cones.push_back(to_add);
       }
       auto y_cones = cone_data->yellow_cones;
       for (uint i = 0; i < y_cones.size(); i++)
@@ -109,6 +113,7 @@ class SLAMValidation : public rclcpp::Node
         gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(y_cones[i].point.x,
                                                              y_cones[i].point.y));
         cones.push_back(to_add);
+        yellow_cones.push_back(to_add);
       }
       auto o_cones = cone_data->big_orange_cones;
       for (uint i = 0; i < o_cones.size(); i++)
@@ -195,19 +200,10 @@ class SLAMValidation : public rclcpp::Node
 
     }
 
-    void synced_callback(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data,
-                        const eufs_msgs::msg::CarState::SharedPtr pose_data)
-    {
-        cone_callback(cone_data);
-        vehicle_state_callback(pose_data);
-    }
+
 
 
     void run_slam(){
-      //if(global_odom.x() == 0 || global_odom.y() == 0 || global_odom.theta() == 0){
-      //  RCLCPP_INFO(this->get_logger(), "fucked pose: (%f,%f,%f)", global_odom.x(), global_odom.y(), global_odom.theta());
-      //  return;
-      //}
 
       // print pose and cones
       std::ofstream ofs;
@@ -240,7 +236,8 @@ class SLAMValidation : public rclcpp::Node
       }
       ofs.close();
       std::cout.rdbuf(coutbuf); //reset to standard output again
-      slam_instance.step(this->get_logger(), global_odom, cones,orangeCones, velocity, dt, loopClosure);
+      slam_instance.step(this->get_logger(), global_odom, cones, blue_cones,
+                  yellow_cones,orangeCones, velocity, dt, loopClosure);
       // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
 
@@ -249,7 +246,7 @@ class SLAMValidation : public rclcpp::Node
         run_slam();
     }
 
-    slamISAM slam_instance = slamISAM();
+    slamISAM slam_instance = slamISAM(this->get_logger());
     rclcpp::Subscription<eufs_msgs::msg::ConeArrayWithCovariance>::SharedPtr cone_sub;
     rclcpp::Subscription<eufs_msgs::msg::CarState>::SharedPtr vehicle_state_sub;
 
@@ -264,6 +261,9 @@ class SLAMValidation : public rclcpp::Node
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
     vector<Point2> cones; // local variable to load cone observations into SLAM instance
     vector<Point2> orangeCones; // local variable to load cone observations into SLAM instance
+
+    vector<Point2> blue_cones; //local variable to store the blue observed cones
+    vector<Point2> yellow_cones; //local variable to store the yellow observed cones
 
     gtsam::Pose2 init_odom; // local variable to load odom into SLAM instance
     //VehicleState prev_veh_state = VehicleState();
