@@ -300,7 +300,7 @@ public:
         if (blue_n_landmarks == 0 && yellow_n_landmarks == 0) /*no previously seen cones */
         {
             /* all obs cones are new */
-            assert(num_obs > 0);
+            isam2_mutex.lock();
             for (int i = 0; i < num_obs_blue; i++)
             {
 
@@ -353,6 +353,7 @@ public:
             pose_num++;
             step_cv.notify_one();
 
+            isam2_mutex.unlock();
 
             RCLCPP_INFO(logger, "completed first DA cycle");
             return;
@@ -762,7 +763,20 @@ public:
 
             //TODO: M_task->color_cone_IDs->at(minID);
             int obs_id = M_task->color_obs_id;
-            graph.add(BetweenFactor<Pose2>(X(pose_num), L(M_task->color_cone_IDs->at(minID)),
+            int id = -1;
+            if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
+            {
+                /* not using HEURISTIC_N */
+                id = M_task->color_cone_IDs->at(minID);
+            }
+            else
+            {
+                /* using HEURISTIC_N */
+                id = M_task->color_cone_IDs->at(M_task->prev_color_n_landmarks - HEURISTIC_N + minID);
+            }
+
+
+            graph.add(BetweenFactor<Pose2>(X(pose_num), L(id),
                                         Pose2(M_task->color_cone_obs->at(obs_id).x(),
                                             M_task->color_cone_obs->at(obs_id).y(),
                                             M_task->glob_pos_bearing.theta()),
@@ -779,10 +793,6 @@ public:
 
         minID_counter = minID_counter + 1;
 
-        /* This is thread safe because with the isam2_mutex, only one thread
-         * can modify minID_counter at a time
-         */
-        bool first_min_ID = (minID_counter == 1);
 
         /* Is calling cv.wait for a thread really necessary?
          * No: if minID_counter == num_obs and if only 1 thread can be updating
