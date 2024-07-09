@@ -49,7 +49,7 @@ static thread all_threads[NUM_THREADS];
 static condition_variable cv;
 static condition_variable step_cv;
 //static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 25;
+static const float M_DIST_TH = 120;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;
@@ -813,6 +813,7 @@ public:
         ///////////////////////////////////////////////////////////////////////
         RCLCPP_INFO(logger, "min id %d", M_task->color_obs_id);
         isam2.update(graph, values);
+	isam2.update();
         graph.resize(0);
         values.clear();
 
@@ -1136,6 +1137,7 @@ public:
 
         //todo only do this once after update
         isam2.update(graph, values);
+	isam2.update();
         graph.resize(0);
         values.clear();
         /*TODO: potential issue is data associating the next time step before
