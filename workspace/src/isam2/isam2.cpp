@@ -317,6 +317,11 @@ public:
                     RCLCPP_INFO(logger, "first landmark added");
                 }
 
+	    	isam2.update(graph, values);
+            	isam2.update();
+            	values.clear();
+            	graph.resize(0);
+
                 blue_cone_IDs.push_back(n_landmarks);
                 blue_n_landmarks++;
                 n_landmarks++;
@@ -338,17 +343,19 @@ public:
                 {
                     RCLCPP_INFO(logger, "first landmark added");
                 }
+
+		isam2.update(graph, values);
+            	isam2.update();
+            	values.clear();
+            	graph.resize(0);
+
                 yellow_cone_IDs.push_back(n_landmarks);
                 yellow_n_landmarks++;
                 n_landmarks++;
             }
 
 
-            isam2.update(graph, values);
-            isam2.update();
-            values.clear();
-            graph.resize(0);
-
+            
             prev_DA_done = true;
             pose_num++;
             step_cv.notify_one();
