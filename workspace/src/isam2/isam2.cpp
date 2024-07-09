@@ -485,7 +485,14 @@ public:
                 int id = cone_IDs->at(ith_color_cone);
                 if (using_heuristic_n)
                 {
-                    id = cone_IDs->at(blue_n_landmarks - HEURISTIC_N + ith_color_cone);
+		    if (cur_obs_is_blue)
+		    {
+		        id = cone_IDs->at(blue_n_landmarks - HEURISTIC_N + ith_color_cone);
+		    }
+		    else 
+		    {
+			id = cone_IDs->at(yellow_n_landmarks - HEURISTIC_N + ith_color_cone);
+		    }
                 }
                 A_task->m_dist->at(i) = (diff * isam2.marginalCovariance(L(id))
                                               * diff.transpose())(0, 0);
@@ -588,7 +595,6 @@ public:
                                                     A_task->m_dist, lo, hi);
                 RCLCPP_INFO(logger, "blue id: %d | minID: [%d, %d)", i, lo, hi);
                 lo = hi;
-                //TODO: work_queue mutex already locked in process_work_queue
                 work_queue.push_back(make_tuple(M_task, 'm'));
             }
 
@@ -761,7 +767,6 @@ public:
             }
 
 
-            //TODO: M_task->color_cone_IDs->at(minID);
             int obs_id = M_task->color_obs_id;
             int id = -1;
             if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
@@ -1212,7 +1217,6 @@ public:
 
         }
 
-        //TODO: how to get the correct landmarks based on element index? */
         /* Getting the most recent HEURISTIC_N number previous cones */
         for (int i = blue_lo; i < blue_n_landmarks; i++)
         {
