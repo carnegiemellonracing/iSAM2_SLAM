@@ -566,6 +566,14 @@ public:
             vector<Point2> *yellow_unknown_obs = NULL;
             vector<Pose2> *blue_glob_obs = NULL;
             vector<Pose2> *yellow_glob_obs = NULL;
+	    if (heuristic_run)
+	    {
+		blue_unknown_obs = new vector<Point2>;
+                yellow_unknown_obs = new vector<Point2>;
+                blue_glob_obs = new vector<Pose2>;
+                yellow_glob_obs = new vector<Pose2>;
+	    }
+
 
             work_queue_mutex.lock();
             RCLCPP_INFO(logger, "num_obs_blue: %d | num_obs_yellow: %d",
@@ -581,11 +589,7 @@ public:
                         hi  = lo + blue_n_landmarks+1;
                     }
 
-                    blue_unknown_obs = new vector<Point2>;
-                    yellow_unknown_obs = new vector<Point2>;
-                    blue_glob_obs = new vector<Pose2>;
-                    yellow_glob_obs = new vector<Pose2>;
-                }
+	        }
                 Pose2 glob_pos_bearing = Pose2(A_task->blue_global_cone_x(i, 0),
                                             A_task->blue_global_cone_y(i, 0),
                                             A_task->blue_bearing(i, 0));
@@ -716,17 +720,26 @@ public:
         {
             if (heuristic_run)
             {
+		assert(M_task->blue_unknown_obs != NULL && M_task->yellow_unknown_obs != NULL);
                 if (M_task->is_blue_obs && !(M_task->is_yellow_obs)) /*is blue*/
                 {
+		    RCLCPP_INFO(logger, "heuristic_run: unknown blue cone; obs_id: %d", 
+				    				M_task->color_obs_id);
                     M_task->blue_unknown_obs->push_back(
                         M_task->color_cone_obs->at(M_task->color_obs_id));
                     M_task->blue_glob_obs->push_back(M_task->glob_pos_bearing);
+		    RCLCPP_INFO(logger, "blue_unknown_obs size: %d", 
+				    (int)M_task->blue_unknown_obs->size());
                 }
                 else if (M_task->is_yellow_obs && !(M_task->is_blue_obs)) /*is yellow*/
                 {
+		    RCLCPP_INFO(logger, "herustic_run: unknown yellow cone; obs_id: %d",
+				    				M_task->color_obs_id);
                     M_task->yellow_unknown_obs->push_back(
                         M_task->color_cone_obs->at(M_task->color_obs_id));
                     M_task->yellow_glob_obs->push_back(M_task->glob_pos_bearing);
+		    RCLCPP_INFO(logger, "yellow_unknown_obs size: %d", 
+				    (int)M_task->yellow_unknown_obs->size());
                 }
             }
             else /* not heuristic_run => add to isam2 */
@@ -825,20 +838,25 @@ public:
 
             int blue_num_u_obs = 0;
             int yellow_num_u_obs = 0;
-            int num_obs = 0;
+            int num_u_obs = 0;
 
             if (heuristic_run)
             {
                 blue_num_u_obs = (int)M_task->blue_unknown_obs->size();
                 yellow_num_u_obs = (int)M_task->yellow_unknown_obs->size();
-                num_obs = blue_num_u_obs + yellow_num_u_obs;
+                num_u_obs = blue_num_u_obs + yellow_num_u_obs;
+
+		RCLCPP_INFO(logger, "getting unknown observations; blue_num_u_obs: %d | yellow_num_u_obs: %d",
+						blue_num_u_obs, yellow_num_u_obs);
             }
+	    RCLCPP_INFO(logger, "num unknown observations: %d", num_u_obs);
 
 
 
-            if (heuristic_run && num_obs > 0)
+            if (heuristic_run && num_u_obs > 0)
             {
                 heuristic_run = false;
+		RCLCPP_INFO(logger, "processing unknown observations"); 
 
                 /* create the new global_cone x and y and bearing */
                 Eigen::MatrixXd blue_bearing = Eigen::MatrixXd(blue_num_u_obs, 1);
@@ -896,8 +914,6 @@ public:
                 int m_dist_len = ((blue_n_landmarks + 1) * blue_num_u_obs +
                             (yellow_n_landmarks + 1) * yellow_num_u_obs);
                 delete M_task->m_dist;
-                delete M_task->blue_glob_obs;
-                delete M_task->yellow_glob_obs;
                 vector<float> *m_dist = new vector(m_dist_len, (float)0.0);
                 int multiple_size = (int)(m_dist_len / NUM_THREADS);
                 int remainders = m_dist_len - (NUM_THREADS * multiple_size);
@@ -1213,7 +1229,7 @@ public:
         vector<Pose2> *yellow_cone_est = new vector<Pose2>;
         int blue_lo = blue_n_landmarks - HEURISTIC_N;
         int yellow_lo = yellow_n_landmarks - HEURISTIC_N;
-        if (HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
+        if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
         {
             /* cannot use HEURISTIC_N => Look at all previous cone estimates */
             blue_multiple_size = blue_n_landmarks + 1;
