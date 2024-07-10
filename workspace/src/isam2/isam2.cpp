@@ -1287,7 +1287,7 @@ public:
 
         int multiple_size = (int)(m_dist_len / NUM_THREADS);
         int remainders = m_dist_len - (NUM_THREADS * multiple_size);
-        if (m_dist_len < MIN_M_DIST)
+        if (m_dist_len < MIN_M_DIST || (blue_n_landmarks == 0 && yellow_n_landmarks == 0))
         {
             multiple_size = m_dist_len;
             remainders = 0;
