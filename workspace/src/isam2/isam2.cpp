@@ -49,7 +49,7 @@ static thread all_threads[NUM_THREADS];
 static condition_variable cv;
 static condition_variable step_cv;
 //static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 92;
+static const float M_DIST_TH = 130;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;
@@ -80,18 +80,6 @@ class Assoc_Args
     vector<Point2> *cone_obs_blue;
     vector<Point2> *cone_obs_yellow;
 
-    /* You need both because you could switch over from computing blue observations
-     * to computing yellow computations while in the same thread
-     */
-    Eigen::MatrixXd blue_global_cone_x;
-    Eigen::MatrixXd blue_global_cone_y;
-
-    Eigen::MatrixXd yellow_global_cone_x;
-    Eigen::MatrixXd yellow_global_cone_y;
-
-    Eigen::MatrixXd blue_bearing;
-    Eigen::MatrixXd yellow_bearing;
-
     vector<Pose2> *blue_cone_est;
     vector<Pose2> *yellow_cone_est;
     Pose2 global_odom;
@@ -103,9 +91,6 @@ class Assoc_Args
 
     /* cone_obs must be a pointer be thread_safe */
     Assoc_Args(vector<Point2> *cone_obs_blue, vector<Point2> *cone_obs_yellow,
-            Eigen::MatrixXd blue_global_cone_x, Eigen::MatrixXd blue_global_cone_y,
-            Eigen::MatrixXd yellow_global_cone_x, Eigen::MatrixXd yellow_global_cone_y,
-            Eigen::MatrixXd blue_bearing, Eigen::MatrixXd yellow_bearing,
             vector<Pose2> *blue_cone_est, vector<Pose2> *yellow_cone_est,
             Pose2 global_odom, vector<float> *m_dist, int lo, int hi)
     {
@@ -113,16 +98,6 @@ class Assoc_Args
          * you want to know the color of the new cone you add */
         this->cone_obs_blue = cone_obs_blue;
         this->cone_obs_yellow = cone_obs_yellow;
-
-        /* you'll need to separate */
-        this->blue_global_cone_x = blue_global_cone_x;
-        this->blue_global_cone_y = blue_global_cone_y;
-
-        this->yellow_global_cone_x = yellow_global_cone_x;
-        this->yellow_global_cone_y = yellow_global_cone_y;
-
-        this->blue_bearing = blue_bearing;
-        this->yellow_bearing = yellow_bearing;
 
         /* cannot separate all_cone_est because access to marginal cov is also like this */
         /* Not necessarily: the index in color_cone_est indicates the index in color_cone_IDs to access*/
@@ -226,8 +201,29 @@ private: ISAM2Params parameters;
         return Symbol('l', cone_pose_id);
     }
 
-public:
+    /* Assoc_Args common arguments */
+    vector<Point2> cone_obs_blue;
+    vector<Point2> cone_obs_yellow;
 
+    Eigen::MatrixXd blue_global_cone_x;
+    Eigen::MatrixXd blue_global_cone_y;
+
+    Eigen::MatrixXd yellow_global_cone_x;
+    Eigen::MatrixXd yellow_global_cone_y;
+
+    Eigen::MatrixXd blue_bearing;
+    Eigen::MatrixXd yellow_bearing;
+
+    vector<Pose2> blue_cone_est;
+    vector<Pose2> yellow_cone_est;
+
+    Pose2 global_odom;
+    
+
+
+
+public:
+    high_resolution_clock::time_point start;
     int n_landmarks;
     int blue_n_landmarks;
     int yellow_n_landmarks;
@@ -263,6 +259,9 @@ public:
 
         heuristic_run = true;
         prev_DA_done = true;
+
+        
+       
     }
 
 
@@ -306,10 +305,10 @@ public:
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(n_landmarks),
                             Pose2(A_task->cone_obs_blue->at(i).x(),
                                     A_task->cone_obs_blue->at(i).y(),
-                                    A_task->blue_bearing(i, 0)), landmark_model));
+                                    blue_bearing(i, 0)), landmark_model));
 
-                values.insert(L(n_landmarks), Pose2(A_task->blue_global_cone_x(i),
-                                                    A_task->blue_global_cone_y(i),
+                values.insert(L(n_landmarks), Pose2(blue_global_cone_x(i),
+                                                    blue_global_cone_y(i),
                                                         0));
 
 		        assert(values.exists(L(n_landmarks)));
@@ -319,7 +318,6 @@ public:
                 }
 
 	    	    isam2.update(graph, values);
-            	isam2.update();
             	values.clear();
             	graph.resize(0);
 
@@ -334,10 +332,10 @@ public:
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(n_landmarks),
                             Pose2(A_task->cone_obs_yellow->at(i).x(),
                                     A_task->cone_obs_yellow->at(i).y(),
-                                    A_task->yellow_bearing(i, 0)), landmark_model));
+                                    yellow_bearing(i, 0)), landmark_model));
 
-                 values.insert(L(n_landmarks), Pose2(A_task->yellow_global_cone_x(i),
-                                                    A_task->yellow_global_cone_y(i),
+                 values.insert(L(n_landmarks), Pose2(yellow_global_cone_x(i),
+                                                    yellow_global_cone_y(i),
                                                         0));
 		        assert(values.exists(L(n_landmarks)));
                 if (n_landmarks == 0)
@@ -346,7 +344,6 @@ public:
                 }
 
 		        isam2.update(graph, values);
-            	isam2.update();
             	values.clear();
             	graph.resize(0);
 
@@ -454,8 +451,8 @@ public:
                 last_idx_for_cur_obs = ((obs_id + 1) *
                                             blue_multiple_size - 1);
                 cone_IDs = &blue_cone_IDs;
-                global_cone_x = &A_task->blue_global_cone_x;
-                global_cone_y = &A_task->blue_global_cone_y;
+                global_cone_x = &blue_global_cone_x;
+                global_cone_y = &blue_global_cone_y;
 
             }
             else if (!cur_obs_is_blue) /* yellow observations */
@@ -464,20 +461,16 @@ public:
                                         ((obs_id + 1) *
                                          yellow_multiple_size) - 1);
                 cone_IDs = &yellow_cone_IDs;
-                global_cone_x = &A_task->yellow_global_cone_x;
-                global_cone_y = &A_task->yellow_global_cone_y;
+                global_cone_x = &yellow_global_cone_x;
+                global_cone_y = &yellow_global_cone_y;
             }
 
             /* calculate mahalanobis distance for all previous cones wrt to
              * current obs cone */
-            /*RCLCPP_INFO(logger,"\nlo: %d, hi: %d \n obs_id: %d | num_obs_blue: %d | num_obs_yellow: %d \n"
-                                "first_yellow_idx: %d | blue_n_landmarks: %d | yellow_n_landmarks: %d \n"
-                                "last_est_for_cur_obs: %d",
-                                A_task->lo, A_task->hi, obs_id, num_obs_blue, num_obs_yellow, first_yellow_idx,
-                                blue_n_landmarks, yellow_n_landmarks, last_est_for_cur_obs); */
-            RCLCPP_INFO(logger, "lo: %d | hi: %d | blue_n_landmarks: %d | yellow_n_landmarks: %d"
+            
+            /*RCLCPP_INFO(logger, "lo: %d | hi: %d | blue_n_landmarks: %d | yellow_n_landmarks: %d"
                                 "first_yellow_idx: %d", A_task->lo, A_task->hi, blue_n_landmarks,
-                                yellow_n_landmarks, first_yellow_idx);
+                                yellow_n_landmarks, first_yellow_idx); */
 
 
             for (; i < last_idx_for_cur_obs && i < A_task->hi; i++)
@@ -513,11 +506,10 @@ public:
                 }
 		        assert(i < (int)A_task->m_dist->size());
                 A_task->m_dist->at(i) = (diff * isam2.marginalCovariance(L(id)) * diff.transpose())(0, 0);
-                RCLCPP_INFO(logger, "m_dist at i=%d : %f", i, A_task->m_dist->at(i));
+                //RCLCPP_INFO(logger, "m_dist at i=%d : %f", i, A_task->m_dist->at(i));
                 ith_color_cone++;
 
             }
-	    RCLCPP_INFO(logger, "finished obs: %d", obs_id);
 
 
             if (i == A_task->hi)
@@ -532,7 +524,7 @@ public:
              * Result: It is
              */
             A_task->m_dist->at(last_idx_for_cur_obs) = M_DIST_TH;
-            RCLCPP_INFO(logger, "last_idx_for_cur_obs: %d", last_idx_for_cur_obs);
+            //RCLCPP_INFO(logger, "last_idx_for_cur_obs: %d", last_idx_for_cur_obs);
             i++; /* skip 1 element (reserved for M_DIST_TH */
             obs_id++;
 
@@ -564,6 +556,9 @@ public:
                 ((A_task->m_dist->size() < MIN_M_DIST) && (assoc_counter == 1)))
         {
             RCLCPP_INFO(logger, "finished all Assoc_Args");
+            auto end_m_dist = high_resolution_clock::now();
+            auto dur = duration_cast<microseconds>(end_m_dist - start);
+            RCLCPP_INFO(logger, "m_dist calc time: %d", dur.count());
 
             /*waiting until all Assoc_Args tasks have finished*/
             int num_obs = (num_obs_blue + num_obs_yellow);
@@ -605,16 +600,16 @@ public:
             for (int i = 0; i < num_obs_blue; i++)
             {
                 int hi = lo + blue_multiple_size;
-                Pose2 glob_pos_bearing = Pose2(A_task->blue_global_cone_x(i, 0),
-                                            A_task->blue_global_cone_y(i, 0),
-                                            A_task->blue_bearing(i, 0));
+                Pose2 glob_pos_bearing = Pose2(blue_global_cone_x(i, 0),
+                                                blue_global_cone_y(i, 0),
+                                                blue_bearing(i, 0));
 
 
                 MinID_Args *M_task = new MinID_Args(true, false,
                                                     A_task->cone_obs_blue,
                                                     (int)A_task->blue_cone_est->size(),
                                                     i, &blue_cone_IDs,
-                                                    A_task->global_odom,
+                                                    global_odom,
                                         blue_unknown_obs, yellow_unknown_obs,
                                         blue_glob_obs, yellow_glob_obs,
                                                     num_obs, glob_pos_bearing,
@@ -628,15 +623,15 @@ public:
             {
                 int hi = lo + yellow_multiple_size;
 
-                Pose2 glob_pos_bearing = Pose2(A_task->yellow_global_cone_x(i, 0),
-                                            A_task->yellow_global_cone_y(i, 0),
-                                            A_task->yellow_bearing(i, 0));
+                Pose2 glob_pos_bearing = Pose2(yellow_global_cone_x(i, 0),
+                                                yellow_global_cone_y(i, 0),
+                                                yellow_bearing(i, 0));
 
                 MinID_Args *M_task = new MinID_Args(false, true,
                                                     A_task->cone_obs_yellow,
                                                     (int)A_task->yellow_cone_est->size(),
                                                     i, &yellow_cone_IDs,
-                                                    A_task->global_odom,
+                                                    global_odom,
                                        blue_unknown_obs, yellow_unknown_obs,
                                        blue_glob_obs, yellow_glob_obs,
                                                     num_obs, glob_pos_bearing,
@@ -867,14 +862,14 @@ public:
 		RCLCPP_INFO(logger, "processing unknown observations"); 
 
                 /* create the new global_cone x and y and bearing */
-                Eigen::MatrixXd blue_bearing = Eigen::MatrixXd(blue_num_u_obs, 1);
-                Eigen::MatrixXd yellow_bearing = Eigen::MatrixXd(yellow_num_u_obs, 1);
+                blue_bearing = Eigen::MatrixXd(blue_num_u_obs, 1);
+                yellow_bearing = Eigen::MatrixXd(yellow_num_u_obs, 1);
 
-                Eigen::MatrixXd blue_global_cone_x = Eigen::MatrixXd(blue_num_u_obs, 1);
-                Eigen::MatrixXd blue_global_cone_y = Eigen::MatrixXd(blue_num_u_obs, 1);
+                blue_global_cone_x = Eigen::MatrixXd(blue_num_u_obs, 1);
+                blue_global_cone_y = Eigen::MatrixXd(blue_num_u_obs, 1);
 
-                Eigen::MatrixXd yellow_global_cone_x = Eigen::MatrixXd(yellow_num_u_obs, 1);
-                Eigen::MatrixXd yellow_global_cone_y = Eigen::MatrixXd(yellow_num_u_obs, 1);
+                yellow_global_cone_x = Eigen::MatrixXd(yellow_num_u_obs, 1);
+                yellow_global_cone_y = Eigen::MatrixXd(yellow_num_u_obs, 1);
 
                 for (int i = 0; i < blue_num_u_obs; i++)
                 {
@@ -903,19 +898,19 @@ public:
                     yellow_bearing(i) = M_task->yellow_glob_obs->at(i).theta();
                 }
 
-                vector<Pose2> *blue_cone_est = new vector<Pose2>;
-                vector<Pose2> *yellow_cone_est = new vector<Pose2>;
+                blue_cone_est.clear();
+                yellow_cone_est.clear();
 
                 for (int i = 0; i < blue_n_landmarks; i++)
                 {
                     int id = blue_cone_IDs.at(i);
-                    blue_cone_est->push_back(isam2.calculateEstimate(L(id)).cast<Pose2>());
+                    blue_cone_est.push_back(isam2.calculateEstimate(L(id)).cast<Pose2>());
                 }
 
                 for (int i = 0; i < yellow_n_landmarks; i++)
                 {
                     int id = yellow_cone_IDs.at(i);
-                    yellow_cone_est->push_back(isam2.calculateEstimate(L(id)).cast<Pose2>());
+                    yellow_cone_est.push_back(isam2.calculateEstimate(L(id)).cast<Pose2>());
                 }
 
                 /* Add Assoc_Args for unknown_obs */
@@ -945,12 +940,10 @@ public:
                         hi++;
                         remainders--;
                     }
-
+                    /* TODO: replace color_cone_obs and color_obs_id with color_obs_id and obs (for the observation)
+                     * TLDR: just get the observation rather than index in for it*/
                     Assoc_Args *A_task = new Assoc_Args(M_task->blue_unknown_obs, M_task->yellow_unknown_obs,
-                                                    blue_global_cone_x, blue_global_cone_y,
-                                                yellow_global_cone_x, yellow_global_cone_y,
-                                                blue_bearing, yellow_bearing,
-                                                blue_cone_est, yellow_cone_est,
+                                                &(this->blue_cone_est), &(this->yellow_cone_est),
                                                 M_task->global_odom, m_dist, lo, hi);
                     work_queue.push_back(make_tuple(A_task, 'a'));
 
@@ -1058,7 +1051,7 @@ public:
 	}
         unique_lock<mutex> step_lk(step_wait_mutex);
         step_cv.wait(step_lk, []{return (prev_DA_done.load());});
-
+        
         prev_DA_done = false;
 
         Vector NoiseModel(3);
@@ -1145,15 +1138,12 @@ public:
 
         //todo only do this once after update
         isam2.update(graph, values);
-	isam2.update();
+	    isam2.update();
         graph.resize(0);
         values.clear();
-        /*TODO: potential issue is data associating the next time step before
-         * updating the current iSAM2 model with info of the current time step.
-         * - This will affect data association because the new cones from time
-         *   step n are not added yet before n+1 is processed
-         */
-
+        
+        /* BEGIN VECTORIZATION*/
+        start = high_resolution_clock::now();
         /* vectorizations to calculate the global x and y positions of the cones*/
 	    Eigen::MatrixXd range(cone_obs.size(), 1);
 	    Eigen::MatrixXd bearing(cone_obs.size(), 1);
@@ -1188,19 +1178,21 @@ public:
         int num_obs_blue = (int)cone_obs_blue.size();
         int num_obs_yellow = (int)cone_obs_yellow.size();
 
-        Eigen::MatrixXd blue_global_cone_x = global_cone_x.block(0, 0,
+
+        blue_global_cone_x = global_cone_x.block(0, 0,
                                                     num_obs_blue, 1);
-        Eigen::MatrixXd blue_global_cone_y = global_cone_y.block(0, 0,
+        blue_global_cone_y = global_cone_y.block(0, 0,
                                                     num_obs_blue, 1);
 
-        Eigen::MatrixXd yellow_global_cone_x = global_cone_x.block(num_obs_blue, 0,
+        yellow_global_cone_x = global_cone_x.block(num_obs_blue, 0,
                                                     num_obs_yellow, 1);
 
-        Eigen::MatrixXd yellow_global_cone_y = global_cone_y.block(num_obs_blue, 0,
+        yellow_global_cone_y = global_cone_y.block(num_obs_blue, 0,
                                                     num_obs_yellow, 1);
 
-        Eigen::MatrixXd blue_bearing = Eigen::MatrixXd(num_obs_blue, 1);
-        Eigen::MatrixXd yellow_bearing = Eigen::MatrixXd(num_obs_yellow, 1);
+
+        blue_bearing = Eigen::MatrixXd(num_obs_blue, 1);
+        yellow_bearing = Eigen::MatrixXd(num_obs_yellow, 1);
 
         for (int i = 0; i < num_obs_blue; i++)
         {
@@ -1214,29 +1206,38 @@ public:
 
 
 
-
-
-        vector<Point2> *heap_obs_blue = new vector<Point2>;
-        vector<Point2> *heap_obs_yellow = new vector<Point2>;
-
+        this->global_odom = global_odom;
+        this->cone_obs_blue.clear();
+        this->cone_obs_yellow.clear();
         for (auto b : cone_obs_blue)
         {
-            heap_obs_blue->push_back(b);
+            this->cone_obs_blue.push_back(b);
         }
-
         for (auto y : cone_obs_yellow)
         {
-            heap_obs_yellow->push_back(y);
+            this->cone_obs_yellow.push_back(y);
         }
 
-        RCLCPP_INFO(logger, "finished vectorization");
+        RCLCPP_INFO(logger, "copied observations");
+        // vector<Point2> *heap_obs_blue = new vector<Point2>;
+        // vector<Point2> *heap_obs_yellow = new vector<Point2>;
+
+        // for (auto b : cone_obs_blue)
+        // {
+        //     heap_obs_blue->push_back(b);
+        // }
+
+        // for (auto y : cone_obs_yellow)
+        // {
+        //     heap_obs_yellow->push_back(y);
+        // }
+
+        
 
         /* Firstly, data associate on the last HEURISTIC_N landmark estimates */
         int blue_multiple_size = HEURISTIC_N+1;
         int yellow_multiple_size = HEURISTIC_N+1;
 
-        vector<Pose2> *blue_cone_est = new vector<Pose2>;
-        vector<Pose2> *yellow_cone_est = new vector<Pose2>;
         int blue_lo = blue_n_landmarks - HEURISTIC_N;
         int yellow_lo = yellow_n_landmarks - HEURISTIC_N;
         if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
@@ -1250,21 +1251,26 @@ public:
 
         }
 
+        this->blue_cone_est.clear();
+        this->yellow_cone_est.clear();
+        RCLCPP_INFO(logger, "estimate vectors cleared");
+
+
         /* Getting the most recent HEURISTIC_N number previous cones */
         for (int i = blue_lo; i < blue_n_landmarks; i++)
         {
             int id = blue_cone_IDs.at(i);
-            blue_cone_est->push_back(isam2.calculateEstimate(L(id)).cast<Pose2>());
+            this->blue_cone_est.push_back(isam2.calculateEstimate(L(id)).cast<Pose2>());
         }
 
         for (int i = yellow_lo; i < yellow_n_landmarks; i++)
         {
             int id = yellow_cone_IDs.at(i);
-            yellow_cone_est->push_back(isam2.calculateEstimate(L(id)).cast<Pose2>());
+            this->yellow_cone_est.push_back(isam2.calculateEstimate(L(id)).cast<Pose2>());
         }
 
 
-
+        RCLCPP_INFO(logger, "finished vectorization");
         /* previous MinID_Args need to be processed first before the new
          * Assoc_Args can be added to the work_queue*/
 
@@ -1317,12 +1323,10 @@ public:
                 remainders--;
             }
             RCLCPP_INFO(logger, "step adding Assoc_Args; lo: %d | hi: %d", lo, hi);
-            Assoc_Args *A_task = new Assoc_Args(heap_obs_blue, heap_obs_yellow,
-                    blue_global_cone_x, blue_global_cone_y,
-                    yellow_global_cone_x, yellow_global_cone_y,
-                    blue_bearing, yellow_bearing,
-                    blue_cone_est, yellow_cone_est,
-                    global_odom, m_dist, lo, hi);
+            Assoc_Args *A_task = new 
+            Assoc_Args(&(this->cone_obs_blue), &(this->cone_obs_yellow),
+                    &(this->blue_cone_est), &(this->yellow_cone_est),
+                    this->global_odom, m_dist, lo, hi);
 
 
             work_queue.push_back(make_tuple(A_task, 'a'));
