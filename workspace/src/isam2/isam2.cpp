@@ -49,7 +49,7 @@ static thread all_threads[NUM_THREADS];
 static condition_variable cv;
 static condition_variable step_cv;
 //static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 140;
+static const float M_DIST_TH = 150;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;
@@ -341,6 +341,7 @@ public:
 
         }
 
+        
         /* For each blue observed cone, calculate Mahalanobis distance wrt blue_n_landmarks
          * The +1 represents the M_DIST_TH for that observation
          *
@@ -388,7 +389,12 @@ public:
             obs_id = (int)(offset_start / yellow_multiple_size);
             ith_color_cone = offset_start % yellow_multiple_size;
         }
-
+        
+        /*not necessary because the initialization time was 0*/
+        // auto end_t_assoc = high_resolution_clock::now();
+        // auto dur_t_assoc = duration_cast<microseconds>(end_t_assoc - start_t_assoc);
+        // RCLCPP_INFO(logger, "thread assoc_args init [lo=%d, hi=%d) : time %d",
+        //                     A_task->lo, A_task->hi, dur_t_assoc.count());
         
         while (i < A_task->hi)
         {
@@ -447,7 +453,19 @@ public:
                                 "first_yellow_idx: %d", A_task->lo, A_task->hi, blue_n_landmarks,
                                 yellow_n_landmarks, first_yellow_idx); */
 
-
+            int offset_id_idx = 0;
+            if (using_heuristic_n)
+            {
+                if (cur_obs_is_blue)
+                {
+                    offset_id_idx = blue_n_landmarks - HEURISTIC_N;
+                }
+                else
+                {
+                    offset_id_idx = yellow_n_landmarks - HEURISTIC_N;
+                }
+            }
+            
             for (; i < last_idx_for_cur_obs && i < A_task->hi; i++)
             {
 
@@ -461,29 +479,22 @@ public:
                 diff << (*global_cone_x)(obs_id, 0) - prev_est.x(),
                         (*global_cone_y)(obs_id, 0) - prev_est.y(),
                         1;
-                int id = cone_IDs->at(ith_color_cone);
-                if (using_heuristic_n)
-                {
-                    if (cur_obs_is_blue)
-                    {
-                        id = cone_IDs->at(blue_n_landmarks - HEURISTIC_N + ith_color_cone);
-                    }
-                    else 
-                    {
-                        id = cone_IDs->at(yellow_n_landmarks - HEURISTIC_N + ith_color_cone);
-                    }   
-                }
-                m_dist.at(i) = (diff * isam2.marginalCovariance(L(id)) * diff.transpose())(0, 0);
+                int id = cone_IDs->at(ith_color_cone + offset_id_idx);
+                auto start_t_assoc = high_resolution_clock::now();
+                Eigen::MatrixXd m_cov = isam2.marginalCovariance(L(id));
+                /* isam2.marginalCovariance(L(id)) takes a long time to obtain*/
+                // m_dist.at(i) = (diff * diff.transpose())(0, 0);
+                auto end_t_assoc = high_resolution_clock::now();
+                auto dur_t_assoc = duration_cast<microseconds>(end_t_assoc - start_t_assoc);
+                RCLCPP_INFO(logger, "for loop thread assoc_args [lo=%d, hi=%d) : time %d",
+                                A_task->lo, A_task->hi, dur_t_assoc.count());
                 
+                m_dist.at(i) = (diff * m_cov * diff.transpose())(0, 0);
                 
                 ith_color_cone++;
 
             }
-
-            if (i == (int)m_dist.size())
-            {
-                RCLCPP_INFO(logger, "computed all of m_dist");
-            }
+            
 
             if (i == A_task->hi)
             {
@@ -516,6 +527,10 @@ public:
          * 
          * In the meantime, thread B may increment assoc_counter and then
          * both check the conditional at the same time*/
+        // auto end_t_assoc = high_resolution_clock::now();
+        // auto dur_t_assoc = duration_cast<microseconds>(end_t_assoc - start_t_assoc);
+        // RCLCPP_INFO(logger, "thread assoc_args [lo=%d, hi=%d) : time %d",
+        //                     A_task->lo, A_task->hi, dur_t_assoc.count());
         assoc_counter++;
         if ((assoc_counter.load() == NUM_THREADS) ||
                 ((m_dist.size() < MIN_M_DIST) && (assoc_counter.load() == 1)))
@@ -784,10 +799,10 @@ public:
 
 
         ///////////////////////////////////////////////////////////////////////
-        isam2.update(graph, values);
-	    isam2.update();
-        graph.resize(0);
-        values.clear();
+        // isam2.update(graph, values);
+	    // isam2.update();
+        // graph.resize(0);
+        // values.clear();
 
         /* atomic operation */
         /* TODO: problem; 1 thread could increment to num_obs but another thread 
@@ -814,10 +829,16 @@ public:
          * You may not always have blue cones; you may not always have yellow cones*/
         if (M_task->lo == 0) /* pick 1 MinID_Args tasks */
         {
+            
             unique_lock<mutex> minID_lk(minID_wait_mutex);
             cv.wait(minID_lk, [num_obs]{return (minID_counter.load() == num_obs);});
             
             minID_counter = 0;
+            
+            isam2.update(graph, values);
+            isam2.update();
+            graph.resize(0);
+            values.clear();
             RCLCPP_INFO(logger, "finished processing last minID | is heuristic_run: %d", heuristic_run);
 
             int blue_num_u_obs = 0;
