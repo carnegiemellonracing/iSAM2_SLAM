@@ -49,7 +49,7 @@ static thread all_threads[NUM_THREADS];
 static condition_variable cv;
 static condition_variable step_cv;
 //static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 130;
+static const float M_DIST_TH = 140;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;
@@ -128,11 +128,6 @@ class MinID_Args
     Point2 obs;
     int prev_color_n_landmarks;
 
-    Pose2 global_odom;
-
-    vector<Point2> *blue_unknown_obs; /* used to hold unknown observations from heur. run */
-    vector<Point2> *yellow_unknown_obs;
-
     /* why not Eigen::MatrixXd; can't heap allocate so can't build amongst many diff MinID_Args */
     vector<Pose2> *blue_glob_obs;
     vector<Pose2> *yellow_glob_obs;
@@ -144,8 +139,6 @@ class MinID_Args
 
     MinID_Args (bool is_blue_obs, bool is_yellow_obs, Point2 obs,
                 int prev_color_n_landmarks, 
-                Pose2 global_odom,
-                vector<Point2> *blue_unknown_obs, vector<Point2> *yellow_unknown_obs,
                 vector<Pose2> *blue_glob_obs, vector<Pose2> *yellow_glob_obs,
                 int num_obs, Pose2 glob_pos_bearing, vector<float> *m_dist, int lo, int hi)
     {
@@ -155,11 +148,6 @@ class MinID_Args
         this->obs = obs;
 
         this->prev_color_n_landmarks = prev_color_n_landmarks;
-
-        this->global_odom = global_odom;
-
-        this->blue_unknown_obs = blue_unknown_obs;
-        this->yellow_unknown_obs = yellow_unknown_obs;
 
         this->blue_glob_obs = blue_glob_obs;
         this->yellow_glob_obs = yellow_glob_obs;
@@ -587,17 +575,13 @@ public:
 
             /* add MinIDs_Args to the work queue */
             int lo = 0;
-            vector<Point2> *blue_unknown_obs = NULL;
-            vector<Point2> *yellow_unknown_obs = NULL;
             vector<Pose2> *blue_glob_obs = NULL;
             vector<Pose2> *yellow_glob_obs = NULL;
 	        if (heuristic_run)
 	        {
-		        blue_unknown_obs = new vector<Point2>;
-                yellow_unknown_obs = new vector<Point2>;
                 blue_glob_obs = new vector<Pose2>;
                 yellow_glob_obs = new vector<Pose2>;
-	    }
+	        }
 
 
             work_queue_mutex.lock();
@@ -617,11 +601,9 @@ public:
                                                 blue_bearing(i, 0));
 
 
-
+                assert((int)cone_obs_blue.size() > i);
                 MinID_Args *M_task = new MinID_Args(true, false, this->cone_obs_blue.at(i),
                                                     (int)A_task->blue_cone_est->size(),
-                                                    this->global_odom,
-                                        blue_unknown_obs, yellow_unknown_obs,
                                         blue_glob_obs, yellow_glob_obs,
                                                     num_obs, glob_pos_bearing,
                                                     A_task->m_dist, lo, hi);
@@ -637,11 +619,9 @@ public:
                 Pose2 glob_pos_bearing = Pose2(yellow_global_cone_x(i, 0),
                                                 yellow_global_cone_y(i, 0),
                                                 yellow_bearing(i, 0));
-
+                assert((int)cone_obs_yellow.size() > i);
                 MinID_Args *M_task = new MinID_Args(false, true, this->cone_obs_yellow.at(i),
                                                     (int)A_task->yellow_cone_est->size(),
-                                                    this->global_odom,
-                                       blue_unknown_obs, yellow_unknown_obs,
                                        blue_glob_obs, yellow_glob_obs,
                                                     num_obs, glob_pos_bearing,
                                                     A_task->m_dist, lo, hi);
@@ -650,9 +630,17 @@ public:
                 work_queue.push_back(make_tuple(M_task, 'm'));
             }
 
+            cone_obs_blue.clear();
+            cone_obs_yellow.clear();
+            /* when data associating unknown observations, blue_cone_obs and yellow_cone_obs 
+             * must hold these unknown obs*/
+
             work_queue_mutex.unlock();
             RCLCPP_INFO(logger, "Last Assoc_Arg added MinID_Args to queue: m_dist_len: %d",
                                     (int)A_task->m_dist->size());
+            
+            
+            
 
         }
 
@@ -725,17 +713,17 @@ public:
             {
                 if (M_task->is_blue_obs && !(M_task->is_yellow_obs)) /*is blue*/
                 {
-                    M_task->blue_unknown_obs->push_back(M_task->obs);
+                    cone_obs_blue.push_back(M_task->obs);
                     M_task->blue_glob_obs->push_back(M_task->glob_pos_bearing);
 		            RCLCPP_INFO(logger, "blue_unknown_obs size: %d", 
-				                        (int)M_task->blue_unknown_obs->size());
+				                        (int)cone_obs_blue.size());
                 }
                 else if (M_task->is_yellow_obs && !(M_task->is_blue_obs)) /*is yellow*/
                 {
-                    M_task->yellow_unknown_obs->push_back(M_task->obs);
+                    cone_obs_yellow.push_back(M_task->obs);
                     M_task->yellow_glob_obs->push_back(M_task->glob_pos_bearing);
                     RCLCPP_INFO(logger, "yellow_unknown_obs size: %d", 
-                                        (int)M_task->yellow_unknown_obs->size());
+                                        (int)cone_obs_yellow.size());
                 }
             }
             else /* not heuristic_run => add to isam2 */
@@ -857,8 +845,8 @@ public:
 
             if (heuristic_run)
             {
-                blue_num_u_obs = (int)M_task->blue_unknown_obs->size();
-                yellow_num_u_obs = (int)M_task->yellow_unknown_obs->size();
+                blue_num_u_obs = (int)cone_obs_blue.size();
+                yellow_num_u_obs = (int)cone_obs_yellow.size();
                 num_u_obs = blue_num_u_obs + yellow_num_u_obs;
 
 		RCLCPP_INFO(logger, "getting unknown observations; blue_num_u_obs: %d | yellow_num_u_obs: %d",
@@ -943,6 +931,8 @@ public:
                 int hi = 0;
 
                 work_queue_mutex.lock();
+                assert((int)cone_obs_blue.size() == blue_num_u_obs);
+                assert((int)cone_obs_yellow.size() == yellow_num_u_obs);
                 while (lo < m_dist_len && hi < m_dist_len)
                 {
                     hi = lo + multiple_size;
@@ -953,9 +943,9 @@ public:
                         remainders--;
                     }
                     
-                    Assoc_Args *A_task = new Assoc_Args(M_task->blue_unknown_obs, M_task->yellow_unknown_obs,
+                    Assoc_Args *A_task = new Assoc_Args(&(this->cone_obs_blue), &(this->cone_obs_yellow),
                                                 &(this->blue_cone_est), &(this->yellow_cone_est),
-                                                M_task->global_odom, m_dist, lo, hi);
+                                                this->global_odom, m_dist, lo, hi);
                     work_queue.push_back(make_tuple(A_task, 'a'));
 
                     lo = hi;
