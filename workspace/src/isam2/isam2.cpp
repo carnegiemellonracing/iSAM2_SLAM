@@ -126,7 +126,6 @@ class MinID_Args
     bool is_yellow_obs;
 
     Point2 obs;
-    vector<int> *color_cone_IDs;
     int prev_color_n_landmarks;
 
     Pose2 global_odom;
@@ -144,7 +143,7 @@ class MinID_Args
 
 
     MinID_Args (bool is_blue_obs, bool is_yellow_obs, Point2 obs,
-                int prev_color_n_landmarks, vector<int> *color_cone_IDs,
+                int prev_color_n_landmarks, 
                 Pose2 global_odom,
                 vector<Point2> *blue_unknown_obs, vector<Point2> *yellow_unknown_obs,
                 vector<Pose2> *blue_glob_obs, vector<Pose2> *yellow_glob_obs,
@@ -156,7 +155,6 @@ class MinID_Args
         this->obs = obs;
 
         this->prev_color_n_landmarks = prev_color_n_landmarks;
-        this->color_cone_IDs = color_cone_IDs;
 
         this->global_odom = global_odom;
 
@@ -413,7 +411,7 @@ public:
             ith_color_cone = offset_start % yellow_multiple_size;
         }
 
-        RCLCPP_INFO(logger, "finished init for m_dist computation");
+        
         while (i < A_task->hi)
         {
             int last_idx_for_cur_obs;
@@ -622,7 +620,6 @@ public:
 
                 MinID_Args *M_task = new MinID_Args(true, false, this->cone_obs_blue.at(i),
                                                     (int)A_task->blue_cone_est->size(),
-                                                    &blue_cone_IDs,
                                                     this->global_odom,
                                         blue_unknown_obs, yellow_unknown_obs,
                                         blue_glob_obs, yellow_glob_obs,
@@ -643,7 +640,6 @@ public:
 
                 MinID_Args *M_task = new MinID_Args(false, true, this->cone_obs_yellow.at(i),
                                                     (int)A_task->yellow_cone_est->size(),
-                                                    &yellow_cone_IDs,
                                                     this->global_odom,
                                        blue_unknown_obs, yellow_unknown_obs,
                                        blue_glob_obs, yellow_glob_obs,
@@ -772,7 +768,7 @@ public:
             /* doesn't matter if heuristic_run or not */
             /* RCLCPP_INFO(logger, "old cone; color id: %d",
                                 M_task->color_cone_IDs->at(minID)); */
-            if (M_task->is_blue_obs)
+            /*if (M_task->is_blue_obs)
             {
                 RCLCPP_INFO(logger, "minID: %d old cone; blue_cone_IDs size: %d vs %d",
                                 minID, (int)blue_cone_IDs.size(),
@@ -782,20 +778,31 @@ public:
             {
                 RCLCPP_INFO(logger, "minID: %d old cone; yellow_cone_ids size: %d",
                                 minID, (int)yellow_cone_IDs.size());
-            }
+            } */
 
 
-            int id = -1;
+            int temp_id = -1;
             if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
             {
                 /* not using HEURISTIC_N */
-                id = M_task->color_cone_IDs->at(minID);
+                temp_id = minID;
             }
             else
             {
                 /* using HEURISTIC_N */
-                id = M_task->color_cone_IDs->at(M_task->prev_color_n_landmarks - HEURISTIC_N + minID);
+                temp_id = M_task->prev_color_n_landmarks - HEURISTIC_N + minID;
             }
+
+            int id = -1;
+            if (M_task->is_blue_obs)
+            {
+                id = blue_cone_IDs.at(temp_id);
+            }
+            else if(M_task->is_yellow_obs)
+            {
+                id = yellow_cone_IDs.at(temp_id);
+            }
+
 
 
             graph.add(BetweenFactor<Pose2>(X(pose_num), L(id),
