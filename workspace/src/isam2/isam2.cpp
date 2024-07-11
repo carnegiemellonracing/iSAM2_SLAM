@@ -284,7 +284,7 @@ public:
                                                     blue_global_cone_y(i),
                                                         0));
 
-		        assert(values.exists(L(n_landmarks)));
+		        
                 if (n_landmarks == 0)
                 {
                     RCLCPP_INFO(logger, "first landmark added");
@@ -311,7 +311,7 @@ public:
                  values.insert(L(n_landmarks), Pose2(yellow_global_cone_x(i),
                                                     yellow_global_cone_y(i),
                                                         0));
-		        assert(values.exists(L(n_landmarks)));
+		        
                 if (n_landmarks == 0)
                 {
                     RCLCPP_INFO(logger, "first landmark added");
@@ -456,10 +456,8 @@ public:
                 //assert(cone_IDs->at(ith_color_cone) < (int)A_task->all_cone_est->size());
                 
 
-		        assert((int)color_cone_est->size() > ith_color_cone);
+		        
                 Pose2 prev_est = color_cone_est->at(ith_color_cone);
-		        assert(obs_id < (*global_cone_x).rows());
-		        assert(obs_id < (*global_cone_y).rows());
                 diff << (*global_cone_x)(obs_id, 0) - prev_est.x(),
                         (*global_cone_y)(obs_id, 0) - prev_est.y(),
                         1;
@@ -468,18 +466,13 @@ public:
                 {
                     if (cur_obs_is_blue)
                     {
-                        assert(blue_n_landmarks - HEURISTIC_N + ith_color_cone < cone_IDs->size());
-                        assert(*cone_IDs == blue_cone_IDs);
                         id = cone_IDs->at(blue_n_landmarks - HEURISTIC_N + ith_color_cone);
                     }
                     else 
                     {
-                        assert(yellow_n_landmarks - HEURISTIC_N + ith_color_cone < cone_IDs->size());
-                        assert(*cone_IDs == yellow_cone_IDs);
                         id = cone_IDs->at(yellow_n_landmarks - HEURISTIC_N + ith_color_cone);
                     }   
                 }
-		        assert(i < (int)m_dist.size());
                 m_dist.at(i) = (diff * isam2.marginalCovariance(L(id)) * diff.transpose())(0, 0);
                 
                 
@@ -591,7 +584,7 @@ public:
                                                 blue_bearing(i, 0));
 
 
-                assert((int)cone_obs_blue.size() > i);
+                
                 MinID_Args *M_task = new MinID_Args(true, false, this->cone_obs_blue.at(i),
                                                     (int)blue_cone_est.size(),
                                         blue_glob_obs, yellow_glob_obs,
@@ -608,7 +601,6 @@ public:
                 Pose2 glob_pos_bearing = Pose2(yellow_global_cone_x(i, 0),
                                                 yellow_global_cone_y(i, 0),
                                                 yellow_bearing(i, 0));
-                assert((int)cone_obs_yellow.size() > i);
                 MinID_Args *M_task = new MinID_Args(false, true, this->cone_obs_yellow.at(i),
                                                     (int)yellow_cone_est.size(),
                                        blue_glob_obs, yellow_glob_obs,
@@ -631,6 +623,7 @@ public:
             
 
         }
+        delete A_task;
 
     }
 
@@ -703,15 +696,15 @@ public:
                 {
                     cone_obs_blue.push_back(M_task->obs);
                     M_task->blue_glob_obs->push_back(M_task->glob_pos_bearing);
-		            RCLCPP_INFO(logger, "blue_unknown_obs size: %d", 
-				                        (int)cone_obs_blue.size());
+		            // RCLCPP_INFO(logger, "blue_unknown_obs size: %d", 
+				    //                     (int)cone_obs_blue.size());
                 }
                 else if (M_task->is_yellow_obs && !(M_task->is_blue_obs)) /*is yellow*/
                 {
                     cone_obs_yellow.push_back(M_task->obs);
                     M_task->yellow_glob_obs->push_back(M_task->glob_pos_bearing);
-                    RCLCPP_INFO(logger, "yellow_unknown_obs size: %d", 
-                                        (int)cone_obs_yellow.size());
+                    // RCLCPP_INFO(logger, "yellow_unknown_obs size: %d", 
+                    //                     (int)cone_obs_yellow.size());
                 }
             }
             else /* not heuristic_run => add to isam2 */
@@ -918,8 +911,6 @@ public:
                 int hi = 0;
 
                 work_queue_mutex.lock();
-                assert((int)cone_obs_blue.size() == blue_num_u_obs);
-                assert((int)cone_obs_yellow.size() == yellow_num_u_obs);
                 while (lo < m_dist_len && hi < m_dist_len)
                 {
                     hi = lo + multiple_size;
@@ -963,6 +954,7 @@ public:
         /* if heuristic_run, after filling up the unknown_obs, then you have to
          * do data association again
          */
+         delete M_task;
     }
 
 
@@ -1328,8 +1320,11 @@ public:
                     (int)work_queue.size(), num_tasks);
         work_queue_mutex.unlock();
 
-        RCLCPP_INFO(logger, "added Assoc_Args to work queue; m_dist len = %d",
-                                (int)m_dist.size());
+        auto end_add_assoc = high_resolution_clock::now();
+        auto dur_end_add_assoc = duration_cast<microseconds>(end_add_assoc - start);
+
+        RCLCPP_INFO(logger, "added Assoc_Args to work queue; m_dist len = %d | time: %d",
+                                (int)m_dist.size(), dur_end_add_assoc.count());
         /*Proof: Assoc_Args are being added every time*/
         //assert('d' == 'z');
 
