@@ -49,7 +49,7 @@ static thread all_threads[NUM_THREADS];
 static condition_variable cv;
 static condition_variable step_cv;
 //static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 150;
+static const float M_DIST_TH = 85;
 // static const float M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;
@@ -290,10 +290,7 @@ public:
                     RCLCPP_INFO(logger, "first landmark added");
                 }
 
-	    	    isam2.update(graph, values);
-                isam2.update();
-            	values.clear();
-            	graph.resize(0);
+	    	    
 
                 blue_cone_IDs.push_back(n_landmarks);
                 blue_n_landmarks++;
@@ -317,10 +314,7 @@ public:
                     RCLCPP_INFO(logger, "first landmark added");
                 }
 
-		        isam2.update(graph, values);
-                isam2.update();
-            	values.clear();
-            	graph.resize(0);
+		        
 
                 yellow_cone_IDs.push_back(n_landmarks);
                 yellow_n_landmarks++;
@@ -328,7 +322,10 @@ public:
             }
 
 
-            
+            isam2.update(graph, values);
+            isam2.update();
+            values.clear();
+            graph.resize(0);
             prev_DA_done = true;
             pose_num++;
             step_cv.notify_one();
@@ -480,16 +477,15 @@ public:
                         (*global_cone_y)(obs_id, 0) - prev_est.y(),
                         1;
                 int id = cone_IDs->at(ith_color_cone + offset_id_idx);
-                auto start_t_assoc = high_resolution_clock::now();
-                Eigen::MatrixXd m_cov = isam2.marginalCovariance(L(id));
+                // auto start_t_assoc = high_resolution_clock::now();
+                m_dist.at(i) = (diff * isam2.marginalCovariance(L(id)) * diff.transpose())(0, 0);
                 /* isam2.marginalCovariance(L(id)) takes a long time to obtain*/
                 // m_dist.at(i) = (diff * diff.transpose())(0, 0);
-                auto end_t_assoc = high_resolution_clock::now();
-                auto dur_t_assoc = duration_cast<microseconds>(end_t_assoc - start_t_assoc);
-                RCLCPP_INFO(logger, "for loop thread assoc_args [lo=%d, hi=%d) : time %d",
-                                A_task->lo, A_task->hi, dur_t_assoc.count());
+                // auto end_t_assoc = high_resolution_clock::now();
+                // auto dur_t_assoc = duration_cast<microseconds>(end_t_assoc - start_t_assoc);
+                // RCLCPP_INFO(logger, "for loop thread assoc_args [lo=%d, hi=%d) : time %d",
+                //                 A_task->lo, A_task->hi, dur_t_assoc.count());
                 
-                m_dist.at(i) = (diff * m_cov * diff.transpose())(0, 0);
                 
                 ith_color_cone++;
 
@@ -834,7 +830,7 @@ public:
             cv.wait(minID_lk, [num_obs]{return (minID_counter.load() == num_obs);});
             
             minID_counter = 0;
-            
+
             isam2.update(graph, values);
             isam2.update();
             graph.resize(0);
@@ -1002,8 +998,8 @@ public:
                  * TODO: NO
                  */
                 //assert('i' == 'z');
-                RCLCPP_INFO(logger, "work queue size = %d; t_id: %d",
-                                    (int)work_queue.size(), t_id);
+                // RCLCPP_INFO(logger, "work queue size = %d; t_id: %d",
+                //                     (int)work_queue.size(), t_id);
                 /* retrieve and remove oldest task from the queue */
                 tuple<void*, char> unknown_task = work_queue.at(0);
                 work_queue.erase(work_queue.begin());
@@ -1052,7 +1048,13 @@ public:
 	}
         unique_lock<mutex> step_lk(step_wait_mutex);
         step_cv.wait(step_lk, []{return (prev_DA_done.load());});
-        
+        if (n_landmarks > 0)
+        {
+            auto end = high_resolution_clock::now();
+            auto d = duration_cast<microseconds>(end - start);
+            RCLCPP_INFO(logger, "Data Association time: %d", d.count());
+        }
+        start = high_resolution_clock::now();
         prev_DA_done = false;
 
         Vector NoiseModel(3);
@@ -1117,7 +1119,7 @@ public:
         }
 
         RCLCPP_INFO(logger, "beginning loop closure");
-        if(loopClosure){
+        if (loopClosure) {
             // std::cout<<"loop closure constraint added"<<std::endl;
             static noiseModel::Diagonal::shared_ptr loop_closure_model = noiseModel::Diagonal::Sigmas(NoiseModel);
             //left is 0, right is 1
@@ -1144,7 +1146,7 @@ public:
         values.clear();
         
         /* BEGIN VECTORIZATION*/
-        start = high_resolution_clock::now();
+        
         /* vectorizations to calculate the global x and y positions of the cones*/
 	    Eigen::MatrixXd range(cone_obs.size(), 1);
 	    Eigen::MatrixXd bearing(cone_obs.size(), 1);
@@ -1275,6 +1277,8 @@ public:
 
 
         RCLCPP_INFO(logger, "finished vectorization");
+        RCLCPP_INFO(logger, "Previously: blue_n_landmarks: %d | yellow_n_landmarks: %d",
+                                    blue_n_landmarks, yellow_n_landmarks);
         /* previous MinID_Args need to be processed first before the new
          * Assoc_Args can be added to the work_queue*/
 
