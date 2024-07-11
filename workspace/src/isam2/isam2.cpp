@@ -81,19 +81,13 @@ class Assoc_Args
     vector<Point2> *cone_obs_blue;
     vector<Point2> *cone_obs_yellow;
 
-    vector<Pose2> *blue_cone_est;
-    vector<Pose2> *yellow_cone_est;
-    Pose2 global_odom;
 
-    vector<float> *m_dist;
     int lo;
     int hi;
 
 
     /* cone_obs must be a pointer be thread_safe */
-    Assoc_Args(vector<Point2> *cone_obs_blue, vector<Point2> *cone_obs_yellow,
-            vector<Pose2> *blue_cone_est, vector<Pose2> *yellow_cone_est,
-            Pose2 global_odom, vector<float> *m_dist, int lo, int hi)
+    Assoc_Args(vector<Point2> *cone_obs_blue, vector<Point2> *cone_obs_yellow, int lo, int hi)
     {
         /* separate because when you data associate and fine a new cone,
          * you want to know the color of the new cone you add */
@@ -103,12 +97,8 @@ class Assoc_Args
         /* cannot separate all_cone_est because access to marginal cov is also like this */
         /* Not necessarily: the index in color_cone_est indicates the index in color_cone_IDs to access*/
 
-        this->blue_cone_est = blue_cone_est;
-        this->yellow_cone_est = yellow_cone_est;
 
-        this->global_odom = global_odom;
 
-        this->m_dist = m_dist;
         this->lo = lo;
         this->hi = hi;
 
@@ -118,7 +108,6 @@ class Assoc_Args
 class MinID_Args
 {
     public:
-    vector<float> *m_dist;
     int lo;
     int hi;
 
@@ -128,7 +117,7 @@ class MinID_Args
     Point2 obs;
     int prev_color_n_landmarks;
 
-    /* why not Eigen::MatrixXd; can't heap allocate so can't build amongst many diff MinID_Args */
+    
     vector<Pose2> *blue_glob_obs;
     vector<Pose2> *yellow_glob_obs;
 
@@ -140,7 +129,7 @@ class MinID_Args
     MinID_Args (bool is_blue_obs, bool is_yellow_obs, Point2 obs,
                 int prev_color_n_landmarks, 
                 vector<Pose2> *blue_glob_obs, vector<Pose2> *yellow_glob_obs,
-                int num_obs, Pose2 glob_pos_bearing, vector<float> *m_dist, int lo, int hi)
+                int num_obs, Pose2 glob_pos_bearing, int lo, int hi)
     {
         this->is_blue_obs = is_blue_obs;
         this->is_yellow_obs = is_yellow_obs;
@@ -156,7 +145,6 @@ class MinID_Args
 
         this->glob_pos_bearing = glob_pos_bearing;
 
-        this->m_dist = m_dist;
         this->lo = lo;
         this->hi = hi;
 
@@ -204,7 +192,7 @@ private: ISAM2Params parameters;
 
     Pose2 global_odom;
     
-
+    vector<float> m_dist;
 
 
 public:
@@ -303,6 +291,7 @@ public:
                 }
 
 	    	    isam2.update(graph, values);
+                isam2.update();
             	values.clear();
             	graph.resize(0);
 
@@ -329,6 +318,7 @@ public:
                 }
 
 		        isam2.update(graph, values);
+                isam2.update();
             	values.clear();
             	graph.resize(0);
 
@@ -386,14 +376,14 @@ public:
         if (cur_obs_is_blue)
         {
             /* for indexing into cone_obs_blue */
-            color_cone_est = A_task->blue_cone_est;
+            color_cone_est = &blue_cone_est;
             obs_id = (int)(A_task->lo / blue_multiple_size);
             ith_color_cone = A_task->lo % blue_multiple_size;
         }
         else if (!cur_obs_is_blue)
         {
             /* for indexing into cone_obs_yelow */
-            color_cone_est = A_task->yellow_cone_est;
+            color_cone_est = &yellow_cone_est;
             int offset_start = (int)(A_task->lo - first_yellow_idx);
             obs_id = (int)(offset_start / yellow_multiple_size);
             ith_color_cone = offset_start % yellow_multiple_size;
@@ -489,15 +479,15 @@ public:
                         id = cone_IDs->at(yellow_n_landmarks - HEURISTIC_N + ith_color_cone);
                     }   
                 }
-		        assert(i < (int)A_task->m_dist->size());
-                A_task->m_dist->at(i) = (diff * isam2.marginalCovariance(L(id)) * diff.transpose())(0, 0);
+		        assert(i < (int)m_dist.size());
+                m_dist.at(i) = (diff * isam2.marginalCovariance(L(id)) * diff.transpose())(0, 0);
                 
                 
                 ith_color_cone++;
 
             }
 
-            if (i == (int)A_task->m_dist->size())
+            if (i == (int)m_dist.size())
             {
                 RCLCPP_INFO(logger, "computed all of m_dist");
             }
@@ -513,7 +503,7 @@ public:
              * Is last_idx_for_cur_obs calculated properly? 
              * Result: It is
              */
-            A_task->m_dist->at(last_idx_for_cur_obs) = M_DIST_TH;
+            m_dist.at(last_idx_for_cur_obs) = M_DIST_TH;
             //RCLCPP_INFO(logger, "last_idx_for_cur_obs: %d", last_idx_for_cur_obs);
             i++; /* skip 1 element (reserved for M_DIST_TH */
             obs_id++;
@@ -522,7 +512,7 @@ public:
             {
                 obs_id = 0;
                 cur_obs_is_blue = false;
-                color_cone_est = A_task->yellow_cone_est;
+                color_cone_est = &yellow_cone_est;
             }
             ith_color_cone = 0;
         }
@@ -535,7 +525,7 @@ public:
          * both check the conditional at the same time*/
         assoc_counter++;
         if ((assoc_counter.load() == NUM_THREADS) ||
-                ((A_task->m_dist->size() < MIN_M_DIST) && (assoc_counter.load() == 1)))
+                ((m_dist.size() < MIN_M_DIST) && (assoc_counter.load() == 1)))
         {
             cv.notify_one();
         }
@@ -557,7 +547,7 @@ public:
 
             unique_lock<mutex> assoc_lk(assoc_wait_mutex);
             RCLCPP_INFO(logger, "waiting for Assoc_Args");
-            int m_dist_size = (int)A_task->m_dist->size();
+            int m_dist_size = (int)m_dist.size();
             cv.wait(assoc_lk, [m_dist_size]{return ((assoc_counter.load() == NUM_THREADS) ||
                                 ((m_dist_size < MIN_M_DIST) && (assoc_counter.load() == 1)));});
 
@@ -603,10 +593,9 @@ public:
 
                 assert((int)cone_obs_blue.size() > i);
                 MinID_Args *M_task = new MinID_Args(true, false, this->cone_obs_blue.at(i),
-                                                    (int)A_task->blue_cone_est->size(),
+                                                    (int)blue_cone_est.size(),
                                         blue_glob_obs, yellow_glob_obs,
-                                                    num_obs, glob_pos_bearing,
-                                                    A_task->m_dist, lo, hi);
+                                                    num_obs, glob_pos_bearing, lo, hi);
                 RCLCPP_INFO(logger, "blue id: %d | minID: [%d, %d)", i, lo, hi);
                 lo = hi;
                 work_queue.push_back(make_tuple(M_task, 'm'));
@@ -621,10 +610,9 @@ public:
                                                 yellow_bearing(i, 0));
                 assert((int)cone_obs_yellow.size() > i);
                 MinID_Args *M_task = new MinID_Args(false, true, this->cone_obs_yellow.at(i),
-                                                    (int)A_task->yellow_cone_est->size(),
+                                                    (int)yellow_cone_est.size(),
                                        blue_glob_obs, yellow_glob_obs,
-                                                    num_obs, glob_pos_bearing,
-                                                    A_task->m_dist, lo, hi);
+                                                    num_obs, glob_pos_bearing, lo, hi);
                 RCLCPP_INFO(logger, "yellow id: %d | minID: [%d, %d)", i, lo, hi);
                 lo = hi;
                 work_queue.push_back(make_tuple(M_task, 'm'));
@@ -637,7 +625,7 @@ public:
 
             work_queue_mutex.unlock();
             RCLCPP_INFO(logger, "Last Assoc_Arg added MinID_Args to queue: m_dist_len: %d",
-                                    (int)A_task->m_dist->size());
+                                    (int)m_dist.size());
             
             
             
@@ -678,8 +666,8 @@ public:
 
 
         int num_obs = M_task->num_obs;
-        vector<float>::iterator start_iter = M_task->m_dist->begin() + M_task->lo;
-        vector<float>::iterator end_iter = M_task->m_dist->begin() + M_task->hi;
+        vector<float>::iterator start_iter = m_dist.begin() + M_task->lo;
+        vector<float>::iterator end_iter = m_dist.begin() + M_task->hi;
 
         int minID = std::distance(start_iter,
                                 std::min_element(start_iter, end_iter));
@@ -916,8 +904,7 @@ public:
                 /* Add Assoc_Args for unknown_obs */
                 int m_dist_len = ((blue_n_landmarks + 1) * blue_num_u_obs +
                             (yellow_n_landmarks + 1) * yellow_num_u_obs);
-                delete M_task->m_dist;
-                vector<float> *m_dist = new vector(m_dist_len, (float)0.0);
+                m_dist.resize(m_dist_len);
                 int multiple_size = (int)(m_dist_len / NUM_THREADS);
                 int remainders = m_dist_len - (NUM_THREADS * multiple_size);
 
@@ -943,9 +930,7 @@ public:
                         remainders--;
                     }
                     
-                    Assoc_Args *A_task = new Assoc_Args(&(this->cone_obs_blue), &(this->cone_obs_yellow),
-                                                &(this->blue_cone_est), &(this->yellow_cone_est),
-                                                this->global_odom, m_dist, lo, hi);
+                    Assoc_Args *A_task = new Assoc_Args(&(this->cone_obs_blue), &(this->cone_obs_yellow), lo, hi);
                     work_queue.push_back(make_tuple(A_task, 'a'));
 
                     lo = hi;
@@ -1303,7 +1288,7 @@ public:
         int m_dist_len = (blue_multiple_size * (int)cone_obs_blue.size() +
                             yellow_multiple_size * (int)cone_obs_yellow.size());
 
-        vector<float> *m_dist = new vector(m_dist_len, (float)0);
+        m_dist.resize(m_dist_len);
 
         int multiple_size = (int)(m_dist_len / NUM_THREADS);
         int remainders = m_dist_len - (NUM_THREADS * multiple_size);
@@ -1330,9 +1315,7 @@ public:
             }
             RCLCPP_INFO(logger, "step adding Assoc_Args; lo: %d | hi: %d", lo, hi);
             Assoc_Args *A_task = new 
-            Assoc_Args(&(this->cone_obs_blue), &(this->cone_obs_yellow),
-                    &(this->blue_cone_est), &(this->yellow_cone_est),
-                    this->global_odom, m_dist, lo, hi);
+            Assoc_Args(&(this->cone_obs_blue), &(this->cone_obs_yellow), lo, hi);
 
 
             work_queue.push_back(make_tuple(A_task, 'a'));
@@ -1346,7 +1329,7 @@ public:
         work_queue_mutex.unlock();
 
         RCLCPP_INFO(logger, "added Assoc_Args to work queue; m_dist len = %d",
-                                (int)m_dist->size());
+                                (int)m_dist.size());
         /*Proof: Assoc_Args are being added every time*/
         //assert('d' == 'z');
 
@@ -1432,87 +1415,7 @@ public:
 
 
 
-    /**
-     * @brief t_associate is a function called by threads that will
-     * perform data association on the observed cones stored as Point2
-     * inside vector cone_obs.
-     *
-     * the thread will operate on cones indicated by the indices in the
-     * range of [lo, hi)
-     */
-    void t_associate(vector<Point2> *cone_obs, Eigen::MatrixXd* global_cone_x,
-	    Eigen::MatrixXd* global_cone_y, vector<Pose2> *all_cone_est,
-	    Pose2 global_odom, vector<float> *m_dist, int lo, int hi)
-    {
-        int i = lo;
-        int landmark_idx = lo % (n_landmarks + 1);
-        int obs_id = (int)(lo / (n_landmarks + 1));
-        //RCLCPP_INFO(logger, "lo: %d | hi: %d", lo, hi);
-
-
-        while (i < hi && obs_id < cone_obs->size())
-        {
-
-            /**
-             * calculate for how many previous cone estimates to calculate
-             * mahalanobis distance for, with respect to the current observation.
-             *
-             */
-
-            /**
-             * n_landmarks + 1: add 1 for M_DIST_TH
-             *
-             * -1: subtract 1 for last landmark index and to exclude current M_DIST_TH
-             *
-             */
-
-            int last_est_for_cur_obs = (obs_id + 1) * (n_landmarks + 1) - 1;
-            //RCLCPP_INFO(logger, "Obs_id: %d",obs_id);
-            for (; i < last_est_for_cur_obs && i < hi; i++)
-            {
-
-                Eigen::MatrixXd diff(1, 3);
-                //RCLCPP_INFO(logger, "Last est idx: %d | Cur lm_idx: %d | i: %d | hi: %d", last_est_for_cur_obs, landmark_idx, i, hi);
-                Pose2 prev_est = all_cone_est->at(landmark_idx);
-                //RCLCPP_INFO(logger, "accessed est. pose | i: %d | x: %f, y%f ", i, prev_est.x(), prev_est.y());
-                diff << (*global_cone_x)(obs_id) - prev_est.x(),
-                        (*global_cone_y)(obs_id) - prev_est.y(),
-                        1;
-
-
-                //RCLCPP_INFO(logger, "calculated estimate and diff");
-                m_dist->at(i) = (diff * isam2.marginalCovariance(L(landmark_idx)) * diff.transpose())(0, 0);
-                //RCLCPP_INFO(logger, "accessed marg.cov. | i: %d", i);
-                //RCLCPP_INFO(logger, "calculated mahal distance");
-
-                landmark_idx++;
-            }
-
-            if (i == hi)
-            {
-                return;
-            }
-            m_dist->at(last_est_for_cur_obs) = M_DIST_TH;
-            i++; /* skip 1 element (reserved for M_DIST_TH */
-            obs_id++;
-            landmark_idx = 0;
-        }
-
-    }
-
-
-    void t_find_min_ids(vector<float> *m_dist, vector<int> *min_ids,
-                                    int cone_obs_lo, int cone_obs_hi)
-    {
-        for (int i = cone_obs_lo; i < cone_obs_hi; i++)
-        {
-            int start_offset = i * (n_landmarks + 1);
-            vector<float>::iterator start_iter = m_dist->begin() + start_offset;
-            min_ids->at(i) = std::distance(start_iter,
-                                        std::min_element(start_iter,
-                                            start_iter + (n_landmarks+1)));
-        }
-    }
+    
 
 
 
