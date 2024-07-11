@@ -60,6 +60,7 @@ static vector<tuple<void*, char>> work_queue;
 static mutex work_queue_mutex;
 static mutex isam2_mutex;
 static mutex assoc_wait_mutex;
+static mutex minID_wait_mutex;
 static mutex step_wait_mutex;
 static atomic<int> assoc_counter(0);
 static atomic<int> minID_counter(0);
@@ -124,8 +125,7 @@ class MinID_Args
     bool is_blue_obs;
     bool is_yellow_obs;
 
-    vector<Point2> *color_cone_obs;
-    int color_obs_id;
+    Point2 obs;
     vector<int> *color_cone_IDs;
     int prev_color_n_landmarks;
 
@@ -143,8 +143,8 @@ class MinID_Args
     Pose2 glob_pos_bearing;
 
 
-    MinID_Args (bool is_blue_obs, bool is_yellow_obs, vector<Point2> *color_cone_obs,
-                int prev_color_n_landmarks, int color_obs_id, vector<int> *color_cone_IDs,
+    MinID_Args (bool is_blue_obs, bool is_yellow_obs, Point2 obs,
+                int prev_color_n_landmarks, vector<int> *color_cone_IDs,
                 Pose2 global_odom,
                 vector<Point2> *blue_unknown_obs, vector<Point2> *yellow_unknown_obs,
                 vector<Pose2> *blue_glob_obs, vector<Pose2> *yellow_glob_obs,
@@ -153,10 +153,9 @@ class MinID_Args
         this->is_blue_obs = is_blue_obs;
         this->is_yellow_obs = is_yellow_obs;
 
-        this->color_cone_obs = color_cone_obs;
+        this->obs = obs;
 
         this->prev_color_n_landmarks = prev_color_n_landmarks;
-        this->color_obs_id = color_obs_id;
         this->color_cone_IDs = color_cone_IDs;
 
         this->global_odom = global_odom;
@@ -414,7 +413,7 @@ public:
             ith_color_cone = offset_start % yellow_multiple_size;
         }
 
-
+        RCLCPP_INFO(logger, "finished init for m_dist computation");
         while (i < A_task->hi)
         {
             int last_idx_for_cur_obs;
@@ -506,11 +505,16 @@ public:
                 }
 		        assert(i < (int)A_task->m_dist->size());
                 A_task->m_dist->at(i) = (diff * isam2.marginalCovariance(L(id)) * diff.transpose())(0, 0);
-                //RCLCPP_INFO(logger, "m_dist at i=%d : %f", i, A_task->m_dist->at(i));
+                
+                
                 ith_color_cone++;
 
             }
 
+            if (i == (int)A_task->m_dist->size())
+            {
+                RCLCPP_INFO(logger, "computed all of m_dist");
+            }
 
             if (i == A_task->hi)
             {
@@ -537,8 +541,18 @@ public:
             ith_color_cone = 0;
         }
 
-        assoc_counter = assoc_counter + 1;
-
+        /* atomic operation*/
+        /* TODO: thread A could be sitting at NUM_THREADS - 1
+         * But then it may not have checked the if statement conditional yet
+         * 
+         * In the meantime, thread B may increment assoc_counter and then
+         * both check the conditional at the same time*/
+        assoc_counter++;
+        if ((assoc_counter.load() == NUM_THREADS) ||
+                ((A_task->m_dist->size() < MIN_M_DIST) && (assoc_counter.load() == 1)))
+        {
+            cv.notify_one();
+        }
 
 
 
@@ -552,9 +566,15 @@ public:
          *
          */
 
-        if ((assoc_counter == NUM_THREADS) ||
-                ((A_task->m_dist->size() < MIN_M_DIST) && (assoc_counter == 1)))
+        if (A_task->lo == 0)
         {
+
+            unique_lock<mutex> assoc_lk(assoc_wait_mutex);
+            RCLCPP_INFO(logger, "waiting for Assoc_Args");
+            int m_dist_size = (int)A_task->m_dist->size();
+            cv.wait(assoc_lk, [m_dist_size]{return ((assoc_counter.load() == NUM_THREADS) ||
+                                ((m_dist_size < MIN_M_DIST) && (assoc_counter.load() == 1)));});
+
             RCLCPP_INFO(logger, "finished all Assoc_Args");
             auto end_m_dist = high_resolution_clock::now();
             auto dur = duration_cast<microseconds>(end_m_dist - start);
@@ -563,13 +583,7 @@ public:
             /*waiting until all Assoc_Args tasks have finished*/
             int num_obs = (num_obs_blue + num_obs_yellow);
 
-            //unique_lock<mutex> assoc_lk(assoc_wait_mutex);
-            //while (!((assoc_counter == NUM_THREADS) ||
-            //    ((A_task->m_dist->size() < MIN_M_DIST) && (assoc_counter == 1))))
-            //{
-            //    RCLCPP_INFO(logger, "waiting for Assoc_Args");
-            //    cv.wait(assoc_lk);
-            //}
+            
 
             assoc_counter = 0;
 
@@ -605,11 +619,11 @@ public:
                                                 blue_bearing(i, 0));
 
 
-                MinID_Args *M_task = new MinID_Args(true, false,
-                                                    A_task->cone_obs_blue,
+
+                MinID_Args *M_task = new MinID_Args(true, false, this->cone_obs_blue.at(i),
                                                     (int)A_task->blue_cone_est->size(),
-                                                    i, &blue_cone_IDs,
-                                                    global_odom,
+                                                    &blue_cone_IDs,
+                                                    this->global_odom,
                                         blue_unknown_obs, yellow_unknown_obs,
                                         blue_glob_obs, yellow_glob_obs,
                                                     num_obs, glob_pos_bearing,
@@ -627,11 +641,10 @@ public:
                                                 yellow_global_cone_y(i, 0),
                                                 yellow_bearing(i, 0));
 
-                MinID_Args *M_task = new MinID_Args(false, true,
-                                                    A_task->cone_obs_yellow,
+                MinID_Args *M_task = new MinID_Args(false, true, this->cone_obs_yellow.at(i),
                                                     (int)A_task->yellow_cone_est->size(),
-                                                    i, &yellow_cone_IDs,
-                                                    global_odom,
+                                                    &yellow_cone_IDs,
+                                                    this->global_odom,
                                        blue_unknown_obs, yellow_unknown_obs,
                                        blue_glob_obs, yellow_glob_obs,
                                                     num_obs, glob_pos_bearing,
@@ -686,16 +699,7 @@ public:
 
         int minID = std::distance(start_iter,
                                 std::min_element(start_iter, end_iter));
-	RCLCPP_INFO(logger, "obsID %d | dist: %f", M_task->color_obs_id, *(start_iter + minID));
-
-        if (M_task->is_blue_obs)
-        {
-            RCLCPP_INFO(logger, "minID=%d for blue obs: %d", minID, M_task->color_obs_id);
-        }
-        else
-        {
-            RCLCPP_INFO(logger, "minID=%d for yellow obs: %d", minID, M_task->color_obs_id);
-        }
+	    
         /* Identify if the min ID is actual M_DIST_TH
          * Add the relationship to the graph
          * - Only 1 new cone can be added to graph at a time
@@ -725,31 +729,23 @@ public:
             {
                 if (M_task->is_blue_obs && !(M_task->is_yellow_obs)) /*is blue*/
                 {
-		    RCLCPP_INFO(logger, "heuristic_run: unknown blue cone; obs_id: %d", 
-				    				M_task->color_obs_id);
-                    M_task->blue_unknown_obs->push_back(
-                        M_task->color_cone_obs->at(M_task->color_obs_id));
+                    M_task->blue_unknown_obs->push_back(M_task->obs);
                     M_task->blue_glob_obs->push_back(M_task->glob_pos_bearing);
-		    RCLCPP_INFO(logger, "blue_unknown_obs size: %d", 
-				    (int)M_task->blue_unknown_obs->size());
+		            RCLCPP_INFO(logger, "blue_unknown_obs size: %d", 
+				                        (int)M_task->blue_unknown_obs->size());
                 }
                 else if (M_task->is_yellow_obs && !(M_task->is_blue_obs)) /*is yellow*/
                 {
-		    RCLCPP_INFO(logger, "herustic_run: unknown yellow cone; obs_id: %d",
-				    				M_task->color_obs_id);
-                    M_task->yellow_unknown_obs->push_back(
-                        M_task->color_cone_obs->at(M_task->color_obs_id));
+                    M_task->yellow_unknown_obs->push_back(M_task->obs);
                     M_task->yellow_glob_obs->push_back(M_task->glob_pos_bearing);
-		    RCLCPP_INFO(logger, "yellow_unknown_obs size: %d", 
-				    (int)M_task->yellow_unknown_obs->size());
+                    RCLCPP_INFO(logger, "yellow_unknown_obs size: %d", 
+                                        (int)M_task->yellow_unknown_obs->size());
                 }
             }
             else /* not heuristic_run => add to isam2 */
             {
-                int obs_id = M_task->color_obs_id;
                 graph.add(BetweenFactor<Pose2>(X(pose_num), L(n_landmarks),
-                                        Pose2(M_task->color_cone_obs->at(obs_id).x(),
-                                            M_task->color_cone_obs->at(obs_id).y(),
+                                        Pose2(M_task->obs.x(), M_task->obs.y(),
                                             M_task->glob_pos_bearing.theta()),
                                             landmark_model));
 
@@ -789,7 +785,6 @@ public:
             }
 
 
-            int obs_id = M_task->color_obs_id;
             int id = -1;
             if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
             {
@@ -804,8 +799,8 @@ public:
 
 
             graph.add(BetweenFactor<Pose2>(X(pose_num), L(id),
-                                        Pose2(M_task->color_cone_obs->at(obs_id).x(),
-                                            M_task->color_cone_obs->at(obs_id).y(),
+                                        Pose2(M_task->obs.x(),
+                                            M_task->obs.y(),
                                             M_task->glob_pos_bearing.theta()),
                                             landmark_model));
 
@@ -813,13 +808,21 @@ public:
 
 
         ///////////////////////////////////////////////////////////////////////
-        RCLCPP_INFO(logger, "min id %d", M_task->color_obs_id);
         isam2.update(graph, values);
-	isam2.update();
+	    isam2.update();
         graph.resize(0);
         values.clear();
 
-        minID_counter = minID_counter + 1;
+        /* atomic operation */
+        /* TODO: problem; 1 thread could increment to num_obs but another thread 
+         * has yet to process the conditional in the if statement
+         *
+         * 2 threads will enter the if statement*/
+        minID_counter++;
+        if (minID_counter.load() == num_obs)
+        {
+            cv.notify_one();
+        }
 
 
         /* Is calling cv.wait for a thread really necessary?
@@ -833,9 +836,11 @@ public:
         /* wait for all MinID_Args to be finished */
         /* Take the first MinID_Args; No way to actually get the last by color
          * You may not always have blue cones; you may not always have yellow cones*/
-        if (minID_counter == num_obs)
+        if (M_task->lo == 0) /* pick 1 MinID_Args tasks */
         {
-
+            unique_lock<mutex> minID_lk(minID_wait_mutex);
+            cv.wait(minID_lk, [num_obs]{return (minID_counter.load() == num_obs);});
+            
             minID_counter = 0;
             RCLCPP_INFO(logger, "finished processing last minID | is heuristic_run: %d", heuristic_run);
 
@@ -859,7 +864,7 @@ public:
             if (heuristic_run && num_u_obs > 0)
             {
                 heuristic_run = false;
-		RCLCPP_INFO(logger, "processing unknown observations"); 
+		        RCLCPP_INFO(logger, "processing unknown observations"); 
 
                 /* create the new global_cone x and y and bearing */
                 blue_bearing = Eigen::MatrixXd(blue_num_u_obs, 1);
@@ -940,8 +945,7 @@ public:
                         hi++;
                         remainders--;
                     }
-                    /* TODO: replace color_cone_obs and color_obs_id with color_obs_id and obs (for the observation)
-                     * TLDR: just get the observation rather than index in for it*/
+                    
                     Assoc_Args *A_task = new Assoc_Args(M_task->blue_unknown_obs, M_task->yellow_unknown_obs,
                                                 &(this->blue_cone_est), &(this->yellow_cone_est),
                                                 M_task->global_odom, m_dist, lo, hi);
@@ -978,6 +982,8 @@ public:
          * do data association again
          */
     }
+
+
     /**
      * @brief Callback function for threads. Runs infinitely because threads
      *        persist while SLAM is running. Is responsible for data
@@ -1219,6 +1225,9 @@ public:
         }
 
         RCLCPP_INFO(logger, "copied observations");
+        auto end_vectorization = high_resolution_clock::now();
+        auto dur_v = duration_cast<microseconds>(end_vectorization - start);
+        RCLCPP_INFO(logger, "vectorization time: %d", dur_v.count());
         // vector<Point2> *heap_obs_blue = new vector<Point2>;
         // vector<Point2> *heap_obs_yellow = new vector<Point2>;
 
