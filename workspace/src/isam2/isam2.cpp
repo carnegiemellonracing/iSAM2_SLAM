@@ -165,7 +165,6 @@ private: ISAM2Params parameters;
 
     int pose_num;
 
-
     gtsam::Symbol X(int robot_pose_id) {
         return Symbol('x', robot_pose_id);
     }
@@ -232,6 +231,7 @@ public:
 
         heuristic_run = true;
         prev_DA_done = true;
+        
 
         
        
@@ -327,7 +327,7 @@ public:
             values.clear();
             graph.resize(0);
             prev_DA_done = true;
-            pose_num++;
+            //pose_num++;
             step_cv.notify_one();
 
             isam2_mutex.unlock();
@@ -957,7 +957,7 @@ public:
                 /*reset heuristic_run to true to prep for next cycle*/
                 heuristic_run = true;
                 prev_DA_done = true;
-                pose_num++;
+                //pose_num++;
                 step_cv.notify_one();
 
                 RCLCPP_INFO(logger, "finished prev DA");
@@ -1041,13 +1041,22 @@ public:
                 vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
                 long time_ns, bool loopClosure)
     {
-        //assert('s' == 'z'); Proved that nothing wrong with ros topics
-	if (prev_DA_done == false)
-	{
-            RCLCPP_INFO(logger, "waiting at step for prev DA");
-	}
+        
+        if (prev_DA_done == false)
+        {
+                RCLCPP_INFO(logger, "waiting at step for prev DA");
+        }
         unique_lock<mutex> step_lk(step_wait_mutex);
+
+        
+
+        RCLCPP_INFO(logger, "\nx%d", pose_num);
         step_cv.wait(step_lk, []{return (prev_DA_done.load());});
+        if (n_landmarks > 0)
+        {
+            pose_num++;
+        }
+
         if (n_landmarks > 0)
         {
             auto end = high_resolution_clock::now();
@@ -1084,6 +1093,7 @@ public:
             values.insert(X(0), global_odom);
 
 
+
             //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
             //Add orange cone left and right
             //hopefully it's only 2 cones
@@ -1117,6 +1127,9 @@ public:
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
         }
+        
+
+        
 
         RCLCPP_INFO(logger, "beginning loop closure");
         if (loopClosure) {
@@ -1294,7 +1307,7 @@ public:
         {
             RCLCPP_INFO(logger, "no observed cones");
             prev_DA_done = true;
-            pose_num++;
+            //pose_num++;
             step_cv.notify_one();
             return;
         }
