@@ -9,6 +9,7 @@
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/vector3_stamped.hpp"
 #include "geometry_msgs/msg/quaternion_stamped.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 #include "geometry_msgs/msg/twist_with_covariance.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
@@ -26,11 +27,12 @@
 #include <cmath>
 #include <chrono>
 
-#define CONE_DATA_TOPIC "/ground_truth/cones"
-#define VEHICLE_DATA_TOPIC "/ground_truth/state"
+// #define CONE_DATA_TOPIC "/ground_truth/cones"
+// #define VEHICLE_DATA_TOPIC "/ground_truth/state"
 
-//#define CONE_DATA_TOPIC "/perc_cones"
-//#define VEHICLE_POS_TOPIC "/gnss"
+
+#define CONE_DATA_TOPIC "/perc_cones"
+#define VEHICLE_POS_TOPIC "/gnss"
 #define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
 #define VEHICLE_VEL_TOPIC "/filter/velocity"
 // #define VECHICLE_VEL_TOPIC ""
@@ -53,10 +55,9 @@ class SLAMValidation : public rclcpp::Node
   public:
     SLAMValidation(): Node("slam_validation"){
       rmw_qos_profile_t best_effort_qos = rmw_qos_profile_default;
-      cone_sub = this->create_subscription<eufs_msgs::msg::ConeArrayWithCovariance>(
+      cone_sub = this->create_subscription<interfaces::msg::ConeArray>(
           CONE_DATA_TOPIC, 10, std::bind(&SLAMValidation::cone_callback, this, _1));
-      vehicle_state_sub = this->create_subscription<eufs_msgs::msg::CarState>(
-             VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
+      
 
       timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
       // For sim
@@ -64,14 +65,14 @@ class SLAMValidation : public rclcpp::Node
       // VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
 
       //bring back///////////////
-      // vehicle_pos_sub = this->create_subscription<sensor_msgs::msg::NavSatFix>(
-      // VEHICLE_POS_TOPIC, 10, std::bind(&SLAMValidation::vehicle_pos_callback, this, _1));
+      vehicle_pos_sub = this->create_subscription<sensor_msgs::msg::NavSatFix>(
+      VEHICLE_POS_TOPIC, 10, std::bind(&SLAMValidation::vehicle_pos_callback, this, _1));
 
-      // vehicle_angle_sub = this->create_subscription<geometry_msgs::msg::QuaternionStamped>(
-      // VEHICLE_ANGLE_TOPIC, 10, std::bind(&SLAMValidation::vehicle_angle_callback, this, _1));
+      vehicle_angle_sub = this->create_subscription<geometry_msgs::msg::QuaternionStamped>(
+      VEHICLE_ANGLE_TOPIC, 10, std::bind(&SLAMValidation::vehicle_angle_callback, this, _1));
 
-      // vehicle_vel_sub = this->create_subscription<geometry_msgs::msg::TwistStamped>(
-      // VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
+      vehicle_vel_sub = this->create_subscription<geometry_msgs::msg::TwistStamped>(
+      VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
       ////////////////////////
 
       //TODO: need to initalize robot state?????
@@ -90,8 +91,10 @@ class SLAMValidation : public rclcpp::Node
 
     // positive y forward
     // positive x right
-    void cone_callback(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data)
+    void cone_callback(const interfaces::msg::ConeArray::SharedPtr cone_data)
     {
+      RCLCPP_INFO(this->get_logger(), "cone_callback!");
+      assert('x' == 'z');
       cones.clear();
 
       blue_cones.clear();
@@ -102,24 +105,26 @@ class SLAMValidation : public rclcpp::Node
       auto b_cones = cone_data->blue_cones;
       for (uint i = 0; i < b_cones.size(); i++)
       {
-        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(b_cones[i].point.x,
-                                                             b_cones[i].point.y));
+        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(b_cones[i].x,
+                                                             b_cones[i].y));
         cones.push_back(to_add);
         blue_cones.push_back(to_add);
       }
+
       auto y_cones = cone_data->yellow_cones;
       for (uint i = 0; i < y_cones.size(); i++)
       {
-        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(y_cones[i].point.x,
-                                                             y_cones[i].point.y));
+        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(y_cones[i].x,
+                                                             y_cones[i].y));
         cones.push_back(to_add);
         yellow_cones.push_back(to_add);
       }
+
       auto o_cones = cone_data->big_orange_cones;
       for (uint i = 0; i < o_cones.size(); i++)
       {
-        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(o_cones[i].point.x,
-                                                             o_cones[i].point.y));
+        gtsam::Point2 to_add = gtsam::Point2(Eigen::Vector2d(o_cones[i].x,
+                                                             o_cones[i].y));
         cones.push_back(to_add);
         orangeCones.push_back(to_add);
       }
@@ -174,31 +179,82 @@ class SLAMValidation : public rclcpp::Node
     }
 
 
-    void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr pose_data)
+    void vehicle_pos_callback(const sensor_msgs::msg::NavSatFix::SharedPtr vehicle_pos_data)
     {
-        double pos_x = pose_data->pose.pose.position.x;
-        double pos_y = pose_data->pose.pose.position.y;
+      RCLCPP_INFO(this->get_logger(), "vehicle_pos_callback!");
+      double LAT_TO_M = 111320;
+      double LON_TO_M = 40075000;
+      double x_meters;
+      double y_meters;
+      // TODO: filter
 
-        double q1 = pose_data->pose.pose.orientation.x;
-        double q2 = pose_data->pose.pose.orientation.y;
-        double q3 = pose_data->pose.pose.orientation.z;
-        double q0 = pose_data->pose.pose.orientation.w;
+      // True measurement conversion for gps
+      //  x_meters = LAT_TO_M*vehicle_pos_data->longitude;
+      //  y_meters = LON_TO_M*cos(vehicle_pos_data->latitude)/360;
 
-        double yaw = atan2(2 * (q0 * q3 + q1 * q2),
-                pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
+      x_meters = -(LAT_TO_M * vehicle_pos_data->latitude);
+      y_meters = LAT_TO_M * vehicle_pos_data->longitude;
 
+      if (init_odom.x() == -1 && init_odom.y() == -1)
+      {
+        init_odom = gtsam::Pose2(x_meters, y_meters, init_odom.theta());
+      }
 
-        global_odom = Pose2(pos_x, pos_y, yaw);
-        double dx = pose_data->twist.twist.linear.x;
-        double dy = pose_data->twist.twist.linear.y;
-        velocity = gtsam::Point2(dx, dy);
-
-        long cur_time = pose_data->header.stamp.sec * SEC_TO_NANOSEC + pose_data->header.stamp.nanosec;
-        dt = time_ns - cur_time;
-        time_ns = cur_time;
-
-
+      veh_state.x = x_meters - init_odom.x();
+      veh_state.y = y_meters - init_odom.y();
     }
+
+    void vehicle_angle_callback(
+        const geometry_msgs::msg::QuaternionStamped::SharedPtr vehicle_angle_data)
+    {
+      RCLCPP_INFO(this->get_logger(), "vehicle angle callback!");
+      double q0 = vehicle_angle_data->quaternion.w;
+      double q1 = vehicle_angle_data->quaternion.x;
+      double q2 = vehicle_angle_data->quaternion.y;
+      double q3 = vehicle_angle_data->quaternion.z;
+
+      double yaw = atan2(2 * (q3 * q0 + q1 * q2), -1 + 2 * (q0 * q0 + q1 * q1)); // rotate by 90 degrees? TODO: add to velocity
+
+      if (init_odom.theta() == -1)
+      {
+        init_odom = gtsam::Pose2(init_odom.x(), init_odom.y(), yaw);
+      }
+      veh_state.yaw = yaw;
+    }
+
+    void vehicle_vel_callback(const geometry_msgs::msg::TwistStamped::SharedPtr vehicle_vel_data)
+    {
+      RCLCPP_INFO(this->get_logger(), "vehicle velocity callback!");
+      veh_state.dx = vehicle_vel_data->twist.linear.x;
+      veh_state.dy = vehicle_vel_data->twist.linear.y;
+      veh_state.dyaw = vehicle_vel_data->twist.angular.z;
+    }
+
+    // void vehicle_state_callback(const sensor_msgs::msg::NavSatFix::SharedPtr pose_data)
+    // {
+    //     double pos_x = pose_data->pose.pose.position.x;
+    //     double pos_y = pose_data->pose.pose.position.y;
+
+    //     double q1 = pose_data->pose.pose.orientation.x;
+    //     double q2 = pose_data->pose.pose.orientation.y;
+    //     double q3 = pose_data->pose.pose.orientation.z;
+    //     double q0 = pose_data->pose.pose.orientation.w;
+
+    //     double yaw = atan2(2 * (q0 * q3 + q1 * q2),
+    //             pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
+
+
+    //     global_odom = Pose2(pos_x, pos_y, yaw);
+    //     double dx = pose_data->twist.twist.linear.x;
+    //     double dy = pose_data->twist.twist.linear.y;
+    //     velocity = gtsam::Point2(dx, dy);
+
+    //     long cur_time = pose_data->header.stamp.sec * SEC_TO_NANOSEC + pose_data->header.stamp.nanosec;
+    //     dt = time_ns - cur_time;
+    //     time_ns = cur_time;
+
+
+    // }
 
 
 
@@ -243,18 +299,22 @@ class SLAMValidation : public rclcpp::Node
 
     void timer_callback()
     {
+        global_odom = gtsam::Pose2(veh_state.x, veh_state.y, veh_state.yaw);
+        velocity = gtsam::Point2(veh_state.dx, veh_state.dy);
         run_slam();
+        prev_veh_state = veh_state;
     }
 
     slamISAM slam_instance = slamISAM(this->get_logger());
-    rclcpp::Subscription<eufs_msgs::msg::ConeArrayWithCovariance>::SharedPtr cone_sub;
-    rclcpp::Subscription<eufs_msgs::msg::CarState>::SharedPtr vehicle_state_sub;
+    // rclcpp::Subscription<eufs_msgs::msg::ConeArrayWithCovariance>::SharedPtr cone_sub;
+    rclcpp::Subscription<interfaces::msg::ConeArray>::SharedPtr cone_sub;
+    // rclcpp::Subscription<eufs_msgs::msg::CarState>::SharedPtr vehicle_state_sub;
 
 
     //Bring back/////////////////
-    // rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr vehicle_pos_sub;
-    // rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr vehicle_vel_sub;
-    // rclcpp::Subscription<geometry_msgs::msg::QuaternionStamped>::SharedPtr vehicle_angle_sub;
+    rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr vehicle_pos_sub;
+    rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr vehicle_vel_sub;
+    rclcpp::Subscription<geometry_msgs::msg::QuaternionStamped>::SharedPtr vehicle_angle_sub;
     ///////////////////////////////
 
     gtsam::Point2 velocity;  // local variable to load velocity into SLAM instance
@@ -266,8 +326,8 @@ class SLAMValidation : public rclcpp::Node
     vector<Point2> yellow_cones; //local variable to store the yellow observed cones
 
     gtsam::Pose2 init_odom; // local variable to load odom into SLAM instance
-    //VehicleState prev_veh_state = VehicleState();
-    //VehicleState veh_state = VehicleState();
+    VehicleState prev_veh_state = VehicleState();
+    VehicleState veh_state = VehicleState();
 
     bool file_opened;
 

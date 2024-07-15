@@ -164,6 +164,7 @@ private: ISAM2Params parameters;
     Values values;
 
     int pose_num;
+    bool first_pose_added;
 
     gtsam::Symbol X(int robot_pose_id) {
         return Symbol('x', robot_pose_id);
@@ -219,6 +220,7 @@ public:
         graph = gtsam::NonlinearFactorGraph();
         values = gtsam::Values();
         pose_num = 0;
+        first_pose_added = false;
         n_landmarks = 0;
         //robot_est = gtsam::Pose2(0, 0, 0);
         landmark_est = std::vector<gtsam::Pose2>();
@@ -1052,7 +1054,7 @@ public:
 
         RCLCPP_INFO(logger, "\nx%d", pose_num);
         step_cv.wait(step_lk, []{return (prev_DA_done.load());});
-        if (n_landmarks > 0)
+        if (first_pose_added)
         {
             pose_num++;
         }
@@ -1091,6 +1093,8 @@ public:
             //add prior
             graph.add(prior_factor);
             values.insert(X(0), global_odom);
+
+            first_pose_added = true;
 
 
 
