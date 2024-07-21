@@ -48,9 +48,16 @@ static const int MIN_M_DIST = NUM_THREADS;
 static thread all_threads[NUM_THREADS];
 static condition_variable cv;
 static condition_variable step_cv;
-//static const float M_DIST_TH = 0.000151169; // for real data
-static const float M_DIST_TH = 85;
-// static const float M_DIST_TH = 45; // used to be 45 lmao
+
+// static const double M_DIST_TH = 85;
+// static const double M_DIST_TH = 0.48999999463; //real data 0.01, 0.01, 0.5 LandmarkNoiseModel
+static const double M_DIST_TH_STRAIGHTS = 85;
+// static const double M_DIST_TH_TURNS = 500;
+static const double M_DIST_TH_TURNS = 0.08;
+
+// static const double M_DIST_TH = 4.5;
+
+// static const double M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;
 static vector<int> blue_cone_IDs;
@@ -66,6 +73,7 @@ static atomic<int> assoc_counter(0);
 static atomic<int> minID_counter(0);
 
 atomic<bool> prev_DA_done;
+
 
 
 // static const float DT = 0.1;
@@ -192,7 +200,7 @@ private: ISAM2Params parameters;
 
     Pose2 global_odom;
     
-    vector<float> m_dist;
+    vector<double> m_dist;
 
 
 public:
@@ -211,6 +219,12 @@ public:
     vector<int> blue_cone_IDs;
     vector<int> yellow_cone_IDs;
 
+    Vector LandmarkNoiseModel;
+    noiseModel::Diagonal::shared_ptr landmark_model;
+    Vector NoiseModel;
+    noiseModel::Diagonal::shared_ptr prior_model;
+
+    double m_dist_th;
 
     slamISAM(rclcpp::Logger logger) {
         parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
@@ -233,10 +247,24 @@ public:
 
         heuristic_run = true;
         prev_DA_done = true;
-        
 
-        
-       
+        LandmarkNoiseModel = Vector(3);
+        // used to be 0.01 for real data
+        // 0 for EUFS_SIM
+        //TODO: have a different noise model at the beginning
+        LandmarkNoiseModel(0) = 0.1;
+        LandmarkNoiseModel(1) = 0.1;
+        LandmarkNoiseModel(2) = 0.3;
+        landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
+
+        // used to be all 0s for EUFS_SIM
+        NoiseModel = Vector(3);
+        NoiseModel(0) = 0;
+        NoiseModel(1) = 0;
+        NoiseModel(2) = 0;
+        prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+
+        m_dist_th = M_DIST_TH_STRAIGHTS;
     }
 
 
@@ -252,18 +280,8 @@ public:
      */
     void associate (rclcpp::Logger logger, Assoc_Args *A_task)
     {
-        Vector LandmarkNoiseModel(3);
-        //used to be 0.01 for real data
-        //LandmarkNoiseModel(0) = 0.01;
-        //LandmarkNoiseModel(1) = 0.01;
-        //LandmarkNoiseModel(2) = 0.01;
-
-        // No noise kinda good??
-        LandmarkNoiseModel(0) = 0.0;
-        LandmarkNoiseModel(1) = 0.0;
-        LandmarkNoiseModel(2) = 0.0;
-        //print_cones(logger, cone_obs);
-        static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
+        
+        // auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
 
 
@@ -505,7 +523,7 @@ public:
              * Is last_idx_for_cur_obs calculated properly? 
              * Result: It is
              */
-            m_dist.at(last_idx_for_cur_obs) = M_DIST_TH;
+            m_dist.at(last_idx_for_cur_obs) = m_dist_th;
             //RCLCPP_INFO(logger, "last_idx_for_cur_obs: %d", last_idx_for_cur_obs);
             i++; /* skip 1 element (reserved for M_DIST_TH */
             obs_id++;
@@ -642,23 +660,14 @@ public:
 
     void find_minIDs(rclcpp::Logger logger, MinID_Args *M_task)
     {
-        Vector NoiseModel(3);
-        NoiseModel(0) = 0;
-        NoiseModel(1) = 0;
-        NoiseModel(2) = 0;
+        // Vector NoiseModel(3);
+        // NoiseModel(0) = 0;
+        // NoiseModel(1) = 0;
+        // NoiseModel(2) = 0;
 
-        Vector LandmarkNoiseModel(3);
-        //used to be 0.01 for real data
-        //LandmarkNoiseModel(0) = 0.01;
-        //LandmarkNoiseModel(1) = 0.01;
-        //LandmarkNoiseModel(2) = 0.01;
-
-        // No noise kinda good??
-        LandmarkNoiseModel(0) = 0.0;
-        LandmarkNoiseModel(1) = 0.0;
-        LandmarkNoiseModel(2) = 0.0;
+        
         //print_cones(logger, cone_obs);
-        static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
+        // static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         /* identify the min ID */
         /*
@@ -672,8 +681,8 @@ public:
 
 
         int num_obs = M_task->num_obs;
-        vector<float>::iterator start_iter = m_dist.begin() + M_task->lo;
-        vector<float>::iterator end_iter = m_dist.begin() + M_task->hi;
+        vector<double>::iterator start_iter = m_dist.begin() + M_task->lo;
+        vector<double>::iterator end_iter = m_dist.begin() + M_task->hi;
 
         int minID = std::distance(start_iter,
                                 std::min_element(start_iter, end_iter));
@@ -693,7 +702,9 @@ public:
          * Re-add as Assoc_Args to work queue for cones that are
          * registered as new cones during heuristic_run
          */
-
+        RCLCPP_INFO(logger, "minID: %d | dist: %lf | lo: %d, hi: %d", 
+                    minID, *(m_dist.begin() + M_task->lo + minID), 
+                    M_task->lo, M_task->hi);
         isam2_mutex.lock();
 
         /* updating the iSAM2 model by determining if cone is new or not */
@@ -960,9 +971,11 @@ public:
                 heuristic_run = true;
                 prev_DA_done = true;
                 //pose_num++;
+                
+
                 step_cv.notify_one();
 
-                RCLCPP_INFO(logger, "finished prev DA");
+                RCLCPP_INFO(logger, "finished prev DA | m_dist_th: %lf", m_dist_th);
             }
 
 
@@ -1040,8 +1053,8 @@ public:
      */
     void step(auto logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
-                vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
-                long time_ns, bool loopClosure)
+                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
+                long time_ns, bool loopClosure, bool turning)
     {
         
         if (prev_DA_done == false)
@@ -1049,6 +1062,17 @@ public:
                 RCLCPP_INFO(logger, "waiting at step for prev DA");
         }
         unique_lock<mutex> step_lk(step_wait_mutex);
+
+        if (turning)
+        {
+            m_dist_th = M_DIST_TH_TURNS;
+            RCLCPP_INFO(logger, "TURNING");
+        }
+        else
+        {
+            m_dist_th = M_DIST_TH_STRAIGHTS;
+            RCLCPP_INFO(logger, "STRAIGHT");
+        }
 
         
 
@@ -1068,27 +1092,11 @@ public:
         start = high_resolution_clock::now();
         prev_DA_done = false;
 
-        Vector NoiseModel(3);
-        NoiseModel(0) = 0;
-        NoiseModel(1) = 0;
-        NoiseModel(2) = 0;
-
-        Vector LandmarkNoiseModel(3);
-        //used to be 0.01 for real data
-        //LandmarkNoiseModel(0) = 0.01;
-        //LandmarkNoiseModel(1) = 0.01;
-        //LandmarkNoiseModel(2) = 0.01;
-
-        // No noise kinda good??
-        LandmarkNoiseModel(0) = 0.0;
-        LandmarkNoiseModel(1) = 0.0;
-        LandmarkNoiseModel(2) = 0.0;
-        //print_cones(logger, cone_obs);
-        static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
+        
 
         if (pose_num==0) {//if this is the first pose, add your inital pose to the factor graph
             //std::cout << "First pose\n" << std::endl;
-            static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+            
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
             //add prior
             graph.add(prior_factor);
@@ -1114,8 +1122,9 @@ public:
 
             //TODO: change back to motion model with velocity
             double time_s = time_ns/SEC_TO_NANOSEC;
-
-            Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
+            
+            // Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
+            Pose2 Odometry = Pose2(velocity.x() * time_s, velocity.y()*time_s, velocity.theta()*time_s);
             /*real data motion model?
             Pose2 Odometry =  Pose2(global_odom.x() - prev_pos.x(),global_odom.y() - prev_pos.y(),
                                     global_odom.theta() - prev_pos.theta());
@@ -1131,6 +1140,7 @@ public:
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
         }
+        
         
 
         

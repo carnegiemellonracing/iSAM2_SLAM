@@ -34,8 +34,10 @@
 #define CONE_DATA_TOPIC "/perc_cones"
 #define VEHICLE_POS_TOPIC "/gnss"
 #define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
-#define VEHICLE_VEL_TOPIC "/filter/velocity"
+#define VEHICLE_VEL_TOPIC "/filter/twist"
 // #define VECHICLE_VEL_TOPIC ""
+
+#define TURNING_CONSTANT 0.25
 
 using namespace std;
 using namespace std::placeholders;
@@ -53,13 +55,31 @@ struct VehicleState{
 class SLAMValidation : public rclcpp::Node
 {
   public:
+    // builtin_interfaces::Time pos_time_stamp;
+    // builtin_interfaces::Time obs_time_stamp;
+
     SLAMValidation(): Node("slam_validation"){
-      rmw_qos_profile_t best_effort_qos = rmw_qos_profile_default;
+      const rmw_qos_profile_t best_effort_profile = {
+          RMW_QOS_POLICY_HISTORY_KEEP_LAST,
+          10,
+          RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
+          RMW_QOS_POLICY_DURABILITY_VOLATILE,
+          RMW_QOS_DEADLINE_DEFAULT,
+          RMW_QOS_LIFESPAN_DEFAULT,
+          RMW_QOS_POLICY_LIVELINESS_SYSTEM_DEFAULT,
+          RMW_QOS_LIVELINESS_LEASE_DURATION_DEFAULT,
+          false};
+
+      const rclcpp::QoS best_effort_qos = rclcpp::QoS(
+          rclcpp::QoSInitialization(
+              best_effort_profile.history,
+              best_effort_profile.depth),
+          best_effort_profile);
+
       cone_sub = this->create_subscription<interfaces::msg::ConeArray>(
-          CONE_DATA_TOPIC, 10, std::bind(&SLAMValidation::cone_callback, this, _1));
+          CONE_DATA_TOPIC, best_effort_qos, std::bind(&SLAMValidation::cone_callback, this, _1));
       
 
-      timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
       // For sim
       // vehicle_state_sub = this->create_subscription<interfaces::msg::CarState>(
       // VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
@@ -75,6 +95,7 @@ class SLAMValidation : public rclcpp::Node
       VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
       ////////////////////////
 
+      timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
       //TODO: need to initalize robot state?????
       dt = .1;
       orangeNotSeen = 25;
@@ -93,8 +114,9 @@ class SLAMValidation : public rclcpp::Node
     // positive x right
     void cone_callback(const interfaces::msg::ConeArray::SharedPtr cone_data)
     {
-      RCLCPP_INFO(this->get_logger(), "cone_callback!");
-      assert('x' == 'z');
+      RCLCPP_INFO(this->get_logger(), "\n \t cone_callback! | time: %d\n", 
+              cone_data->orig_data_stamp.sec);
+      // obs_time_stamp = cone_data->orig_data_stamp;
       cones.clear();
 
       blue_cones.clear();
@@ -127,8 +149,10 @@ class SLAMValidation : public rclcpp::Node
                                                              o_cones[i].y));
         cones.push_back(to_add);
         orangeCones.push_back(to_add);
-      }
+      } 
 
+      ///////////////////////////////////////////////////////
+      
       // check to see if you've seen orange cones again
       if (orangeCones.size() == 0)
       {
@@ -173,6 +197,7 @@ class SLAMValidation : public rclcpp::Node
         // std::cout<<"found loop closure" << std::endl;
         loopClosure = true; // TODO: does not account for when there is only a single frame that it sees orange cones
       }
+      
 
 
 
@@ -182,6 +207,7 @@ class SLAMValidation : public rclcpp::Node
     void vehicle_pos_callback(const sensor_msgs::msg::NavSatFix::SharedPtr vehicle_pos_data)
     {
       RCLCPP_INFO(this->get_logger(), "vehicle_pos_callback!");
+
       double LAT_TO_M = 111320;
       double LON_TO_M = 40075000;
       double x_meters;
@@ -207,24 +233,29 @@ class SLAMValidation : public rclcpp::Node
     void vehicle_angle_callback(
         const geometry_msgs::msg::QuaternionStamped::SharedPtr vehicle_angle_data)
     {
-      RCLCPP_INFO(this->get_logger(), "vehicle angle callback!");
+      RCLCPP_INFO(this->get_logger(), "\n \t vehicle angle callback! | time: %d\n", 
+                vehicle_angle_data->header.stamp.sec);
+
       double q0 = vehicle_angle_data->quaternion.w;
       double q1 = vehicle_angle_data->quaternion.x;
       double q2 = vehicle_angle_data->quaternion.y;
       double q3 = vehicle_angle_data->quaternion.z;
-
+      // double yaw = atan2(2 * (q0 * q3 + q1 * q2),
+      //             pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
       double yaw = atan2(2 * (q3 * q0 + q1 * q2), -1 + 2 * (q0 * q0 + q1 * q1)); // rotate by 90 degrees? TODO: add to velocity
 
       if (init_odom.theta() == -1)
       {
         init_odom = gtsam::Pose2(init_odom.x(), init_odom.y(), yaw);
       }
+      RCLCPP_INFO(this->get_logger(), "global_odom.theta() = %lf", yaw);
       veh_state.yaw = yaw;
     }
 
     void vehicle_vel_callback(const geometry_msgs::msg::TwistStamped::SharedPtr vehicle_vel_data)
     {
-      RCLCPP_INFO(this->get_logger(), "vehicle velocity callback!");
+      RCLCPP_INFO(this->get_logger(), "\n \t vehicle velocity callback!\n");
+      
       veh_state.dx = vehicle_vel_data->twist.linear.x;
       veh_state.dy = vehicle_vel_data->twist.linear.y;
       veh_state.dyaw = vehicle_vel_data->twist.angular.z;
@@ -235,10 +266,10 @@ class SLAMValidation : public rclcpp::Node
     //     double pos_x = pose_data->pose.pose.position.x;
     //     double pos_y = pose_data->pose.pose.position.y;
 
+    //     double q0 = pose_data->pose.pose.orientation.w;
     //     double q1 = pose_data->pose.pose.orientation.x;
     //     double q2 = pose_data->pose.pose.orientation.y;
     //     double q3 = pose_data->pose.pose.orientation.z;
-    //     double q0 = pose_data->pose.pose.orientation.w;
 
     //     double yaw = atan2(2 * (q0 * q3 + q1 * q2),
     //             pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
@@ -260,6 +291,11 @@ class SLAMValidation : public rclcpp::Node
 
 
     void run_slam(){
+      if (global_odom.x() == 0 || global_odom.y() == 0 || global_odom.theta() == 0 || init_odom.theta() == -1)
+      {
+        RCLCPP_INFO(this->get_logger(), "fucked pose: (%f,%f,%f)", global_odom.x(), global_odom.y(), global_odom.theta());
+        return;
+      }
 
       // print pose and cones
       std::ofstream ofs;
@@ -292,16 +328,25 @@ class SLAMValidation : public rclcpp::Node
       }
       ofs.close();
       std::cout.rdbuf(coutbuf); //reset to standard output again
+      bool turning = abs(veh_state.dyaw) > TURNING_CONSTANT;
       slam_instance.step(this->get_logger(), global_odom, cones, blue_cones,
-                  yellow_cones,orangeCones, velocity, dt, loopClosure);
+                  yellow_cones,orangeCones, velocity, dt, loopClosure, turning);
       // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
 
     void timer_callback()
     {
         global_odom = gtsam::Pose2(veh_state.x, veh_state.y, veh_state.yaw);
-        velocity = gtsam::Point2(veh_state.dx, veh_state.dy);
-        run_slam();
+        velocity = gtsam::Pose2(veh_state.dx, veh_state.dy, veh_state.dyaw);
+
+
+        /* Determining which dyaw indicates turning */
+        if (abs(veh_state.dyaw) > TURNING_CONSTANT)
+        {
+          run_slam();
+        } 
+        
+       
         prev_veh_state = veh_state;
     }
 
@@ -317,7 +362,7 @@ class SLAMValidation : public rclcpp::Node
     rclcpp::Subscription<geometry_msgs::msg::QuaternionStamped>::SharedPtr vehicle_angle_sub;
     ///////////////////////////////
 
-    gtsam::Point2 velocity;  // local variable to load velocity into SLAM instance
+    gtsam::Pose2 velocity;  // local variable to load velocity into SLAM instance
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
     vector<Point2> cones; // local variable to load cone observations into SLAM instance
     vector<Point2> orangeCones; // local variable to load cone observations into SLAM instance
