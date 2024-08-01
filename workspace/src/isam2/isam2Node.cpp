@@ -37,7 +37,10 @@
 #define VEHICLE_VEL_TOPIC "/filter/twist"
 // #define VECHICLE_VEL_TOPIC ""
 
-#define TURNING_CONSTANT 0.25
+//test on hybrid-3 fourth run
+// #define TURNING_CONSTANT_LOW 0.10
+// #define TURNING_CONSTANT_HI 0.30
+// #define TURNING_CONSTANT 0.1
 
 using namespace std;
 using namespace std::placeholders;
@@ -57,7 +60,6 @@ class SLAMValidation : public rclcpp::Node
   public:
     // builtin_interfaces::Time pos_time_stamp;
     // builtin_interfaces::Time obs_time_stamp;
-
     SLAMValidation(): Node("slam_validation"){
       const rmw_qos_profile_t best_effort_profile = {
           RMW_QOS_POLICY_HISTORY_KEEP_LAST,
@@ -328,9 +330,9 @@ class SLAMValidation : public rclcpp::Node
       }
       ofs.close();
       std::cout.rdbuf(coutbuf); //reset to standard output again
-      bool turning = abs(veh_state.dyaw) > TURNING_CONSTANT;
+      
       slam_instance.step(this->get_logger(), global_odom, cones, blue_cones,
-                  yellow_cones,orangeCones, velocity, dt, loopClosure, turning);
+                  yellow_cones,orangeCones, velocity, dt, loopClosure);
       // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
     }
 
@@ -341,10 +343,11 @@ class SLAMValidation : public rclcpp::Node
 
 
         /* Determining which dyaw indicates turning */
-        if (abs(veh_state.dyaw) > TURNING_CONSTANT)
-        {
-          run_slam();
-        } 
+        // if (abs(veh_state.dyaw) < TURNING_CONSTANT)
+        // {
+        //   run_slam();
+        // } 
+        run_slam();
         
        
         prev_veh_state = veh_state;

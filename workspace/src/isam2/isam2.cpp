@@ -53,8 +53,13 @@ static condition_variable step_cv;
 // static const double M_DIST_TH = 0.48999999463; //real data 0.01, 0.01, 0.5 LandmarkNoiseModel
 static const double M_DIST_TH_STRAIGHTS = 85;
 // static const double M_DIST_TH_TURNS = 500;
-static const double M_DIST_TH_TURNS = 0.08;
+// static const double M_DIST_TH_TURNS = 0.089999; //could work really well for 0.1, 0.1, 0.28; dyaw = 1.35
+static const double M_DIST_TH_HI = 40;
+static const double M_DIST_TH_lLO = 20;
 
+static const double TURNING_CONSTANT_LOW = 0.10;
+static const double TURNING_CONSTANT_HI = 0.30;
+static const 
 // static const double M_DIST_TH = 4.5;
 
 // static const double M_DIST_TH = 45; // used to be 45 lmao
@@ -221,8 +226,10 @@ public:
 
     Vector LandmarkNoiseModel;
     noiseModel::Diagonal::shared_ptr landmark_model;
-    Vector NoiseModel;
+    Vector PriorNoiseModel;
     noiseModel::Diagonal::shared_ptr prior_model;
+    Vector OdomNoiseModel;
+    noiseModel::Diagonal::shared_ptr odom_model;
 
     double m_dist_th;
 
@@ -252,17 +259,26 @@ public:
         // used to be 0.01 for real data
         // 0 for EUFS_SIM
         //TODO: have a different noise model at the beginning
-        LandmarkNoiseModel(0) = 0.1;
-        LandmarkNoiseModel(1) = 0.1;
+        LandmarkNoiseModel(0) = 0.3;
+        LandmarkNoiseModel(1) = 0.3;
         LandmarkNoiseModel(2) = 0.3;
         landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         // used to be all 0s for EUFS_SIM
-        NoiseModel = Vector(3);
-        NoiseModel(0) = 0;
-        NoiseModel(1) = 0;
-        NoiseModel(2) = 0;
-        prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+        PriorNoiseModel = Vector(3);
+        PriorNoiseModel(0) = 0.3;
+        PriorNoiseModel(1) = 0.3;
+        PriorNoiseModel(2) = 0.3;
+        prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
+
+/* Go from 1 pose to another pose*/
+        OdomNoiseModel = Vector(3);
+        OdomNoiseModel(0) = 0.3;
+        OdomNoiseModel(1) = 0.3;
+        OdomNoiseModel(2) = 0.3; 
+        odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
+
+
 
         m_dist_th = M_DIST_TH_STRAIGHTS;
     }
@@ -1054,7 +1070,7 @@ public:
     void step(auto logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
                 vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
-                long time_ns, bool loopClosure, bool turning)
+                long time_ns, bool loopClosure)
     {
         
         if (prev_DA_done == false)
@@ -1063,16 +1079,11 @@ public:
         }
         unique_lock<mutex> step_lk(step_wait_mutex);
 
-        if (turning)
-        {
-            m_dist_th = M_DIST_TH_TURNS;
-            RCLCPP_INFO(logger, "TURNING");
-        }
-        else
-        {
-            m_dist_th = M_DIST_TH_STRAIGHTS;
-            RCLCPP_INFO(logger, "STRAIGHT");
-        }
+        
+        /* Calculate the appropriate noise model settings 
+         * dyaw in (0.1, 0.32)
+         * */
+        
 
         
 
@@ -1113,7 +1124,7 @@ public:
         }
         else {
             //std::cout << "New Pose\n" << std::endl;
-            static noiseModel::Diagonal::shared_ptr odom_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+            
             Pose2 prev_pos = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
             //create a factor between current and previous robot pose
             //add odometry estimates
@@ -1130,10 +1141,8 @@ public:
                                     global_odom.theta() - prev_pos.theta());
                                     */
 
-            static noiseModel::Diagonal::shared_ptr prior_model = noiseModel::Diagonal::Sigmas(NoiseModel);
-            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
-            /* add prior */
-            graph.add(prior_factor);
+            
+            
 
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),
                                                                                     Odometry, odom_model);
@@ -1148,7 +1157,7 @@ public:
         RCLCPP_INFO(logger, "beginning loop closure");
         if (loopClosure) {
             // std::cout<<"loop closure constraint added"<<std::endl;
-            static noiseModel::Diagonal::shared_ptr loop_closure_model = noiseModel::Diagonal::Sigmas(NoiseModel);
+            static noiseModel::Diagonal::shared_ptr loop_closure_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
             //left is 0, right is 1
             //Do triangulation given the current cone positions and the previous saved orange cones
             //take the orange cones, look at difference between
