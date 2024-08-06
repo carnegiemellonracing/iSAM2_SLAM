@@ -41,7 +41,7 @@
 //test on hybrid-3 fourth run
 // #define TURNING_CONSTANT_LOW 0.10
 // #define TURNING_CONSTANT_HI 0.30
-// #define TURNING_CONSTANT 0.1
+#define TURNING_CONSTANT 0.3
 
 using namespace std;
 using namespace std::placeholders;
@@ -351,7 +351,7 @@ class SLAMValidation : public rclcpp::Node
       }
       ofs.close();
       std::cout.rdbuf(coutbuf); //reset to standard output again
-      
+
       slam_instance.step(this->get_logger(), global_odom, cones, blue_cones,
                   yellow_cones,orangeCones, velocity, dt, loopClosure);
       // RCLCPP_INFO(this->get_logger(), "NUM_LANDMARKS: %i\n", (slam_instance.n_landmarks));
@@ -364,22 +364,15 @@ class SLAMValidation : public rclcpp::Node
 
 
         /* Determining which dyaw indicates turning */
-<<<<<<< HEAD
         // if (abs(veh_state.dyaw) < TURNING_CONSTANT)
         // {
         //   run_slam();
-        // } 
+        // }
         run_slam();
-        
-       
-=======
-        if (abs(veh_state.dyaw) > TURNING_CONSTANT)
-        {
-          run_slam();
-        }
 
 
->>>>>>> 87c0910a (isam2Node subscribes to synced data)
+
+
         prev_veh_state = veh_state;
     }
 

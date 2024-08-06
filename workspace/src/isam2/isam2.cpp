@@ -41,7 +41,7 @@ using namespace std;
 using namespace gtsam;
 using namespace std::chrono;
 
-static const int NUM_THREADS = 12;
+static const int NUM_THREADS = 3;
 
 /* Minimum m_dist length before paralellizing */
 static const int MIN_M_DIST = NUM_THREADS;
@@ -52,14 +52,13 @@ static condition_variable step_cv;
 // static const double M_DIST_TH = 85;
 // static const double M_DIST_TH = 0.48999999463; //real data 0.01, 0.01, 0.5 LandmarkNoiseModel
 static const double M_DIST_TH_STRAIGHTS = 85;
-// static const double M_DIST_TH_TURNS = 500;
-// static const double M_DIST_TH_TURNS = 0.089999; //could work really well for 0.1, 0.1, 0.28; dyaw = 1.35
+static const double M_DIST_TH_TURNS = 160;
+//static const double M_DIST_TH_TURNS = 0.089999; //could work really well for 0.1, 0.1, 0.28; dyaw = 1.35
 static const double M_DIST_TH_HI = 40;
-static const double M_DIST_TH_lLO = 20;
+static const double M_DIST_TH_LO = 20;
 
 static const double TURNING_CONSTANT_LOW = 0.10;
 static const double TURNING_CONSTANT_HI = 0.30;
-static const 
 // static const double M_DIST_TH = 4.5;
 
 // static const double M_DIST_TH = 45; // used to be 45 lmao
@@ -130,7 +129,7 @@ class MinID_Args
     Point2 obs;
     int prev_color_n_landmarks;
 
-    
+
     vector<Pose2> *blue_glob_obs;
     vector<Pose2> *yellow_glob_obs;
 
@@ -140,7 +139,7 @@ class MinID_Args
 
 
     MinID_Args (bool is_blue_obs, bool is_yellow_obs, Point2 obs,
-                int prev_color_n_landmarks, 
+                int prev_color_n_landmarks,
                 vector<Pose2> *blue_glob_obs, vector<Pose2> *yellow_glob_obs,
                 int num_obs, Pose2 glob_pos_bearing, int lo, int hi)
     {
@@ -204,7 +203,7 @@ private: ISAM2Params parameters;
     vector<Pose2> yellow_cone_est;
 
     Pose2 global_odom;
-    
+
     vector<double> m_dist;
 
 
@@ -215,7 +214,7 @@ public:
     int yellow_n_landmarks;
 
     bool heuristic_run;
-    
+
     //gtsam::Pose2 robot_est;
     std::vector<gtsam::Pose2> landmark_est;
     std::vector<Point2> orange_cones;
@@ -259,28 +258,28 @@ public:
         // used to be 0.01 for real data
         // 0 for EUFS_SIM
         //TODO: have a different noise model at the beginning
-        LandmarkNoiseModel(0) = 0.3;
-        LandmarkNoiseModel(1) = 0.3;
-        LandmarkNoiseModel(2) = 0.3;
+        LandmarkNoiseModel(0) = 0.0;
+        LandmarkNoiseModel(1) = 0.0;
+        LandmarkNoiseModel(2) = 0.01;
         landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         // used to be all 0s for EUFS_SIM
         PriorNoiseModel = Vector(3);
-        PriorNoiseModel(0) = 0.3;
-        PriorNoiseModel(1) = 0.3;
-        PriorNoiseModel(2) = 0.3;
+        PriorNoiseModel(0) = 0.0;
+        PriorNoiseModel(1) = 0.0;
+        PriorNoiseModel(2) = 0.0;
         prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
 /* Go from 1 pose to another pose*/
         OdomNoiseModel = Vector(3);
-        OdomNoiseModel(0) = 0.3;
-        OdomNoiseModel(1) = 0.3;
-        OdomNoiseModel(2) = 0.3; 
+        OdomNoiseModel(0) = 0.0;
+        OdomNoiseModel(1) = 0.0;
+        OdomNoiseModel(2) = 0.01;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
 
-        m_dist_th = M_DIST_TH_STRAIGHTS;
+        m_dist_th = M_DIST_TH_TURNS;
     }
 
 
@@ -296,7 +295,7 @@ public:
      */
     void associate (rclcpp::Logger logger, Assoc_Args *A_task)
     {
-        
+
         // auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
 
@@ -320,13 +319,13 @@ public:
                                                     blue_global_cone_y(i),
                                                         0));
 
-		        
+
                 if (n_landmarks == 0)
                 {
-                    RCLCPP_INFO(logger, "first landmark added");
+                    RCLCPP_INFO(logger, "first landmark (blue) added");
                 }
 
-	    	    
+
 
                 blue_cone_IDs.push_back(n_landmarks);
                 blue_n_landmarks++;
@@ -344,13 +343,13 @@ public:
                  values.insert(L(n_landmarks), Pose2(yellow_global_cone_x(i),
                                                     yellow_global_cone_y(i),
                                                         0));
-		        
+
                 if (n_landmarks == 0)
                 {
-                    RCLCPP_INFO(logger, "first landmark added");
+                    RCLCPP_INFO(logger, "first landmark (yellow) added");
                 }
 
-		        
+
 
                 yellow_cone_IDs.push_back(n_landmarks);
                 yellow_n_landmarks++;
@@ -358,8 +357,11 @@ public:
             }
 
 
-            isam2.update(graph, values);
-            isam2.update();
+            if (n_landmarks > 0)
+            {
+                isam2.update(graph, values);
+                isam2.update();
+            }
             values.clear();
             graph.resize(0);
             prev_DA_done = true;
@@ -374,14 +376,14 @@ public:
 
         }
 
-        
+
         /* For each blue observed cone, calculate Mahalanobis distance wrt blue_n_landmarks
          * The +1 represents the M_DIST_TH for that observation
          *
          * Likewise for each yellow observed cone
          * How many previous landmarks are you looking at?
          */
-         
+
         int blue_multiple_size = blue_n_landmarks + 1;
         int yellow_multiple_size = yellow_n_landmarks + 1;
         bool using_heuristic_n = false;
@@ -422,13 +424,13 @@ public:
             obs_id = (int)(offset_start / yellow_multiple_size);
             ith_color_cone = offset_start % yellow_multiple_size;
         }
-        
+
         /*not necessary because the initialization time was 0*/
         // auto end_t_assoc = high_resolution_clock::now();
         // auto dur_t_assoc = duration_cast<microseconds>(end_t_assoc - start_t_assoc);
         // RCLCPP_INFO(logger, "thread assoc_args init [lo=%d, hi=%d) : time %d",
         //                     A_task->lo, A_task->hi, dur_t_assoc.count());
-        
+
         while (i < A_task->hi)
         {
             int last_idx_for_cur_obs;
@@ -452,13 +454,13 @@ public:
              *           by color
              */
 
-            /* TODO: SUSPECT 1 
+            /* TODO: SUSPECT 1
              * is global_cone_x and global_cone_y initialized properly?
-             * 
+             *
              * Chances are yes, they most likely are because you aren't getting
              * any index out of bounds error;
              */
-        
+
 
             if (cur_obs_is_blue) /* blue observation */
             {
@@ -481,7 +483,7 @@ public:
 
             /* calculate mahalanobis distance for all previous cones wrt to
              * current obs cone */
-            
+
             /*RCLCPP_INFO(logger, "lo: %d | hi: %d | blue_n_landmarks: %d | yellow_n_landmarks: %d"
                                 "first_yellow_idx: %d", A_task->lo, A_task->hi, blue_n_landmarks,
                                 yellow_n_landmarks, first_yellow_idx); */
@@ -498,16 +500,16 @@ public:
                     offset_id_idx = yellow_n_landmarks - HEURISTIC_N;
                 }
             }
-            
+
             for (; i < last_idx_for_cur_obs && i < A_task->hi; i++)
             {
 
                 Eigen::MatrixXd diff(1, 3);
 
                 //assert(cone_IDs->at(ith_color_cone) < (int)A_task->all_cone_est->size());
-                
 
-		        
+
+
                 Pose2 prev_est = color_cone_est->at(ith_color_cone);
                 diff << (*global_cone_x)(obs_id, 0) - prev_est.x(),
                         (*global_cone_y)(obs_id, 0) - prev_est.y(),
@@ -521,22 +523,22 @@ public:
                 // auto dur_t_assoc = duration_cast<microseconds>(end_t_assoc - start_t_assoc);
                 // RCLCPP_INFO(logger, "for loop thread assoc_args [lo=%d, hi=%d) : time %d",
                 //                 A_task->lo, A_task->hi, dur_t_assoc.count());
-                
-                
+
+
                 ith_color_cone++;
 
             }
-            
+
 
             if (i == A_task->hi)
             {
                 break;
             }
-            /* TODO: Suspect 2 
-             * The M_DIST_TH are not in the right places: 
+            /* TODO: Suspect 2
+             * The M_DIST_TH are not in the right places:
              * They shouldn't be at the beginning, they should be at the end of each multiple
              *
-             * Is last_idx_for_cur_obs calculated properly? 
+             * Is last_idx_for_cur_obs calculated properly?
              * Result: It is
              */
             m_dist.at(last_idx_for_cur_obs) = m_dist_th;
@@ -556,7 +558,7 @@ public:
         /* atomic operation*/
         /* TODO: thread A could be sitting at NUM_THREADS - 1
          * But then it may not have checked the if statement conditional yet
-         * 
+         *
          * In the meantime, thread B may increment assoc_counter and then
          * both check the conditional at the same time*/
         // auto end_t_assoc = high_resolution_clock::now();
@@ -599,7 +601,7 @@ public:
             /*waiting until all Assoc_Args tasks have finished*/
             int num_obs = (num_obs_blue + num_obs_yellow);
 
-            
+
 
             assoc_counter = 0;
 
@@ -617,10 +619,10 @@ public:
             work_queue_mutex.lock();
             RCLCPP_INFO(logger, "num_obs_blue: %d | num_obs_yellow: %d",
                                 num_obs_blue, num_obs_yellow);
-            /* Remember: For blue_multiple_size and yellow_multiple_size to both 
-             * both be HEURISTIC_N + 1, HEURISTIC_N must be less than both 
+            /* Remember: For blue_multiple_size and yellow_multiple_size to both
+             * both be HEURISTIC_N + 1, HEURISTIC_N must be less than both
              * blue_n_landmarks AND yellow_n_landmarks
-             * 
+             *
              * TODO: consider changing this in the future?
              */
             for (int i = 0; i < num_obs_blue; i++)
@@ -631,7 +633,7 @@ public:
                                                 blue_bearing(i, 0));
 
 
-                
+
                 MinID_Args *M_task = new MinID_Args(true, false, this->cone_obs_blue.at(i),
                                                     (int)blue_cone_est.size(),
                                         blue_glob_obs, yellow_glob_obs,
@@ -659,15 +661,15 @@ public:
 
             cone_obs_blue.clear();
             cone_obs_yellow.clear();
-            /* when data associating unknown observations, blue_cone_obs and yellow_cone_obs 
+            /* when data associating unknown observations, blue_cone_obs and yellow_cone_obs
              * must hold these unknown obs*/
 
             work_queue_mutex.unlock();
             RCLCPP_INFO(logger, "Last Assoc_Arg added MinID_Args to queue: m_dist_len: %d",
                                     (int)m_dist.size());
-            
-            
-            
+
+
+
 
         }
         delete A_task;
@@ -681,7 +683,7 @@ public:
         // NoiseModel(1) = 0;
         // NoiseModel(2) = 0;
 
-        
+
         //print_cones(logger, cone_obs);
         // static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
@@ -702,7 +704,7 @@ public:
 
         int minID = std::distance(start_iter,
                                 std::min_element(start_iter, end_iter));
-	    
+
         /* Identify if the min ID is actual M_DIST_TH
          * Add the relationship to the graph
          * - Only 1 new cone can be added to graph at a time
@@ -718,8 +720,8 @@ public:
          * Re-add as Assoc_Args to work queue for cones that are
          * registered as new cones during heuristic_run
          */
-        RCLCPP_INFO(logger, "minID: %d | dist: %lf | lo: %d, hi: %d", 
-                    minID, *(m_dist.begin() + M_task->lo + minID), 
+        RCLCPP_INFO(logger, "minID: %d | dist: %lf | lo: %d, hi: %d",
+                    minID, *(m_dist.begin() + M_task->lo + minID),
                     M_task->lo, M_task->hi);
         isam2_mutex.lock();
 
@@ -736,14 +738,14 @@ public:
                 {
                     cone_obs_blue.push_back(M_task->obs);
                     M_task->blue_glob_obs->push_back(M_task->glob_pos_bearing);
-		            // RCLCPP_INFO(logger, "blue_unknown_obs size: %d", 
+		            // RCLCPP_INFO(logger, "blue_unknown_obs size: %d",
 				    //                     (int)cone_obs_blue.size());
                 }
                 else if (M_task->is_yellow_obs && !(M_task->is_blue_obs)) /*is yellow*/
                 {
                     cone_obs_yellow.push_back(M_task->obs);
                     M_task->yellow_glob_obs->push_back(M_task->glob_pos_bearing);
-                    // RCLCPP_INFO(logger, "yellow_unknown_obs size: %d", 
+                    // RCLCPP_INFO(logger, "yellow_unknown_obs size: %d",
                     //                     (int)cone_obs_yellow.size());
                 }
             }
@@ -830,7 +832,7 @@ public:
         // values.clear();
 
         /* atomic operation */
-        /* TODO: problem; 1 thread could increment to num_obs but another thread 
+        /* TODO: problem; 1 thread could increment to num_obs but another thread
          * has yet to process the conditional in the if statement
          *
          * 2 threads will enter the if statement*/
@@ -854,10 +856,10 @@ public:
          * You may not always have blue cones; you may not always have yellow cones*/
         if (M_task->lo == 0) /* pick 1 MinID_Args tasks */
         {
-            
+
             unique_lock<mutex> minID_lk(minID_wait_mutex);
             cv.wait(minID_lk, [num_obs]{return (minID_counter.load() == num_obs);});
-            
+
             minID_counter = 0;
 
             isam2.update(graph, values);
@@ -886,7 +888,7 @@ public:
             if (heuristic_run && num_u_obs > 0)
             {
                 heuristic_run = false;
-		        RCLCPP_INFO(logger, "processing unknown observations"); 
+		        RCLCPP_INFO(logger, "processing unknown observations");
 
                 /* create the new global_cone x and y and bearing */
                 blue_bearing = Eigen::MatrixXd(blue_num_u_obs, 1);
@@ -966,7 +968,7 @@ public:
                         hi++;
                         remainders--;
                     }
-                    
+
                     Assoc_Args *A_task = new Assoc_Args(&(this->cone_obs_blue), &(this->cone_obs_yellow), lo, hi);
                     work_queue.push_back(make_tuple(A_task, 'a'));
 
@@ -987,7 +989,7 @@ public:
                 heuristic_run = true;
                 prev_DA_done = true;
                 //pose_num++;
-                
+
 
                 step_cv.notify_one();
 
@@ -1072,20 +1074,20 @@ public:
                 vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
                 long time_ns, bool loopClosure)
     {
-        
+
         if (prev_DA_done == false)
         {
                 RCLCPP_INFO(logger, "waiting at step for prev DA");
         }
         unique_lock<mutex> step_lk(step_wait_mutex);
 
-        
-        /* Calculate the appropriate noise model settings 
+
+        /* Calculate the appropriate noise model settings
          * dyaw in (0.1, 0.32)
          * */
-        
 
-        
+
+
 
         RCLCPP_INFO(logger, "\nx%d", pose_num);
         step_cv.wait(step_lk, []{return (prev_DA_done.load());});
@@ -1103,11 +1105,11 @@ public:
         start = high_resolution_clock::now();
         prev_DA_done = false;
 
-        
+
 
         if (pose_num==0) {//if this is the first pose, add your inital pose to the factor graph
             //std::cout << "First pose\n" << std::endl;
-            
+
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
             //add prior
             graph.add(prior_factor);
@@ -1124,7 +1126,12 @@ public:
         }
         else {
             //std::cout << "New Pose\n" << std::endl;
-            
+            // Should the prior be for the current pose?
+            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom,
+                                                        prior_model);
+            //add prior
+            graph.add(prior_factor);
+
             Pose2 prev_pos = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
             //create a factor between current and previous robot pose
             //add odometry estimates
@@ -1133,7 +1140,7 @@ public:
 
             //TODO: change back to motion model with velocity
             double time_s = time_ns/SEC_TO_NANOSEC;
-            
+
             // Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
             Pose2 Odometry = Pose2(velocity.x() * time_s, velocity.y()*time_s, velocity.theta()*time_s);
             /*real data motion model?
@@ -1141,18 +1148,18 @@ public:
                                     global_odom.theta() - prev_pos.theta());
                                     */
 
-            
-            
+
+
 
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),
                                                                                     Odometry, odom_model);
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
         }
-        
-        
 
-        
+
+
+
 
         RCLCPP_INFO(logger, "beginning loop closure");
         if (loopClosure) {
@@ -1180,9 +1187,9 @@ public:
 	    isam2.update();
         graph.resize(0);
         values.clear();
-        
+
         /* BEGIN VECTORIZATION*/
-        
+
         /* vectorizations to calculate the global x and y positions of the cones*/
 	    Eigen::MatrixXd range(cone_obs.size(), 1);
 	    Eigen::MatrixXd bearing(cone_obs.size(), 1);
@@ -1274,7 +1281,7 @@ public:
         //     heap_obs_yellow->push_back(y);
         // }
 
-        
+
 
         /* Firstly, data associate on the last HEURISTIC_N landmark estimates */
         int blue_multiple_size = HEURISTIC_N+1;
@@ -1367,7 +1374,7 @@ public:
                 remainders--;
             }
             RCLCPP_INFO(logger, "step adding Assoc_Args; lo: %d | hi: %d", lo, hi);
-            Assoc_Args *A_task = new 
+            Assoc_Args *A_task = new
             Assoc_Args(&(this->cone_obs_blue), &(this->cone_obs_yellow), lo, hi);
 
 
@@ -1471,7 +1478,7 @@ public:
 
 
 
-    
+
 
 
 
