@@ -10,3 +10,5 @@ eufs/log/*
 build/*
 install/*
 log/*
+workspace/src/isam2/.isam2.cpp.swp
+workspace/src/isam2/.isam2Node.cpp.swp
