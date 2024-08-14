@@ -52,7 +52,7 @@ static condition_variable step_cv;
 // static const double M_DIST_TH = 85;
 // static const double M_DIST_TH = 0.48999999463; //real data 0.01, 0.01, 0.5 LandmarkNoiseModel
 static const double M_DIST_TH_STRAIGHTS = 85;
-static const double M_DIST_TH_TURNS = 160;
+static const double M_DIST_TH_TURNS = 190;
 //static const double M_DIST_TH_TURNS = 0.089999; //could work really well for 0.1, 0.1, 0.28; dyaw = 1.35
 static const double M_DIST_TH_HI = 40;
 static const double M_DIST_TH_LO = 20;
@@ -260,7 +260,7 @@ public:
         //TODO: have a different noise model at the beginning
         LandmarkNoiseModel(0) = 0.0;
         LandmarkNoiseModel(1) = 0.0;
-        LandmarkNoiseModel(2) = 0.01;
+        LandmarkNoiseModel(2) = 0.0;
         landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         // used to be all 0s for EUFS_SIM
@@ -274,7 +274,7 @@ public:
         OdomNoiseModel = Vector(3);
         OdomNoiseModel(0) = 0.0;
         OdomNoiseModel(1) = 0.0;
-        OdomNoiseModel(2) = 0.01;
+        OdomNoiseModel(2) = 0.0;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -678,11 +678,6 @@ public:
 
     void find_minIDs(rclcpp::Logger logger, MinID_Args *M_task)
     {
-        // Vector NoiseModel(3);
-        // NoiseModel(0) = 0;
-        // NoiseModel(1) = 0;
-        // NoiseModel(2) = 0;
-
 
         //print_cones(logger, cone_obs);
         // static auto landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
@@ -1071,7 +1066,7 @@ public:
      */
     void step(auto logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
-                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
+                vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
                 long time_ns, bool loopClosure)
     {
 
@@ -1126,11 +1121,13 @@ public:
         }
         else {
             //std::cout << "New Pose\n" << std::endl;
+
             // Should the prior be for the current pose?
-            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom,
+            /*gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom,
                                                         prior_model);
             //add prior
             graph.add(prior_factor);
+            */
 
             Pose2 prev_pos = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
             //create a factor between current and previous robot pose
@@ -1141,16 +1138,18 @@ public:
             //TODO: change back to motion model with velocity
             double time_s = time_ns/SEC_TO_NANOSEC;
 
-            // Pose2 Odometry =  Pose2(velocity.x()*time_s, velocity.y()*time_s, global_odom.theta() - prev_pos.theta());
-            Pose2 Odometry = Pose2(velocity.x() * time_s, velocity.y()*time_s, velocity.theta()*time_s);
+            Pose2 Odometry =  Pose2(velocity.x()*time_s,
+                                    velocity.y()*time_s,
+                                    global_odom.theta() - prev_pos.theta());
+
+            //Pose2 Odometry = Pose2(velocity.x() * time_s,
+            //                          velocity.y()*time_s,
+            //                          velocity.theta()*time_s);
+
             /*real data motion model?
             Pose2 Odometry =  Pose2(global_odom.x() - prev_pos.x(),global_odom.y() - prev_pos.y(),
                                     global_odom.theta() - prev_pos.theta());
                                     */
-
-
-
-
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),
                                                                                     Odometry, odom_model);
             graph.add(odom_factor);
@@ -1225,10 +1224,8 @@ public:
         int num_obs_yellow = (int)cone_obs_yellow.size();
 
 
-        blue_global_cone_x = global_cone_x.block(0, 0,
-                                                    num_obs_blue, 1);
-        blue_global_cone_y = global_cone_y.block(0, 0,
-                                                    num_obs_blue, 1);
+        blue_global_cone_x = global_cone_x.block(0, 0, num_obs_blue, 1);
+        blue_global_cone_y = global_cone_y.block(0, 0, num_obs_blue, 1);
 
         yellow_global_cone_x = global_cone_x.block(num_obs_blue, 0,
                                                     num_obs_yellow, 1);
@@ -1337,7 +1334,6 @@ public:
         {
             RCLCPP_INFO(logger, "no observed cones");
             prev_DA_done = true;
-            //pose_num++;
             step_cv.notify_one();
             return;
         }
