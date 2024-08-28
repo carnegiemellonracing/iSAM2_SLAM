@@ -316,7 +316,18 @@ class SLAMValidation : public rclcpp::Node
       if (orangeNotSeenFlag == true && orangeCones.size() >= 2)
       {
         // std::cout<<"found loop closure" << std::endl;
-        loopClosure = true;
+        Point2 diff = Point2(init_odom.x() - global_odom.x(),
+                        init_odom.y() - global_odom.y());
+        float dist_from_start = norm2(diff);
+        bool near_start = (dist_from_start <= (float)10);
+        float bearing_diff = abs(init_odom.theta() - global_odom.theta());
+        bool facing_start = bearing_diff <= (float)(M_PI / 4);
+
+        if (near_start && facing_start)
+        {
+            RCLCPP_INFO(this->get_logger(), "LOOP CLOSURE\n\n");
+            loopClosure = true;
+        }
         // TODO: does not account for when there is only a single frame that it sees orange cones
       }
     }
