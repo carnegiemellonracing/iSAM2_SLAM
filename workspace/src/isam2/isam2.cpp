@@ -1175,9 +1175,11 @@ public:
             Pose2 AvgPoseDiff = Pose2(avgDiff.x(), avgDiff.y(),angle);
             // std::cout<<"loop closure pose diff:"<<AvgPoseDiff<<std::endl;
 
+            assert(1 == 0);
             gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(0), X(pose_num),AvgPoseDiff, loop_closure_model);
             graph.add(odom_factor);
             values.insert(X(pose_num), global_odom);
+
         }
         RCLCPP_INFO(logger, "end loop closure");
 

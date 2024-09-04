@@ -319,10 +319,14 @@ class SLAMValidation : public rclcpp::Node
         Point2 diff = Point2(init_odom.x() - global_odom.x(),
                         init_odom.y() - global_odom.y());
         float dist_from_start = norm2(diff);
-        bool near_start = (dist_from_start <= (float)10);
-        float bearing_diff = abs(init_odom.theta() - global_odom.theta());
-        bool facing_start = bearing_diff <= (float)(M_PI / 4);
 
+        bool near_start = (dist_from_start <= (float)10);
+
+        float bearing_diff = abs(init_odom.theta() - global_odom.theta());
+        bool facing_start = bearing_diff <= (float)(M_PI / 2);
+
+        RCLCPP_INFO(this->get_logger(), "BEARING DIFF: %lf | DIST FROM START: %lf",
+                                bearing_diff, dist_from_start);
         if (near_start && facing_start)
         {
             RCLCPP_INFO(this->get_logger(), "LOOP CLOSURE\n\n");
@@ -478,7 +482,10 @@ class SLAMValidation : public rclcpp::Node
         // {
         //   run_slam();
         // }
-        run_slam();
+        if (!loopClosure)
+        {
+            run_slam();
+        }
 
 
 
