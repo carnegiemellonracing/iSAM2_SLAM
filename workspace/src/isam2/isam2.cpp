@@ -52,7 +52,7 @@ static condition_variable step_cv;
 // static const double M_DIST_TH = 85;
 // static const double M_DIST_TH = 0.48999999463; //real data 0.01, 0.01, 0.5 LandmarkNoiseModel
 static const double M_DIST_TH_STRAIGHTS = 85;
-static const double M_DIST_TH_TURNS = 190;
+static const double M_DIST_TH_TURNS = 90;
 //static const double M_DIST_TH_TURNS = 0.089999; //could work really well for 0.1, 0.1, 0.28; dyaw = 1.35
 static const double M_DIST_TH_HI = 40;
 static const double M_DIST_TH_LO = 20;
@@ -258,23 +258,23 @@ public:
         // used to be 0.01 for real data
         // 0 for EUFS_SIM
         //TODO: have a different noise model at the beginning
-        LandmarkNoiseModel(0) = 0.0;
-        LandmarkNoiseModel(1) = 0.0;
-        LandmarkNoiseModel(2) = 0.0;
+        LandmarkNoiseModel(0) = 0;
+        LandmarkNoiseModel(1) = 0;
+        LandmarkNoiseModel(2) = 0;
         landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         // used to be all 0s for EUFS_SIM
         PriorNoiseModel = Vector(3);
-        PriorNoiseModel(0) = 0.0;
-        PriorNoiseModel(1) = 0.0;
-        PriorNoiseModel(2) = 0.0;
+        PriorNoiseModel(0) = 0;
+        PriorNoiseModel(1) = 0;
+        PriorNoiseModel(2) = 0;
         prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
 /* Go from 1 pose to another pose*/
         OdomNoiseModel = Vector(3);
-        OdomNoiseModel(0) = 0.0;
-        OdomNoiseModel(1) = 0.0;
-        OdomNoiseModel(2) = 0.0;
+        OdomNoiseModel(0) = 0;
+        OdomNoiseModel(1) = 0;
+        OdomNoiseModel(2) = 0;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -360,7 +360,6 @@ public:
             if (n_landmarks > 0)
             {
                 isam2.update(graph, values);
-                isam2.update();
             }
             values.clear();
             graph.resize(0);
@@ -1175,10 +1174,11 @@ public:
             Pose2 AvgPoseDiff = Pose2(avgDiff.x(), avgDiff.y(),angle);
             // std::cout<<"loop closure pose diff:"<<AvgPoseDiff<<std::endl;
 
-            assert(1 == 0);
-            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(0), X(pose_num),AvgPoseDiff, loop_closure_model);
-            graph.add(odom_factor);
-            values.insert(X(pose_num), global_odom);
+            /*gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(0),
+                                                                X(pose_num),AvgPoseDiff,
+                                                                loop_closure_model); */
+            //graph.add(odom_factor);
+            //values.insert(X(pose_num), global_odom);
 
         }
         RCLCPP_INFO(logger, "end loop closure");

@@ -373,9 +373,13 @@ class SLAMValidation : public rclcpp::Node
       double q1 = vehicle_angle_data.quaternion.x;
       double q2 = vehicle_angle_data.quaternion.y;
       double q3 = vehicle_angle_data.quaternion.z;
-      // double yaw = atan2(2 * (q0 * q3 + q1 * q2),
-      //             pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
-      double yaw = atan2(2 * (q3 * q0 + q1 * q2), -1 + 2 * (q0 * q0 + q1 * q1)); // rotate by 90 degrees? TODO: add to velocity
+
+      double yaw = atan2(2 * (q0 * q3 + q1 * q2),
+                   pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
+
+
+      // rotate by 90 degrees? TODO: add to velocity
+      //double yaw = atan2(2 * (q3 * q0 + q1 * q2), -1 + 2 * (q0 * q0 + q1 * q1));
 
       if (init_odom.theta() == -1)
       {
