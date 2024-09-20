@@ -52,7 +52,7 @@ static condition_variable step_cv;
 // static const double M_DIST_TH = 85;
 // static const double M_DIST_TH = 0.48999999463; //real data 0.01, 0.01, 0.5 LandmarkNoiseModel
 static const double M_DIST_TH_STRAIGHTS = 85;
-static const double M_DIST_TH_TURNS = 90;
+static const double M_DIST_TH_TURNS = 100;
 //static const double M_DIST_TH_TURNS = 0.089999; //could work really well for 0.1, 0.1, 0.28; dyaw = 1.35
 static const double M_DIST_TH_HI = 40;
 static const double M_DIST_TH_LO = 20;
@@ -1101,10 +1101,11 @@ public:
 
 
 
-        if (pose_num==0) {//if this is the first pose, add your inital pose to the factor graph
+        if (pose_num == 0) {//if this is the first pose, add your inital pose to the factor graph
             //std::cout << "First pose\n" << std::endl;
 
-            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom, prior_model);
+            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom,
+                                                                                    prior_model);
             //add prior
             graph.add(prior_factor);
             values.insert(X(0), global_odom);

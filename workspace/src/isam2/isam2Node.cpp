@@ -398,10 +398,15 @@ class SLAMValidation : public rclcpp::Node
       veh_state.dyaw = vehicle_vel_data.twist.angular.z;
     }
 
+
     void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr pose_data) {
         RCLCPP_INFO(this->get_logger(), "\n \t vehicle state callback!\n");
-        double pos_x = pose_data->pose.pose.position.x;
-        double pos_y = pose_data->pose.pose.position.y;
+
+
+
+        /* You don't want to rely on using GPS; testing SLAM's localization abilities */
+        double correct_pos_x = pose_data->pose.pose.position.x;
+        double correct_pos_y = pose_data->pose.pose.position.y;
 
         double q0 = pose_data->pose.pose.orientation.w;
         double q1 = pose_data->pose.pose.orientation.x;
@@ -411,17 +416,41 @@ class SLAMValidation : public rclcpp::Node
         double yaw = atan2(2 * (q0 * q3 + q1 * q2),
                 pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
 
+        /* At the very start */
+        if (init_odom.x() == -1 && init_odom.y() == -1)
+        {
+            init_odom = Pose2(pose_data->pose.pose.position.x,
+                                pose_data->pose.pose.position.y,
+                                yaw);
 
-        global_odom = Pose2(pos_x, pos_y, yaw);
+            int nano_to_micro = (int)(pose_data->header.stamp.nanosec / 1000);
+            double micro_double = ((double)(nano_to_micro)) / 1000000;
+            time_ns = pose_data->header.stamp.sec + micro_double;
+        }
+
         double dx = pose_data->twist.twist.linear.x;
         double dy = pose_data->twist.twist.linear.y;
         velocity = gtsam::Point2(dx, dy);
 
-        long cur_time = pose_data->header.stamp.sec * SEC_TO_NANOSEC + pose_data->header.stamp.nanosec;
-        dt = time_ns - cur_time;
+        /* time_ns is the previous time in nanoseconds */
+        int nano_to_micro = (int)(pose_data->header.stamp.nanosec / 1000);
+        double micro_double = ((double)(nano_to_micro)) / 1000000;
+        double cur_time = pose_data->header.stamp.sec + micro_double;
+        //RCLCPP_INFO(this->get_logger(), "time_w_dec: %f | dt: %f | prev_time: %f",
+        //                                        cur_time, dt, time_ns);
+        dt = abs(time_ns - cur_time);
         time_ns = cur_time;
 
 
+        double range = sqrt(pow(dt * dx, 2) + pow(dt * dy, 2));
+
+        double pos_x = init_odom.x() + range * cos(yaw);
+        double pos_y = init_odom.y() + range * sin(yaw);
+
+        global_odom = Pose2(pos_x, pos_y, yaw);
+        init_odom = global_odom;
+        RCLCPP_INFO(this->get_logger(), "\nCorrect x: %f | y: %f \n Motion Model x: %f | y: %f \n",
+                                correct_pos_x, correct_pos_y, pos_x, pos_y);
     }
 
 
@@ -513,6 +542,7 @@ class SLAMValidation : public rclcpp::Node
     //gtsam::Pose2 velocity;  // local variable to load velocity into SLAM instance
     gtsam::Point2 velocity;
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
+    gtsam::Pose2 prev_odom;
     vector<Point2> cones; // local variable to load cone observations into SLAM instance
     vector<Point2> orangeCones; // local variable to load cone observations into SLAM instance
 
@@ -526,8 +556,8 @@ class SLAMValidation : public rclcpp::Node
     bool file_opened;
 
     rclcpp::TimerBase::SharedPtr timer;
-    long dt;
-    long time_ns;
+    double dt;
+    double time_ns;
     int orangeNotSeen;
     bool orangeNotSeenFlag;
     bool loopClosure;
