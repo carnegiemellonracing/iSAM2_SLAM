@@ -4,6 +4,7 @@
 workspace/build/
 workspace/install/
 workspace/log/
+eufs/*
 eufs/build/*
 eufs/install/*
 eufs/log/*
