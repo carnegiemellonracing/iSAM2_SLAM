@@ -787,7 +787,8 @@ public:
 
 
             int temp_id = -1;
-            if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
+            if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks
+                    || HEURISTIC_N >= yellow_n_landmarks)
             {
                 /* not using HEURISTIC_N */
                 temp_id = minID;
@@ -1075,10 +1076,9 @@ public:
         }
         unique_lock<mutex> step_lk(step_wait_mutex);
 
+        RCLCPP_INFO(logger, "Num Observed landmarks: %d", cone_obs_blue.size());
 
-        /* Calculate the appropriate noise model settings
-         * dyaw in (0.1, 0.32)
-         * */
+
 
 
 
