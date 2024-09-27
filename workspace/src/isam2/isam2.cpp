@@ -175,7 +175,7 @@ private: ISAM2Params parameters;
     NonlinearFactorGraph graph;
     Values values;
 
-    int pose_num;
+    int pose_num = 0;
     bool first_pose_added;
 
     gtsam::Symbol X(int robot_pose_id) {
@@ -1099,7 +1099,7 @@ public:
         start = high_resolution_clock::now();
         prev_DA_done = false;
 
-
+        /* Adding poses to the SLAM factor graph */
 
         if (pose_num == 0) {//if this is the first pose, add your inital pose to the factor graph
             //std::cout << "First pose\n" << std::endl;
@@ -1107,6 +1107,7 @@ public:
             gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom,
                                                                                     prior_model);
             //add prior
+            //TODO: need to record the initial bearing because it could be erroneous
             graph.add(prior_factor);
             values.insert(X(0), global_odom);
 
@@ -1119,7 +1120,8 @@ public:
             //hopefully it's only 2 cones
             orange_cones = orange_ref_cones;
         }
-        else {
+        else 
+        {
             //std::cout << "New Pose\n" << std::endl;
 
             // Should the prior be for the current pose?
@@ -1186,7 +1188,7 @@ public:
 
         //todo only do this once after update
         isam2.update(graph, values);
-	    isam2.update();
+        isam2.update();
         graph.resize(0);
         values.clear();
 
@@ -1208,7 +1210,7 @@ public:
 	        bearing(i) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
 	    }
 
-	    Eigen::MatrixXd totalBearing = bearing.array()+global_odom.theta();
+	    Eigen::MatrixXd totalBearing = bearing.array()+ global_odom.theta();
 
         /* do this twice, once for yellow obs and once for blue obs */
 	    Eigen::MatrixXd global_cone_x = Eigen::MatrixXd(cone_obs.size(),1);
@@ -1218,9 +1220,16 @@ public:
 	    Eigen::MatrixXd totalBearing_sin(cone_obs.size(),1);
 	    totalBearing_cos = totalBearing.array().cos();
 	    totalBearing_sin = totalBearing.array().sin();
+        
+        
+        Pose2 cur_pos = gtsam::Pose2(0, 0);
+        if (pose_num != 0)
+        {
+            cur_pos = isam2.calculateEstimate(X(pose_num)).cast<Pose2>();
+        } 
 
-	    global_cone_x = global_odom.x() + range.array()*totalBearing_cos.array();
-        global_cone_y = global_odom.y() + range.array()*totalBearing_sin.array();
+	    global_cone_x =  prev_pos.x() + range.array()*totalBearing_cos.array();
+        global_cone_y =  prev_pos.y() + range.array()*totalBearing_sin.array();
 
 
         int num_obs_blue = (int)cone_obs_blue.size();

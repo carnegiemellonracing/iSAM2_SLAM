@@ -133,7 +133,9 @@ private:
         blue_cones.clear();
         yellow_cones.clear();
         orangeCones.clear();
-
+	
+        /* Grabbing the velocity and orientation message closest to the 
+        * current cone message in time */
         double cur_time = ((double)cone_data->orig_data_stamp.sec +
                         ((double)((int)(cone_data->orig_data_stamp.nanosec / 1000)) / 1000000));
 
@@ -187,8 +189,12 @@ private:
         veh_state.dx = closest_velocity->twist.linear.x;
         veh_state.dy = closest_velocity->twist.linear.y;
         veh_state.dyaw = closest_velocity->twist.angular.z;
+        velocity = gtsam::Point2(veh_state.dx, veh_state.dy, veh_state.dyaw);
 
-
+        /* At the very beginning, we take the current velocity time stamp. 
+        * dt = 0 but that's ok because we shouldn't be moving when SLAM 
+        * starts
+        */
         if (init_odom.x() == -1 && init_odom.y() == -1 && init_odom.theta() == -1)
         {
             prev_velocity_time = best_velocity_time;
@@ -197,11 +203,7 @@ private:
 
         dt = abs(prev_velocity_time - best_velocity_time);
         prev_velocity_time = best_velocity_time;
-        double range = sqrt(pow(dt * veh_state.dx, 2) +
-                            pow(dt * veh_state.dy, 2));
-
-        veh_state.x = prev_veh_state.x + range * cos(veh_state.yaw);
-        veh_state.y = prev_veh_state.y + range * sin(-veh_state.yaw);
+        
 
         double q0 = closest_angle->quaternion.w;
         double q1 = closest_angle->quaternion.x;
@@ -212,9 +214,11 @@ private:
         //        pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
 
         // rotate by 90 degrees? TODO: add to velocity
-        veh_state.yaw = atan2(2 * (q3 * q0 + q1 * q2), -1 + 2 * (q0 * q0 + q1 * q1));
+        veh_state.yaw = atan2(2 * (q3 * q0 + q1 * q2),
+                             -1 + 2 * (q0 * q0 + q1 * q1));
 
-
+        
+        /* Process cones */
         auto b_cones = cone_data->blue_cones;
         for (uint i = 0; i < b_cones.size(); i++)
         {
@@ -243,9 +247,12 @@ private:
         }
 
         ///////////////////////////////////////////////////////
+        // LOOP CLOSURE //
+        ///////////////////////////////////////////////////////
 
         // check to see if you've seen orange cones again
         // orangeNotSeenFlag set to true when the orange cones not seen for 25 frames
+        /*
         if (orangeCones.size() == 0)
         {
             orangeNotSeen++;
@@ -306,36 +313,8 @@ private:
            }
            // TODO: does not account for when there is only a single frame that it sees orange cones
         }
+        */
     }
-
-
-    /*
-    void vehicle_pos_callback(const sensor_msgs::msg::NavSatFix::SharedPtr vehicle_pos_data)
-    {
-        RCLCPP_INFO(this->get_logger(), "\nvehicle_pos_callback!");
-
-        double LAT_TO_M = 111320;
-        double LON_TO_M = 40075000;
-        double x_meters;
-        double y_meters;
-        // TODO: filter
-
-        // True measurement conversion for gps
-        //  x_meters = LAT_TO_M*vehicle_pos_data->longitude;
-        //  y_meters = LON_TO_M*cos(vehicle_pos_data->latitude)/360;
-
-        x_meters = -(LAT_TO_M * vehicle_pos_data.latitude);
-        y_meters = LAT_TO_M * vehicle_pos_data.longitude;
-
-        if (init_odom.x() == -1 && init_odom.y() == -1)
-        {
-          init_odom = gtsam::Pose2(x_meters, y_meters, init_odom.theta());
-        }
-
-        veh_state.x = x_meters - init_odom.x();
-        veh_state.y = y_meters - init_odom.y();
-    }
-    */
 
     void vehicle_angle_callback(
         const geometry_msgs::msg::QuaternionStamped::SharedPtr vehicle_angle_data)
@@ -349,25 +328,6 @@ private:
             angle_msg_cache.pop_front();
         }
 
-
-        //double q0 = vehicle_angle_data->quaternion.w;
-        //double q1 = vehicle_angle_data->quaternion.x;
-        //double q2 = vehicle_angle_data->quaternion.y;
-        //double q3 = vehicle_angle_data->quaternion.z;
-
-        //double yaw = atan2(2 * (q0 * q3 + q1 * q2),
-        //             pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
-
-
-        // rotate by 90 degrees? TODO: add to velocity
-        //double yaw = atan2(2 * (q3 * q0 + q1 * q2), -1 + 2 * (q0 * q0 + q1 * q1));
-
-        //if (init_odom.theta() == -1)
-        //{
-        //  init_odom = gtsam::Pose2(init_odom.x(), init_odom.y(), yaw);
-        //}
-        //RCLCPP_INFO(this->get_logger(), "global_odom.theta() = %lf", yaw);
-        //veh_state.yaw = yaw;
     }
 
     void vehicle_vel_callback(const geometry_msgs::msg::TwistStamped::SharedPtr vehicle_vel_data)
@@ -380,69 +340,7 @@ private:
             velocity_msg_cache.pop_front();
         }
 
-        //veh_state.dx = vehicle_vel_data.twist.linear.x;
-        //veh_state.dy = vehicle_vel_data.twist.linear.y;
-        //veh_state.dyaw = vehicle_vel_data.twist.angular.z;
     }
-
-    /*
-    void vehicle_state_callback(const eufs_msgs::msg::CarState::SharedPtr pose_data)
-    {
-        RCLCPP_INFO(this->get_logger(), "\n \t vehicle state callback!\n");
-
-
-
-        // You don't want to rely on using GPS; testing SLAM's localization abilities
-        double correct_pos_x = pose_data->pose.pose.position.x;
-        double correct_pos_y = pose_data->pose.pose.position.y;
-
-        double q0 = pose_data->pose.pose.orientation.w;
-        double q1 = pose_data->pose.pose.orientation.x;
-        double q2 = pose_data->pose.pose.orientation.y;
-        double q3 = pose_data->pose.pose.orientation.z;
-
-        double yaw = atan2(2 * (q0 * q3 + q1 * q2),
-                pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
-
-        // At the very start
-        if (init_odom.x() == -1 && init_odom.y() == -1)
-        {
-            init_odom = Pose2(pose_data->pose.pose.position.x,
-                                pose_data->pose.pose.position.y,
-                                yaw);
-
-            int nano_to_micro = (int)(pose_data->header.stamp.nanosec / 1000);
-            double micro_double = ((double)(nano_to_micro)) / 1000000;
-            time_ns = pose_data->header.stamp.sec + micro_double;
-        }
-
-        double dx = pose_data->twist.twist.linear.x;
-        double dy = pose_data->twist.twist.linear.y;
-        velocity = gtsam::Point2(dx, dy);
-
-        // time_ns is the previous time in nanoseconds
-        int nano_to_micro = (int)(pose_data->header.stamp.nanosec / 1000);
-        double micro_double = ((double)(nano_to_micro)) / 1000000;
-        double cur_time = pose_data->header.stamp.sec + micro_double;
-        //RCLCPP_INFO(this->get_logger(), "time_w_dec: %f | dt: %f | prev_time: %f",
-        //                                        cur_time, dt, time_ns);
-        dt = abs(time_ns - cur_time);
-        time_ns = cur_time;
-
-
-        double range = sqrt(pow(dt * dx, 2) + pow(dt * dy, 2));
-
-        double pos_x = init_odom.x() + range * cos(yaw);
-        double pos_y = init_odom.y() + range * sin(yaw);
-
-        global_odom = Pose2(pos_x, pos_y, yaw);
-        init_odom = global_odom;
-        RCLCPP_INFO(this->get_logger(), "\nCorrect x: %f | y: %f \n Motion Model x: %f | y: %f \n",
-                                correct_pos_x, correct_pos_y, pos_x, pos_y);
-    }
-    */
-
-
 
 
     void run_slam()
@@ -455,43 +353,25 @@ private:
         RCLCPP_INFO(this->get_logger(), "Car Pose: (%f, %f, %f)", global_odom.x(),
                                                                   global_odom.y(),
                                                                   global_odom.theta());
-
-        // print pose and cones
-        std::ofstream ofs;
-        std::ofstream out("urmom.txt");
-        std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-        std::cout.rdbuf(out.rdbuf());
-
-        if (!file_opened)
-        {
-
-            //RCLCPP_INFO(this->get_logger(), "running SLAM; new\n");
-            ofs.open("urmom.txt", std::ofstream::out | std::ofstream::trunc);
-            file_opened = true;
-        } else if (file_opened) {
-
-            //RCLCPP_INFO(this->get_logger(), "running SLAM\n");
-            ofs.open("urmom.txt", std::ofstream::out | std::ofstream::app);
-        }
-
-        ofs << "(" << global_odom.x() << ","<< global_odom.y() << ","<< global_odom.theta()<< ")\n";
-        for(auto cone: cones){
-            //CHANGED BY MELINDA: yeah so cones look like they're flipped
-            //about the car y axis for some reason ?
-            //RCLCPP_INFO(this->get_logger(), "reading cones\n");
-            double range = norm2(cone);
-
-            double bearing = std::atan2(cone.y(), cone.x());//+ global_odom.theta();
-            double global_cone_x = global_odom.x() + range*cos(bearing+global_odom.theta());
-            double global_cone_y = global_odom.y() + range*sin(bearing+global_odom.theta());
-            ofs << "(" << global_cone_x << ","<< global_cone_y << ")\n"; //original
-        }
-        ofs.close();
-        std::cout.rdbuf(coutbuf); //reset to standard output again
-
         RCLCPP_INFO(this->get_logger(), "Running SLAM");
+
+       /* We should be passing in odometry info so that SLAM can do motion modeling.
+	    * At each time stamp, we either:
+	    * a.) Receive GPS message:
+	    * When we do, we want to incorporate that into our motion modeling
+	    *
+	    * b.) Don't receive GPS message:
+	    * When we don't we want to use velocity and our SLAM estimate
+	    * to model our new pose */
         slam_instance.step(this->get_logger(), global_odom, cones, blue_cones,
-                  yellow_cones,orangeCones, velocity, dt, loopClosure);
+                  yellow_cones, orangeCones, velocity, dt, loopClosure);
+
+
+        /* Why are we resetting the global pose? 
+         * We may not get GPS at every time step.
+         * Instead, use motion model to predict new pose.
+         */
+         //global_odom = gtsam::Pose2(-1, -1, -1);
     }
 
     void timer_callback()
