@@ -169,14 +169,15 @@ class MinID_Args
 
 class slamISAM {
 
-private: ISAM2Params parameters;
+private:
+    ISAM2Params parameters;
     ISAM2 isam2;
     //Create a factor graph and values for new data
     NonlinearFactorGraph graph;
     Values values;
 
     int pose_num = 0;
-    bool first_pose_added;
+    bool first_pose_added = false;
 
     gtsam::Symbol X(int robot_pose_id) {
         return Symbol('x', robot_pose_id);
@@ -323,6 +324,7 @@ public:
                 if (n_landmarks == 0)
                 {
                     RCLCPP_INFO(logger, "first landmark (blue) added");
+                    assert(values.exists(X(0)));
                 }
 
 
@@ -355,6 +357,7 @@ public:
                 yellow_n_landmarks++;
                 n_landmarks++;
             }
+
 
 
             if (n_landmarks > 0)
@@ -453,13 +456,6 @@ public:
              *           by color
              */
 
-            /* TODO: SUSPECT 1
-             * is global_cone_x and global_cone_y initialized properly?
-             *
-             * Chances are yes, they most likely are because you aren't getting
-             * any index out of bounds error;
-             */
-
 
             if (cur_obs_is_blue) /* blue observation */
             {
@@ -505,10 +501,6 @@ public:
 
                 Eigen::MatrixXd diff(1, 3);
 
-                //assert(cone_IDs->at(ith_color_cone) < (int)A_task->all_cone_est->size());
-
-
-
                 Pose2 prev_est = color_cone_est->at(ith_color_cone);
                 diff << (*global_cone_x)(obs_id, 0) - prev_est.x(),
                         (*global_cone_y)(obs_id, 0) - prev_est.y(),
@@ -533,13 +525,8 @@ public:
             {
                 break;
             }
-            /* TODO: Suspect 2
-             * The M_DIST_TH are not in the right places:
-             * They shouldn't be at the beginning, they should be at the end of each multiple
-             *
-             * Is last_idx_for_cur_obs calculated properly?
-             * Result: It is
-             */
+
+
             m_dist.at(last_idx_for_cur_obs) = m_dist_th;
             //RCLCPP_INFO(logger, "last_idx_for_cur_obs: %d", last_idx_for_cur_obs);
             i++; /* skip 1 element (reserved for M_DIST_TH */
@@ -555,11 +542,7 @@ public:
         }
 
         /* atomic operation*/
-        /* TODO: thread A could be sitting at NUM_THREADS - 1
-         * But then it may not have checked the if statement conditional yet
-         *
-         * In the meantime, thread B may increment assoc_counter and then
-         * both check the conditional at the same time*/
+
         // auto end_t_assoc = high_resolution_clock::now();
         // auto dur_t_assoc = duration_cast<microseconds>(end_t_assoc - start_t_assoc);
         // RCLCPP_INFO(logger, "thread assoc_args [lo=%d, hi=%d) : time %d",
@@ -570,11 +553,6 @@ public:
         {
             cv.notify_one();
         }
-
-
-
-
-
 
         /* Wait for all other Assoc_Args
          * to finish
@@ -1046,10 +1024,6 @@ public:
                     find_minIDs(logger, M_task);
                 }
             }
-            //else
-            //{
-            //    RCLCPP_INFO(logger, "empty work queue");
-            //}
 
             if (locked)
             {
@@ -1067,13 +1041,14 @@ public:
     void step(auto logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
                 vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
-                long time_ns, bool loopClosure)
+                double dt, bool loopClosure)
     {
 
         if (prev_DA_done == false)
         {
-                RCLCPP_INFO(logger, "waiting at step for prev DA");
+            RCLCPP_INFO(logger, "waiting at step for prev DA");
         }
+
         unique_lock<mutex> step_lk(step_wait_mutex);
 
         RCLCPP_INFO(logger, "Num Observed landmarks: %d", cone_obs_blue.size());
@@ -1085,6 +1060,7 @@ public:
 
         RCLCPP_INFO(logger, "\nx%d", pose_num);
         step_cv.wait(step_lk, []{return (prev_DA_done.load());});
+
         if (first_pose_added)
         {
             pose_num++;
@@ -1100,16 +1076,26 @@ public:
         prev_DA_done = false;
 
         /* Adding poses to the SLAM factor graph */
+        Pose2 prev_pos;
+        if (pose_num != 0)
+        {
+            prev_pos = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
+            RCLCPP_INFO(logger, "prev_pos = x:%f, y:%f, theta:%f",
+                                    prev_pos.x(),
+                                    prev_pos.y(),
+                                    prev_pos.theta());
+        }
 
-        if (pose_num == 0) {//if this is the first pose, add your inital pose to the factor graph
-            //std::cout << "First pose\n" << std::endl;
-
-            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom,
-                                                                                    prior_model);
+        if (pose_num == 0)
+        {
+            RCLCPP_INFO(logger, "Processing first pose");
+            gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0),
+                                                                global_odom, prior_model);
             //add prior
             //TODO: need to record the initial bearing because it could be erroneous
+            assert(global_odom.x() == -1 && global_odom.y() == -1);
             graph.add(prior_factor);
-            values.insert(X(0), global_odom);
+            values.insert(X(0), gtsam::Pose2(0, 0, global_odom.theta()));
 
             first_pose_added = true;
 
@@ -1119,43 +1105,35 @@ public:
             //Add orange cone left and right
             //hopefully it's only 2 cones
             orange_cones = orange_ref_cones;
+            RCLCPP_INFO(logger, "Finished processing first pose");
         }
-        else 
+        else
         {
-            //std::cout << "New Pose\n" << std::endl;
 
-            // Should the prior be for the current pose?
-            /*gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0), global_odom,
-                                                        prior_model);
-            //add prior
-            graph.add(prior_factor);
-            */
 
-            Pose2 prev_pos = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
             //create a factor between current and previous robot pose
             //add odometry estimates
             //Motion model
-
-
-            //TODO: change back to motion model with velocity
-            double time_s = time_ns/SEC_TO_NANOSEC;
-
-            Pose2 Odometry =  Pose2(velocity.x()*time_s,
-                                    velocity.y()*time_s,
+            Pose2 Odometry =  Pose2(velocity.x()*dt,
+                                    velocity.y()*dt,
                                     global_odom.theta() - prev_pos.theta());
 
-            //Pose2 Odometry = Pose2(velocity.x() * time_s,
-            //                          velocity.y()*time_s,
-            //                          velocity.theta()*time_s);
+            Pose2 next_pos = gtsam::Pose2(prev_pos.x() + velocity.x()*dt,
+                                          prev_pos.y() + velocity.y()*dt,
+                                          global_odom.theta());
 
             /*real data motion model?
-            Pose2 Odometry =  Pose2(global_odom.x() - prev_pos.x(),global_odom.y() - prev_pos.y(),
+            Pose2 Odometry =  Pose2(global_odom.x() - prev_pos.x(),
+                                    global_odom.y() - prev_pos.y(),
                                     global_odom.theta() - prev_pos.theta());
                                     */
-            gtsam::BetweenFactor<Pose2> odom_factor = gtsam::BetweenFactor<Pose2>(X(pose_num - 1), X(pose_num),
-                                                                                    Odometry, odom_model);
+            gtsam::BetweenFactor<Pose2> odom_factor =
+                                        gtsam::BetweenFactor<Pose2>(X(pose_num - 1),
+                                                                        X(pose_num),
+                                                                            Odometry,
+                                                                            odom_model);
             graph.add(odom_factor);
-            values.insert(X(pose_num), global_odom);
+            values.insert(X(pose_num), next_pos);
         }
 
 
@@ -1165,14 +1143,15 @@ public:
         RCLCPP_INFO(logger, "beginning loop closure");
         if (loopClosure) {
             // std::cout<<"loop closure constraint added"<<std::endl;
-            static noiseModel::Diagonal::shared_ptr loop_closure_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
+            static noiseModel::Diagonal::shared_ptr loop_closure_model =
+                                        noiseModel::Diagonal::Sigmas(OdomNoiseModel);
             //left is 0, right is 1
-            //Do triangulation given the current cone positions and the previous saved orange cones
-            //take the orange cones, look at difference between
-            //the left and right cones
+            //Do triangulation given current cone positions and prev saved orange cones
+            //Take the orange cones, look at difference betw the left and right cones
             Point2 diffLeft = orange_cones[0] - orange_ref_cones[0];
             Point2 diffRight = orange_cones[1] - orange_ref_cones[1];
-            Point2 avgDiff = (diffLeft+diffRight)/2; //pose difference between first pose and last pose
+            Point2 avgDiff = (diffLeft+diffRight)/2;
+            //pose difference between first pose and last pose
             double angle = atan2(avgDiff.y(), avgDiff.x());
             Pose2 AvgPoseDiff = Pose2(avgDiff.x(), avgDiff.y(),angle);
             // std::cout<<"loop closure pose diff:"<<AvgPoseDiff<<std::endl;
@@ -1220,13 +1199,13 @@ public:
 	    Eigen::MatrixXd totalBearing_sin(cone_obs.size(),1);
 	    totalBearing_cos = totalBearing.array().cos();
 	    totalBearing_sin = totalBearing.array().sin();
-        
-        
-        Pose2 cur_pos = gtsam::Pose2(0, 0);
+
+
+        Pose2 cur_pos = gtsam::Pose2(0, 0, 0);
         if (pose_num != 0)
         {
             cur_pos = isam2.calculateEstimate(X(pose_num)).cast<Pose2>();
-        } 
+        }
 
 	    global_cone_x =  prev_pos.x() + range.array()*totalBearing_cos.array();
         global_cone_y =  prev_pos.y() + range.array()*totalBearing_sin.array();
@@ -1277,19 +1256,6 @@ public:
         auto end_vectorization = high_resolution_clock::now();
         auto dur_v = duration_cast<microseconds>(end_vectorization - start);
         RCLCPP_INFO(logger, "vectorization time: %d", dur_v.count());
-        // vector<Point2> *heap_obs_blue = new vector<Point2>;
-        // vector<Point2> *heap_obs_yellow = new vector<Point2>;
-
-        // for (auto b : cone_obs_blue)
-        // {
-        //     heap_obs_blue->push_back(b);
-        // }
-
-        // for (auto y : cone_obs_yellow)
-        // {
-        //     heap_obs_yellow->push_back(y);
-        // }
-
 
 
         /* Firstly, data associate on the last HEURISTIC_N landmark estimates */
@@ -1298,7 +1264,8 @@ public:
 
         int blue_lo = blue_n_landmarks - HEURISTIC_N;
         int yellow_lo = yellow_n_landmarks - HEURISTIC_N;
-        if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks || HEURISTIC_N >= yellow_n_landmarks)
+        if (!heuristic_run || HEURISTIC_N >= blue_n_landmarks
+                            || HEURISTIC_N >= yellow_n_landmarks)
         {
             /* cannot use HEURISTIC_N => Look at all previous cone estimates */
             blue_multiple_size = blue_n_landmarks + 1;
@@ -1448,11 +1415,6 @@ public:
         Eigen::MatrixXd diff(1, 3);
         diff << measurement.x()-landmark.x(),measurement.y()-landmark.y(),1;
         Eigen::MatrixXd marginal_covariance = isam2.marginalCovariance(landmark_key);
-        /*RCLCPP_INFO(logger, "\n%f | %f | %f\n %f | %f | %f\n %f | %f | %f\n ",
-                    marginal_covariance(0, 0), marginal_covariance(0, 1), marginal_covariance(0, 2),
-                    marginal_covariance(1, 0), marginal_covariance(1, 1), marginal_covariance(1, 2),
-                    marginal_covariance(2, 0), marginal_covariance(2, 1), marginal_covariance(2, 2));*/
-
         //shouldn't this be inverse?
 
         Eigen::MatrixXd test = diff * marginal_covariance;

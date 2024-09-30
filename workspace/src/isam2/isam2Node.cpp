@@ -46,6 +46,7 @@
 // #define TURNING_CONSTANT_LOW 0.10
 // #define TURNING_CONSTANT_HI 0.30
 
+static const long SLAM_DELAY_MICROSEC = 50000;
 using namespace std;
 using namespace std::placeholders;
 
@@ -84,14 +85,8 @@ public:
                best_effort_profile.depth),
            best_effort_profile);
 
-        //cone_sub = this->create_subscription<eufs_msgs::msg::ConeArrayWithCovariance>(
-        //    CONE_DATA_TOPIC, best_effort_qos, std::bind(&SLAMValidation::cone_callback, this, _1));
         cone_sub = this->create_subscription<interfaces::msg::ConeArray>(
            CONE_DATA_TOPIC, best_effort_qos, std::bind(&SLAMValidation::cone_callback, this, _1));
-
-
-        //vehicle_state_sub = this->create_subscription<eufs_msgs::msg::CarState>(
-        //VEHICLE_DATA_TOPIC, 10, std::bind(&SLAMValidation::vehicle_state_callback, this, _1));
 
         //bring back///////////////
         //vehicle_pos_sub = this->create_subscription<sensor_msgs::msg::NavSatFix>(
@@ -104,13 +99,6 @@ public:
         VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
         ////////////////////////
 
-        /*
-        vehicle_data_sub = this->create_subscription<interfaces::msg::ConeArrayWithOdom>(
-                              "/perc_cones", 10, std::bind(&SLAMValidation::vehicle_data_callback,
-                                  this, _1));
-                                  */
-        timer = this->create_wall_timer(100ms, std::bind(&SLAMValidation::timer_callback, this));
-        //TODO: need to initalize robot state?????
         dt = .1;
         orangeNotSeen = 25;
         orangeNotSeenFlag = false;
@@ -118,6 +106,13 @@ public:
 
         init_odom = gtsam::Pose2(-1,-1,-1);
         file_opened = true;
+
+        slam_first_run = false;
+        prev_slam_time = high_resolution_clock::now();
+        cur_slam_time = high_resolution_clock::now();
+
+        velocity_msg_cache = {};
+        angle_msg_cache = {};
     }
 
 private:
@@ -133,8 +128,14 @@ private:
         blue_cones.clear();
         yellow_cones.clear();
         orangeCones.clear();
-	
-        /* Grabbing the velocity and orientation message closest to the 
+
+        /* Check if you have enough elements to sync */
+        if (velocity_msg_cache.size() == 0 || angle_msg_cache.size() == 0)
+        {
+            return;
+        }
+
+        /* Grabbing the velocity and orientation message closest to the
         * current cone message in time */
         double cur_time = ((double)cone_data->orig_data_stamp.sec +
                         ((double)((int)(cone_data->orig_data_stamp.nanosec / 1000)) / 1000000));
@@ -143,7 +144,7 @@ private:
         geometry_msgs::msg::TwistStamped::SharedPtr closest_velocity;
         double best_velocity_time = 0;
         double min_diff = (double)INT_MAX;
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < velocity_msg_cache.size(); i++)
         {
             geometry_msgs::msg::TwistStamped::SharedPtr cur_msg = velocity_msg_cache.front();
             velocity_msg_cache.pop_front();
@@ -166,7 +167,7 @@ private:
         geometry_msgs::msg::QuaternionStamped::SharedPtr closest_angle;
         double best_angle_time = 0;
         min_diff = (double)INT_MAX;
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < angle_msg_cache.size(); i++)
         {
             geometry_msgs::msg::QuaternionStamped::SharedPtr cur_msg = angle_msg_cache.front();
             angle_msg_cache.pop_front();
@@ -184,40 +185,41 @@ private:
             angle_msg_cache.push_back(cur_msg);
         }
 
+        RCLCPP_INFO(this->get_logger(), "Finished finding syncing data");
+
         /* Calculate variables about car pose after closest candidates */
         /* Motion model for car pose */
-        veh_state.dx = closest_velocity->twist.linear.x;
-        veh_state.dy = closest_velocity->twist.linear.y;
-        veh_state.dyaw = closest_velocity->twist.angular.z;
-        velocity = gtsam::Point2(veh_state.dx, veh_state.dy, veh_state.dyaw);
+        velocity = gtsam::Point2(closest_velocity->twist.linear.y,
+                                 closest_velocity->twist.linear.x);
 
-        /* At the very beginning, we take the current velocity time stamp. 
-        * dt = 0 but that's ok because we shouldn't be moving when SLAM 
+        double qw = closest_angle->quaternion.w;
+        double qx = closest_angle->quaternion.x;
+        double qy = closest_angle->quaternion.y;
+        double qz = closest_angle->quaternion.z;
+
+
+        // rotate by 90 degrees? TODO: add to velocity
+        double yaw = atan2(2 * (qz * qw + qx * qy),
+                             -1 + 2 * (qw * qw + qx * qx));
+
+        RCLCPP_INFO(this->get_logger(), "Calculated Yaw");
+        /* At the very beginning, we take the current velocity time stamp.
+        * dt = 0 but that's ok because we shouldn't be moving when SLAM
         * starts
         */
         if (init_odom.x() == -1 && init_odom.y() == -1 && init_odom.theta() == -1)
         {
+            init_odom = gtsam::Pose2(-1, -1, yaw);
             prev_velocity_time = best_velocity_time;
         }
 
 
         dt = abs(prev_velocity_time - best_velocity_time);
         prev_velocity_time = best_velocity_time;
-        
 
-        double q0 = closest_angle->quaternion.w;
-        double q1 = closest_angle->quaternion.x;
-        double q2 = closest_angle->quaternion.y;
-        double q3 = closest_angle->quaternion.z;
 
-        //veh_state.yaw = atan2(2 * (q0 * q3 + q1 * q2),
-        //        pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2));
+        global_odom = gtsam::Pose2(-1, -1, yaw);
 
-        // rotate by 90 degrees? TODO: add to velocity
-        veh_state.yaw = atan2(2 * (q3 * q0 + q1 * q2),
-                             -1 + 2 * (q0 * q0 + q1 * q1));
-
-        
         /* Process cones */
         auto b_cones = cone_data->blue_cones;
         for (uint i = 0; i < b_cones.size(); i++)
@@ -247,7 +249,7 @@ private:
         }
 
         ///////////////////////////////////////////////////////
-        // LOOP CLOSURE //
+        // LOOP CLOSURE should be done in iSAM2 //
         ///////////////////////////////////////////////////////
 
         // check to see if you've seen orange cones again
@@ -311,9 +313,16 @@ private:
                RCLCPP_INFO(this->get_logger(), "LOOP CLOSURE\n\n");
                loopClosure = true;
            }
-           // TODO: does not account for when there is only a single frame that it sees orange cones
         }
         */
+        cur_slam_time = high_resolution_clock::now();
+        long dur = duration_cast<microseconds>(cur_slam_time - prev_slam_time).count();
+        if (slam_first_run == false || dur > SLAM_DELAY_MICROSEC)
+        {
+            prev_slam_time = cur_slam_time;
+            slam_first_run = true;
+            run_slam();
+        }
     }
 
     void vehicle_angle_callback(
@@ -345,14 +354,6 @@ private:
 
     void run_slam()
     {
-        //if (global_odom.x() == 0 || global_odom.y() == 0 || global_odom.theta() == 0 || init_odom.theta() == -1)
-        //{
-        //  RCLCPP_INFO(this->get_logger(), "fucked pose: (%f,%f,%f)", global_odom.x(), global_odom.y(), global_odom.theta());
-        //  return;
-        //}
-        RCLCPP_INFO(this->get_logger(), "Car Pose: (%f, %f, %f)", global_odom.x(),
-                                                                  global_odom.y(),
-                                                                  global_odom.theta());
         RCLCPP_INFO(this->get_logger(), "Running SLAM");
 
        /* We should be passing in odometry info so that SLAM can do motion modeling.
@@ -367,51 +368,19 @@ private:
                   yellow_cones, orangeCones, velocity, dt, loopClosure);
 
 
-        /* Why are we resetting the global pose? 
-         * We may not get GPS at every time step.
-         * Instead, use motion model to predict new pose.
-         */
-         //global_odom = gtsam::Pose2(-1, -1, -1);
     }
 
-    void timer_callback()
-    {
-        global_odom = gtsam::Pose2(veh_state.x, veh_state.y, veh_state.yaw);
-        if (init_odom.x() == -1 && init_odom.y() == -1 && init_odom.theta() == -1)
-        {
-            init_odom = global_odom;
-        }
-
-        velocity = gtsam::Point2(veh_state.dx, veh_state.dy);
-
-
-        /* Determining which dyaw indicates turning */
-        // if (abs(veh_state.dyaw) < TURNING_CONSTANT)
-        // {
-        //   run_slam();
-        // }
-        run_slam();
-
-
-
-
-        prev_veh_state = veh_state;
-    }
 
     slamISAM slam_instance = slamISAM(this->get_logger());
     rclcpp::Subscription<interfaces::msg::ConeArray>::SharedPtr cone_sub;
-    //rclcpp::Subscription<eufs_msgs::msg::ConeArrayWithCovariance>::SharedPtr cone_sub;
-    //rclcpp::Subscription<eufs_msgs::msg::CarState>::SharedPtr vehicle_state_sub;
-
+    std::chrono::time_point<std::chrono::high_resolution_clock> prev_slam_time;
+    std::chrono::time_point<std::chrono::high_resolution_clock> cur_slam_time;
 
     //Bring back/////////////////
     rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr vehicle_pos_sub;
     rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr vehicle_vel_sub;
     rclcpp::Subscription<geometry_msgs::msg::QuaternionStamped>::SharedPtr vehicle_angle_sub;
-    ///////////////////////////////
-    //rclcpp::Subscription<interfaces::msg::ConeArrayWithOdom>::SharedPtr vehicle_data_sub;
 
-    //gtsam::Pose2 velocity;  // local variable to load velocity into SLAM instance
     gtsam::Point2 velocity;
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
     gtsam::Pose2 prev_odom;
@@ -422,18 +391,16 @@ private:
     vector<Point2> yellow_cones; //local variable to store the yellow observed cones
 
     gtsam::Pose2 init_odom; // local variable to load odom into SLAM instance
-    VehicleState prev_veh_state = VehicleState();
-    VehicleState veh_state = VehicleState();
 
     bool file_opened;
 
     rclcpp::TimerBase::SharedPtr timer;
     double dt;
-    //double time_ns;
     double prev_velocity_time;
     int orangeNotSeen;
     bool orangeNotSeenFlag;
     bool loopClosure;
+    bool slam_first_run;
 
     deque<interfaces::msg::ConeArray::SharedPtr> cone_msg_cache;
     deque<geometry_msgs::msg::TwistStamped::SharedPtr> velocity_msg_cache;
