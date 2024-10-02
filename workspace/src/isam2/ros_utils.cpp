@@ -11,6 +11,7 @@ void cone_msg_to_vectors(interfaces::msg::ConeArray::SharedPtr cone_data,
                         vector<Point2> &blue_cones,
                         vector<Point2> &yellow_cones,
                         vector<Point2> &orange_cones) {
+    // Trying to find a library that converts ros2 msg array to vector
     for (uint i = 0; i < cone_data->blue_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->blue_cones.at(i).x,
                                cone_data->blue_cones.at(i).y);
@@ -67,7 +68,17 @@ void cones_pos_to_global_frame(vector<Point2> &cone_obs,) {
 	    }
 
 	    Eigen::MatrixXd totalBearing = bearing.array()+ global_odom.theta();
+}
 
+/**
+ * @brief Movella Xsens IMU uses y-left, x-forward axes. CMR DV uses y-forward
+ * x-right axes. This function performs the conversion.
+ */
+void imu_axes_to_DV_axes(double &x, double &y) {
+    double temp_x = x;
+    x = -1 * y;
+    y = x;
+}
 
 
 
