@@ -3,14 +3,45 @@
  * @brief This file contains utility functions used for converting ROS messages
  * to appropriate data types and for any necessary calculations.
  */
+#include <memory>
+
+#include "rclcpp/rclcpp.hpp"
+#include <message_filters/subscriber.h>
+#include <message_filters/sync_policies/approximate_time.h>
+
+#include "interfaces/msg/cone_array.hpp"
+#include "interfaces/msg/cone_array_with_odom.hpp"
+
+#include "geometry_msgs/msg/point.hpp"
+#include "geometry_msgs/msg/vector3_stamped.hpp"
+#include "geometry_msgs/msg/quaternion_stamped.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
+#include "geometry_msgs/msg/twist_with_covariance.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+#include "sensor_msgs/msg/nav_sat_fix.hpp"
+
+#include "eufs_msgs/msg/cone_array_with_covariance.hpp"
+#include "eufs_msgs/msg/car_state.hpp"
+
+#include <gtsam/nonlinear/ISAM2Params.h>
+
+#include "isam2.cpp"
+
+#include <boost/shared_ptr.hpp>
+#include <vector>
+#include <deque>
+#include <cmath>
+#include <chrono>
+
 using namespace std;
 using namespace gtsam;
 using namespace Eigen;
 
 void cone_msg_to_vectors(interfaces::msg::ConeArray::SharedPtr cone_data,
-                        vector<Point2> &blue_cones,
-                        vector<Point2> &yellow_cones,
-                        vector<Point2> &orange_cones) {
+                                            vector<Point2> &cones,
+                                            vector<Point2> &blue_cones,
+                                            vector<Point2> &yellow_cones,
+                                            vector<Point2> &orange_cones) {
     // Trying to find a library that converts ros2 msg array to vector
     for (uint i = 0; i < cone_data->blue_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->blue_cones.at(i).x,
@@ -36,15 +67,18 @@ void cone_msg_to_vectors(interfaces::msg::ConeArray::SharedPtr cone_data,
 
 void velocity_msg_to_point2(geometry_msgs::msg::TwistStamped::SharedPtr vel_data,
                             Point2 &velocity) {
+    double dx = vehicle_vel_data->twist.linear.x;
+    double dy = vehicle_vel_data->twist.linear.y;
     velocity = Point2(vel_data.twist.linear.x, vel_data.twist.linear.y);
 }
 
 void quat_msg_to_yaw(geometry_msgs::msg::QuaternionStamped::SharedPtr ang_data,
-                        int &yaw) {
+                        double &yaw) {
     double qw = closest_angle->quaternion.w;
     double qx = closest_angle->quaternion.x;
     double qy = closest_angle->quaternion.y;
     double qz = closest_angle->quaternion.z;
+    imu_axes_to_DV_axes(qx, qy);
 
     yaw = atan2(2 * (qz * qw + qx * qy),
                              -1 + 2 * (qw * qw + qx * qx));
@@ -67,7 +101,7 @@ void cones_pos_to_global_frame(vector<Point2> &cone_obs,) {
 	        bearing(i) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
 	    }
 
-	    Eigen::MatrixXd totalBearing = bearing.array()+ global_odom.theta();
+	    Eigen::MatrixXd totalBearing = bearing.array() + global_odom.theta();
 }
 
 /**
