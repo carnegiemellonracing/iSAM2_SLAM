@@ -96,8 +96,8 @@ void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr
 
 void cones_pos_to_global_frame(vector<Point2> &cone_obs, Pose2 &global_odom) {
 
-        Eigen::MatrixXd range(cone_obs.size(), 1);
-	    Eigen::MatrixXd bearing(cone_obs.size(), 1);
+        MatrixXd range(cone_obs.size(), 1);
+	    MatrixXd bearing(cone_obs.size(), 1);
 
 	    int num_obs = (int)cone_obs.size();
 
@@ -111,8 +111,69 @@ void cones_pos_to_global_frame(vector<Point2> &cone_obs, Pose2 &global_odom) {
 	        bearing(i) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
 	    }
 
-	    Eigen::MatrixXd totalBearing = bearing.array() + global_odom.theta();
+	    MatrixXd totalBearing = bearing.array() + global_odom.theta();
 }
+
+void motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double dt,
+                    Pose2 &prev_pose, Pose2 global_odom, bool new_gps) {
+    new_pose = Pose2(prev_pose.x() + velocity.x() * dt,
+                            prev_pose.y() + velocity.y() * dt,
+                            global_odom.theta());
+
+    odometry = Pose2(velocity.x() * dt,
+                            velocity.y() * dt,
+                            global_odom.theta() - prev_pose.theta());
+}
+
+
+/* Vectorized functions */
+void calc_cone_range(MatrixXd &range) {
+    int num_obs = (int)cone_obs.size();
+
+	for (int i = 0; i < num_obs; i++)
+	{
+	    range(i) = norm2(cone_obs.at(i));
+	}
+}
+
+/** Bearing of cone from the car
+ */
+void calc_cone_bearing_from_car(MatrixXd &bearing, Pose2 &global_odom) {
+    int num_obs = (int)cone_obs.size();
+
+    for (int i = 0; i < num_obs; i++)
+    {
+        bearing(i) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
+    }
+
+    /* Putting the bearing in global frame */
+    bearing = bearing.array() + global_odom.theta();
+
+}
+
+void cone_car_to_global_frame(vector<Pose2> &cone_obs,
+                            Pose2 &global_odom, Pose2 &prev_pose,
+                            MatrixXd global_cone_x, MatrixXd global_cone_y) {
+
+    MatrixXd range(cone_obs.size(), 1);
+    MatrixXd bearing(cone_obs.size(), 1);
+
+
+    calc_cone_range(range);
+    calc_cone_bearing_from_car(bearing, global_odom);
+    global_cone_x = prev_pose.x() + range.array()*bearing.array().cos();
+    global_cone_y = prev_pose.y() + range.array()*bearing.array().sin();
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
