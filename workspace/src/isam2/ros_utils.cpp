@@ -7,6 +7,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include <message_filters/subscriber.h>
+#include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
 #include "interfaces/msg/cone_array.hpp"
@@ -25,8 +26,6 @@
 
 #include <gtsam/nonlinear/ISAM2Params.h>
 
-#include "isam2.cpp"
-
 #include <boost/shared_ptr.hpp>
 #include <vector>
 #include <deque>
@@ -37,7 +36,17 @@ using namespace std;
 using namespace gtsam;
 using namespace Eigen;
 
-void cone_msg_to_vectors(interfaces::msg::ConeArray::SharedPtr cone_data,
+/**
+ * @brief Movella Xsens IMU uses y-left, x-forward axes. CMR DV uses y-forward
+ * x-right axes. This function performs the conversion.
+ */
+void imu_axes_to_DV_axes(double &x, double &y) {
+    double temp_x = x;
+    x = -1 * y;
+    y = x;
+}
+
+void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
                                             vector<Point2> &cones,
                                             vector<Point2> &blue_cones,
                                             vector<Point2> &yellow_cones,
@@ -65,26 +74,27 @@ void cone_msg_to_vectors(interfaces::msg::ConeArray::SharedPtr cone_data,
     }
 }
 
-void velocity_msg_to_point2(geometry_msgs::msg::TwistStamped::SharedPtr vel_data,
+void velocity_msg_to_point2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                             Point2 &velocity) {
     double dx = vehicle_vel_data->twist.linear.x;
     double dy = vehicle_vel_data->twist.linear.y;
-    velocity = Point2(vel_data.twist.linear.x, vel_data.twist.linear.y);
+    imu_axes_to_DV_axes(dx, dy);
+    velocity = Point2(dx, dy);
 }
 
-void quat_msg_to_yaw(geometry_msgs::msg::QuaternionStamped::SharedPtr ang_data,
+void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
                         double &yaw) {
-    double qw = closest_angle->quaternion.w;
-    double qx = closest_angle->quaternion.x;
-    double qy = closest_angle->quaternion.y;
-    double qz = closest_angle->quaternion.z;
+    double qw = vehicle_angle_data->quaternion.w;
+    double qx = vehicle_angle_data->quaternion.x;
+    double qy = vehicle_angle_data->quaternion.y;
+    double qz = vehicle_angle_data->quaternion.z;
     imu_axes_to_DV_axes(qx, qy);
 
     yaw = atan2(2 * (qz * qw + qx * qy),
                              -1 + 2 * (qw * qw + qx * qx));
 }
 
-void cones_pos_to_global_frame(vector<Point2> &cone_obs,) {
+void cones_pos_to_global_frame(vector<Point2> &cone_obs, Pose2 &global_odom) {
 
         Eigen::MatrixXd range(cone_obs.size(), 1);
 	    Eigen::MatrixXd bearing(cone_obs.size(), 1);
@@ -103,19 +113,6 @@ void cones_pos_to_global_frame(vector<Point2> &cone_obs,) {
 
 	    Eigen::MatrixXd totalBearing = bearing.array() + global_odom.theta();
 }
-
-/**
- * @brief Movella Xsens IMU uses y-left, x-forward axes. CMR DV uses y-forward
- * x-right axes. This function performs the conversion.
- */
-void imu_axes_to_DV_axes(double &x, double &y) {
-    double temp_x = x;
-    x = -1 * y;
-    y = x;
-}
-
-
-
 
 
 
