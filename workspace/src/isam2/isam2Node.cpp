@@ -21,7 +21,6 @@
 #include <gtsam/nonlinear/ISAM2Params.h>
 
 #include "isam2.cpp"
-#include "ros_utils.cpp"
 
 
 
@@ -109,19 +108,13 @@ public:
         sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
 
         dt = .1;
-        orangeNotSeen = 25;
-        orangeNotSeenFlag = false;
-        loopClosure = false;
 
         init_odom = gtsam::Pose2(-1,-1,-1);
         file_opened = true;
 
-        slam_first_run = false;
         prev_slam_time = high_resolution_clock::now();
         cur_slam_time = high_resolution_clock::now();
 
-        velocity_msg_cache = {};
-        angle_msg_cache = {};
     }
 
 private:
@@ -169,7 +162,6 @@ private:
                   vehicle_angle_data->header.stamp.sec);
         double yaw = 0;
         quat_msg_to_yaw(vehicle_angle_data, yaw);
-        global_odom = Pose2(-1, -1, yaw);
 
        /** At the very beginning, we take the current velocity time stamp.
         * dt = 0 but that's ok because we shouldn't be moving when SLAM
@@ -179,6 +171,9 @@ private:
         {
             init_odom = gtsam::Pose2(-1, -1, yaw);
         }
+
+
+        global_odom = Pose2(-1, -1, yaw - init_odom.theta());
 
     }
 
@@ -195,7 +190,7 @@ private:
 	    * When we don't we want to use velocity and our SLAM estimate
 	    * to model our new pose */
         slam_instance.step(this->get_logger(), global_odom, cones, blue_cones,
-                  yellow_cones, orange_cones, velocity, dt, loopClosure);
+                  yellow_cones, orange_cones, velocity, dt);
 
 
     }
@@ -232,15 +227,6 @@ private:
 
     rclcpp::TimerBase::SharedPtr timer;
     double dt;
-    double prev_velocity_time;
-    int orangeNotSeen;
-    bool orangeNotSeenFlag;
-    bool loopClosure;
-    bool slam_first_run;
-
-    deque<interfaces::msg::ConeArray::SharedPtr> cone_msg_cache;
-    deque<geometry_msgs::msg::TwistStamped::SharedPtr> velocity_msg_cache;
-    deque<geometry_msgs::msg::QuaternionStamped::SharedPtr> angle_msg_cache;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> prev_slam_time;
     std::chrono::time_point<std::chrono::high_resolution_clock> cur_slam_time;

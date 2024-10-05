@@ -2,6 +2,10 @@
  * @file slam_utils.cpp
  * @brief This file contains utility functions used for converting ROS messages
  * to appropriate data types and for any necessary calculations.
+ *
+ * Most functions in this value pass in the result container by reference.
+ * This reference is modified to store the results. The result reference
+ * is always the first parameter that is passed in.
  */
 #include <memory>
 
@@ -94,28 +98,9 @@ void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr
                              -1 + 2 * (qw * qw + qx * qx));
 }
 
-void cones_pos_to_global_frame(vector<Point2> &cone_obs, Pose2 &global_odom) {
-
-        MatrixXd range(cone_obs.size(), 1);
-	    MatrixXd bearing(cone_obs.size(), 1);
-
-	    int num_obs = (int)cone_obs.size();
-
-	    for (int i = 0; i < num_obs; i++)
-	    {
-	        range(i) = norm2(cone_obs.at(i));
-	    }
-
-        for (int i = 0; i < num_obs; i++)
-	    {
-	        bearing(i) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
-	    }
-
-	    MatrixXd totalBearing = bearing.array() + global_odom.theta();
-}
-
-void motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double dt,
+void motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
                     Pose2 &prev_pose, Pose2 global_odom, bool new_gps) {
+
     new_pose = Pose2(prev_pose.x() + velocity.x() * dt,
                             prev_pose.y() + velocity.y() * dt,
                             global_odom.theta());
@@ -127,7 +112,7 @@ void motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double dt,
 
 
 /* Vectorized functions */
-void calc_cone_range(MatrixXd &range) {
+void calc_cone_range_from_car(MatrixXd &range, vector<Point2> &cone_obs) {
     int num_obs = (int)cone_obs.size();
 
 	for (int i = 0; i < num_obs; i++)
@@ -138,31 +123,23 @@ void calc_cone_range(MatrixXd &range) {
 
 /** Bearing of cone from the car
  */
-void calc_cone_bearing_from_car(MatrixXd &bearing, Pose2 &global_odom) {
+void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs) {
     int num_obs = (int)cone_obs.size();
 
     for (int i = 0; i < num_obs; i++)
     {
         bearing(i) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
     }
-
-    /* Putting the bearing in global frame */
-    bearing = bearing.array() + global_odom.theta();
-
 }
 
-void cone_car_to_global_frame(vector<Pose2> &cone_obs,
-                            Pose2 &global_odom, Pose2 &prev_pose,
-                            MatrixXd global_cone_x, MatrixXd global_cone_y) {
+void cone_to_global_frame(MatrixXd &range, MatrixXd &bearing,
+                            MatrixXd &global_cone_x, MatrixXd &global_cone_y,
+                            vector<Point2> &cone_obs,
+                            Pose2 &cur_pose, Pose2 &prev_pose) {
 
-    MatrixXd range(cone_obs.size(), 1);
-    MatrixXd bearing(cone_obs.size(), 1);
-
-
-    calc_cone_range(range);
-    calc_cone_bearing_from_car(bearing, global_odom);
-    global_cone_x = prev_pose.x() + range.array()*bearing.array().cos();
-    global_cone_y = prev_pose.y() + range.array()*bearing.array().sin();
+    MatrixXd global_bearing = bearing.array() + cur_pose.theta();
+    global_cone_x = prev_pose.x() + range.array()*global_bearing.array().cos();
+    global_cone_y = prev_pose.y() + range.array()*global_bearing.array().sin();
 
 }
 
