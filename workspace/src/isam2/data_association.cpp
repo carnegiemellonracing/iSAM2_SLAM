@@ -25,7 +25,7 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
     for (int i = 0; i < num_obs; i++) {
         for (int j = 0; j < slam_est.size(); j++) {
 
-            MatrixXd diff(2, 1);
+            MatrixXd diff(1, 2);
             diff << global_cone_x(i,0) - slam_est.at(j).x(),
                     global_cone_y(i,0) - slam_est.at(j).y();
 
