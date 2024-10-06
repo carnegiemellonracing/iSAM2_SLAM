@@ -44,18 +44,22 @@ void find_new_cones(vector<tuple<Point2, double, int>> &old_cones,
             vector<Point2> &cone_obs, vector<double> &m_dist, int n_landmarks,
             rclcpp::Logger &logger) {
 
-    int lo, hi = 0;
+    int lo = 0;
+    int hi = 0;
+
     for (int i = 0; i < cone_obs.size(); i++) {
         hi += n_landmarks + 1;
         vector<double>::iterator min_dist = min_element(m_dist.begin() + lo,
                                                         m_dist.begin() + hi);
         int min_id = distance(m_dist.begin() + lo, min_dist);
-
+        // RCLCPP_INFO(logger, "num_obs = %d \t lo: %d | hi: %d", cone_obs.size(), lo, hi);
+        // RCLCPP_INFO(logger, "min_id: %d", min_id);
         if (min_id == n_landmarks) {
             //RCLCPP_INFO(logger, "adding new cone...");
+            Point2 global_cone_pos = Point2(global_cone_x(i,0), global_cone_y(i,0));
             new_cones.emplace_back(cone_obs.at(i),
                                     bearing(i, 0),
-                                    Point2(global_cone_x(i,0), global_cone_y(i,0)));
+                                    global_cone_pos);
             //RCLCPP_INFO(logger, "new cone added");
         } else {
             //RCLCPP_INFO(logger, "updating old cone...");
