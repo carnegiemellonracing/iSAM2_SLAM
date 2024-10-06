@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import copy
 
 fig = plt.figure()
 plt.ion()
@@ -17,6 +18,7 @@ while run:
     landmarks = np.array([])
     poses = np.array([])
 
+    cur_landmark =np.array([])
     i = 1
     pose = 0
     landmark = 0
@@ -42,22 +44,34 @@ while run:
                     temp = temp.astype(float)
                     if(poses.size == 0):
                         poses = temp
-
                     else:
                         poses = np.vstack((poses,temp))
                     pose = 0
                 elif landmark == 1:
                     # pass
-                    temp = line[1:len(line)-1]
-                    temp = np.array(temp.split(','))
-                    temp = temp.astype(float)
+                    # temp = line[1:len(line)-1]
+                    # temp = np.array(temp.split(','))
+                    # temp = temp.astype(float)
 
-                    if(landmarks.size == 0):
-                        landmarks = temp
+                    # Case on the line:
+                    if line == "]":
+                        if(landmarks.size == 0):
+                            landmarks = cur_landmark
+                            cur_landmark = np.array([])
+                        else:
+                            landmarks = np.vstack((landmarks, cur_landmark))
+                            cur_landmark = np.array([])
 
-                    else:
-                        landmarks = np.vstack((landmarks,temp))
-                    landmark = 0
+                        landmark = 0
+                    elif line == "[":
+                        continue
+                    elif cur_landmark.size == 0:
+                        x_coord = float(line[0:len(line) - 1])
+                        cur_landmark = np.append(cur_landmark, [x_coord])
+                    elif cur_landmark.size == 1:
+                        y_coord = float(line[0:len(line)])
+                        cur_landmark = np.append(cur_landmark, [y_coord])
+
     # if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2):
     if ((poses.shape[0]) != 0) and ((landmarks.shape[0]) != 0) and (poses.ndim==2 and landmarks.ndim==2):
         scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
