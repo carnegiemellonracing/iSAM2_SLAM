@@ -49,6 +49,7 @@
 static const long QUEUE_SIZE = 20;
 static const long SLAM_DELAY_MICROSEC = 50000;
 using namespace std;
+using namespace std::chrono;
 using std::placeholders::_1;
 using std::placeholders::_2;
 using std::placeholders::_3;
@@ -152,7 +153,10 @@ private:
     {
         RCLCPP_INFO(this->get_logger(), "\n \t vehicle velocity callback! | time: %d\n",
                                                 vehicle_vel_data->header.stamp.sec);
+        RCLCPP_INFO(this->get_logger(), "init vel: dx=%f | dy%f",
+                            vehicle_vel_data->twist.linear.x, vehicle_vel_data->twist.linear.y);
         velocity_msg_to_point2(vehicle_vel_data, velocity);
+        RCLCPP_INFO(this->get_logger(), "new vel: dx=%f | dy%f", velocity.x(), velocity.y());
     }
 
     void vehicle_angle_callback(
@@ -180,7 +184,11 @@ private:
     void run_slam()
     {
         RCLCPP_INFO(this->get_logger(), "Running SLAM");
-
+        cur_slam_time = high_resolution_clock::now();
+        duration<double> dur = duration_cast<duration<double>>(cur_slam_time - prev_slam_time);
+        prev_slam_time = cur_slam_time;
+        dt = dur.count();
+        RCLCPP_INFO(this->get_logger(), "dur: %f | dt: %f", dur.count(), dt);
        /* We should be passing in odometry info so that SLAM can do motion modeling.
 	    * At each time stamp, we either:
 	    * a.) Receive GPS message:

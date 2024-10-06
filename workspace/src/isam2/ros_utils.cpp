@@ -47,7 +47,7 @@ using namespace Eigen;
 void imu_axes_to_DV_axes(double &x, double &y) {
     double temp_x = x;
     x = -1 * y;
-    y = x;
+    y = temp_x;
 }
 
 void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
@@ -92,10 +92,12 @@ void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr
     double qx = vehicle_angle_data->quaternion.x;
     double qy = vehicle_angle_data->quaternion.y;
     double qz = vehicle_angle_data->quaternion.z;
-    imu_axes_to_DV_axes(qx, qy);
 
     yaw = atan2(2 * (qz * qw + qx * qy),
                              -1 + 2 * (qw * qw + qx * qx));
+    // DV axes: y forwards and x right => need to rotate IMU axes clockwise
+    yaw -=  (M_PI / 2);
+
 }
 
 void motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
