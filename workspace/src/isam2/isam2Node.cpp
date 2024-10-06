@@ -62,7 +62,7 @@ public:
     {
         const rmw_qos_profile_t best_effort_profile = {
             RMW_QOS_POLICY_HISTORY_KEEP_LAST,
-            10,
+            20,
             RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
             RMW_QOS_POLICY_DURABILITY_VOLATILE,
             RMW_QOS_DEADLINE_DEFAULT,
@@ -103,14 +103,15 @@ public:
                             message_filters::sync_policies::ApproximateTime<
                                     interfaces::msg::ConeArray,
                                     geometry_msgs::msg::TwistStamped,
-                                    geometry_msgs::msg::QuaternionStamped>(10),
+                                    geometry_msgs::msg::QuaternionStamped>(20),
                                     cone_sub, vehicle_vel_sub,vehicle_angle_sub);
-        sync->setAgePenalty(0.5);
+        sync->setAgePenalty(0.1);
         sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
 
         dt = .1;
 
         init_odom = gtsam::Pose2(-1,-1,-1);
+        init_velocity = gtsam::Point2(-1, -1);
         file_opened = true;
 
         prev_slam_time = high_resolution_clock::now();
@@ -155,7 +156,8 @@ private:
                                                 vehicle_vel_data->header.stamp.sec);
         RCLCPP_INFO(this->get_logger(), "init vel: dx=%f | dy%f",
                             vehicle_vel_data->twist.linear.x, vehicle_vel_data->twist.linear.y);
-        velocity_msg_to_point2(vehicle_vel_data, velocity);
+        velocity_msg_to_point2(vehicle_vel_data, init_velocity, velocity);
+
         RCLCPP_INFO(this->get_logger(), "new vel: dx=%f | dy%f", velocity.x(), velocity.y());
     }
 
@@ -165,20 +167,16 @@ private:
         RCLCPP_INFO(this->get_logger(), "\n \t vehicle angle callback! | time: %d\n",
                   vehicle_angle_data->header.stamp.sec);
         double yaw = 0;
-        quat_msg_to_yaw(vehicle_angle_data, yaw, this->get_logger());
+        quat_msg_to_yaw(vehicle_angle_data, yaw, init_odom,
+                            global_odom, this->get_logger());
+
         RCLCPP_INFO(this->get_logger(), "final yaw: %f", yaw);
 
        /** At the very beginning, we take the current velocity time stamp.
         * dt = 0 but that's ok because we shouldn't be moving when SLAM
         * starts
         */
-        if (init_odom.x() == -1 && init_odom.y() == -1 && init_odom.theta() == -1)
-        {
-            init_odom = gtsam::Pose2(-1, -1, yaw);
-        }
 
-
-        global_odom = Pose2(-1, -1, yaw - init_odom.theta());
 
     }
 
@@ -220,8 +218,10 @@ private:
                                             interfaces::msg::ConeArray,
                                             geometry_msgs::msg::TwistStamped,
                                             geometry_msgs::msg::QuaternionStamped>>> sync;
-
+    gtsam::Point2 init_velocity;
     gtsam::Point2 velocity;
+
+    gtsam::Pose2 init_odom; // local variable to load odom into SLAM instance
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
     gtsam::Pose2 prev_odom;
     vector<Point2> cones; // local variable to load cone observations into SLAM instance
@@ -230,7 +230,6 @@ private:
     vector<Point2> blue_cones; //local variable to store the blue observed cones
     vector<Point2> yellow_cones; //local variable to store the yellow observed cones
 
-    gtsam::Pose2 init_odom; // local variable to load odom into SLAM instance
 
     bool file_opened;
 

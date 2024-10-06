@@ -78,15 +78,22 @@ void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_
 }
 
 void velocity_msg_to_point2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
-                            Point2 &velocity) {
+                            Point2 &init_velocity, Point2 &velocity) {
     double dx = vehicle_vel_data->twist.linear.x;
     double dy = vehicle_vel_data->twist.linear.y;
     imu_axes_to_DV_axes(dx, dy);
     velocity = Point2(dx, dy);
+
+    //if (init_velocity.x() == -1 && init_velocity.y() == -1) {
+    //    init_velocity = Pose2(velocity.x(), velocity.y());
+    //}
+    //velocity = Point2(velocity.x() - init_velocity.x(), velocity.y() - init_velocity.y());
 }
 
-void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
-                        double &yaw, rclcpp::Logger logger) {
+void quat_msg_to_yaw(
+    const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
+                        double &yaw, Pose2 &init_odom, Pose2 &global_odom,
+                        rclcpp::Logger logger) {
     double qw = vehicle_angle_data->quaternion.w;
     double qx = vehicle_angle_data->quaternion.x;
     double qy = vehicle_angle_data->quaternion.y;
@@ -95,7 +102,18 @@ void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr
     double imu_yaw = atan2(2 * (qz * qw + qx * qy),
                     -1 + 2 * (qw * qw + qx * qx));
     // DV axes: y forwards and x right => need to rotate IMU axes clockwise
-    yaw = imu_yaw - (M_PI / 2.0);
+    //yaw = imu_yaw - (M_PI / 2.0);
+    yaw = imu_yaw;
+
+
+    //if (init_odom.x() == -1 && init_odom.y() == -1 && init_odom.theta() == -1)
+    //{
+    //    init_odom = gtsam::Pose2(-1, -1, yaw);
+    //}
+
+
+    //global_odom = Pose2(-1, -1, yaw - init_odom.theta());
+    global_odom = Pose2(-1, -1, yaw);
 
 }
 

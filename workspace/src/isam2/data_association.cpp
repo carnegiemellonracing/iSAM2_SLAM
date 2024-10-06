@@ -14,7 +14,7 @@
 #include <float.h>
 
 #include "ros_utils.cpp"
-const double M_DIST_TH = 120;
+const double M_DIST_TH = 200;
 
 using namespace Eigen;
 
@@ -83,20 +83,16 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
     calc_cone_range_from_car(range, cone_obs);
     calc_cone_bearing_from_car(bearing, cone_obs);
 
-    RCLCPP_INFO(logger, "calc bearing and range");
     cone_to_global_frame(range, bearing,
                          global_cone_x, global_cone_y,
-                         cone_obs, cur_pose, prev_pose);
+                         cone_obs, cur_pose);
 
-    RCLCPP_INFO(logger, "calc global cones");
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
                     slam_est, slam_mcov, logger);
 
-    RCLCPP_INFO(logger, "populated m_dist");
     find_new_cones(old_cones, new_cones,
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
-    RCLCPP_INFO(logger, "identified new cones");
 }
 
 

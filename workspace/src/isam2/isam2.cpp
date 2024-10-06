@@ -51,42 +51,11 @@ static thread all_threads[NUM_THREADS];
 static condition_variable cv;
 static condition_variable step_cv;
 
-// static const double M_DIST_TH = 85;
-// static const double M_DIST_TH = 0.48999999463; //real data 0.01, 0.01, 0.5 LandmarkNoiseModel
-static const double M_DIST_TH_STRAIGHTS = 85;
-static const double M_DIST_TH_TURNS = 100;
-//static const double M_DIST_TH_TURNS = 0.089999; //could work really well for 0.1, 0.1, 0.28; dyaw = 1.35
-static const double M_DIST_TH_HI = 40;
-static const double M_DIST_TH_LO = 20;
-
-static const double TURNING_CONSTANT_LOW = 0.10;
-static const double TURNING_CONSTANT_HI = 0.30;
-// static const double M_DIST_TH = 4.5;
-
-// static const double M_DIST_TH = 45; // used to be 45 lmao
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;
 static vector<int> blue_cone_IDs;
 static vector<int> yellow_cone_IDs;
 
-static vector<tuple<void*, char>> work_queue;
-static mutex work_queue_mutex;
-static mutex isam2_mutex;
-static mutex assoc_wait_mutex;
-static mutex minID_wait_mutex;
-static mutex step_wait_mutex;
-static atomic<int> assoc_counter(0);
-static atomic<int> minID_counter(0);
-
-atomic<bool> prev_DA_done;
-
-
-
-// static const float DT = 0.1;
-// static const float SIM_TIME = 50.0;
-// static const int LM_SIZE = 2;
-// static const int STATE_SIZE = 3;
-// static const int N_STEP = 100;
 
 class slamISAM {
 
@@ -152,7 +121,6 @@ public:
     gtsam::Vector OdomNoiseModel;
     noiseModel::Diagonal::shared_ptr odom_model;
 
-    double m_dist_th;
 
     slamISAM(rclcpp::Logger logger) {
         parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
@@ -193,7 +161,6 @@ public:
 
 
 
-        m_dist_th = M_DIST_TH_TURNS;
     }
 
     void update_pose(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
