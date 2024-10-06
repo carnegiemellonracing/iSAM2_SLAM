@@ -117,7 +117,7 @@ void calc_cone_range_from_car(MatrixXd &range, vector<Point2> &cone_obs) {
 
 	for (int i = 0; i < num_obs; i++)
 	{
-	    range(i) = norm2(cone_obs.at(i));
+	    range(i,0) = norm2(cone_obs.at(i));
 	}
 }
 
@@ -128,7 +128,7 @@ void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs) {
 
     for (int i = 0; i < num_obs; i++)
     {
-        bearing(i) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
+        bearing(i,0) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
     }
 }
 

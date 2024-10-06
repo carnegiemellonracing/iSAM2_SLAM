@@ -169,13 +169,12 @@ public:
 
         orange_cones = std::vector<Point2>();
 
-        LandmarkNoiseModel = gtsam::Vector(3);
+        LandmarkNoiseModel = gtsam::Vector(2);
         // used to be 0.01 for real data
         // 0 for EUFS_SIM
         //TODO: have a different noise model at the beginning
         LandmarkNoiseModel(0) = 0;
         LandmarkNoiseModel(1) = 0;
-        LandmarkNoiseModel(2) = 0;
         landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         // used to be all 0s for EUFS_SIM
@@ -208,7 +207,7 @@ public:
             //add prior
             //TODO: need to record the initial bearing because it could be erroneous
             graph.add(prior_factor);
-            values.insert(X(0), gtsam::Pose2(0, 0, global_odom.theta()));
+            values.insert(X(0), Pose2(0, 0, global_odom.theta()));
 
             first_pose_added = true;
 
@@ -231,9 +230,8 @@ public:
             prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
 
             motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom, false);
-
-            gtsam::BetweenFactor<Pose2> odom_factor =
-                                        gtsam::BetweenFactor<Pose2>(X(pose_num - 1),
+            RCLCPP_INFO(logger, "Finished motion model");
+            gtsam::BetweenFactor<Pose2> odom_factor = BetweenFactor<Pose2>(X(pose_num - 1),
                                                                         X(pose_num),
                                                                             odometry,
                                                                             odom_model);
@@ -245,9 +243,12 @@ public:
         graph.resize(0);
         values.clear();
 
+
         if (pose_num > 0) {
             cur_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>();
         }
+
+
 
 
     }
@@ -321,10 +322,11 @@ public:
         Pose2 cur_pose = Pose2(0, 0, 0);
         Pose2 prev_pose = Pose2(0, 0, 0);
         update_pose(cur_pose, prev_pose, global_odom, velocity, dt, false,logger);
+        RCLCPP_INFO(logger, "Finished update_pose");
 
-        vector<Pose2> slam_est = {};
+        vector<Point2> slam_est = {};
         for (int i = 0; i < n_landmarks; i++) {
-            slam_est.push_back(isam2.calculateEstimate(L(i)).cast<Pose2>());
+            slam_est.push_back(isam2.calculateEstimate(L(i)).cast<Point2>());
         }
 
         vector<MatrixXd> slam_mcov = {};
@@ -336,10 +338,11 @@ public:
         vector<tuple<Point2, double, Point2>> new_cones = {};
 
         data_association(old_cones, new_cones, cur_pose, prev_pose,
-                            cone_obs, slam_est, slam_mcov);
-
+                            cone_obs, logger, slam_est, slam_mcov);
+        RCLCPP_INFO(logger, "Finished data_association");
 
         update_landmarks(old_cones, new_cones);
+        RCLCPP_INFO(logger, "Finished update_landmarks");
 
         pose_num++;
         /* Create a boolean to check if mahalanobis calcs are done for current
