@@ -35,7 +35,6 @@
 #include <deque>
 #include <cmath>
 #include <chrono>
-
 using namespace std;
 using namespace gtsam;
 using namespace Eigen;
@@ -87,16 +86,16 @@ void velocity_msg_to_point2(const geometry_msgs::msg::TwistStamped::ConstSharedP
 }
 
 void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
-                        double &yaw) {
+                        double &yaw, rclcpp::Logger logger) {
     double qw = vehicle_angle_data->quaternion.w;
     double qx = vehicle_angle_data->quaternion.x;
     double qy = vehicle_angle_data->quaternion.y;
     double qz = vehicle_angle_data->quaternion.z;
 
-    yaw = atan2(2 * (qz * qw + qx * qy),
-                             -1 + 2 * (qw * qw + qx * qx));
+    double imu_yaw = atan2(2 * (qz * qw + qx * qy),
+                    -1 + 2 * (qw * qw + qx * qx));
     // DV axes: y forwards and x right => need to rotate IMU axes clockwise
-    yaw -=  (M_PI / 2);
+    yaw = imu_yaw - (M_PI / 2.0);
 
 }
 
@@ -136,12 +135,11 @@ void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs) {
 
 void cone_to_global_frame(MatrixXd &range, MatrixXd &bearing,
                             MatrixXd &global_cone_x, MatrixXd &global_cone_y,
-                            vector<Point2> &cone_obs,
-                            Pose2 &cur_pose, Pose2 &prev_pose) {
+                            vector<Point2> &cone_obs, Pose2 &cur_pose) {
 
     MatrixXd global_bearing = bearing.array() + cur_pose.theta();
-    global_cone_x = prev_pose.x() + range.array()*global_bearing.array().cos();
-    global_cone_y = prev_pose.y() + range.array()*global_bearing.array().sin();
+    global_cone_x = cur_pose.x() + range.array()*global_bearing.array().cos();
+    global_cone_y = cur_pose.y() + range.array()*global_bearing.array().sin();
 
 }
 

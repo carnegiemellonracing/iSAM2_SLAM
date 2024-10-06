@@ -105,7 +105,7 @@ public:
                                     geometry_msgs::msg::TwistStamped,
                                     geometry_msgs::msg::QuaternionStamped>(10),
                                     cone_sub, vehicle_vel_sub,vehicle_angle_sub);
-        sync->setAgePenalty(0.50);
+        sync->setAgePenalty(0.5);
         sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
 
         dt = .1;
@@ -165,7 +165,8 @@ private:
         RCLCPP_INFO(this->get_logger(), "\n \t vehicle angle callback! | time: %d\n",
                   vehicle_angle_data->header.stamp.sec);
         double yaw = 0;
-        quat_msg_to_yaw(vehicle_angle_data, yaw);
+        quat_msg_to_yaw(vehicle_angle_data, yaw, this->get_logger());
+        RCLCPP_INFO(this->get_logger(), "final yaw: %f", yaw);
 
        /** At the very beginning, we take the current velocity time stamp.
         * dt = 0 but that's ok because we shouldn't be moving when SLAM
