@@ -103,7 +103,7 @@ void quat_msg_to_yaw(
                     -1 + 2 * (qw * qw + qx * qx));
     // DV axes: y forwards and x right => need to rotate IMU axes clockwise
     //yaw = imu_yaw - (M_PI / 2.0);
-    yaw = imu_yaw + (M_PI / 2.0);
+    yaw = imu_yaw + (M_PI / 2.0); //correct
 
 
     //if (init_odom.x() == -1 && init_odom.y() == -1 && init_odom.theta() == -1)
@@ -147,7 +147,7 @@ void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs) {
 
     for (int i = 0; i < num_obs; i++)
     {
-        bearing(i,0) = atan2(cone_obs.at(i).y(), cone_obs.at(i).x());
+        bearing(i,0) = atan2(-cone_obs.at(i).x(), cone_obs.at(i).y());
     }
 }
 
