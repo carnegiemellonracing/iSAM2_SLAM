@@ -103,7 +103,7 @@ void quat_msg_to_yaw(
                     -1 + 2 * (qw * qw + qx * qx));
     // DV axes: y forwards and x right => need to rotate IMU axes clockwise
     //yaw = imu_yaw - (M_PI / 2.0);
-    yaw = imu_yaw;
+    yaw = imu_yaw + (M_PI / 2.0);
 
 
     //if (init_odom.x() == -1 && init_odom.y() == -1 && init_odom.theta() == -1)

@@ -43,13 +43,13 @@ using namespace std;
 using namespace gtsam;
 using namespace std::chrono;
 
-static const int NUM_THREADS = 3;
+// static const int NUM_THREADS = 3;
 
 /* Minimum m_dist length before paralellizing */
-static const int MIN_M_DIST = NUM_THREADS;
-static thread all_threads[NUM_THREADS];
-static condition_variable cv;
-static condition_variable step_cv;
+// static const int MIN_M_DIST = NUM_THREADS;
+// static thread all_threads[NUM_THREADS];
+// static condition_variable cv;
+// static condition_variable step_cv;
 
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;

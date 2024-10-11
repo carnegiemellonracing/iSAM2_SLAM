@@ -37,17 +37,13 @@
 
 
 #define CONE_DATA_TOPIC "/perc_cones"
-#define VEHICLE_POS_TOPIC "/gnss"
+#define VEHICLE_POS_TOPIC "/filter/positionlla" // currently unused
 #define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
 #define VEHICLE_VEL_TOPIC "/filter/twist"
-#define MSG_CACHE_SIZE 6
-// #define VECHICLE_VEL_TOPIC ""
 
-//test on hybrid-3 fourth run
-// #define TURNING_CONSTANT_LOW 0.10
-// #define TURNING_CONSTANT_HI 0.30
 static const long QUEUE_SIZE = 20;
-static const long SLAM_DELAY_MICROSEC = 50000;
+// static const long SLAM_DELAY_MICROSEC = 50000;
+
 using namespace std;
 using namespace std::chrono;
 using std::placeholders::_1;
@@ -78,19 +74,7 @@ public:
                best_effort_profile.depth),
            best_effort_profile);
 
-        //cone_sub = this->create_subscription<interfaces::msg::ConeArray>(
-        //CONE_DATA_TOPIC,best_effort_qos,std::bind(&SLAMValidation::cone_callback,this,_1));
-
-        //bring back///////////////
-        //vehicle_pos_sub = this->create_subscription<sensor_msgs::msg::NavSatFix>(
-        //VEHICLE_POS_TOPIC, 10, std::bind(&SLAMValidation::vehicle_pos_callback, this, _1));
-
-        //vehicle_angle_sub = this->create_subscription<geometry_msgs::msg::QuaternionStamped>(
-        //VEHICLE_ANGLE_TOPIC, 10, std::bind(&SLAMValidation::vehicle_angle_callback, this, _1));
-
-        //vehicle_vel_sub = this->create_subscription<geometry_msgs::msg::TwistStamped>(
-        //VEHICLE_VEL_TOPIC, 10, std::bind(&SLAMValidation::vehicle_vel_callback, this, _1));
-        ////////////////////////
+        
         cone_sub.subscribe(this, CONE_DATA_TOPIC, best_effort_profile);
         vehicle_angle_sub.subscribe(this, VEHICLE_ANGLE_TOPIC, best_effort_profile);
         vehicle_vel_sub.subscribe(this, VEHICLE_VEL_TOPIC, best_effort_profile);
@@ -105,11 +89,12 @@ public:
                                     geometry_msgs::msg::TwistStamped,
                                     geometry_msgs::msg::QuaternionStamped>(20),
                                     cone_sub, vehicle_vel_sub,vehicle_angle_sub);
-        sync->setAgePenalty(0.1);
+        sync->setAgePenalty(0.11);
         sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
 
         dt = .1;
 
+        //TODO: std::optional where init is set to None
         init_odom = gtsam::Pose2(-1,-1,-1);
         init_velocity = gtsam::Point2(-1, -1);
         file_opened = true;
@@ -125,10 +110,10 @@ private:
                     const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                     const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
         RCLCPP_INFO(this->get_logger(), "Sync Callback");
+        cone_callback(cone_data);
         vehicle_vel_callback(vehicle_vel_data);
         vehicle_angle_callback(vehicle_angle_data);
-        cone_callback(cone_data);
-
+        run_slam();
     }
 
     /* Whenever cone_callback is called, update car pose variables
@@ -146,7 +131,7 @@ private:
 
         /* Process cones */
         cone_msg_to_vectors(cone_data, cones, blue_cones, yellow_cones, orange_cones);
-        run_slam();
+        
     }
 
 
@@ -171,12 +156,6 @@ private:
                             global_odom, this->get_logger());
 
         RCLCPP_INFO(this->get_logger(), "final yaw: %f", yaw);
-
-       /** At the very beginning, we take the current velocity time stamp.
-        * dt = 0 but that's ok because we shouldn't be moving when SLAM
-        * starts
-        */
-
 
     }
 
