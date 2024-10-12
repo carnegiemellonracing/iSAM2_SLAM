@@ -154,9 +154,9 @@ public:
 
         /* Go from 1 pose to another pose*/
         OdomNoiseModel = gtsam::Vector(3);
-        OdomNoiseModel(0) = 0;
-        OdomNoiseModel(1) = 0;
-        OdomNoiseModel(2) = 0;
+        OdomNoiseModel(0) = 0.01;
+        OdomNoiseModel(1) = 0.01;
+        OdomNoiseModel(2) = 0.02;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
