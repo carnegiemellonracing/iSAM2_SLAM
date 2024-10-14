@@ -8,6 +8,7 @@
  * is always the first parameter that is passed in.
  */
 #include <memory>
+#include <optional>
 
 #include "rclcpp/rclcpp.hpp"
 #include <message_filters/subscriber.h>
@@ -83,17 +84,11 @@ void velocity_msg_to_point2(const geometry_msgs::msg::TwistStamped::ConstSharedP
     double dy = vehicle_vel_data->twist.linear.y;
     imu_axes_to_DV_axes(dx, dy);
     velocity = Point2(dx, dy);
-
-    //if (init_velocity.x() == -1 && init_velocity.y() == -1) {
-    //    init_velocity = Pose2(velocity.x(), velocity.y());
-    //}
-    //velocity = Point2(velocity.x() - init_velocity.x(), velocity.y() - init_velocity.y());
 }
 
 void quat_msg_to_yaw(
     const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
-                        double &yaw, Pose2 &init_odom, Pose2 &global_odom,
-                        rclcpp::Logger logger) {
+                        double &yaw, Pose2 &global_odom, rclcpp::Logger logger) {
     double qw = vehicle_angle_data->quaternion.w;
     double qx = vehicle_angle_data->quaternion.x;
     double qy = vehicle_angle_data->quaternion.y;
@@ -101,20 +96,9 @@ void quat_msg_to_yaw(
 
     double imu_yaw = atan2(2 * (qz * qw + qx * qy),
                     -1 + 2 * (qw * qw + qx * qx));
-    // DV axes: y forwards and x right => need to rotate IMU axes clockwise
-    //yaw = imu_yaw - (M_PI / 2.0);
-    yaw = imu_yaw + (M_PI / 2.0); //correct
+    yaw = imu_yaw + (M_PI / 2.0);
 
-
-    //if (init_odom.x() == -1 && init_odom.y() == -1 && init_odom.theta() == -1)
-    //{
-    //    init_odom = gtsam::Pose2(-1, -1, yaw);
-    //}
-
-
-    //global_odom = Pose2(-1, -1, yaw - init_odom.theta());
-    global_odom = Pose2(-1, -1, yaw);
-
+    global_odom = Pose2(global_odom.x(), global_odom.y(), yaw);
 }
 
 void motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
@@ -161,7 +145,41 @@ void cone_to_global_frame(MatrixXd &range, MatrixXd &bearing,
 
 }
 
+double degrees_to_radians(double degrees) {
+    return degrees * M_PI / 180.0;
+}
 
+void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
+                        Pose2 &global_odom, optional<Pose2> &init_odom) {
+    double latitude = vehicle_pos_data->vector.x;
+    double longitude = vehicle_pos_data->vector.y;
+    //imu_axes_to_DV_axes(latitude, longitude);
+
+    double LAT_DEG_TO_METERS = 111132;
+
+    /* Intuition: Find the radius of the circle at current latitude
+     * Convert the change in longitude to radians
+     * Calculate the distance in meters
+     *
+     * We will use 111320 as our range instead of 111132 because the
+     * Earth is not a perfect sphere
+     */
+
+    /* Represents the radius used to multiply angle in radians */
+    double LON_RAD_TO_METERS = 111320 * cos(degrees_to_radians(latitude));
+
+    double x = LON_RAD_TO_METERS * degrees_to_radians(longitude);
+    double y = LAT_DEG_TO_METERS * latitude;
+
+    if (!(init_odom.has_value())) {
+        init_odom.emplace(x, y, -1);
+    }
+
+    global_odom = Pose2(x - init_odom.value().x(),
+                        y - init_odom.value().y(),
+                        global_odom.theta());
+
+}
 
 
 
