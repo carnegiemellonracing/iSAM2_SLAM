@@ -141,21 +141,21 @@ public:
         // used to be 0.01 for real data
         // 0 for EUFS_SIM
         //TODO: have a different noise model at the beginning
-        LandmarkNoiseModel(0) = 0;
-        LandmarkNoiseModel(1) = 0;
+        LandmarkNoiseModel(0) = 0.04;
+        LandmarkNoiseModel(1) = 0.04;
         landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         // used to be all 0s for EUFS_SIM
         PriorNoiseModel = gtsam::Vector(3);
         PriorNoiseModel(0) = 0;
         PriorNoiseModel(1) = 0;
-        PriorNoiseModel(2) = 0;
+        PriorNoiseModel(2) = 0.02;
         prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
         /* Go from 1 pose to another pose*/
         OdomNoiseModel = gtsam::Vector(3);
-        OdomNoiseModel(0) = 0.01;
-        OdomNoiseModel(1) = 0.01;
+        OdomNoiseModel(0) = 0;
+        OdomNoiseModel(1) = 0;
         OdomNoiseModel(2) = 0.02;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
@@ -194,20 +194,33 @@ public:
             //Motion model
             Pose2 new_pose = Pose2(0, 0, 0);
             Pose2 odometry = Pose2(0, 0, 0);
+
             prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
-            
-            RCLCPP_INFO(logger, "velocity; dx: %f | dy: %f", velocity.x(), velocity.y());
-            velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom, false);
+
+           
+            //velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom, false);
+            //RCLCPP_INFO(logger, "velocity position; x: %.10f | y: %.10f", new_pose.x(), new_pose.y());
+
+            gps_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom, false);
+            RCLCPP_INFO(logger, "GPS position; x: %.10f | y: %.10f", new_pose.x(), new_pose.y());
+
             RCLCPP_INFO(logger, "Finished motion model");
+
+
             gtsam::BetweenFactor<Pose2> odom_factor = BetweenFactor<Pose2>(X(pose_num - 1),
                                                                         X(pose_num),
                                                                             odometry,
                                                                             odom_model);
             graph.add(odom_factor);
             values.insert(X(pose_num), new_pose);
+            // Tortuga debugging
+            //if (pose_num == 50) {
+            //    assert(1 == 0);
+            //}
         }
 
 
+        // Need to add cur car pose to the graph for data association later
         isam2.update(graph, values);
         graph.resize(0);
         values.clear();
@@ -287,7 +300,7 @@ public:
         {
             auto end = high_resolution_clock::now();
             auto d = duration_cast<microseconds>(end - start);
-            RCLCPP_INFO(logger, "Data Association time: %d", d.count());
+            RCLCPP_INFO(logger, "Step time: %d", d.count());
         }
 
         start = high_resolution_clock::now();
@@ -310,9 +323,12 @@ public:
         vector<tuple<Point2, double, int>> old_cones = {};
         vector<tuple<Point2, double, Point2>> new_cones = {};
 
+        auto start_DA = high_resolution_clock::now();
         data_association(old_cones, new_cones, cur_pose, prev_pose,
                             cone_obs, logger, slam_est, slam_mcov);
-        RCLCPP_INFO(logger, "Finished data_association");
+        auto end_DA = high_resolution_clock::now();
+        auto dur_DA = duration_cast<microseconds>(end_DA - start_DA);
+        RCLCPP_INFO(logger, "Data association time: %d", dur_DA.count());
 
         update_landmarks(old_cones, new_cones);
         RCLCPP_INFO(logger, "Finished update_landmarks");

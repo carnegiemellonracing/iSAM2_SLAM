@@ -116,8 +116,8 @@ void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, d
 void gps_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
                     Pose2 &prev_pose, Pose2 global_odom, bool new_gps) {
     new_pose = Pose2(global_odom.x(), global_odom.y(), global_odom.theta());
-    odometry = Pose2(velocity.x() * dt,
-                        velocity.y() * dt,
+    odometry = Pose2(new_pose.x() - prev_pose.x(),
+                        new_pose.y() - prev_pose.y(),
                         global_odom.theta() - prev_pose.theta());
 }
 
@@ -171,7 +171,7 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
     latitude -= init_lon_lat.value().y();
     RCLCPP_INFO(logger, "init_lon_lat: %.10f | %.10f", init_lon_lat.value().x(), 
                                                 init_lon_lat.value().y());
-    
+    RCLCPP_INFO(logger, "cur lon_lat: %.10f | %.10f", longitude, latitude);
     RCLCPP_INFO(logger, "cur change in lon_lat: %.10f | %.10f", 
                                             longitude, latitude);
     double LAT_DEG_TO_METERS = 111132;
@@ -180,15 +180,20 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
      * Convert the change in longitude to radians
      * Calculate the distance in meters
      *
-     * We will use 111320 as our range instead of 111132 because the
-     * Earth is not a perfect sphere
+     * The range should be the earth's radius: 6378137 meters.
+     * The radius of the circle at current latitude: 6378137 * cos(latitude_rads)
+     * To get the longitude, we need to convert change in longitude to radians
+     * - longitude_rads = longitude * (M_PI / 180.0)
+     *
+     * Observe: 111320 = 6378137 * M_PI / 180.0
      */
 
     /* Represents the radius used to multiply angle in radians */
-    double LON_RAD_TO_METERS = 111320 * cos(degrees_to_radians(latitude));
+    double LON_DEG_TO_METERS = 111320 * cos(degrees_to_radians(latitude));
 
-    double x = LON_RAD_TO_METERS * degrees_to_radians(longitude);
+    double x = LON_DEG_TO_METERS * longitude;
     double y = LAT_DEG_TO_METERS * latitude;
+    imu_axes_to_DV_axes(x, y);
 
     
 

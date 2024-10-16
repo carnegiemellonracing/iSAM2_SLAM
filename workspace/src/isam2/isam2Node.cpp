@@ -167,7 +167,7 @@ private:
         double yaw = 0;
         quat_msg_to_yaw(vehicle_angle_data, yaw, global_odom, this->get_logger());
 
-        RCLCPP_INFO(this->get_logger(), "final yaw: %f", yaw);
+        RCLCPP_INFO(this->get_logger(), "yaw: %.10f", yaw);
 
     }
 
