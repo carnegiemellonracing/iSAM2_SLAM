@@ -195,8 +195,9 @@ public:
             Pose2 new_pose = Pose2(0, 0, 0);
             Pose2 odometry = Pose2(0, 0, 0);
             prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
+            
             RCLCPP_INFO(logger, "velocity; dx: %f | dy: %f", velocity.x(), velocity.y());
-            motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom, false);
+            velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom, false);
             RCLCPP_INFO(logger, "Finished motion model");
             gtsam::BetweenFactor<Pose2> odom_factor = BetweenFactor<Pose2>(X(pose_num - 1),
                                                                         X(pose_num),
@@ -205,6 +206,7 @@ public:
             graph.add(odom_factor);
             values.insert(X(pose_num), new_pose);
         }
+
 
         isam2.update(graph, values);
         graph.resize(0);
@@ -263,6 +265,10 @@ public:
             values.insert(L(n_landmarks), cone_global_frame);
             n_landmarks++;
         }
+
+        isam2.update(graph, values);
+        graph.resize(0);
+        values.clear();
     }
 
 

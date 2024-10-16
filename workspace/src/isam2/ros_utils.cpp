@@ -101,7 +101,7 @@ void quat_msg_to_yaw(
     global_odom = Pose2(global_odom.x(), global_odom.y(), yaw);
 }
 
-void motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
+void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
                     Pose2 &prev_pose, Pose2 global_odom, bool new_gps) {
 
     new_pose = Pose2(prev_pose.x() + velocity.x() * dt,
@@ -111,6 +111,14 @@ void motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
     odometry = Pose2(velocity.x() * dt,
                             velocity.y() * dt,
                             global_odom.theta() - prev_pose.theta());
+}
+
+void gps_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
+                    Pose2 &prev_pose, Pose2 global_odom, bool new_gps) {
+    new_pose = Pose2(global_odom.x(), global_odom.y(), global_odom.theta());
+    odometry = Pose2(velocity.x() * dt,
+                        velocity.y() * dt,
+                        global_odom.theta() - prev_pose.theta());
 }
 
 
@@ -150,11 +158,22 @@ double degrees_to_radians(double degrees) {
 }
 
 void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
-                        Pose2 &global_odom, optional<Pose2> &init_odom) {
+                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
+    /* Doesn't depend on imu axes. These are global coordinates */
     double latitude = vehicle_pos_data->vector.x;
     double longitude = vehicle_pos_data->vector.y;
-    //imu_axes_to_DV_axes(latitude, longitude);
 
+    if (!(init_lon_lat.has_value())) {
+        init_lon_lat.emplace(longitude, latitude);
+    }
+
+    longitude -= init_lon_lat.value().x();
+    latitude -= init_lon_lat.value().y();
+    RCLCPP_INFO(logger, "init_lon_lat: %.10f | %.10f", init_lon_lat.value().x(), 
+                                                init_lon_lat.value().y());
+    
+    RCLCPP_INFO(logger, "cur change in lon_lat: %.10f | %.10f", 
+                                            longitude, latitude);
     double LAT_DEG_TO_METERS = 111132;
 
     /* Intuition: Find the radius of the circle at current latitude
@@ -171,13 +190,9 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
     double x = LON_RAD_TO_METERS * degrees_to_radians(longitude);
     double y = LAT_DEG_TO_METERS * latitude;
 
-    if (!(init_odom.has_value())) {
-        init_odom.emplace(x, y, -1);
-    }
+    
 
-    global_odom = Pose2(x - init_odom.value().x(),
-                        y - init_odom.value().y(),
-                        global_odom.theta());
+    global_odom = Pose2(x, y, global_odom.theta());
 
 }
 

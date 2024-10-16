@@ -97,7 +97,7 @@ public:
         dt = .1;
 
         //TODO: std::optional where init is set to None
-        init_odom = std::nullopt;
+        init_lon_lat = std::nullopt;
         init_velocity = gtsam::Point2(-1, -1);
         file_opened = true;
 
@@ -143,7 +143,7 @@ private:
     {
         RCLCPP_INFO(this->get_logger(), "\n \t vehicle position callback! | time: %d\n",
                                                 vehicle_pos_data->header.stamp.sec);
-        vector3_msg_to_gps(vehicle_pos_data, global_odom, init_odom);
+        vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
     }
 
 
@@ -210,7 +210,7 @@ private:
     gtsam::Point2 init_velocity;
     gtsam::Point2 velocity;
 
-    optional<gtsam::Pose2> init_odom; // local variable to load odom into SLAM instance
+    optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
     gtsam::Pose2 prev_odom;
     vector<Point2> cones; // local variable to load cone observations into SLAM instance
