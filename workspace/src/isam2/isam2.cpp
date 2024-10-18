@@ -18,7 +18,7 @@
 // graph, and initial guesses for any new variables used in the added factors
 #include <gtsam/nonlinear/NonlinearFactorGraph.h>
 #include <gtsam/nonlinear/Values.h>
-
+#include <gtsam/nonlinear/LevenbergMarquardtOptimizer.h>
 // In GTSAM, measurement functions are represented as 'factors'. Several common
 // factors have been provided with the library for solving robotics/SLAM/Bundle
 // Adjustment problems. Here we will use Projection factors to model the
@@ -141,22 +141,22 @@ public:
         // used to be 0.01 for real data
         // 0 for EUFS_SIM
         //TODO: have a different noise model at the beginning
-        LandmarkNoiseModel(0) = 0.04;
-        LandmarkNoiseModel(1) = 0.04;
+        LandmarkNoiseModel(0) = 0.01;
+        LandmarkNoiseModel(1) = 0.01;
         landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         // used to be all 0s for EUFS_SIM
         PriorNoiseModel = gtsam::Vector(3);
         PriorNoiseModel(0) = 0;
         PriorNoiseModel(1) = 0;
-        PriorNoiseModel(2) = 0.02;
+        PriorNoiseModel(2) = 0.1;
         prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
         /* Go from 1 pose to another pose*/
         OdomNoiseModel = gtsam::Vector(3);
         OdomNoiseModel(0) = 0;
         OdomNoiseModel(1) = 0;
-        OdomNoiseModel(2) = 0.02;
+        OdomNoiseModel(2) = 0.1;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -219,10 +219,11 @@ public:
             //}
         }
 
-
+        //Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
         // Need to add cur car pose to the graph for data association later
+        //RCLCPP_INFO(logger, "optimized pose 0: %d", optimized_val.exists(X(0)));
         isam2.update(graph, values);
-        graph.resize(0);
+        //graph.resize(0);
         values.clear();
 
 
@@ -240,7 +241,7 @@ public:
      * 2nd Point2 for new_cones represents the global position
      */
     void update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
-                        vector<tuple<Point2, double, Point2>> &new_cones) {
+                        vector<tuple<Point2, double, Point2>> &new_cones, rclcpp::Logger logger) {
 
         /* Bearing range factor will need
          * Types for car pose to landmark node (Pose2, Point2)
@@ -278,7 +279,7 @@ public:
             values.insert(L(n_landmarks), cone_global_frame);
             n_landmarks++;
         }
-
+        //Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
         isam2.update(graph, values);
         graph.resize(0);
         values.clear();
@@ -330,7 +331,7 @@ public:
         auto dur_DA = duration_cast<microseconds>(end_DA - start_DA);
         RCLCPP_INFO(logger, "Data association time: %d", dur_DA.count());
 
-        update_landmarks(old_cones, new_cones);
+        update_landmarks(old_cones, new_cones, logger);
         RCLCPP_INFO(logger, "Finished update_landmarks");
 
         pose_num++;
