@@ -141,22 +141,22 @@ public:
         // used to be 0.01 for real data
         // 0 for EUFS_SIM
         //TODO: have a different noise model at the beginning
-        LandmarkNoiseModel(0) = 0.01;
-        LandmarkNoiseModel(1) = 0.01;
+        LandmarkNoiseModel(0) = 0;
+        LandmarkNoiseModel(1) = 0;
         landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
         // used to be all 0s for EUFS_SIM
         PriorNoiseModel = gtsam::Vector(3);
-        PriorNoiseModel(0) = 0;
-        PriorNoiseModel(1) = 0;
-        PriorNoiseModel(2) = 0.1;
+        PriorNoiseModel(0) = 0.1;
+        PriorNoiseModel(1) = 0.1;
+        PriorNoiseModel(2) = 0.001;
         prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
         /* Go from 1 pose to another pose*/
         OdomNoiseModel = gtsam::Vector(3);
-        OdomNoiseModel(0) = 0;
-        OdomNoiseModel(1) = 0;
-        OdomNoiseModel(2) = 0.1;
+        OdomNoiseModel(0) = 0.1;
+        OdomNoiseModel(1) = 0.1;
+        OdomNoiseModel(2) = 0.001;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -213,25 +213,22 @@ public:
                                                                             odom_model);
             graph.add(odom_factor);
             values.insert(X(pose_num), new_pose);
-            // Tortuga debugging
-            //if (pose_num == 50) {
-            //    assert(1 == 0);
-            //}
+
+            /* For optimizatino of poses */
+            //values.insert(X(pose_num - 1), prev_pose);
         }
 
-        //Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
-        // Need to add cur car pose to the graph for data association later
-        //RCLCPP_INFO(logger, "optimized pose 0: %d", optimized_val.exists(X(0)));
+        //Values optimized_values = LevenbergMarquardtOptimizer(graph, values).optimize();
+        //if (pose_num > 0) {
+        //    optimized_values.erase(X(pose_num - 1));
+        //}
+        //isam2.update(graph, optimized_values);
         isam2.update(graph, values);
-        //graph.resize(0);
+        graph.resize(0);
         values.clear();
 
 
-        if (pose_num > 0) {
-            cur_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>();
-        }
-
-
+        cur_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
 
 
     }
@@ -241,7 +238,8 @@ public:
      * 2nd Point2 for new_cones represents the global position
      */
     void update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
-                        vector<tuple<Point2, double, Point2>> &new_cones, rclcpp::Logger logger) {
+                        vector<tuple<Point2, double, Point2>> &new_cones, 
+                        Pose2 &cur_pose,rclcpp::Logger logger) {
 
         /* Bearing range factor will need
          * Types for car pose to landmark node (Pose2, Point2)
@@ -264,7 +262,10 @@ public:
                                             r,
                                             landmark_model));
         }
-
+        isam2.update(graph, values);
+        graph.resize(0);
+        // values should be empty
+        
         for (int n = 0; n < new_cones.size(); n++) {
             Point2 cone_car_frame = get<0>(new_cones.at(n));
             Rot2 b = Rot2::fromAngle(get<1>(new_cones.at(n)));
@@ -279,9 +280,13 @@ public:
             values.insert(L(n_landmarks), cone_global_frame);
             n_landmarks++;
         }
-        //Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
-        isam2.update(graph, values);
-        graph.resize(0);
+        values.insert(X(pose_num), cur_pose);
+        /* All values in graph must be in values paramete */
+        Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
+        optimized_val.erase(X(pose_num));
+        isam2.update(graph, optimized_val);
+        //isam2.update(graph, values);
+        graph.resize(0); //Not resizing your graph will result in long update times
         values.clear();
     }
 
@@ -292,7 +297,7 @@ public:
      *        calculate current pose). Will add data association tasks to the
      *        work queue.
      */
-    void step(auto logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
+    void step(rclcpp::Logger logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
                 vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
                 double dt) {
@@ -331,7 +336,7 @@ public:
         auto dur_DA = duration_cast<microseconds>(end_DA - start_DA);
         RCLCPP_INFO(logger, "Data association time: %d", dur_DA.count());
 
-        update_landmarks(old_cones, new_cones, logger);
+        update_landmarks(old_cones, new_cones, cur_pose, logger);
         RCLCPP_INFO(logger, "Finished update_landmarks");
 
         pose_num++;

@@ -15,7 +15,7 @@
 
 #include "ros_utils.cpp"
 //const double M_DIST_TH = 1200; // Best for velocity motion_model
-const double M_DIST_TH = 0.5;
+const double M_DIST_TH = 0.2;
 
 using namespace Eigen;
 
