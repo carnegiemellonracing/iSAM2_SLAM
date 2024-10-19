@@ -313,9 +313,13 @@ public:
 
         Pose2 cur_pose = Pose2(0, 0, 0);
         Pose2 prev_pose = Pose2(0, 0, 0);
+        auto start_update_pose = high_resolution_clock::now();
         update_pose(cur_pose, prev_pose, global_odom, velocity, dt, false,logger);
-        RCLCPP_INFO(logger, "Finished update_pose");
+        auto end_update_pose = high_resolution_clock::now();
+        auto dur_update_pose = duration_cast<microseconds>(end_update_pose - start_update_pose);
+        RCLCPP_INFO(logger, "update_pose time: %d", dur_update_pose.count());
 
+        auto start_est_retrieval = high_resolution_clock::now();
         vector<Point2> slam_est = {};
         for (int i = 0; i < n_landmarks; i++) {
             slam_est.push_back(isam2.calculateEstimate(L(i)).cast<Point2>());
@@ -325,6 +329,9 @@ public:
         for (int i = 0; i < n_landmarks; i++) {
             slam_mcov.push_back(isam2.marginalCovariance(L(i)));
         }
+        auto end_est_retrieval = high_resolution_clock::now();
+        auto dur_est_retrieval = duration_cast<microseconds>(end_est_retrieval - start_est_retrieval);
+        RCLCPP_INFO(logger, "est_retrieval time: %d", dur_est_retrieval.count());
 
         vector<tuple<Point2, double, int>> old_cones = {};
         vector<tuple<Point2, double, Point2>> new_cones = {};
@@ -336,15 +343,19 @@ public:
         auto dur_DA = duration_cast<microseconds>(end_DA - start_DA);
         RCLCPP_INFO(logger, "Data association time: %d", dur_DA.count());
 
+        auto start_update_landmarks = high_resolution_clock::now();
         update_landmarks(old_cones, new_cones, cur_pose, logger);
-        RCLCPP_INFO(logger, "Finished update_landmarks");
+        auto end_update_landmarks = high_resolution_clock::now();
+        auto dur_update_landmarks = duration_cast<microseconds>(end_update_landmarks - start_update_landmarks);
+        RCLCPP_INFO(logger, "update_landmarks time: %d", dur_update_landmarks.count());
 
         pose_num++;
         /* Create a boolean to check if mahalanobis calcs are done for current
          * time step before proceeding to mahalanobis calcs for next time step
          *
          */
-
+        
+        auto start_vis_setup = high_resolution_clock::now();
         std::ofstream ofs;
         std::ofstream out("squirrel.txt");
         std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
@@ -354,6 +365,9 @@ public:
         estimate.print("Estimate:");
         ofs.close();
         std::cout.rdbuf(coutbuf); //reset to standard output again
+        auto end_vis_setup = high_resolution_clock::now();
+        auto dur_vis_setup = duration_cast<microseconds>(end_vis_setup - start_vis_setup);
+        RCLCPP_INFO(logger, "vis_setup time: %d", dur_vis_setup.count());
 
 
         //calculate estimate of robot state

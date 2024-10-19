@@ -169,11 +169,13 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
 
     longitude -= init_lon_lat.value().x();
     latitude -= init_lon_lat.value().y();
+    /* Print statements for longitude and latitude debugging
     RCLCPP_INFO(logger, "init_lon_lat: %.10f | %.10f", init_lon_lat.value().x(), 
                                                 init_lon_lat.value().y());
     RCLCPP_INFO(logger, "cur lon_lat: %.10f | %.10f", longitude, latitude);
     RCLCPP_INFO(logger, "cur change in lon_lat: %.10f | %.10f", 
-                                            longitude, latitude);
+                                            longitude, latitude); */
+
     double LAT_DEG_TO_METERS = 111132;
 
     /* Intuition: Find the radius of the circle at current latitude
@@ -200,13 +202,3 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
     global_odom = Pose2(x, y, global_odom.theta());
 
 }
-
-
-
-
-
-
-
-
-
-

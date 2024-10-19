@@ -126,7 +126,7 @@ private:
      */
     void cone_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data)
     {
-        RCLCPP_INFO(this->get_logger(), "\n \t cone_callback!");
+        RCLCPP_INFO(this->get_logger(), "\t cone_callback!");
         cones = {};
 
         /* issue these could clear before you're finished with data association. */
@@ -141,7 +141,7 @@ private:
 
     void vehicle_pos_callback(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data)
     {
-        RCLCPP_INFO(this->get_logger(), "\n \t vehicle position callback! | time: %d\n",
+        RCLCPP_INFO(this->get_logger(), "\t vehicle position callback! | time: %d\n",
                                                 vehicle_pos_data->header.stamp.sec);
         vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
     }
@@ -150,25 +150,19 @@ private:
 
     void vehicle_vel_callback(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data)
     {
-        RCLCPP_INFO(this->get_logger(), "\n \t vehicle velocity callback! | time: %d\n",
+        RCLCPP_INFO(this->get_logger(), "\t vehicle velocity callback! | time: %d\n",
                                                 vehicle_vel_data->header.stamp.sec);
-        RCLCPP_INFO(this->get_logger(), "init vel: dx=%f | dy%f",
-                            vehicle_vel_data->twist.linear.x, vehicle_vel_data->twist.linear.y);
         velocity_msg_to_point2(vehicle_vel_data, init_velocity, velocity);
-
-        RCLCPP_INFO(this->get_logger(), "new vel: dx=%f | dy%f", velocity.x(), velocity.y());
     }
 
     void vehicle_angle_callback(
         const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data)
     {
-        RCLCPP_INFO(this->get_logger(), "\n \t vehicle angle callback! | time: %d\n",
+        RCLCPP_INFO(this->get_logger(), "\t vehicle angle callback! | time: %d\n",
                   vehicle_angle_data->header.stamp.sec);
         double yaw = 0;
         quat_msg_to_yaw(vehicle_angle_data, yaw, global_odom, this->get_logger());
-
-        RCLCPP_INFO(this->get_logger(), "yaw: %.10f", yaw);
-
+        //RCLCPP_INFO(this->get_logger(), "yaw: %.10f", yaw);
     }
 
     void run_slam()
@@ -178,7 +172,6 @@ private:
         duration<double> dur = duration_cast<duration<double>>(cur_slam_time - prev_slam_time);
         prev_slam_time = cur_slam_time;
         dt = dur.count();
-        RCLCPP_INFO(this->get_logger(), "dur: %f | dt: %f", dur.count(), dt);
        /* We should be passing in odometry info so that SLAM can do motion modeling.
 	    * At each time stamp, we either:
 	    * a.) Receive GPS message:
