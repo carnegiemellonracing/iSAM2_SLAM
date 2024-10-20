@@ -176,7 +176,7 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
     RCLCPP_INFO(logger, "cur change in lon_lat: %.10f | %.10f", 
                                             longitude, latitude); */
 
-    double LAT_DEG_TO_METERS = 111132;
+    double LAT_DEG_TO_METERS = 111111;
 
     /* Intuition: Find the radius of the circle at current latitude
      * Convert the change in longitude to radians
@@ -191,7 +191,7 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
      */
 
     /* Represents the radius used to multiply angle in radians */
-    double LON_DEG_TO_METERS = 111320 * cos(degrees_to_radians(latitude));
+    double LON_DEG_TO_METERS = 111319.5 * cos(degrees_to_radians(latitude));
 
     double x = LON_DEG_TO_METERS * longitude;
     double y = LAT_DEG_TO_METERS * latitude;

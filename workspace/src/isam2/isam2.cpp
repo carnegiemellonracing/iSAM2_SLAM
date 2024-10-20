@@ -214,15 +214,9 @@ public:
             graph.add(odom_factor);
             values.insert(X(pose_num), new_pose);
 
-            /* For optimizatino of poses */
-            //values.insert(X(pose_num - 1), prev_pose);
         }
 
-        //Values optimized_values = LevenbergMarquardtOptimizer(graph, values).optimize();
-        //if (pose_num > 0) {
-        //    optimized_values.erase(X(pose_num - 1));
-        //}
-        //isam2.update(graph, optimized_values);
+        
         isam2.update(graph, values);
         graph.resize(0);
         values.clear();
