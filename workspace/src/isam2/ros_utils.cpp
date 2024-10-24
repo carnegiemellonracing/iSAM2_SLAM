@@ -102,7 +102,7 @@ void quat_msg_to_yaw(
 }
 
 void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
-                    Pose2 &prev_pose, Pose2 global_odom, bool new_gps) {
+                    Pose2 &prev_pose, Pose2 global_odom) {
 
     new_pose = Pose2(prev_pose.x() + velocity.x() * dt,
                             prev_pose.y() + velocity.y() * dt,
@@ -114,13 +114,29 @@ void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, d
 }
 
 void gps_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
-                    Pose2 &prev_pose, Pose2 global_odom, bool new_gps) {
+                    Pose2 &prev_pose, Pose2 global_odom) {
     new_pose = Pose2(global_odom.x(), global_odom.y(), global_odom.theta());
     odometry = Pose2(new_pose.x() - prev_pose.x(),
                         new_pose.y() - prev_pose.y(),
                         global_odom.theta() - prev_pose.theta());
 }
 
+void gps_velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
+                    Pose2 &prev_pose, Pose2 global_odom) {
+    /* new_pose is calculated using GPS. odometry uses velocity */
+    new_pose = Pose2(global_odom.x(), global_odom.y(), global_odom.theta());
+    odometry = Pose2(velocity.x() * dt, velocity.y() * dt, global_odom.theta() - prev_pose.theta());
+
+}
+
+double header_to_nanosec(const std_msgs::msg::Header &header) {
+    return (header.stamp.sec * (double)1e9) + header.stamp.nanosec;
+}
+
+void header_to_dt(const optional<std_msgs::msg::Header> &prev, const optional<std_msgs::msg::Header> &cur, double &dt) {
+    // dt units is meters per second
+    dt = (header_to_nanosec(cur.value()) - header_to_nanosec(prev.value())) * 1e-9;
+}
 
 /* Vectorized functions */
 void calc_cone_range_from_car(MatrixXd &range, vector<Point2> &cone_obs) {

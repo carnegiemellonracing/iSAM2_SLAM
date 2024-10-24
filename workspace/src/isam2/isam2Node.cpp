@@ -91,7 +91,7 @@ public:
                                     geometry_msgs::msg::TwistStamped,
                                     geometry_msgs::msg::QuaternionStamped>(20),
                                     cone_sub, vehicle_pos_sub, vehicle_vel_sub,vehicle_angle_sub);
-        sync->setAgePenalty(0.11);
+        sync->setAgePenalty(0.09);
         sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3, _4));
 
         dt = .1;
@@ -101,9 +101,7 @@ public:
         init_velocity = gtsam::Point2(-1, -1);
         file_opened = true;
 
-        prev_slam_time = high_resolution_clock::now();
-        cur_slam_time = high_resolution_clock::now();
-
+        prev_filter_time = std::nullopt;
     }
 
 private:
@@ -113,11 +111,23 @@ private:
                     const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                     const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
         RCLCPP_INFO(this->get_logger(), "Sync Callback");
+
+        optional<std_msgs::msg::Header> cur_filter_time(vehicle_pos_data->header);
+        if (!prev_filter_time.has_value()) {
+            prev_filter_time.swap(cur_filter_time);
+            return;
+        }
+
+        header_to_dt(prev_filter_time, cur_filter_time, dt);
+        prev_filter_time.swap(cur_filter_time);
+
         cone_callback(cone_data);
         vehicle_pos_callback(vehicle_pos_data);
         vehicle_vel_callback(vehicle_vel_data);
         vehicle_angle_callback(vehicle_angle_data);
         run_slam();
+
+        
     }
 
 
@@ -168,10 +178,7 @@ private:
     void run_slam()
     {
         RCLCPP_INFO(this->get_logger(), "Running SLAM");
-        cur_slam_time = high_resolution_clock::now();
-        duration<double> dur = duration_cast<duration<double>>(cur_slam_time - prev_slam_time);
-        prev_slam_time = cur_slam_time;
-        dt = dur.count();
+
        /* We should be passing in odometry info so that SLAM can do motion modeling.
 	    * At each time stamp, we either:
 	    * a.) Receive GPS message:
@@ -218,8 +225,7 @@ private:
     rclcpp::TimerBase::SharedPtr timer;
     double dt;
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> prev_slam_time;
-    std::chrono::time_point<std::chrono::high_resolution_clock> cur_slam_time;
+    optional<std_msgs::msg::Header> prev_filter_time;
 
     //print files
     std::ofstream outfile;

@@ -19,6 +19,9 @@
 #include <gtsam/nonlinear/NonlinearFactorGraph.h>
 #include <gtsam/nonlinear/Values.h>
 #include <gtsam/nonlinear/LevenbergMarquardtOptimizer.h>
+#include <gtsam/nonlinear/DoglegOptimizer.h>
+#include <gtsam/nonlinear/GaussNewtonOptimizer.h>
+#include <gtsam/nonlinear/NonlinearConjugateGradientOptimizer.h>
 // In GTSAM, measurement functions are represented as 'factors'. Several common
 // factors have been provided with the library for solving robotics/SLAM/Bundle
 // Adjustment problems. Here we will use Projection factors to model the
@@ -150,6 +153,10 @@ public:
         PriorNoiseModel(0) = 0.1;
         PriorNoiseModel(1) = 0.1;
         PriorNoiseModel(2) = 0.001;
+        //PriorNoiseModel(0) = 0;
+        //PriorNoiseModel(1) = 0;
+        //PriorNoiseModel(2) = 0;
+
         prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
         /* Go from 1 pose to another pose*/
@@ -157,6 +164,9 @@ public:
         OdomNoiseModel(0) = 0.1;
         OdomNoiseModel(1) = 0.1;
         OdomNoiseModel(2) = 0.001;
+        //OdomNoiseModel(0) = 0;
+        //OdomNoiseModel(1) = 0;
+        //OdomNoiseModel(2) = 0;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -198,10 +208,7 @@ public:
             prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
 
            
-            //velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom, false);
-            //RCLCPP_INFO(logger, "velocity position; x: %.10f | y: %.10f", new_pose.x(), new_pose.y());
-
-            gps_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom, false);
+            gps_velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
             RCLCPP_INFO(logger, "GPS position; x: %.10f | y: %.10f", new_pose.x(), new_pose.y());
 
             RCLCPP_INFO(logger, "Finished motion model");
@@ -275,11 +282,10 @@ public:
             n_landmarks++;
         }
         values.insert(X(pose_num), cur_pose);
-        /* All values in graph must be in values paramete */
+        /* All values in graph must be in values parameter */
         Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
         optimized_val.erase(X(pose_num));
         isam2.update(graph, optimized_val);
-        //isam2.update(graph, values);
         graph.resize(0); //Not resizing your graph will result in long update times
         values.clear();
     }
