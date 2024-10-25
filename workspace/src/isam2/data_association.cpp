@@ -74,6 +74,7 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
 
     vector<double> m_dist = {};
     int n_landmarks = slam_est.size();
+    int n_obs = cone_obs.size();
 
     // Populating m_dist with mahalanobis distances
     MatrixXd global_cone_x(cone_obs.size(), 1);
@@ -87,13 +88,32 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
     cone_to_global_frame(range, bearing,
                          global_cone_x, global_cone_y,
                          cone_obs, cur_pose);
-
+    /*
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
                     slam_est, slam_mcov, logger);
 
     find_new_cones(old_cones, new_cones,
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
+    */
+    Eigen::MatrixXd a = Eigen::MatrixXd::Zero(n_landmarks, n_landmarks*2);
+    Eigen::MatrixXd b(n_landmarks*2, 2);
+    Eigen::MatrixXd c(2, n_landmarks);
+    for(int o = 0; o < n_obs; o++){
+        for(int i = 0; i < n_landmarks; i++){
+            Point2 cur_delta(global_cone_x(o, 0) - slam_est.at(i).x(), global_cone_y(o, 0) - slam_est.at(i).y());
+            a(i, i*2) = cur_delta.x();
+            a(i, i*2+1) = cur_delta.y();
+            MatrixXd mcov = slam_mcov[i];
+            b << mcov;
+            c(0, i) = cur_delta.x();
+            c(1, i) = cur_delta.y();
+        }
+        EigenXd dists = a * b * c;
+
+    }
+
+
 }
 
 
