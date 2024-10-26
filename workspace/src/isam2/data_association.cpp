@@ -110,7 +110,17 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
             c(1, i) = cur_delta.y();
         }
         EigenXd dists = a * b * c;
-
+        int min_id;
+        int min = dists.diagonal().minCoeff(&min_id);
+        if(min >= MIN_DIST_TH) {
+            Point2 global_cone_pos = Point2(global_cone_x(i,0), global_cone_y(i,0));
+            new_cones.emplace_back(cone_obs.at(i),
+                                    bearing(i, 0),
+                                    global_cone_pos);
+        }
+        else {
+            old_cones.emplace_back(cone_obs.at(i), bearing(i, 0), min_id);
+        }
     }
 
 
