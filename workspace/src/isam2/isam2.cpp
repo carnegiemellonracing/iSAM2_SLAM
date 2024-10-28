@@ -173,7 +173,7 @@ public:
 
     }
 
-    void update_pose(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
+    void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
             Point2 &velocity,double dt, bool new_gps, rclcpp::Logger &logger) {
         /* Adding poses to the SLAM factor graph */
         if (pose_num == 0)
@@ -208,7 +208,7 @@ public:
             prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
 
            
-            gps_velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
+            velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
             RCLCPP_INFO(logger, "GPS position; x: %.10f | y: %.10f", new_pose.x(), new_pose.y());
 
             RCLCPP_INFO(logger, "Finished motion model");
@@ -281,11 +281,12 @@ public:
             values.insert(L(n_landmarks), cone_global_frame);
             n_landmarks++;
         }
-        values.insert(X(pose_num), cur_pose);
         /* All values in graph must be in values parameter */
-        Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
-        optimized_val.erase(X(pose_num));
-        isam2.update(graph, optimized_val);
+        // values.insert(X(pose_num), cur_pose);
+        // Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
+        // optimized_val.erase(X(pose_num));
+        // isam2.update(graph, optimized_val);
+        isam2.update(graph, values);
         graph.resize(0); //Not resizing your graph will result in long update times
         values.clear();
     }
@@ -294,8 +295,7 @@ public:
     /**
      * @brief Obtains information about the observed cones from the current time
      *        step as well as odometry information (to use motion model to
-     *        calculate current pose). Will add data association tasks to the
-     *        work queue.
+     *        calculate current pose). 
      */
     void step(rclcpp::Logger logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
@@ -313,11 +313,11 @@ public:
 
         Pose2 cur_pose = Pose2(0, 0, 0);
         Pose2 prev_pose = Pose2(0, 0, 0);
-        auto start_update_pose = high_resolution_clock::now();
-        update_pose(cur_pose, prev_pose, global_odom, velocity, dt, false,logger);
-        auto end_update_pose = high_resolution_clock::now();
-        auto dur_update_pose = duration_cast<microseconds>(end_update_pose - start_update_pose);
-        RCLCPP_INFO(logger, "update_pose time: %d", dur_update_pose.count());
+        auto start_update_poses = high_resolution_clock::now();
+        update_poses(cur_pose, prev_pose, global_odom, velocity, dt, false,logger);
+        auto end_update_poses = high_resolution_clock::now();
+        auto dur_update_poses = duration_cast<microseconds>(end_update_poses - start_update_poses);
+        RCLCPP_INFO(logger, "update_poses time: %d", dur_update_poses.count());
 
         auto start_est_retrieval = high_resolution_clock::now();
         vector<Point2> slam_est = {};
