@@ -135,7 +135,6 @@ public:
         pose_num = 0;
         first_pose_added = false;
         n_landmarks = 0;
-        //robot_est = gtsam::Pose2(0, 0, 0);
         landmark_est = std::vector<gtsam::Pose2>();
 
         orange_cones = std::vector<Point2>();
@@ -150,23 +149,17 @@ public:
 
         // used to be all 0s for EUFS_SIM
         PriorNoiseModel = gtsam::Vector(3);
-        PriorNoiseModel(0) = 0.1;
-        PriorNoiseModel(1) = 0.1;
-        PriorNoiseModel(2) = 0.001;
-        //PriorNoiseModel(0) = 0;
-        //PriorNoiseModel(1) = 0;
-        //PriorNoiseModel(2) = 0;
+        PriorNoiseModel(0) = 0;
+        PriorNoiseModel(1) = 0;
+        PriorNoiseModel(2) = 0;
 
         prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
         /* Go from 1 pose to another pose*/
         OdomNoiseModel = gtsam::Vector(3);
-        OdomNoiseModel(0) = 0.1;
-        OdomNoiseModel(1) = 0.1;
-        OdomNoiseModel(2) = 0.001;
-        //OdomNoiseModel(0) = 0;
-        //OdomNoiseModel(1) = 0;
-        //OdomNoiseModel(2) = 0;
+        OdomNoiseModel(0) = 0.2;
+        OdomNoiseModel(1) = 0.2;
+        OdomNoiseModel(2) = 0.5;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -282,13 +275,18 @@ public:
             n_landmarks++;
         }
         /* All values in graph must be in values parameter */
-        // values.insert(X(pose_num), cur_pose);
-        // Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
-        // optimized_val.erase(X(pose_num));
-        // isam2.update(graph, optimized_val);
-        isam2.update(graph, values);
-        graph.resize(0); //Not resizing your graph will result in long update times
-        values.clear();
+        if (n_landmarks < 20) {
+            values.insert(X(pose_num), cur_pose);
+            Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
+            optimized_val.erase(X(pose_num));
+            isam2.update(graph, optimized_val);
+
+        } else {
+            isam2.update(graph, values);
+            graph.resize(0); //Not resizing your graph will result in long update times
+            values.clear();
+
+        }
     }
 
 
@@ -370,10 +368,6 @@ public:
         RCLCPP_INFO(logger, "vis_setup time: %d", dur_vis_setup.count());
 
 
-        //calculate estimate of robot state
-        //robot_est = isam2.calculateEstimate().at(X(pose_num)).cast<gtsam::Pose2>();
-        //pose_num++;
-        // std::cout << "Robot Estimate:(" << robot_est.x() <<"," << robot_est.y() << ")" << std::endl;
     }
 
 
