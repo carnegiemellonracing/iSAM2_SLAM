@@ -105,7 +105,7 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
             a(i, i*2) = cur_delta.x();
             a(i, i*2+1) = cur_delta.y();
             MatrixXd mcov = slam_mcov[i];
-            b << mcov;
+            b.block<2, 2>(i * 2, 0) = mcov;
             c(0, i) = cur_delta.x();
             c(1, i) = cur_delta.y();
         }
