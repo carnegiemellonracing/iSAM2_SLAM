@@ -153,15 +153,15 @@ public:
 
         /* Go from 1 pose to another pose*/
         OdomNoiseModel = gtsam::Vector(3);
-        OdomNoiseModel(0) = 0.2;
-        OdomNoiseModel(1) = 0.2;
-        OdomNoiseModel(2) = 0.5;
+        OdomNoiseModel(0) = 0;
+        OdomNoiseModel(1) = 0;
+        OdomNoiseModel(2) = 0;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
-        UnaryNoiseModel = gtsam::Vector(3);
-        UnaryNoiseModel(0) = 0.2;
-        UnaryNoiseModel(1) = 0.2;
-        UnaryNoiseModel(2) = 0.5;
+        UnaryNoiseModel = gtsam::Vector(2);
+        UnaryNoiseModel(0) = 0;
+        UnaryNoiseModel(1) = 0;
+        // UnaryNoiseModel(2) = 0.5;
         unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
 
 
@@ -215,7 +215,7 @@ public:
                                                                             odometry,
                                                                             odom_model);
             graph.add(odom_factor);
-            graph.add(boost::make_shared<UnaryFactor>(global_odom, unary_model));
+            graph.emplace_shared<UnaryFactor>(X(pose_num), global_odom, unary_model);
             values.insert(X(pose_num), new_pose);
 
         }
@@ -279,7 +279,7 @@ public:
             n_landmarks++;
         }
         /* All values in graph must be in values parameter */
-        if (n_landmarks < 20) {
+        if (n_landmarks < 30) {
             values.insert(X(pose_num), cur_pose);
             Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
             optimized_val.erase(X(pose_num));

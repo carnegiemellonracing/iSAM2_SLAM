@@ -38,7 +38,9 @@ public:
      * Below is the constructor
      */
     UnaryFactor(Key k, const Pose2& input_GPS, const SharedNoiseModel& model):
-        NoiseModelFactor1<Pose2>(model, k), z(msmt.x(), msmt.y(), msmt.theta()){}
+        NoiseModelFactorN<Pose2>(model, k), z(input_GPS.x(),
+                                                input_GPS.y(), 
+                                                input_GPS.theta()){}
     //        z = Pose2(msmt.x(), msmt.y(), msmt.theta());
     //}
 
