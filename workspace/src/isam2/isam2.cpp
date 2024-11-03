@@ -32,6 +32,7 @@
 #include <gtsam/slam/BearingRangeFactor.h>
 
 #include "data_association.cpp"
+#include "unary_factor.cpp"
 
 #include <vector>
 #include <tuple>
@@ -46,13 +47,6 @@ using namespace std;
 using namespace gtsam;
 using namespace std::chrono;
 
-// static const int NUM_THREADS = 3;
-
-/* Minimum m_dist length before paralellizing */
-// static const int MIN_M_DIST = NUM_THREADS;
-// static thread all_threads[NUM_THREADS];
-// static condition_variable cv;
-// static condition_variable step_cv;
 
 static const long SEC_TO_NANOSEC = 1000000000;
 static const int HEURISTIC_N = 10;
@@ -123,6 +117,8 @@ public:
     noiseModel::Diagonal::shared_ptr prior_model;
     gtsam::Vector OdomNoiseModel;
     noiseModel::Diagonal::shared_ptr odom_model;
+    gtsam::Vector UnaryNoiseModel;
+    noiseModel::Diagonal::shared_ptr unary_model;
 
 
     slamISAM(rclcpp::Logger logger) {
@@ -162,6 +158,13 @@ public:
         OdomNoiseModel(2) = 0.5;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
+        UnaryNoiseModel = gtsam::Vector(3);
+        UnaryNoiseModel(0) = 0.2;
+        UnaryNoiseModel(1) = 0.2;
+        UnaryNoiseModel(2) = 0.5;
+        unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
+
+
 
 
     }
@@ -200,7 +203,7 @@ public:
 
             prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
 
-           
+            //global_odom holds our GPS measurements
             velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
             RCLCPP_INFO(logger, "GPS position; x: %.10f | y: %.10f", new_pose.x(), new_pose.y());
 
@@ -212,11 +215,12 @@ public:
                                                                             odometry,
                                                                             odom_model);
             graph.add(odom_factor);
+            graph.add(boost::make_shared<UnaryFactor>(global_odom, unary_model));
             values.insert(X(pose_num), new_pose);
 
         }
 
-        
+
         isam2.update(graph, values);
         graph.resize(0);
         values.clear();
@@ -232,7 +236,7 @@ public:
      * 2nd Point2 for new_cones represents the global position
      */
     void update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
-                        vector<tuple<Point2, double, Point2>> &new_cones, 
+                        vector<tuple<Point2, double, Point2>> &new_cones,
                         Pose2 &cur_pose,rclcpp::Logger logger) {
 
         /* Bearing range factor will need
@@ -259,7 +263,7 @@ public:
         isam2.update(graph, values);
         graph.resize(0);
         // values should be empty
-        
+
         for (int n = 0; n < new_cones.size(); n++) {
             Point2 cone_car_frame = get<0>(new_cones.at(n));
             Rot2 b = Rot2::fromAngle(get<1>(new_cones.at(n)));
@@ -283,17 +287,16 @@ public:
 
         } else {
             isam2.update(graph, values);
-            graph.resize(0); //Not resizing your graph will result in long update times
-            values.clear();
-
         }
+        graph.resize(0); //Not resizing your graph will result in long update times
+        values.clear();
     }
 
 
     /**
      * @brief Obtains information about the observed cones from the current time
      *        step as well as odometry information (to use motion model to
-     *        calculate current pose). 
+     *        calculate current pose).
      */
     void step(rclcpp::Logger logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
@@ -352,7 +355,7 @@ public:
          * time step before proceeding to mahalanobis calcs for next time step
          *
          */
-        
+
         auto start_vis_setup = high_resolution_clock::now();
         std::ofstream ofs;
         std::ofstream out("squirrel.txt");

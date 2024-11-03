@@ -186,10 +186,10 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
     longitude -= init_lon_lat.value().x();
     latitude -= init_lon_lat.value().y();
     /* Print statements for longitude and latitude debugging
-    RCLCPP_INFO(logger, "init_lon_lat: %.10f | %.10f", init_lon_lat.value().x(), 
+    RCLCPP_INFO(logger, "init_lon_lat: %.10f | %.10f", init_lon_lat.value().x(),
                                                 init_lon_lat.value().y());
     RCLCPP_INFO(logger, "cur lon_lat: %.10f | %.10f", longitude, latitude);
-    RCLCPP_INFO(logger, "cur change in lon_lat: %.10f | %.10f", 
+    RCLCPP_INFO(logger, "cur change in lon_lat: %.10f | %.10f",
                                             longitude, latitude); */
 
     double LAT_DEG_TO_METERS = 111111;
@@ -213,7 +213,7 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
     double y = LAT_DEG_TO_METERS * latitude;
     imu_axes_to_DV_axes(x, y);
 
-    
+
 
     global_odom = Pose2(x, y, global_odom.theta());
 
