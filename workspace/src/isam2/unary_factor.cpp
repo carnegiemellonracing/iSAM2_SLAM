@@ -1,8 +1,5 @@
-#include<gtsam/geometry/Pose2.h>
-#include<gtsam/inference/Key.h>
-#include<boost>
-#include<bits/stdc++.h>
-#include<gtsam/nonlinear/NonlinearFactorGraph.h>
+#include <bits/stdc++.h>
+#include <gtsam/nonlinear/NonlinearFactor.h>
 #include <gtsam/slam/BetweenFactor.h>
 #include <gtsam/slam/PriorFactor.h>
 /*
@@ -16,7 +13,7 @@ class UnaryFactor : public NoiseModelFactor1<Pose2> {
     Pose2 z;
 
 public:
-    typedef boost::shared_ptr<UnaryFactor> shared_ptr;
+    typedef std::shared_ptr<UnaryFactor> shared_ptr;
 
     /*
      * In the iSAM2 paper, each factor f(q) is proportional to
@@ -40,7 +37,7 @@ public:
      *
      * Below is the constructor
      */
-    UnaryFactor(Key k, Pose2 msmt, const SharedNoiseModel& model):
+    UnaryFactor(Key k, const Pose2& input_GPS, const SharedNoiseModel& model):
         NoiseModelFactor1<Pose2>(model, k), z(msmt.x(), msmt.y(), msmt.theta()){}
     //        z = Pose2(msmt.x(), msmt.y(), msmt.theta());
     //}
@@ -51,8 +48,7 @@ public:
     /* @brief Evaluates the error between an unknown variable and the
      * GPS measurement we receive
      */
-    gtsam::Vector evaluateError(const Pose2& q,
-                        boost::optional<Matrix&> H = boost::none) const {
+    gtsam::Vector evaluateError(const Pose2& q, OptionalMatrixType H) const {
         const Rot2& R = q.rotation();
 
         // If H is not none
@@ -61,17 +57,16 @@ public:
                                             R.s(), R.c(), 0.0).finished();
         }
 
-        return (gtsam::Vector(3) << q.x() - z.x(),
-                                    q.y() - z.y(),
-                                    q.theta() - z.theta()).finished();
+        return (gtsam::Vector(2) << q.x() - z.x(),
+                                    q.y() - z.y()).finished();
     }
 
     /*
      * @brief Clones this factor
      */
-    virtual gtsam::NonlinearFactor::shared_ptr clone() const {
-        return boost::static_pointer_cast<gtsam::NonlinearFactor>(
-                    gtsam::NonlinearFactor::shared_ptr(new UnaryFactor(*this)));
+    gtsam::NonlinearFactor::shared_ptr clone() const override {
+        return std::static_pointer_cast<gtsam::NonlinearFactor>(
+        gtsam::NonlinearFactor::shared_ptr(new UnaryFactor(*this)));
     }
 
 };

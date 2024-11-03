@@ -1,0 +1,38 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found geometry_msgs: 4.2.4 (/opt/ros/humble/share/geometry_msgs/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Configuring incomplete, errors occurred!
+See also "/home/dale/driverless-packages/iSAM2_SLAM/workspace/src/isam2/build/isam2/CMakeFiles/CMakeOutput.log".
+[31mCMake Error at CMakeLists.txt:20 (find_package):
+  By not providing "Findinterfaces.cmake" in CMAKE_MODULE_PATH this project
+  has asked CMake to find a package configuration file provided by
+  "interfaces", but CMake did not find one.
+
+  Could not find a package configuration file provided by "interfaces" with
+  any of the following names:
+
+    interfacesConfig.cmake
+    interfaces-config.cmake
+
+  Add the installation prefix of "interfaces" to CMAKE_PREFIX_PATH or set
+  "interfaces_DIR" to a directory containing one of the above files.  If
+  "interfaces" provides a separate development package or SDK, be sure it has
+  been installed.
+
+[0m
