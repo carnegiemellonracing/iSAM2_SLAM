@@ -153,14 +153,14 @@ public:
 
         /* Go from 1 pose to another pose*/
         OdomNoiseModel = gtsam::Vector(3);
-        OdomNoiseModel(0) = 0;
-        OdomNoiseModel(1) = 0;
-        OdomNoiseModel(2) = 0;
+        OdomNoiseModel(0) = 0.1;
+        OdomNoiseModel(1) = 0.1;
+        OdomNoiseModel(2) = 0.1;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
         UnaryNoiseModel = gtsam::Vector(2);
-        UnaryNoiseModel(0) = 0;
-        UnaryNoiseModel(1) = 0;
+        UnaryNoiseModel(0) = 0.01;
+        UnaryNoiseModel(1) = 0.01;
         // UnaryNoiseModel(2) = 0.5;
         unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
 
@@ -182,9 +182,9 @@ public:
             graph.add(prior_factor);
             values.insert(X(0), Pose2(0, 0, global_odom.theta()));
 
-            first_pose_added = true;
+            cur_pose = Pose2(0, 0, global_odom.theta());
 
-
+                first_pose_added = true;
 
             //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
             //Add orange cone left and right
@@ -214,6 +214,7 @@ public:
                                                                         X(pose_num),
                                                                             odometry,
                                                                             odom_model);
+            cur_pose = Pose2(new_pose.x(), new_pose.y(), new_pose.theta());
             graph.add(odom_factor);
             graph.emplace_shared<UnaryFactor>(X(pose_num), global_odom, unary_model);
             values.insert(X(pose_num), new_pose);
@@ -226,7 +227,8 @@ public:
         values.clear();
 
 
-        cur_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
+        Pose2 est_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
+        RCLCPP_INFO(logger, "Diff: x: %.10f | y: %.10f", est_pose.x() - cur_pose.x(), est_pose.y() - cur_pose.y());
 
 
     }
