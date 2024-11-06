@@ -103,7 +103,7 @@ void quat_msg_to_yaw(
 
 void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
                     Pose2 &prev_pose, Pose2 global_odom) {
-
+    
     new_pose = Pose2(prev_pose.x() + velocity.x() * dt,
                             prev_pose.y() + velocity.y() * dt,
                             global_odom.theta());

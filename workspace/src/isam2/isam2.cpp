@@ -124,6 +124,7 @@ public:
     slamISAM(rclcpp::Logger logger) {
         parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
         parameters.setFactorization("QR");
+        parameters.enablePartialRelinearizationCheck = true;
 
         isam2 = gtsam::ISAM2(parameters);
         graph = gtsam::NonlinearFactorGraph();
@@ -153,14 +154,14 @@ public:
 
         /* Go from 1 pose to another pose*/
         OdomNoiseModel = gtsam::Vector(3);
-        OdomNoiseModel(0) = 0.1;
-        OdomNoiseModel(1) = 0.1;
-        OdomNoiseModel(2) = 0.1;
+        OdomNoiseModel(0) = 0;
+        OdomNoiseModel(1) = 0;
+        OdomNoiseModel(2) = 0;
         odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
         UnaryNoiseModel = gtsam::Vector(2);
-        UnaryNoiseModel(0) = 0.01;
-        UnaryNoiseModel(1) = 0.01;
+        UnaryNoiseModel(0) = 0;
+        UnaryNoiseModel(1) = 0;
         // UnaryNoiseModel(2) = 0.5;
         unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
 
@@ -227,8 +228,8 @@ public:
         values.clear();
 
 
-        Pose2 est_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
-        RCLCPP_INFO(logger, "Diff: x: %.10f | y: %.10f", est_pose.x() - cur_pose.x(), est_pose.y() - cur_pose.y());
+        // Pose2 est_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
+        // RCLCPP_INFO(logger, "Diff: x: %.10f | y: %.10f", est_pose.x() - cur_pose.x(), est_pose.y() - cur_pose.y());
 
 
     }
@@ -292,6 +293,8 @@ public:
         }
         graph.resize(0); //Not resizing your graph will result in long update times
         values.clear();
+
+        RCLCPP_INFO(logger, "n_landmarks: %d", n_landmarks);
     }
 
 
