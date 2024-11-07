@@ -50,6 +50,7 @@ void imu_axes_to_DV_axes(double &x, double &y) {
     y = temp_x;
 }
 
+
 void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
                                             vector<Point2> &cones,
                                             vector<Point2> &blue_cones,
@@ -82,7 +83,7 @@ void velocity_msg_to_point2(const geometry_msgs::msg::TwistStamped::ConstSharedP
                             Point2 &init_velocity, Point2 &velocity) {
     double dx = vehicle_vel_data->twist.linear.x;
     double dy = vehicle_vel_data->twist.linear.y;
-    imu_axes_to_DV_axes(dx, dy);
+    // imu_axes_to_DV_axes(dx, dy);
     velocity = Point2(dx, dy);
 }
 
@@ -96,7 +97,8 @@ void quat_msg_to_yaw(
 
     double imu_yaw = atan2(2 * (qz * qw + qx * qy),
                     -1 + 2 * (qw * qw + qx * qx));
-    yaw = imu_yaw + (M_PI / 2.0);
+    // yaw = imu_yaw + (M_PI / 2.0);
+    yaw = imu_yaw;
 
     global_odom = Pose2(global_odom.x(), global_odom.y(), yaw);
 }
@@ -154,7 +156,21 @@ void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs) {
     int num_obs = (int)cone_obs.size();
 
     for (int i = 0; i < num_obs; i++)
-    {
+    {   
+        /**
+         * Intuition:
+         * Perceptions gives us cones in DV axes: y forwards and x right
+         * 
+         * Directly in front of us, the bearing is 0
+         * - The bearing is the angle from the axis directly in front of us
+         * - counter clockwise is positive bearing
+         * - clockwise is negative bearing
+         * 
+         * Given the DV axes, to calculate the bearing is atan2(-x, y)
+         * - If the bearing was to the left (counter clockwise from 0)
+         * - The bearing would be a positive angle 
+         * 
+         */
         bearing(i,0) = atan2(-cone_obs.at(i).x(), cone_obs.at(i).y());
     }
 }
@@ -162,7 +178,7 @@ void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs) {
 void cone_to_global_frame(MatrixXd &range, MatrixXd &bearing,
                             MatrixXd &global_cone_x, MatrixXd &global_cone_y,
                             vector<Point2> &cone_obs, Pose2 &cur_pose) {
-
+    
     MatrixXd global_bearing = bearing.array() + cur_pose.theta();
     global_cone_x = cur_pose.x() + range.array()*global_bearing.array().cos();
     global_cone_y = cur_pose.y() + range.array()*global_bearing.array().sin();
@@ -211,7 +227,7 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
 
     double x = LON_DEG_TO_METERS * longitude;
     double y = LAT_DEG_TO_METERS * latitude;
-    imu_axes_to_DV_axes(x, y);
+    // imu_axes_to_DV_axes(x, y);
 
 
 
