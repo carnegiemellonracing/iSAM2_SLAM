@@ -6,9 +6,9 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      " This message contains information about the state of the EKF" "\n"
-      " and is meant for use by the state monitor to ensure the EKF" "\n"
-      " isn't failing.")
+      "This message contains information about the state of the EKF" "\n"
+      "and is meant for use by the state monitor to ensure the EKF" "\n"
+      "isn't failing.")
     struct EKFState {
       boolean gps_received;
 

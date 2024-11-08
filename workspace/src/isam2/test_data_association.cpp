@@ -34,32 +34,43 @@ void data_association_1(int n_obs, MatrixXd &global_cone_x, MatrixXd &global_con
 void data_association_2(int n_obs, int n_landmarks, MatrixXd &global_cone_x, MatrixXd &global_cone_y, vector<double> &m_dist,
                         vector<Point2> &cone_obs, vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov)
 {
-    Eigen::MatrixXd a = Eigen::MatrixXd::Zero(n_landmarks, n_landmarks * 2);
-    Eigen::MatrixXd b(n_landmarks * 2, 2);
+    Eigen::MatrixXd a = Eigen::MatrixXd::Zero(2, n_landmarks * 2);
+    Eigen::MatrixXd b(2, n_landmarks * 2);
     Eigen::MatrixXd c(2, n_landmarks);
     for (int o = 0; o < n_obs; o++)
     {
         for (int i = 0; i < n_landmarks; i++)
         {
             Point2 cur_delta(global_cone_x(o, 0) - slam_est.at(i).x(), global_cone_y(o, 0) - slam_est.at(i).y());
-            a(i, i * 2) = cur_delta.x();
-            a(i, i * 2 + 1) = cur_delta.y();
+            a(0, i * 2) = cur_delta.x();
+            a(0, i * 2 + 1) = cur_delta.x();
+            a(1, i * 2) = cur_delta.y();
+            a(1, i * 2 + 1) = cur_delta.y();
             MatrixXd mcov = slam_mcov[i];
-            b.block<2, 2>(i * 2, 0) = mcov;
+            b.block<2, 2>(0, i * 2) = mcov;
             c(0, i) = cur_delta.x();
             c(1, i) = cur_delta.y();
         }
-        MatrixXd dists = a * b * c;
+        MatrixXd dists = a.array() * b.array();
+        VectorXd dists_vec = dists.colwise().sum();
+        MatrixXd dists_mat = Eigen::Map<Eigen::MatrixXd>(dists_vec.data(), 2, n_landmarks);
+        dists_mat.array() = dists_mat.array() * c.array();
+        VectorXd m_dist_vec = dists_mat.colwise().sum();
         for (int i = 0; i < n_landmarks; i++)
         {
-            m_dist.push_back(dists(i, i));
+            m_dist.push_back(m_dist_vec(i));
         }
     }
 }
-int main()
+int main(int argc, char* argv[])
 {
     int n_obs = 20;
-    int n_landmarks = 300;
+    int n_landmarks = 50;
+    if (argc == 3)
+    {
+        n_obs = stoi(argv[1]);
+        n_landmarks = stoi(argv[2]);
+    }
     MatrixXd global_cone_x(n_obs, 1);
     MatrixXd global_cone_y(n_obs, 1);
     vector<double> m_dist_1;
@@ -101,9 +112,9 @@ int main()
     cout << d1.count() << " " << d2.count() << endl;
 
 
-    //for (int i = 0; i < m_dist_1.size(); i++)
-    //{
-    //    assert(abs(m_dist_1[i] - m_dist_2[i]) < 0.00000001);
-    //    cout << m_dist_1[i] << " " << m_dist_2[i] << endl;
-    //}
+    // for (int i = 0; i < m_dist_1.size(); i++)
+    // {
+    //     cout << m_dist_1[i] << " " << m_dist_2[i] << endl;
+    //     assert(abs(m_dist_1[i] - m_dist_2[i]) < 0.00000001);
+    // }
 }

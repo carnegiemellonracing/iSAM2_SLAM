@@ -6,6 +6,8 @@ msg/BoundingBoxes.idl
 msg/BoundingBoxes.msg
 msg/CanState.idl
 msg/CanState.msg
+msg/CarForces.idl
+msg/CarForces.msg
 msg/CarState.idl
 msg/CarState.msg
 msg/ChassisCommand.idl

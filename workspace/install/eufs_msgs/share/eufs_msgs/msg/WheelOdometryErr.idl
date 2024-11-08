@@ -7,7 +7,7 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      " Message for the error of Wheel Odometry. Error based on euclidean distance.")
+      "Message for the error of Wheel Odometry. Error based on euclidean distance.")
     struct WheelOdometryErr {
       std_msgs::msg::Header header;
 
@@ -20,7 +20,7 @@ module eufs_msgs {
       double angular_vel_err;
 
       @verbatim (language="comment", text=
-        " Just a-axis motion, since that has special importance for Wheel Odometry")
+        "Just a-axis motion, since that has special importance for Wheel Odometry")
       double forward_vel_err;
     };
   };
