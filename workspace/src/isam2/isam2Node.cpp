@@ -98,7 +98,6 @@ public:
 
         //TODO: std::optional where init is set to None
         init_lon_lat = std::nullopt;
-        init_velocity = gtsam::Point2(-1, -1);
         file_opened = true;
 
         prev_filter_time = std::nullopt;
@@ -162,7 +161,7 @@ private:
     {
         RCLCPP_INFO(this->get_logger(), "\t vehicle velocity callback! | time: %d\n",
                                                 vehicle_vel_data->header.stamp.sec);
-        velocity_msg_to_point2(vehicle_vel_data, init_velocity, velocity);
+        velocity_msg_to_pose2(vehicle_vel_data, velocity);
     }
 
     void vehicle_angle_callback(
@@ -207,8 +206,8 @@ private:
                                             geometry_msgs::msg::Vector3Stamped,
                                             geometry_msgs::msg::TwistStamped,
                                             geometry_msgs::msg::QuaternionStamped>>> sync;
-    gtsam::Point2 init_velocity;
-    gtsam::Point2 velocity;
+    
+    gtsam::Pose2 velocity;
 
     optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance

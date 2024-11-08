@@ -14,8 +14,7 @@
 #include <float.h>
 
 #include "ros_utils.cpp"
-// const double M_DIST_TH = 1200; // Best for velocity motion_model
-const double M_DIST_TH = 40;
+const double M_DIST_TH = 50;
 
 using namespace Eigen;
 
@@ -74,6 +73,8 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
 
     vector<double> m_dist = {};
     int n_landmarks = slam_est.size();
+
+    remove_far_cones(cone_obs);
 
     // Populating m_dist with mahalanobis distances
     MatrixXd global_cone_x(cone_obs.size(), 1);

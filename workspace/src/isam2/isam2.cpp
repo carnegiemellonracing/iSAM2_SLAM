@@ -105,7 +105,6 @@ public:
 
     //gtsam::Pose2 robot_est;
     std::vector<gtsam::Pose2> landmark_est;
-    std::vector<Point2> orange_cones;
 
     /* how the landmark estimates are organized */
     vector<int> blue_cone_IDs;
@@ -122,6 +121,8 @@ public:
 
 
     slamISAM(rclcpp::Logger logger) {
+
+        // Initializing SLAM Parameters
         parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
         parameters.setFactorization("QR");
         parameters.enablePartialRelinearizationCheck = true;
@@ -129,12 +130,11 @@ public:
         isam2 = gtsam::ISAM2(parameters);
         graph = gtsam::NonlinearFactorGraph();
         values = gtsam::Values();
+
         pose_num = 0;
         first_pose_added = false;
         n_landmarks = 0;
         landmark_est = std::vector<gtsam::Pose2>();
-
-        orange_cones = std::vector<Point2>();
 
         LandmarkNoiseModel = gtsam::Vector(2);
         // used to be 0.01 for real data
@@ -171,8 +171,12 @@ public:
     }
 
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
-            Point2 &velocity,double dt, bool new_gps, rclcpp::Logger &logger) {
+            Pose2 &velocity,double dt, bool new_gps, rclcpp::Logger &logger) {
         /* Adding poses to the SLAM factor graph */
+        double offset_x = 0;
+        double offset_y = 0;
+        calc_offset_imu_to_car_center(offset_x, offset_y, global_odom.theta());
+
         if (pose_num == 0)
         {
             RCLCPP_INFO(logger, "Processing first pose");
@@ -181,11 +185,12 @@ public:
             //add prior
             //TODO: need to record the initial bearing because it could be erroneous
             graph.add(prior_factor);
-            values.insert(X(0), Pose2(0, 0, global_odom.theta()));
+            
 
-            cur_pose = Pose2(0, 0, global_odom.theta());
+            cur_pose = Pose2(0 - offset_x, 0 - offset_y, global_odom.theta());
+            values.insert(X(0), Pose2(cur_pose.x(), cur_pose.y(), global_odom.theta()));
 
-                first_pose_added = true;
+            first_pose_added = true;
 
             //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
             //Add orange cone left and right
@@ -194,8 +199,6 @@ public:
         }
         else
         {
-
-
             //create a factor between current and previous robot pose
             //add odometry estimates
             //Motion model
@@ -217,7 +220,9 @@ public:
                                                                             odom_model);
             cur_pose = Pose2(new_pose.x(), new_pose.y(), new_pose.theta());
             graph.add(odom_factor);
-            graph.emplace_shared<UnaryFactor>(X(pose_num), global_odom, unary_model);
+             
+            Pose2 imu_offset_global_odom = Pose2(global_odom.x() + offset_x, global_odom.y() + offset_y, global_odom.theta());
+            graph.emplace_shared<UnaryFactor>(X(pose_num), imu_offset_global_odom, unary_model);
             values.insert(X(pose_num), new_pose);
 
         }
@@ -282,7 +287,7 @@ public:
             n_landmarks++;
         }
         /* All values in graph must be in values parameter */
-        if (n_landmarks < 30) {
+        if (n_landmarks < 400) {
             values.insert(X(pose_num), cur_pose);
             Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
             optimized_val.erase(X(pose_num));
@@ -291,6 +296,8 @@ public:
         } else {
             isam2.update(graph, values);
         }
+        // isam2.update(graph, values);
+        
         graph.resize(0); //Not resizing your graph will result in long update times
         values.clear();
 
@@ -305,7 +312,7 @@ public:
      */
     void step(rclcpp::Logger logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
-                vector<Point2> &orange_ref_cones, gtsam::Point2 velocity,
+                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
                 double dt) {
 
         if (n_landmarks > 0)
@@ -325,6 +332,8 @@ public:
         auto dur_update_poses = duration_cast<microseconds>(end_update_poses - start_update_poses);
         RCLCPP_INFO(logger, "update_poses time: %d", dur_update_poses.count());
 
+
+        /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
         auto start_est_retrieval = high_resolution_clock::now();
         vector<Point2> slam_est = {};
         for (int i = 0; i < n_landmarks; i++) {
@@ -339,6 +348,8 @@ public:
         auto dur_est_retrieval = duration_cast<microseconds>(end_est_retrieval - start_est_retrieval);
         RCLCPP_INFO(logger, "est_retrieval time: %d", dur_est_retrieval.count());
 
+
+        /**** Data association ***/
         vector<tuple<Point2, double, int>> old_cones = {};
         vector<tuple<Point2, double, Point2>> new_cones = {};
 
@@ -356,6 +367,8 @@ public:
         RCLCPP_INFO(logger, "update_landmarks time: %d", dur_update_landmarks.count());
 
         pose_num++;
+
+        RCLCPP_INFO(logger, "pose_num: %d | n_landmarks: %d", pose_num, n_landmarks);
         /* Create a boolean to check if mahalanobis calcs are done for current
          * time step before proceeding to mahalanobis calcs for next time step
          *

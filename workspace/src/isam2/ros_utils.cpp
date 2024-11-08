@@ -40,6 +40,9 @@ using namespace std;
 using namespace gtsam;
 using namespace Eigen;
 
+const double IMU_OFFSET = 0.3; //meters
+const double LIDAR_OFFSET = 0.3; //meters
+const double MAX_CONE_RANGE = 10;
 /**
  * @brief Movella Xsens IMU uses y-left, x-forward axes. CMR DV uses y-forward
  * x-right axes. This function performs the conversion.
@@ -79,12 +82,13 @@ void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_
     }
 }
 
-void velocity_msg_to_point2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
-                            Point2 &init_velocity, Point2 &velocity) {
+void velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
+                            Pose2 &velocity) {
     double dx = vehicle_vel_data->twist.linear.x;
     double dy = vehicle_vel_data->twist.linear.y;
-    // imu_axes_to_DV_axes(dx, dy);
-    velocity = Point2(dx, dy);
+    double dw = vehicle_vel_data->twist.angular.z;
+    
+    velocity = Pose2(dx, dy, dw);
 }
 
 void quat_msg_to_yaw(
@@ -97,38 +101,74 @@ void quat_msg_to_yaw(
 
     double imu_yaw = atan2(2 * (qz * qw + qx * qy),
                     -1 + 2 * (qw * qw + qx * qx));
-    // yaw = imu_yaw + (M_PI / 2.0);
     yaw = imu_yaw;
 
     global_odom = Pose2(global_odom.x(), global_odom.y(), yaw);
 }
 
-void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
-                    Pose2 &prev_pose, Pose2 global_odom) {
-    
-    new_pose = Pose2(prev_pose.x() + velocity.x() * dt,
-                            prev_pose.y() + velocity.y() * dt,
-                            global_odom.theta());
-
-    odometry = Pose2(velocity.x() * dt,
-                            velocity.y() * dt,
-                            global_odom.theta() - prev_pose.theta());
+/**
+ * @brief Calculates the lateral velocity error as a result of turning.
+ *        The IMU is offset from the center of the car. There's extra lateral
+ *        velocity error due to the offset.
+ */
+void calc_lateral_velocity_error(double& dx_error, double& dy_error, 
+                                double ang_velocity, double yaw) {
+    /** Intuition: In the local frame, create a triangle T from the global bearing of the car
+     *  
+     * ang_velocity represents the magnitude of the angular velocity vector
+     * - To get the x component (global frame x), 
+     *      let the vertical side of the triangle be the radius
+     * 
+     * - To get the y component (global frame y),
+     *      let the horizontal side of the triangle be the radius
+     */
+    dx_error = ang_velocity * (IMU_OFFSET * sin(yaw));
+    dy_error = ang_velocity * (IMU_OFFSET * cos(yaw));
 }
 
-void gps_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
+void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double dt,
                     Pose2 &prev_pose, Pose2 global_odom) {
-    new_pose = Pose2(global_odom.x(), global_odom.y(), global_odom.theta());
+    
+    
+    double dx_error = 0;
+    double dy_error = 0;
+
+    calc_lateral_velocity_error(dx_error, dy_error, velocity.theta(), global_odom.theta());
+    
+    double dx = velocity.x() - dx_error;
+    double dy = velocity.y() - dy_error;
+
+
+
+    new_pose = Pose2(prev_pose.x() + dx * dt,
+                    prev_pose.y() + dy * dt,
+                    global_odom.theta());
+
+    //TODO: how does change in theta results differ from dt * velocity.z()
+    odometry = Pose2(dx * dt,
+                    dy * dt,
+                    global_odom.theta() - prev_pose.theta());
+}
+
+void calc_offset_imu_to_car_center(double& offset_x, double& offset_y, double yaw) {
+    offset_x = IMU_OFFSET * cos(yaw);
+    offset_y = IMU_OFFSET * sin(yaw);
+}
+
+void calc_offset_lidar_to_car_center(double& offset_x, double& offset_y, double yaw) {
+    offset_x = LIDAR_OFFSET * cos(yaw);
+    offset_y = LIDAR_OFFSET * sin(yaw);
+}
+
+void gps_motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double dt,
+                    Pose2 &prev_pose, Pose2 global_odom) {
+    double offset_x = 0;
+    double offset_y = 0;
+    calc_offset_imu_to_car_center(offset_x, offset_y, global_odom.theta());
+    new_pose = Pose2(global_odom.x() - offset_x, global_odom.y() - offset_y, global_odom.theta());
     odometry = Pose2(new_pose.x() - prev_pose.x(),
                         new_pose.y() - prev_pose.y(),
                         global_odom.theta() - prev_pose.theta());
-}
-
-void gps_velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Point2 &velocity, double dt,
-                    Pose2 &prev_pose, Pose2 global_odom) {
-    /* new_pose is calculated using GPS. odometry uses velocity */
-    new_pose = Pose2(global_odom.x(), global_odom.y(), global_odom.theta());
-    odometry = Pose2(velocity.x() * dt, velocity.y() * dt, global_odom.theta() - prev_pose.theta());
-
 }
 
 double header_to_nanosec(const std_msgs::msg::Header &header) {
@@ -138,6 +178,18 @@ double header_to_nanosec(const std_msgs::msg::Header &header) {
 void header_to_dt(const optional<std_msgs::msg::Header> &prev, const optional<std_msgs::msg::Header> &cur, double &dt) {
     // dt units is meters per second
     dt = (header_to_nanosec(cur.value()) - header_to_nanosec(prev.value())) * 1e-9;
+}
+/**
+ * @brief Removes far away observed cones.Observed cones that are far away are more erroneous
+ */
+void remove_far_cones(vector<Point2> &cone_obs) {
+    for (int i = 0; i < (int)cone_obs.size(); i++) {
+        if (norm2(cone_obs.at(i)) > MAX_CONE_RANGE) {
+            cone_obs.erase(cone_obs.begin() + i);
+            i--;
+        }
+    }
+    
 }
 
 /* Vectorized functions */
@@ -178,10 +230,15 @@ void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs) {
 void cone_to_global_frame(MatrixXd &range, MatrixXd &bearing,
                             MatrixXd &global_cone_x, MatrixXd &global_cone_y,
                             vector<Point2> &cone_obs, Pose2 &cur_pose) {
-    
+    double lidar_offset_x = 0;
+    double lidar_offset_y = 0;
+    calc_offset_lidar_to_car_center(lidar_offset_x, lidar_offset_y, cur_pose.theta());
     MatrixXd global_bearing = bearing.array() + cur_pose.theta();
     global_cone_x = cur_pose.x() + range.array()*global_bearing.array().cos();
+    global_cone_x = global_cone_x.array() + lidar_offset_x;
     global_cone_y = cur_pose.y() + range.array()*global_bearing.array().sin();
+    global_cone_y = global_cone_y.array() + lidar_offset_y;
+    
 
 }
 
@@ -227,7 +284,6 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
 
     double x = LON_DEG_TO_METERS * longitude;
     double y = LAT_DEG_TO_METERS * latitude;
-    // imu_axes_to_DV_axes(x, y);
 
 
 
