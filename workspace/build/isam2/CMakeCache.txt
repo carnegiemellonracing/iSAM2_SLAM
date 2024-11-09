@@ -37,29 +37,29 @@ AMENT_TEST_RESULTS_DIR:PATH=/home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/is
 //Build the testing tree.
 BUILD_TESTING:BOOL=ON
 
-Boost_CHRONO_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.71.0
+Boost_CHRONO_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_chrono.so.1.82.0
 
-Boost_DATE_TIME_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.71.0
+Boost_DATE_TIME_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_date_time.so.1.82.0
 
 //The directory containing a CMake configuration file for Boost.
-Boost_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0
+Boost_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/Boost-1.82.0
 
-Boost_FILESYSTEM_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.71.0
+Boost_FILESYSTEM_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_filesystem.so.1.82.0
 
 //Path to a file.
-Boost_INCLUDE_DIR:PATH=/usr/include
+Boost_INCLUDE_DIR:PATH=/home/danielnguyen/anaconda3/include
 
-Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
+Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_program_options.so.1.82.0
 
-Boost_REGEX_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_regex.so.1.71.0
+Boost_REGEX_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_regex.so.1.82.0
 
-Boost_SERIALIZATION_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_serialization.so.1.71.0
+Boost_SERIALIZATION_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_serialization.so.1.82.0
 
-Boost_SYSTEM_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
+Boost_SYSTEM_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_system.so.1.82.0
 
-Boost_THREAD_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_thread.so.1.71.0
+Boost_THREAD_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_thread.so.1.82.0
 
-Boost_TIMER_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_timer.so.1.71.0
+Boost_TIMER_LIBRARY_RELEASE:STRING=/home/danielnguyen/anaconda3/lib/libboost_timer.so.1.82.0
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
@@ -256,9 +256,6 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
-//The directory containing a CMake configuration file for Eigen.
-Eigen_DIR:PATH=Eigen_DIR-NOTFOUND
-
 //Path to a library.
 FastCDR_LIBRARY_DEBUG:FILEPATH=FastCDR_LIBRARY_DEBUG-NOTFOUND
 
@@ -293,7 +290,7 @@ OPENSSL_SSL_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libssl.so
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
 //Path to a program.
-PYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3
+PYTHON_EXECUTABLE:FILEPATH=/home/danielnguyen/anaconda3/bin/python3
 
 //Specify specific Python version to use ('major.minor' or 'major')
 PYTHON_VERSION:STRING=
@@ -359,37 +356,37 @@ ament_cmake_test_DIR:PATH=/opt/ros/foxy/share/ament_cmake_test/cmake
 ament_cmake_version_DIR:PATH=/opt/ros/foxy/share/ament_cmake_version/cmake
 
 //The directory containing a CMake configuration file for boost_atomic.
-boost_atomic_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_atomic-1.71.0
+boost_atomic_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_atomic-1.82.0
 
 //The directory containing a CMake configuration file for boost_chrono.
-boost_chrono_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_chrono-1.71.0
+boost_chrono_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_chrono-1.82.0
 
 //The directory containing a CMake configuration file for boost_date_time.
-boost_date_time_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_date_time-1.71.0
+boost_date_time_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_date_time-1.82.0
 
 //The directory containing a CMake configuration file for boost_filesystem.
-boost_filesystem_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_filesystem-1.71.0
+boost_filesystem_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_filesystem-1.82.0
 
 //The directory containing a CMake configuration file for boost_headers.
-boost_headers_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_headers-1.71.0
+boost_headers_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_headers-1.82.0
 
 //The directory containing a CMake configuration file for boost_program_options.
-boost_program_options_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_program_options-1.71.0
+boost_program_options_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_program_options-1.82.0
 
 //The directory containing a CMake configuration file for boost_regex.
-boost_regex_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_regex-1.71.0
+boost_regex_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_regex-1.82.0
 
 //The directory containing a CMake configuration file for boost_serialization.
-boost_serialization_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_serialization-1.71.0
+boost_serialization_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_serialization-1.82.0
 
 //The directory containing a CMake configuration file for boost_system.
-boost_system_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_system-1.71.0
+boost_system_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_system-1.82.0
 
 //The directory containing a CMake configuration file for boost_thread.
-boost_thread_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_thread-1.71.0
+boost_thread_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_thread-1.82.0
 
 //The directory containing a CMake configuration file for boost_timer.
-boost_timer_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_timer-1.71.0
+boost_timer_DIR:PATH=/home/danielnguyen/anaconda3/lib/cmake/boost_timer-1.82.0
 
 //The directory containing a CMake configuration file for builtin_interfaces.
 builtin_interfaces_DIR:PATH=/opt/ros/foxy/share/builtin_interfaces/cmake
@@ -694,13 +691,13 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding Boost
-FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake][cfound components: serialization system filesystem thread program_options date_time timer chrono regex ][v1.71.0(1.65)]
+FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/home/danielnguyen/anaconda3/lib/cmake/Boost-1.82.0/BoostConfig.cmake][cfound components: serialization system filesystem thread program_options date_time timer chrono regex ][v1.82.0(1.65)]
 //Details about finding FastRTPS
 FIND_PACKAGE_MESSAGE_DETAILS_FastRTPS:INTERNAL=[/opt/ros/foxy/include][/opt/ros/foxy/lib/libfastrtps.so;/opt/ros/foxy/lib/libfastcdr.so][v()]
 //Details about finding OpenSSL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenSSL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libcrypto.so][/usr/include][c ][v1.1.1f()]
 //Details about finding PythonInterp
-FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python3][v3.8.10(3)]
+FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/home/danielnguyen/anaconda3/bin/python3][v3.8.12(3)]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //ADVANCED property for variable: OPENSSL_CRYPTO_LIBRARY
@@ -719,11 +716,11 @@ _OPENSSL_CFLAGS_OTHER:INTERNAL=
 _OPENSSL_FOUND:INTERNAL=1
 _OPENSSL_INCLUDEDIR:INTERNAL=/usr/include
 _OPENSSL_INCLUDE_DIRS:INTERNAL=
-_OPENSSL_LDFLAGS:INTERNAL=-lssl;-lcrypto
+_OPENSSL_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lssl;-lcrypto
 _OPENSSL_LDFLAGS_OTHER:INTERNAL=
 _OPENSSL_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
 _OPENSSL_LIBRARIES:INTERNAL=ssl;crypto
-_OPENSSL_LIBRARY_DIRS:INTERNAL=
+_OPENSSL_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
 _OPENSSL_LIBS:INTERNAL=
 _OPENSSL_LIBS_L:INTERNAL=
 _OPENSSL_LIBS_OTHER:INTERNAL=
@@ -734,11 +731,11 @@ _OPENSSL_STATIC_CFLAGS:INTERNAL=
 _OPENSSL_STATIC_CFLAGS_I:INTERNAL=
 _OPENSSL_STATIC_CFLAGS_OTHER:INTERNAL=
 _OPENSSL_STATIC_INCLUDE_DIRS:INTERNAL=
-_OPENSSL_STATIC_LDFLAGS:INTERNAL=-lssl;-lcrypto;-ldl;-pthread
-_OPENSSL_STATIC_LDFLAGS_OTHER:INTERNAL=-pthread
+_OPENSSL_STATIC_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lssl;-L/usr/lib/x86_64-linux-gnu;-ldl;-pthread;-lcrypto;-ldl;-pthread
+_OPENSSL_STATIC_LDFLAGS_OTHER:INTERNAL=-pthread;-pthread
 _OPENSSL_STATIC_LIBDIR:INTERNAL=
-_OPENSSL_STATIC_LIBRARIES:INTERNAL=ssl;crypto;dl
-_OPENSSL_STATIC_LIBRARY_DIRS:INTERNAL=
+_OPENSSL_STATIC_LIBRARIES:INTERNAL=ssl;dl;crypto;dl
+_OPENSSL_STATIC_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu
 _OPENSSL_STATIC_LIBS:INTERNAL=
 _OPENSSL_STATIC_LIBS_L:INTERNAL=
 _OPENSSL_STATIC_LIBS_OTHER:INTERNAL=

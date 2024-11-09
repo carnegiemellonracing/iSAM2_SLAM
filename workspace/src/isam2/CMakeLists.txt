@@ -27,13 +27,17 @@ find_package(GTSAM REQUIRED)
 include_directories(${GTSAM_INCLUDE_DIR})
 
 add_executable(isam_test isam2Node.cpp)
+add_executable(da_test test_data_association.cpp)
 
 target_link_libraries(isam_test gtsam)
+target_link_libraries(da_test gtsam)
 ament_target_dependencies(isam_test rclcpp message_filters interfaces geometry_msgs sensor_msgs eufs_msgs)
+ament_target_dependencies(da_test rclcpp message_filters interfaces geometry_msgs sensor_msgs eufs_msgs)
 ament_export_include_directories(source)
 
 install(TARGETS
   isam_test
+  da_test
   DESTINATION lib/${PROJECT_NAME})
 
 ament_environment_hooks()

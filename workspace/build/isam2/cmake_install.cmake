@@ -49,10 +49,30 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/isam_test")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/isam_test"
-         OLD_RPATH "/usr/local/lib:/opt/ros/foxy/lib:/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/lib:/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/eufs_msgs/lib:"
+         OLD_RPATH "/usr/local/lib:/opt/ros/foxy/lib:/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/lib:/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/home/danielnguyen/anaconda3/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/isam_test")
+    endif()
+  endif()
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/da_test" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/da_test")
+    file(RPATH_CHECK
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/da_test"
+         RPATH "")
+  endif()
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/isam2" TYPE EXECUTABLE FILES "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/da_test")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/da_test" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/da_test")
+    file(RPATH_CHANGE
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/da_test"
+         OLD_RPATH "/usr/local/lib:/opt/ros/foxy/lib:/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/lib:/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/eufs_msgs/lib:/home/danielnguyen/anaconda3/lib:"
+         NEW_RPATH "")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/isam2/da_test")
     endif()
   endif()
 endif()

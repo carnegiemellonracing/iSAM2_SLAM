@@ -3,6 +3,7 @@
 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/install.dir
 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/list_install_components.dir
 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/rebuild_cache.dir
+/home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/da_test.dir
 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/edit_cache.dir
 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/test.dir
 /home/danielnguyen/cmr/iSAM2_SLAM/workspace/build/isam2/CMakeFiles/isam_test.dir

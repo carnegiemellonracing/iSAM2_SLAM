@@ -96,34 +96,66 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
     */
-    Eigen::MatrixXd a = Eigen::MatrixXd::Zero(n_landmarks, n_landmarks*2);
-    Eigen::MatrixXd b(n_landmarks*2, 2);
+Eigen::MatrixXd a = Eigen::MatrixXd::Zero(2, n_landmarks * n_obs * 2);
+    Eigen::MatrixXd b(2, n_landmarks * n_obs * 2);
     Eigen::MatrixXd c(2, n_landmarks);
-    for(int o = 0; o < n_obs; o++){
-        for(int i = 0; i < n_landmarks; i++){
-            Point2 cur_delta(global_cone_x(o, 0) - slam_est.at(i).x(), global_cone_y(o, 0) - slam_est.at(i).y());
-            a(i, i*2) = cur_delta.x();
-            a(i, i*2+1) = cur_delta.y();
-            MatrixXd mcov = slam_mcov[i];
-            b << mcov;
-            c(0, i) = cur_delta.x();
-            c(1, i) = cur_delta.y();
-        }
-        EigenXd dists = a * b * c;
-        int min_id;
-        int min = dists.diagonal().minCoeff(&min_id);
-        if(min >= MIN_DIST_TH) {
-            Point2 global_cone_pos = Point2(global_cone_x(i,0), global_cone_y(i,0));
-            new_cones.emplace_back(cone_obs.at(i),
-                                    bearing(i, 0),
-                                    global_cone_pos);
-        }
-        else {
-            old_cones.emplace_back(cone_obs.at(i), bearing(i, 0), min_id);
+    // create matrix A: contains the difference vectors as columns, each diff vector is duplicated
+    for (int o = 0; o < n_obs; o++)
+    {
+        // Populate matrix A with all of the differnce vectors
+        for (int i = 0; i < n_landmarks; i++)
+        {
+            Point2 diff = Point2(global_cone_x(o,0)-slam_est.at(i).x(), global_cone_y(o,0)-slam_est.at(i).y());
+            a(0,i*2) = diff.x();
+            a(0, i*2+1) = diff.x();
+            a(1,i*2) = diff.y();
+            a(1,i*2+1) = diff.y();
         }
     }
 
+    MatrixXd smol_b(2, n_landmarks * 2);
+    for (int i = 0; i < n_landmarks; i++)
+    {
+        // For each observed cone, add the marginal_cov matrix to B
+        MatrixXd mcov = slam_mcov[i];
+        smol_b.block<2, 2>(0, i * 2) = mcov;
+    }
 
+    for (int o = 0; o < n_obs; o++)
+    {
+        b.block<2, n_landmarks * 2>(0, o * n_landmarks * 2) = smol_b;
+    }
+
+    for (int o = 0; o < n_obs; o++)
+    {
+        for (int i = 0; i < n_landmarks; i++)
+        {
+            Point2 diff = Point2(global_cone_x(o,0)-slam_est.at(i).x(), global_cone_y(o,0)-slam_est.at(i).y());
+            // Build c by row stacking each diff vector
+            c(0, i) = diff.x();
+            c(1, i) = diff.y();
+        }
+    }
+    MatrixXd pre_AB = a.array() * b.array();
+    VectorXd AB_vec = pre_AB.colwise().sum();
+    MatrixXd dists = Eigen::Map<Eigen::MatrixXd>(AB_vec.data(), 2, n_landmarks);
+    dists.array() = dists.array() * c.array();
+    VectorXd m_dists_vec = dists.colwise().sum();
+    for(int o = 0; o < n_obs; o++) {
+        int min_id;
+        int min = dists.segment(o * n_obs, n_obs).minCoeff(&min_id);
+        if (min >= M_DIST_TH)
+        {
+            Point2 global_cone_pos = Point2(global_cone_x(o, 0), global_cone_y(o, 0));
+            new_cones.emplace_back(cone_obs.at(o),
+                                    bearing(o, 0),
+                                    global_cone_pos);
+        }
+        else
+        {
+            old_cones.emplace_back(cone_obs.at(o), bearing(o, 0), min_id);
+        }
+    }
 }
 
 

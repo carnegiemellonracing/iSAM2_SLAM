@@ -168,6 +168,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named da_test
+
+# Build rule for target.
+da_test: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 da_test
+.PHONY : da_test
+
+# fast build rule for target.
+da_test/fast:
+	$(MAKE) -f CMakeFiles/da_test.dir/build.make CMakeFiles/da_test.dir/build
+.PHONY : da_test/fast
+
+#=============================================================================
 # Target rules for targets named isam_test
 
 # Build rule for target.
@@ -233,6 +246,33 @@ isam2Node.cpp.s:
 	$(MAKE) -f CMakeFiles/isam_test.dir/build.make CMakeFiles/isam_test.dir/isam2Node.cpp.s
 .PHONY : isam2Node.cpp.s
 
+test_data_association.o: test_data_association.cpp.o
+
+.PHONY : test_data_association.o
+
+# target to build an object file
+test_data_association.cpp.o:
+	$(MAKE) -f CMakeFiles/da_test.dir/build.make CMakeFiles/da_test.dir/test_data_association.cpp.o
+.PHONY : test_data_association.cpp.o
+
+test_data_association.i: test_data_association.cpp.i
+
+.PHONY : test_data_association.i
+
+# target to preprocess a source file
+test_data_association.cpp.i:
+	$(MAKE) -f CMakeFiles/da_test.dir/build.make CMakeFiles/da_test.dir/test_data_association.cpp.i
+.PHONY : test_data_association.cpp.i
+
+test_data_association.s: test_data_association.cpp.s
+
+.PHONY : test_data_association.s
+
+# target to generate assembly for a file
+test_data_association.cpp.s:
+	$(MAKE) -f CMakeFiles/da_test.dir/build.make CMakeFiles/da_test.dir/test_data_association.cpp.s
+.PHONY : test_data_association.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -244,6 +284,7 @@ help:
 	@echo "... install"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... da_test"
 	@echo "... edit_cache"
 	@echo "... test"
 	@echo "... isam_test"
@@ -252,6 +293,9 @@ help:
 	@echo "... isam2Node.o"
 	@echo "... isam2Node.i"
 	@echo "... isam2Node.s"
+	@echo "... test_data_association.o"
+	@echo "... test_data_association.i"
+	@echo "... test_data_association.s"
 .PHONY : help
 
 
