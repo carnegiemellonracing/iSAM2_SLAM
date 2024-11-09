@@ -7,17 +7,17 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "Checkpoint position [x, y, z]")
+      " Checkpoint position [x, y, z]")
     struct PurePursuitCheckpoint {
       geometry_msgs::msg::Point position;
 
       @verbatim (language="comment", text=
-        "Maximum speed")
+        " Maximum speed")
       @unit (value="m/s")
       double max_speed;
 
       @verbatim (language="comment", text=
-        "Maximum lateral acceleration")
+        " Maximum lateral acceleration")
       @unit (value="m/s^2")
       double max_lateral_acceleration;
     };

@@ -7,8 +7,8 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "Message for the error of our SLAM algorithm. All of them are based on euclidean distances, besides the map similarity," "\n"
-      "which can be interpreted as a percentage of how well our algorithm describes the map.")
+      " Message for the error of our SLAM algorithm. All of them are based on euclidean distances, besides the map similarity," "\n"
+      " which can be interpreted as a percentage of how well our algorithm describes the map.")
     struct SLAMErr {
       std_msgs::msg::Header header;
 

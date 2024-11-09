@@ -8,24 +8,22 @@
 module eufs_msgs {
   module action {
     @verbatim (language="comment", text=
-      "This action is only used by darknet_ros")
+      " This action is only used by darknet_ros")
     struct CheckForObjects_Goal {
       @verbatim (language="comment", text=
-        "Check if objects in image" "\n"
-        "Goal definition")
+        " Check if objects in image" "\n"
+        " Goal definition")
       int16 id;
 
       sensor_msgs::msg::Image image;
     };
-    @verbatim (language="comment", text=
-      "Result definition")
     struct CheckForObjects_Result {
+      @verbatim (language="comment", text=
+        " Result definition")
       int16 id;
 
       eufs_msgs::msg::BoundingBoxes bounding_boxes;
     };
-    @verbatim (language="comment", text=
-      "Feedback definition")
     struct CheckForObjects_Feedback {
       uint8 structure_needs_at_least_one_member;
     };

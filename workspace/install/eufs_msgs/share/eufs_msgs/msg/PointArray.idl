@@ -7,7 +7,7 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "Simple msg for array of points")
+      " Simple msg for array of points")
     struct PointArray {
       sequence<geometry_msgs::msg::Point> points;
     };

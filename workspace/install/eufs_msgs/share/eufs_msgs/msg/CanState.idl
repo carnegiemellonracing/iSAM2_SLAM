@@ -25,12 +25,12 @@ module eufs_msgs {
       const uint16 AMI_MANUAL = 21;
     };
     @verbatim (language="comment", text=
-      "State of the Autonomous System")
+      " State of the Autonomous System")
     struct CanState {
       uint16 as_state;
 
       @verbatim (language="comment", text=
-        "Mission indicator")
+        " Mission indicator")
       uint16 ami_state;
     };
   };

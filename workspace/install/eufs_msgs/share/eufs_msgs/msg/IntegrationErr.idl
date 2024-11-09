@@ -7,7 +7,7 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "Message for the error of Odometry Integration. Error based on euclidean distance.")
+      " Message for the error of Odometry Integration. Error based on euclidean distance.")
     struct IntegrationErr {
       std_msgs::msg::Header header;
 

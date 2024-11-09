@@ -7,18 +7,18 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "Waypoint position")
+      " Waypoint position")
     struct Waypoint {
       geometry_msgs::msg::Point position;
 
       @verbatim (language="comment", text=
-        "Suggested forward velocity (x direction in car frame)" "\n"
-        "m/s")
+        " Suggested forward velocity (x direction in car frame)" "\n"
+        " m/s")
       double speed;
 
       @verbatim (language="comment", text=
-        "Suggested steering angle" "\n"
-        "rad")
+        " Suggested steering angle" "\n"
+        " rad")
       double suggested_steering;
     };
   };

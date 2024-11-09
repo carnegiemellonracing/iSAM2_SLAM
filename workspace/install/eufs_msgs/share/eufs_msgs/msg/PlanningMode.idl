@@ -6,16 +6,12 @@
 module eufs_msgs {
   module msg {
     module PlanningMode_Constants {
-      @verbatim (language="comment", text=
-        "Local planning mode")
       const int8 LOCAL = 0;
-      @verbatim (language="comment", text=
-        "Global planning mode")
       const int8 GLOBAL = 1;
     };
     struct PlanningMode {
       @verbatim (language="comment", text=
-        "modes enuerated above")
+        " modes enuerated above")
       int8 mode;
     };
   };

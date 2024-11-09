@@ -8,8 +8,8 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "This message is used by planning nodes to advertise suggested trajectory waypoints" "\n"
-      "as well as suggested velocity and steering at each waypoint.")
+      " This message is used by planning nodes to advertise suggested trajectory waypoints" "\n"
+      " as well as suggested velocity and steering at each waypoint.")
     struct WaypointArrayStamped {
       std_msgs::msg::Header header;
 

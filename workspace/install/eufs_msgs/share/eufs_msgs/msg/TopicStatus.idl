@@ -11,7 +11,7 @@ module eufs_msgs {
       const uint16 TIMEOUT_EXCEEDED = 2;
     };
     @verbatim (language="comment", text=
-      "Topic information")
+      " Topic information")
     struct TopicStatus {
       string topic;
 
@@ -24,7 +24,7 @@ module eufs_msgs {
       string log_level;
 
       @verbatim (language="comment", text=
-        "Topic status")
+        " Topic status")
       uint16 status;
     };
   };

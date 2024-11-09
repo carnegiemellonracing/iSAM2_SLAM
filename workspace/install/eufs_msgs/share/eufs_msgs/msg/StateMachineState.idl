@@ -6,7 +6,7 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "State of the EUFS State Machine")
+      " State of the EUFS State Machine")
     struct StateMachineState {
       uint16 state;
 

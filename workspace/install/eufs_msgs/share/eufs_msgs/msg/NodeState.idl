@@ -7,28 +7,28 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "ID of the node")
+      " ID of the node")
     struct NodeState {
       uint16 id;
 
       @verbatim (language="comment", text=
-        "Name of the node")
+        " Name of the node")
       string name;
 
       @verbatim (language="comment", text=
-        "Next expected heartbeat value")
+        " Next expected heartbeat value")
       uint8 exp_heartbeat;
 
       @verbatim (language="comment", text=
-        "Time of last heartbeat")
+        " Time of last heartbeat")
       builtin_interfaces::msg::Time last_heartbeat;
 
       @verbatim (language="comment", text=
-        "Describes the action to take if node is offline")
+        " Describes the action to take if node is offline")
       uint8 severity;
 
       @verbatim (language="comment", text=
-        "Whether the node is running or not according to the status monitor")
+        " Whether the node is running or not according to the status monitor")
       boolean online;
     };
   };

@@ -7,7 +7,7 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      "Message for the error of the EKF. All of them are based on euclidean distances.")
+      " Message for the error of the EKF. All of them are based on euclidean distances.")
     struct EKFErr {
       std_msgs::msg::Header header;
 

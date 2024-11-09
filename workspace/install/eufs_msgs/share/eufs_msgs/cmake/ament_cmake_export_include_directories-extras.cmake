@@ -1,6 +1,6 @@
 # generated from ament_cmake_export_include_directories/cmake/ament_cmake_export_include_directories-extras.cmake.in
 
-set(_exported_include_dirs "${eufs_msgs_DIR}/../../../include/eufs_msgs")
+set(_exported_include_dirs "${eufs_msgs_DIR}/../../../include")
 
 # append include directories to eufs_msgs_INCLUDE_DIRS
 # warn about not existing paths

@@ -11,7 +11,7 @@ module eufs_msgs {
       std_msgs::msg::Header header;
 
       @verbatim (language="comment", text=
-        "Simple msg for array of points")
+        " Simple msg for array of points")
       sequence<geometry_msgs::msg::Point> points;
     };
   };

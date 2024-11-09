@@ -6,35 +6,25 @@
 module eufs_msgs {
   module msg {
     module SLAMState_Constants {
-      @verbatim (language="comment", text=
-        "Possible states of the algorithm" "\n"        "No inputs have been received yet")
       const int8 NO_INPUTS = 0;
-      @verbatim (language="comment", text=
-        "Building map")
       const int8 MAPPING = 1;
-      @verbatim (language="comment", text=
-        "Loop closed, now localising only")
       const int8 LOCALISING = 2;
-      @verbatim (language="comment", text=
-        "Input topics timedout")
       const int8 TIMEOUT = 3;
-      @verbatim (language="comment", text=
-        "If true, critical failure!  Recommends emergency shutdown")
       const int8 RECOMMENDS_FAILURE = 4;
     };
     struct SLAMState {
       @verbatim (language="comment", text=
-        "True after loop closure")
+        " True after loop closure")
       boolean loop_closed;
 
       int16 laps;
 
       @verbatim (language="comment", text=
-        "Dump for any logging purposes. Eg: \"particle covariance high; can't localise\"")
+        " Dump for any logging purposes. Eg: \"particle covariance high; can't localise\"")
       string status;
 
       @verbatim (language="comment", text=
-        "States enumerated above")
+        " States enumerated above")
       int8 state;
     };
   };
