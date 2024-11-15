@@ -10,6 +10,7 @@
 #include <chrono>
 #include <float.h>
 #include "ros_utils.cpp"
+#include "ispc"
 
 
 using namespace Eigen;
@@ -63,7 +64,7 @@ void data_association_2(int n_obs, int n_landmarks, MatrixXd &global_cone_x, Mat
     }
 }
 
-void data_association_2(int n_obs, int n_landmarks, MatrixXd &global_cone_x, MatrixXd &global_cone_y, vector<double> &m_dist,
+void data_association_3(int n_obs, int n_landmarks, MatrixXd &global_cone_x, MatrixXd &global_cone_y, vector<double> &m_dist,
                         vector<Point2> &cone_obs, vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov)
 {   
     Eigen::MatrixXd a = Eigen::MatrixXd::Zero(2, n_landmarks * n_obs * 2);
@@ -93,7 +94,7 @@ void data_association_2(int n_obs, int n_landmarks, MatrixXd &global_cone_x, Mat
 
     for (int o = 0; o < n_obs; o++)
     {
-        b.block<2, n_landmarks * 2>(0, o * n_landmarks * 2) = smol_b;
+        b.block(0, o * n_landmarks * 2,2 , n_landmarks * 2) = smol_b;
     }
 
     for (int o = 0; o < n_obs; o++)
@@ -108,6 +109,19 @@ void data_association_2(int n_obs, int n_landmarks, MatrixXd &global_cone_x, Mat
     }
 
     
+}
+
+void data_association_4(int n_obs, int n_landmarks, MatrixXd &global_cone_x, MatrixXd &global_cone_y, vector<double> &m_dist,
+                        vector<Point2> &cone_obs, vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov)
+{
+    vector<double> slam_est_x;
+    vector<double> slam_est_y;
+    for (Point 2 point : slam_est)
+    {
+        slam_est_x.append(point.x());
+        slam_est_y.append(point.y());
+    }
+    ispc::data_associate_3(n_obs, n_landmarks, global_cone_x, global_cone_y, slam_est_x, slam_est_y, slam_mcov, m_dist);
 }
 
 int main(int argc, char* argv[])
@@ -154,10 +168,18 @@ int main(int argc, char* argv[])
     data_association_2(n_obs, n_landmarks, global_cone_x, global_cone_y, m_dist_2,
                        cone_obs, slam_est, slam_mcov);
     auto end2 = high_resolution_clock::now();
+    data_association_3(n_obs, n_landmarks, global_cone_x, global_cone_y, m_dist_2,
+                       cone_obs, slam_est, slam_mcov);
+    auto end3 = high_resolution_clock::now();
+    data_association_4(n_obs, n_landmarks, global_cone_x, global_cone_y, m_dist_2,
+                       cone_obs, slam_est, slam_mcov);
+    auto end4 = high_resolution_clock::now();
     auto d1 = duration_cast<microseconds>(end - start);
     auto d2 = duration_cast<microseconds>(end2 - end);
+    auto d3 = duration_cast<microseconds>(end3 - end2);
+    auto d4 = duration_cast<microseconds>(end4 - end3);
 
-    cout << d1.count() << " " << d2.count() << endl;
+    cout << d1.count() << " " << d2.count() << " " << d3.count() << " " << d4.count() << endl;
 
 
     // for (int i = 0; i < m_dist_1.size(); i++)

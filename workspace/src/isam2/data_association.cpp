@@ -123,7 +123,7 @@ Eigen::MatrixXd a = Eigen::MatrixXd::Zero(2, n_landmarks * n_obs * 2);
 
     for (int o = 0; o < n_obs; o++)
     {
-        b.block<2, n_landmarks * 2>(0, o * n_landmarks * 2) = smol_b;
+        b.block(0, o * n_landmarks * 2, 2, n_landmarks * 2) = smol_b;
     }
 
     for (int o = 0; o < n_obs; o++)
@@ -143,7 +143,7 @@ Eigen::MatrixXd a = Eigen::MatrixXd::Zero(2, n_landmarks * n_obs * 2);
     VectorXd m_dists_vec = dists.colwise().sum();
     for(int o = 0; o < n_obs; o++) {
         int min_id;
-        int min = dists.segment(o * n_obs, n_obs).minCoeff(&min_id);
+        int min = m_dists_vec.segment(o * n_obs, n_obs).minCoeff(&min_id);
         if (min >= M_DIST_TH)
         {
             Point2 global_cone_pos = Point2(global_cone_x(o, 0), global_cone_y(o, 0));
