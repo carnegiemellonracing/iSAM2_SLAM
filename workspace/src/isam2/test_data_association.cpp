@@ -64,8 +64,63 @@ void data_association_2(int n_obs, int n_landmarks, MatrixXd &global_cone_x, Mat
     }
 }
 
-void data_association_3(int n_obs, int n_landmarks, MatrixXd &global_cone_x, MatrixXd &global_cone_y, vector<double> &m_dist,
+void data_association_allobs(int n_obs, int n_landmarks, MatrixXd &global_cone_x, MatrixXd &global_cone_y, vector<double> &m_dist,
                         vector<Point2> &cone_obs, vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov)
+{
+    Eigen::MatrixXd a = Eigen::MatrixXd::Zero(2, n_landmarks * n_obs * 2);
+    Eigen::MatrixXd b(2, n_landmarks * n_obs * 2);
+    Eigen::MatrixXd c(2, n_landmarks);
+    // create matrix A: contains the difference vectors as columns, each diff vector is duplicated
+    for (int o = 0; o < n_obs; o++)
+    {
+        // Populate matrix A with all of the differnce vectors
+        for (int i = 0; i < n_landmarks; i++)
+        {
+            Point2 diff = Point2(global_cone_x(o, 0) - slam_est.at(i).x(), global_cone_y(o, 0) - slam_est.at(i).y());
+            a(0, i * 2) = diff.x();
+            a(0, i * 2 + 1) = diff.x();
+            a(1, i * 2) = diff.y();
+            a(1, i * 2 + 1) = diff.y();
+        }
+    }
+    MatrixXd smol_b(2, n_landmarks * 2);
+    for (int i = 0; i < n_landmarks; i++)
+    {
+        // For each observed cone, add the marginal_cov matrix to B
+        MatrixXd mcov = slam_mcov[i];
+        smol_b.block<2, 2>(0, i * 2) = mcov;
+    }
+    for (int o = 0; o < n_obs; o++)
+    {
+        b.block<2, n_landmarks * 2>(0, o * n_landmarks * 2) = smol_b;
+    }
+    for (int o = 0; o < n_obs; o++)
+    {
+        for (int i = 0; i < n_landmarks; i++)
+        {
+            Point2 diff = Point2(global_cone_x(o, 0) - slam_est.at(i).x(), global_cone_y(o, 0) - slam_est.at(i).y());
+            // Build c by row stacking each diff vector
+            c(0, i + o * n_landmarks) = diff.x();
+            c(1, i + o * n_landmarks) = diff.y();
+        }
+    }
+    // element multiplication
+    MatrixXd dists = a.array() * b.array();
+    VectorXd dists_vec = dists.colwise().sum();
+    MatrixXd dists_mat = Eigen::Map<Eigen::MatrixXd>(dists_vec.data(), 2, n_landmarks * n_obs * 2);
+    dists_mat.array() = dists_mat.array() * c.array();
+    VectorXd m_dist_vec = dists_mat.colwise().sum();
+    for (int i = 0; i < n_landmarks; i++)
+    {
+        m_dist.push_back(m_dist_vec(i));
+    }
+}
+
+NEW
+
+    void
+    data_association_3(int n_obs, int n_landmarks, MatrixXd &global_cone_x, MatrixXd &global_cone_y, vector<double> &m_dist,
+                       vector<Point2> &cone_obs, vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov)
 {   
     Eigen::MatrixXd a = Eigen::MatrixXd::Zero(2, n_landmarks * n_obs * 2);
     Eigen::MatrixXd b(2, n_landmarks * n_obs * 2);
