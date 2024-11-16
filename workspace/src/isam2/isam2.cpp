@@ -97,6 +97,7 @@ private:
 
 public:
     high_resolution_clock::time_point start;
+    high_resolution_clock::time_point end;
     int n_landmarks;
     int blue_n_landmarks;
     int yellow_n_landmarks;
@@ -209,10 +210,6 @@ public:
 
             //global_odom holds our GPS measurements
             velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
-            RCLCPP_INFO(logger, "GPS position; x: %.10f | y: %.10f", new_pose.x(), new_pose.y());
-
-            RCLCPP_INFO(logger, "Finished motion model");
-
 
             gtsam::BetweenFactor<Pose2> odom_factor = BetweenFactor<Pose2>(X(pose_num - 1),
                                                                         X(pose_num),
@@ -301,7 +298,7 @@ public:
         graph.resize(0); //Not resizing your graph will result in long update times
         values.clear();
 
-        RCLCPP_INFO(logger, "n_landmarks: %d", n_landmarks);
+        
     }
 
 
@@ -317,9 +314,9 @@ public:
 
         if (n_landmarks > 0)
         {
-            auto end = high_resolution_clock::now();
-            auto d = duration_cast<microseconds>(end - start);
-            RCLCPP_INFO(logger, "Step time: %d", d.count());
+            auto start_step  = high_resolution_clock::now();
+            auto dur_betw_step = duration_cast<milliseconds>(start_step - end);
+            RCLCPP_INFO(logger, "End of prev step to cur step: %d", dur_betw_step.count());
         }
 
         start = high_resolution_clock::now();
@@ -329,7 +326,7 @@ public:
         auto start_update_poses = high_resolution_clock::now();
         update_poses(cur_pose, prev_pose, global_odom, velocity, dt, false,logger);
         auto end_update_poses = high_resolution_clock::now();
-        auto dur_update_poses = duration_cast<microseconds>(end_update_poses - start_update_poses);
+        auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
         RCLCPP_INFO(logger, "update_poses time: %d", dur_update_poses.count());
 
 
@@ -345,7 +342,7 @@ public:
             slam_mcov.push_back(isam2.marginalCovariance(L(i)));
         }
         auto end_est_retrieval = high_resolution_clock::now();
-        auto dur_est_retrieval = duration_cast<microseconds>(end_est_retrieval - start_est_retrieval);
+        auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
         RCLCPP_INFO(logger, "est_retrieval time: %d", dur_est_retrieval.count());
 
 
@@ -357,18 +354,18 @@ public:
         data_association(old_cones, new_cones, cur_pose, prev_pose,
                             cone_obs, logger, slam_est, slam_mcov);
         auto end_DA = high_resolution_clock::now();
-        auto dur_DA = duration_cast<microseconds>(end_DA - start_DA);
+        auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         RCLCPP_INFO(logger, "Data association time: %d", dur_DA.count());
 
         auto start_update_landmarks = high_resolution_clock::now();
         update_landmarks(old_cones, new_cones, cur_pose, logger);
         auto end_update_landmarks = high_resolution_clock::now();
-        auto dur_update_landmarks = duration_cast<microseconds>(end_update_landmarks - start_update_landmarks);
+        auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
         RCLCPP_INFO(logger, "update_landmarks time: %d", dur_update_landmarks.count());
 
         pose_num++;
 
-        RCLCPP_INFO(logger, "pose_num: %d | n_landmarks: %d", pose_num, n_landmarks);
+        
         /* Create a boolean to check if mahalanobis calcs are done for current
          * time step before proceeding to mahalanobis calcs for next time step
          *
@@ -385,10 +382,14 @@ public:
         ofs.close();
         std::cout.rdbuf(coutbuf); //reset to standard output again
         auto end_vis_setup = high_resolution_clock::now();
-        auto dur_vis_setup = duration_cast<microseconds>(end_vis_setup - start_vis_setup);
+        auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
         RCLCPP_INFO(logger, "vis_setup time: %d", dur_vis_setup.count());
 
+        end = high_resolution_clock::now();
+        auto dur_step_call = duration_cast<milliseconds>(end - start);
+        RCLCPP_INFO(logger, "SLAM run step | Step call time: %d\n", dur_step_call.count());
 
+        RCLCPP_INFO(logger, "pose_num: %d | n_landmarks: %d\n\n", pose_num, n_landmarks);
     }
 
 
