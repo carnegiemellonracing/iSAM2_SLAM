@@ -23,7 +23,6 @@
 #include "isam2.cpp"
 
 
-
 #include <boost/shared_ptr.hpp>
 #include <vector>
 #include <deque>
@@ -95,7 +94,6 @@ public:
         gps_queue = std::make_shared<std::deque<std::tuple<double, gtsam::Pose2, gtsam::Pose2, double>>>();
 
         dt = .1;
-        gps_queue_mutex = new std::mutex();
 
         //TODO: std::optional where init is set to None
         init_lon_lat = std::nullopt;
@@ -124,12 +122,11 @@ private:
         vehicle_pos_callback(vehicle_pos_data);
         vehicle_vel_callback(vehicle_vel_data);
         vehicle_angle_callback(vehicle_angle_data);
-        gps_queue_mutex->lock();
+        std::lock_guard<std::mutex> lock(gps_queue_mutex);
         gps_queue->emplace_back(header_to_nanosec(cur_filter_time.value()), global_odom, velocity, dt);
         if(gps_queue->size() > MAX_QUEUE) {
             gps_queue->pop_front();
         }
-        gps_queue_mutex->unlock();
         //run_slam();
 
         
@@ -159,7 +156,7 @@ private:
         std::tuple<double, gtsam::Pose2, gtsam::Pose2, double> bestMsg; 
         double minTimeDiff = std::numeric_limits<double>::max();
 
-        gps_queue_mutex->lock();
+        std::unique_lock<std::mutex> lock(gps_queue_mutex);
         for (const auto &element : *gps_queue) // Dereference the shared pointer
         {
             double time = std::get<0>(element);
@@ -174,7 +171,7 @@ private:
         global_odom = std::get<1>(bestMsg);
         velocity = std::get<2>(bestMsg);
         dt = std::get<3>(bestMsg);
-        gps_queue_mutex->unlock();
+        lock.unlock();
         run_slam();
     }
 
@@ -230,7 +227,7 @@ private:
     message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
 
 
-    std::mutex *gps_queue_mutex;
+    std::mutex gps_queue_mutex;
     std::shared_ptr<std::deque<std::tuple<double, gtsam::Pose2, gtsam::Pose2, double>>> gps_queue;
     std::shared_ptr<message_filters::Subscriber<interfaces::msg::ConeArray>> cone_sub;
     std::shared_ptr<message_filters::Synchronizer<
@@ -240,7 +237,7 @@ private:
                                             geometry_msgs::msg::QuaternionStamped>>> gps_sync;
     
     gtsam::Pose2 velocity;
-    int MAX_QUEUE = 10;
+    int MAX_QUEUE = 20;
 
     optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
@@ -269,13 +266,11 @@ int main(int argc, char * argv[]){
   std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
   std::cout.rdbuf(out.rdbuf());
 
-  auto shared_ptr = std::make_shared<SLAMValidation>();
   rclcpp::init(argc, argv);
+  auto shared_ptr = std::make_shared<SLAMValidation>();
   rclcpp::executors::MultiThreadedExecutor executor;
   executor.add_node(shared_ptr);
-  rclcpp::spin(shared_ptr);
   executor.spin();
   std::cout.rdbuf(coutbuf); //reset to standard output again
-
   return 0;
 }
