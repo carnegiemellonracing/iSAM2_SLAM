@@ -74,13 +74,12 @@ public:
                best_effort_profile.depth),
            best_effort_profile);
 
-        cone_sub.subscribe(this, CONE_DATA_TOPIC, best_effort_profile);
         vehicle_pos_sub.subscribe(this, VEHICLE_POS_TOPIC, best_effort_profile);
         vehicle_angle_sub.subscribe(this, VEHICLE_ANGLE_TOPIC, best_effort_profile);
         vehicle_vel_sub.subscribe(this, VEHICLE_VEL_TOPIC, best_effort_profile);
 
-        cone_subscriber = std::make_shared<message_filters::Subscriber<interfaces::msg::ConeArray>>(cone_sub);
-        cone_subscriber->registerCallback(std::bind(&SLAMValidation::cone_callback, this, _1));
+        cone_sub = std::make_shared<message_filters::Subscriber<interfaces::msg::ConeArray>>(this, CONE_DATA_TOPIC, best_effort_profile);
+        cone_sub->registerCallback(std::bind(&SLAMValidation::cone_callback, this, _1));
         gps_sync = std::make_shared<message_filters::Synchronizer<
                                     message_filters::sync_policies::ApproximateTime<
                                     geometry_msgs::msg::Vector3Stamped,
@@ -96,6 +95,7 @@ public:
         gps_queue = std::make_shared<std::deque<std::tuple<double, gtsam::Pose2, gtsam::Pose2, double>>>();
 
         dt = .1;
+        gps_queue_mutex = new std::mutex();
 
         //TODO: std::optional where init is set to None
         init_lon_lat = std::nullopt;
@@ -106,8 +106,7 @@ public:
 
 private:
 
-    void sync_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
-                    const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
+    void sync_callback(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
                     const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                     const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
         RCLCPP_INFO(this->get_logger(), "Sync Callback");
@@ -125,12 +124,12 @@ private:
         vehicle_pos_callback(vehicle_pos_data);
         vehicle_vel_callback(vehicle_vel_data);
         vehicle_angle_callback(vehicle_angle_data);
-        gps_queue_mutex.lock();
+        gps_queue_mutex->lock();
         gps_queue->emplace_back(header_to_nanosec(cur_filter_time.value()), global_odom, velocity, dt);
         if(gps_queue->size() > MAX_QUEUE) {
             gps_queue->pop_front();
         }
-        gps_queue_mutex.unlock();
+        gps_queue_mutex->unlock();
         //run_slam();
 
         
@@ -160,8 +159,8 @@ private:
         std::tuple<double, gtsam::Pose2, gtsam::Pose2, double> bestMsg; 
         double minTimeDiff = std::numeric_limits<double>::max();
 
-        gps_queue_mutex.lock();
-        for (const auto &element : *deque_ptr) // Dereference the shared pointer
+        gps_queue_mutex->lock();
+        for (const auto &element : *gps_queue) // Dereference the shared pointer
         {
             double time = std::get<0>(element);
             if(std::abs(time - cur_time) < minTimeDiff) {
@@ -175,7 +174,7 @@ private:
         global_odom = std::get<1>(bestMsg);
         velocity = std::get<2>(bestMsg);
         dt = std::get<3>(bestMsg);
-        gps_queue_mutex.unlock();
+        gps_queue_mutex->unlock();
         run_slam();
     }
 
@@ -226,15 +225,14 @@ private:
 
     slamISAM slam_instance = slamISAM(this->get_logger());
 
-    message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
     message_filters::Subscriber<geometry_msgs::msg::Vector3Stamped> vehicle_pos_sub;
     message_filters::Subscriber<geometry_msgs::msg::TwistStamped> vehicle_vel_sub;
     message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
 
 
-    std::mutex gps_queue_mutex;
+    std::mutex *gps_queue_mutex;
     std::shared_ptr<std::deque<std::tuple<double, gtsam::Pose2, gtsam::Pose2, double>>> gps_queue;
-    std::shared_ptr<message_filters::Subscriber<interfaces::msg::ConeArray>> cone_subscriber;
+    std::shared_ptr<message_filters::Subscriber<interfaces::msg::ConeArray>> cone_sub;
     std::shared_ptr<message_filters::Synchronizer<
                             message_filters::sync_policies::ApproximateTime<
                                             geometry_msgs::msg::Vector3Stamped,
