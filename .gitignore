@@ -5,3 +5,4 @@ eufs/*
 eufs/build/*
 eufs/install/*
 eufs/log/*
+workspace/src/isam2/data/*
