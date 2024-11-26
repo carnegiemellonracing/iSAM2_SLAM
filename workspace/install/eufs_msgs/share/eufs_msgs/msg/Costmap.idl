@@ -6,10 +6,10 @@
 module eufs_msgs {
   module msg {
     @verbatim (language="comment", text=
-      " costmap for the MPPI algorithm in the form of a 2D image")
+      "costmap for the MPPI algorithm in the form of a 2D image")
     struct Costmap {
       @verbatim (language="comment", text=
-        " the bounds give the scale and limits of the image")
+        "the bounds give the scale and limits of the image")
       double x_bounds_min;
 
       double x_bounds_max;
@@ -19,11 +19,11 @@ module eufs_msgs {
       double y_bounds_max;
 
       @verbatim (language="comment", text=
-        " he pixels per meter are used in scaling the image up")
+        "he pixels per meter are used in scaling the image up")
       double pixels_per_meter;
 
       @verbatim (language="comment", text=
-        " the costmap contains 4 channels of floats")
+        "the costmap contains 4 channels of floats")
       sequence<float> channel0;
 
       sequence<float> channel1;
