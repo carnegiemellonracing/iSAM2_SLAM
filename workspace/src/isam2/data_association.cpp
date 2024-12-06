@@ -14,7 +14,7 @@
 #include <float.h>
 
 #include "ros_utils.cpp"
-const double M_DIST_TH = 50;
+const double M_DIST_TH = 50.0;
 
 using namespace Eigen;
 
