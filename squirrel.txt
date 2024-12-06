@@ -1,0 +1,485 @@
+Estimate:
+Values with 108 values:
+Value l0: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	0.783408;
+	-3.42409
+]
+
+Value l1: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	0.0397746;
+	-5.32184
+]
+
+Value l2: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-3.81524;
+	-1.48209
+]
+
+Value l3: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-6.21852;
+	-7.40154
+]
+
+Value l4: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-5.32839;
+	-5.21904
+]
+
+Value l5: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-4.53297;
+	-3.26946
+]
+
+Value l6: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-0.794202;
+	-7.45891
+]
+
+Value l7: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-1.51715;
+	-9.20164
+]
+
+Value l8: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-2.91772;
+	-11.7734
+]
+
+Value l9: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-7.87332;
+	-11.0495
+]
+
+Value l10: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-7.73788;
+	-13.4246
+]
+
+Value l11: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-7.08026;
+	-11.4354
+]
+
+Value l12: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-8.04533;
+	-15.5797
+]
+
+Value l13: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-3.72375;
+	-19.6925
+]
+
+Value l14: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-8.30356;
+	-17.891
+]
+
+Value l15: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-2.62161;
+	-19.7432
+]
+
+Value l16: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-7.65973;
+	-20.33
+]
+
+Value l17: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-8.11006;
+	-22.3351
+]
+
+Value l18: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-3.64143;
+	-27.1814
+]
+
+Value l19: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-8.19144;
+	-24.1857
+]
+
+Value l20: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-8.42661;
+	-26.4261
+]
+
+Value l21: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-8.19824;
+	-28.3362
+]
+
+Value l22: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-2.77143;
+	-29.9223
+]
+
+Value l23: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-7.4911;
+	-30.4161
+]
+
+Value l24: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-1.34852;
+	-31.3617
+]
+
+Value l25: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-6.63906;
+	-31.755
+]
+
+Value l26: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-5.61018;
+	-33.2644
+]
+
+Value l27: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	0.419101;
+	-32.8975
+]
+
+Value l28: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-4.18355;
+	-34.9422
+]
+
+Value l29: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	-2.62493;
+	-36.0471
+]
+
+Value l30: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	2.42777;
+	-33.9315
+]
+
+Value l31: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	0.0786032;
+	-36.8747
+]
+
+Value l32: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	3.79283;
+	-33.2831
+]
+
+Value l33: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	2.13444;
+	-37.2872
+]
+
+Value l34: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	5.71731;
+	-33.3888
+]
+
+Value l35: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	13.8038;
+	-29.6899
+]
+
+Value l36: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	11.9801;
+	-36.2171
+]
+
+Value l37: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	10.1038;
+	-36.6515
+]
+
+Value l38: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	8.07681;
+	-31.7766
+]
+
+Value l39: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	6.26788;
+	-36.2141
+]
+
+Value l40: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	7.71996;
+	-36.6138
+]
+
+Value l41: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	13.6739;
+	-35.6361
+]
+
+Value l42: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	9.57813;
+	-31.8151
+]
+
+Value l43: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	11.6406;
+	-31.1913
+]
+
+Value l44: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	15.3256;
+	-34.2283
+]
+
+Value l45: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	15.3445;
+	-26.4982
+]
+
+Value l46: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	18.0025;
+	-30.8191
+]
+
+Value l47: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	16.9307;
+	-31.9426
+]
+
+Value l48: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	15.4117;
+	-33.078
+]
+
+Value l49: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	18.8516;
+	-29.1799
+]
+
+Value l50: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	16.3578;
+	-23.8767
+]
+
+Value l51: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	20.1079;
+	-26.9517
+]
+
+Value l52: (Eigen::Matrix<double, 2, 1, 0, 2, 1>)
+[
+	21.1824;
+	-24.5218
+]
+
+Value x0: (gtsam::Pose2)
+(0.107817, 0.279956, -1.93841)
+
+Value x1: (gtsam::Pose2)
+(-0.587612, -1.26139, -1.96983)
+
+Value x2: (gtsam::Pose2)
+(-0.938918, -1.23806, -1.99036)
+
+Value x3: (gtsam::Pose2)
+(-1.42269, -2.21571, -2.0049)
+
+Value x4: (gtsam::Pose2)
+(-1.58815, -2.53762, -2.01797)
+
+Value x5: (gtsam::Pose2)
+(-2.15128, -3.63431, -2.03409)
+
+Value x6: (gtsam::Pose2)
+(-2.27624, -3.95037, -2.02976)
+
+Value x7: (gtsam::Pose2)
+(-2.82678, -5.48091, -1.95437)
+
+Value x8: (gtsam::Pose2)
+(-3.29352, -7.11668, -1.91628)
+
+Value x9: (gtsam::Pose2)
+(-3.54567, -8.28727, -1.88001)
+
+Value x10: (gtsam::Pose2)
+(-3.78669, -10.0656, -1.81183)
+
+Value x11: (gtsam::Pose2)
+(-3.8907, -10.9671, -1.78181)
+
+Value x12: (gtsam::Pose2)
+(-3.97171, -11.966, -1.73832)
+
+Value x13: (gtsam::Pose2)
+(-3.84933, -13.8664, -1.59902)
+
+Value x14: (gtsam::Pose2)
+(-3.84479, -15.7085, -1.56696)
+
+Value x15: (gtsam::Pose2)
+(-3.88227, -17.0741, -1.59299)
+
+Value x16: (gtsam::Pose2)
+(-3.93701, -18.4198, -1.61212)
+
+Value x17: (gtsam::Pose2)
+(-3.98102, -19.1742, -1.63932)
+
+Value x18: (gtsam::Pose2)
+(-4.01301, -19.9564, -1.64651)
+
+Value x19: (gtsam::Pose2)
+(-4.04918, -20.3982, -1.65131)
+
+Value x20: (gtsam::Pose2)
+(-4.19847, -21.4094, -1.68864)
+
+Value x21: (gtsam::Pose2)
+(-4.29284, -22.1425, -1.72274)
+
+Value x22: (gtsam::Pose2)
+(-4.36378, -22.7151, -1.732)
+
+Value x23: (gtsam::Pose2)
+(-4.41403, -23.2995, -1.73626)
+
+Value x24: (gtsam::Pose2)
+(-4.44562, -23.9113, -1.73198)
+
+Value x25: (gtsam::Pose2)
+(-4.49369, -24.618, -1.7285)
+
+Value x26: (gtsam::Pose2)
+(-4.50822, -24.9066, -1.72689)
+
+Value x27: (gtsam::Pose2)
+(-4.539, -25.6088, -1.71657)
+
+Value x28: (gtsam::Pose2)
+(-4.53422, -26.4171, -1.70576)
+
+Value x29: (gtsam::Pose2)
+(-4.53317, -26.8364, -1.70378)
+
+Value x30: (gtsam::Pose2)
+(-4.49408, -27.2941, -1.68805)
+
+Value x31: (gtsam::Pose2)
+(-3.92391, -28.3596, -1.54103)
+
+Value x32: (gtsam::Pose2)
+(-3.7773, -28.6077, -1.4967)
+
+Value x33: (gtsam::Pose2)
+(-3.66119, -28.7743, -1.42901)
+
+Value x34: (gtsam::Pose2)
+(-3.23284, -29.2455, -1.33107)
+
+Value x35: (gtsam::Pose2)
+(-2.83095, -29.648, -1.24861)
+
+Value x36: (gtsam::Pose2)
+(-2.69941, -29.7682, -1.20183)
+
+Value x37: (gtsam::Pose2)
+(-2.16179, -30.2032, -1.11738)
+
+Value x38: (gtsam::Pose2)
+(4.19304, -32.4111, -0.444357)
+
+Value x39: (gtsam::Pose2)
+(4.92744, -32.6571, -0.423639)
+
+Value x40: (gtsam::Pose2)
+(5.21128, -32.7477, -0.412004)
+
+Value x41: (gtsam::Pose2)
+(5.87512, -32.9355, -0.398424)
+
+Value x42: (gtsam::Pose2)
+(6.13882, -33.0033, -0.387286)
+
+Value x43: (gtsam::Pose2)
+(8.89702, -32.716, -0.169721)
+
+Value x44: (gtsam::Pose2)
+(9.28596, -32.6579, -0.132845)
+
+Value x45: (gtsam::Pose2)
+(9.70845, -32.5343, -0.0115945)
+
+Value x46: (gtsam::Pose2)
+(10.134, -32.3535, 0.0676949)
+
+Value x47: (gtsam::Pose2)
+(10.3009, -32.2841, 0.101381)
+
+Value x48: (gtsam::Pose2)
+(10.743, -32.0461, 0.185528)
+
+Value x49: (gtsam::Pose2)
+(11.2177, -31.7461, 0.270811)
+
+Value x50: (gtsam::Pose2)
+(11.655, -31.4357, 0.34946)
+
+Value x51: (gtsam::Pose2)
+(12.0022, -31.145, 0.448747)
+
+Value x52: (gtsam::Pose2)
+(12.2742, -30.8901, 0.491163)
+
+Value x53: (gtsam::Pose2)
+(12.9023, -30.1853, 0.630891)
+
+Value x54: (gtsam::Pose2)
+(13.1554, -29.8773, 0.699807)
+

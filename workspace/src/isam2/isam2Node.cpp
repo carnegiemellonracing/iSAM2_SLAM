@@ -270,7 +270,6 @@ private:
     slamISAM slam_instance = slamISAM(this->get_logger());
     high_resolution_clock::time_point cur_sync_callback_time;
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
-    message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
     message_filters::Subscriber<geometry_msgs::msg::Vector3Stamped> vehicle_pos_sub;
     message_filters::Subscriber<geometry_msgs::msg::TwistStamped> vehicle_vel_sub;
     message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
