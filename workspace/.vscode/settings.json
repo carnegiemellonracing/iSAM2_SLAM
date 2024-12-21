@@ -63,7 +63,9 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "bit": "cpp",
-        "core": "cpp"
+        "core": "cpp",
+        "unordered_set": "cpp",
+        "hash_map": "cpp"
     },
     "python.autoComplete.extraPaths": [
         "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/lib/python3.8/site-packages",

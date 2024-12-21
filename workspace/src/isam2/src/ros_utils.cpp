@@ -7,42 +7,8 @@
  * This reference is modified to store the results. The result reference
  * is always the first parameter that is passed in.
  */
-#include <memory>
-#include <optional>
+#include "ros_utils.hpp"
 
-#include "rclcpp/rclcpp.hpp"
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/approximate_time.h>
-
-#include "interfaces/msg/cone_array.hpp"
-#include "interfaces/msg/cone_array_with_odom.hpp"
-
-#include "geometry_msgs/msg/point.hpp"
-#include "geometry_msgs/msg/vector3_stamped.hpp"
-#include "geometry_msgs/msg/quaternion_stamped.hpp"
-#include "geometry_msgs/msg/twist_stamped.hpp"
-#include "geometry_msgs/msg/twist_with_covariance.hpp"
-#include "geometry_msgs/msg/twist.hpp"
-#include "sensor_msgs/msg/nav_sat_fix.hpp"
-
-#include "eufs_msgs/msg/cone_array_with_covariance.hpp"
-#include "eufs_msgs/msg/car_state.hpp"
-
-#include <gtsam/nonlinear/ISAM2Params.h>
-
-#include <boost/shared_ptr.hpp>
-#include <vector>
-#include <deque>
-#include <cmath>
-#include <chrono>
-using namespace std;
-using namespace gtsam;
-using namespace Eigen;
-
-const double IMU_OFFSET = 0.3; //meters
-const double LIDAR_OFFSET = 0.3; //meters
-const double MAX_CONE_RANGE = 10;
 /**
  * @brief Movella Xsens IMU uses y-left, x-forward axes. CMR DV uses y-forward
  * x-right axes. This function performs the conversion.
@@ -53,6 +19,50 @@ void imu_axes_to_DV_axes(double &x, double &y) {
     y = temp_x;
 }
 
+void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
+                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
+    /* Doesn't depend on imu axes. These are global coordinates */
+    double latitude = vehicle_pos_data->vector.x;
+    double longitude = vehicle_pos_data->vector.y;
+
+    if (!(init_lon_lat.has_value())) {
+        init_lon_lat.emplace(longitude, latitude);
+    }
+
+    longitude -= init_lon_lat.value().x();
+    latitude -= init_lon_lat.value().y();
+    /* Print statements for longitude and latitude debugging
+    RCLCPP_INFO(logger, "init_lon_lat: %.10f | %.10f", init_lon_lat.value().x(),
+                                                init_lon_lat.value().y());
+    RCLCPP_INFO(logger, "cur lon_lat: %.10f | %.10f", longitude, latitude);
+    RCLCPP_INFO(logger, "cur change in lon_lat: %.10f | %.10f",
+                                            longitude, latitude); */
+
+    double LAT_DEG_TO_METERS = 111111;
+
+    /* Intuition: Find the radius of the circle at current latitude
+     * Convert the change in longitude to radians
+     * Calculate the distance in meters
+     *
+     * The range should be the earth's radius: 6378137 meters.
+     * The radius of the circle at current latitude: 6378137 * cos(latitude_rads)
+     * To get the longitude, we need to convert change in longitude to radians
+     * - longitude_rads = longitude * (M_PI / 180.0)
+     *
+     * Observe: 111320 = 6378137 * M_PI / 180.0
+     */
+
+    /* Represents the radius used to multiply angle in radians */
+    double LON_DEG_TO_METERS = 111319.5 * cos(degrees_to_radians(latitude));
+
+    double x = LON_DEG_TO_METERS * longitude;
+    double y = LAT_DEG_TO_METERS * latitude;
+
+
+
+    global_odom = Pose2(x, y, global_odom.theta());
+
+}
 
 void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
                                             vector<Point2> &cones,
@@ -246,47 +256,41 @@ double degrees_to_radians(double degrees) {
     return degrees * M_PI / 180.0;
 }
 
-void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
-                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
-    /* Doesn't depend on imu axes. These are global coordinates */
-    double latitude = vehicle_pos_data->vector.x;
-    double longitude = vehicle_pos_data->vector.y;
-
-    if (!(init_lon_lat.has_value())) {
-        init_lon_lat.emplace(longitude, latitude);
+void print_cone_obs(vector<Point2> &cone_obs, optional<rclcpp::Logger> logger) {
+    for (int i = 0; i < cone_obs.size(); i++) {
+        if (logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "cone_obs.at(%d): %f %f", i, 
+                                                    cone_obs.at(i).x(),
+                                                    cone_obs.at(i).y());
+        }
     }
+}
 
-    longitude -= init_lon_lat.value().x();
-    latitude -= init_lon_lat.value().y();
-    /* Print statements for longitude and latitude debugging
-    RCLCPP_INFO(logger, "init_lon_lat: %.10f | %.10f", init_lon_lat.value().x(),
-                                                init_lon_lat.value().y());
-    RCLCPP_INFO(logger, "cur lon_lat: %.10f | %.10f", longitude, latitude);
-    RCLCPP_INFO(logger, "cur change in lon_lat: %.10f | %.10f",
-                                            longitude, latitude); */
+void print_step_input(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
+                vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
+                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt) {
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "PRINTING STEP INPUTS");
+        RCLCPP_INFO(logger.value(), "global_odom: %f %f %f", global_odom.x(), global_odom.y(), global_odom.theta());
+        print_cone_obs(cone_obs, logger);
 
-    double LAT_DEG_TO_METERS = 111111;
-
-    /* Intuition: Find the radius of the circle at current latitude
-     * Convert the change in longitude to radians
-     * Calculate the distance in meters
-     *
-     * The range should be the earth's radius: 6378137 meters.
-     * The radius of the circle at current latitude: 6378137 * cos(latitude_rads)
-     * To get the longitude, we need to convert change in longitude to radians
-     * - longitude_rads = longitude * (M_PI / 180.0)
-     *
-     * Observe: 111320 = 6378137 * M_PI / 180.0
-     */
-
-    /* Represents the radius used to multiply angle in radians */
-    double LON_DEG_TO_METERS = 111319.5 * cos(degrees_to_radians(latitude));
-
-    double x = LON_DEG_TO_METERS * longitude;
-    double y = LAT_DEG_TO_METERS * latitude;
-
-
-
-    global_odom = Pose2(x, y, global_odom.theta());
-
+    // At the moment, cone_obs_blue and cone_obs_yellow are empty because we don't have coloring
+    // Similarly for the orange_ref_cones
+        RCLCPP_INFO(logger.value(), "velocity: %f %f %f", velocity.x(), velocity.y(), velocity.theta());
+        RCLCPP_INFO(logger.value(), "dt: %f", dt);
+    }
+}
+    
+                        
+void print_update_poses(Pose2 &prev_pose, Pose2 &new_pose, Pose2 &odometry, Pose2 &imu_offset_global_odom, optional<rclcpp::Logger> logger) {
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "\tLOGGING UPDATE_POSES POSE2 VARIABLES:");
+        RCLCPP_INFO(logger.value(), "prev_pose: %f %f %f", prev_pose.x(), prev_pose.y(), prev_pose.theta());
+        RCLCPP_INFO(logger.value(), "new_pose: %f %f %f", new_pose.x(), new_pose.y(), new_pose.theta());
+        RCLCPP_INFO(logger.value(), "odometry: %f %f %f", odometry.x(), odometry.y(), odometry.theta());
+        RCLCPP_INFO(logger.value(), "imu_offset_global_odom: %f %f %f", imu_offset_global_odom.x(), 
+                                                                imu_offset_global_odom.y(), 
+                                                                imu_offset_global_odom.theta());
+        RCLCPP_INFO(logger.value(), "\n");
+    }
 }

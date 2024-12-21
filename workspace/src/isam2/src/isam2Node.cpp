@@ -1,59 +1,9 @@
-#include <memory>
-#include <functional>
-
-#include "rclcpp/rclcpp.hpp"
-
-#include <message_filters/subscriber.h>
-#include <message_filters/sync_policies/approximate_time.h>
-#include <message_filters/synchronizer.h>
-
-#include "interfaces/msg/cone_array.hpp"
-#include "interfaces/msg/cone_array_with_odom.hpp"
-
-#include "geometry_msgs/msg/point.hpp"
-#include "geometry_msgs/msg/vector3_stamped.hpp"
-#include "geometry_msgs/msg/quaternion_stamped.hpp"
-#include "geometry_msgs/msg/twist_stamped.hpp"
-#include "geometry_msgs/msg/twist_with_covariance.hpp"
-#include "geometry_msgs/msg/twist.hpp"
-#include "sensor_msgs/msg/nav_sat_fix.hpp"
-
-#include <gtsam/nonlinear/ISAM2Params.h>
-
-#include "isam2.cpp"
+#include "isam2_pkg.hpp"
 
 
-
-#include <boost/shared_ptr.hpp>
-#include <vector>
-#include <deque>
-#include <cmath>
-#include <chrono>
-
-//#define CONE_DATA_TOPIC "/ground_truth/cones"
-//#define VEHICLE_DATA_TOPIC "/ground_truth/state"
-//#define VEHICLE_VEL_TOPIC "/filter/velocity"
-//#define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
-
-
-#define CONE_DATA_TOPIC "/perc_cones"
-#define VEHICLE_POS_TOPIC "/filter/positionlla"
-#define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
-#define VEHICLE_VEL_TOPIC "/filter/twist"
-
-// static const long SLAM_DELAY_MICROSEC = 50000;
-
-using namespace std;
-using namespace std::chrono;
-using std::placeholders::_1;
-using std::placeholders::_2;
-using std::placeholders::_3;
-using std::placeholders::_4;
 
 class SLAMValidation : public rclcpp::Node {
 public:
-    // builtin_interfaces::Time pos_time_stamp;
-    // builtin_interfaces::Time obs_time_stamp;
     SLAMValidation(): Node("slam_validation")
     {
         const rmw_qos_profile_t best_effort_profile = {
@@ -147,7 +97,7 @@ private:
 
         auto sync_data_end = high_resolution_clock::now();
         auto sync_data_duration = duration_cast<milliseconds>(sync_data_end - sync_data_start);
-        RCLCPP_INFO(this->get_logger(), "\tSync callback time: %ld", sync_data_duration.count());
+        RCLCPP_INFO(this->get_logger(), "\tSync callback time: %ld \n", sync_data_duration.count());
 
 
         run_slam();
@@ -236,7 +186,7 @@ private:
 	    * b.) Don't receive GPS message:
 	    * When we don't we want to use velocity and our SLAM estimate
 	    * to model our new pose */
-        slam_instance.step(this->get_logger(), global_odom, cones, blue_cones,
+        slam_instance.step(global_odom, cones, blue_cones,
                   yellow_cones, orange_cones, velocity, dt);
 
 

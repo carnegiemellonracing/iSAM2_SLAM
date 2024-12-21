@@ -6,7 +6,8 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/**",
+        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/include/**",
+        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/eufs_msgs/include/**",
         "/opt/ros/foxy/include/**",
         "/usr/include/**"
       ],
@@ -14,7 +15,7 @@
       "intelliSenseMode": "gcc-x64",
       "compilerPath": "/usr/bin/gcc",
       "cStandard": "gnu11",
-      "cppStandard": "c++17"
+      "cppStandard": "c++14"
     }
   ],
   "version": 4
