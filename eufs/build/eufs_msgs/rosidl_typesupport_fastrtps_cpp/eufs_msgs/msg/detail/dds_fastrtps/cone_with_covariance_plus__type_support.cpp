@@ -65,6 +65,8 @@ cdr_serialize(
   cdr << ros_message.orange_prob;
   // Member: big_orange_prob
   cdr << ros_message.big_orange_prob;
+  // Member: unknown_prob
+  cdr << ros_message.unknown_prob;
   // Member: point
   geometry_msgs::msg::typesupport_fastrtps_cpp::cdr_serialize(
     ros_message.point,
@@ -96,6 +98,9 @@ cdr_deserialize(
 
   // Member: big_orange_prob
   cdr >> ros_message.big_orange_prob;
+
+  // Member: unknown_prob
+  cdr >> ros_message.unknown_prob;
 
   // Member: point
   geometry_msgs::msg::typesupport_fastrtps_cpp::cdr_deserialize(
@@ -149,6 +154,12 @@ get_serialized_size(
   // Member: big_orange_prob
   {
     size_t item_size = sizeof(ros_message.big_orange_prob);
+    current_alignment += item_size +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
+  }
+  // Member: unknown_prob
+  {
+    size_t item_size = sizeof(ros_message.unknown_prob);
     current_alignment += item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
   }
@@ -216,6 +227,14 @@ max_serialized_size_ConeWithCovariancePlus(
   }
 
   // Member: big_orange_prob
+  {
+    size_t array_size = 1;
+
+    current_alignment += array_size * sizeof(uint64_t) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint64_t));
+  }
+
+  // Member: unknown_prob
   {
     size_t array_size = 1;
 

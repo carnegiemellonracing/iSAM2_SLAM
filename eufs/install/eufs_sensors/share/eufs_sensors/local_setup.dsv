@@ -1,1 +1,2 @@
-/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/build/eufs_sensors/ament_cmake_environment_hooks/local_setup.dsv
+source;share/eufs_sensors/environment/ament_prefix_path.sh
+source;share/eufs_sensors/environment/path.sh

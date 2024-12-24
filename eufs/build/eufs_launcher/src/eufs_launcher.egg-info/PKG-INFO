@@ -1,8 +1,0 @@
-Metadata-Version: 2.1
-Name: eufs-launcher
-Version: 2.0.0
-Summary: Configures and launches eufs_sim.
-Maintainer: Cameron Matthew
-Maintainer-email: cambobmat@icloud.com
-License: MIT
-Requires-Dist: setuptools

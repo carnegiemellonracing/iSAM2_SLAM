@@ -47,6 +47,7 @@ struct ConeWithCovariancePlus_
       this->yellow_prob = 0.0;
       this->orange_prob = 0.0;
       this->big_orange_prob = 0.0;
+      this->unknown_prob = 0.0;
       std::fill<typename std::array<double, 4>::iterator, double>(this->covariance.begin(), this->covariance.end(), 0.0);
     }
   }
@@ -63,6 +64,7 @@ struct ConeWithCovariancePlus_
       this->yellow_prob = 0.0;
       this->orange_prob = 0.0;
       this->big_orange_prob = 0.0;
+      this->unknown_prob = 0.0;
       std::fill<typename std::array<double, 4>::iterator, double>(this->covariance.begin(), this->covariance.end(), 0.0);
     }
   }
@@ -83,6 +85,9 @@ struct ConeWithCovariancePlus_
   using _big_orange_prob_type =
     double;
   _big_orange_prob_type big_orange_prob;
+  using _unknown_prob_type =
+    double;
+  _unknown_prob_type unknown_prob;
   using _point_type =
     geometry_msgs::msg::Point_<ContainerAllocator>;
   _point_type point;
@@ -119,6 +124,12 @@ struct ConeWithCovariancePlus_
     const double & _arg)
   {
     this->big_orange_prob = _arg;
+    return *this;
+  }
+  Type & set__unknown_prob(
+    const double & _arg)
+  {
+    this->unknown_prob = _arg;
     return *this;
   }
   Type & set__point(
@@ -189,6 +200,9 @@ struct ConeWithCovariancePlus_
       return false;
     }
     if (this->big_orange_prob != other.big_orange_prob) {
+      return false;
+    }
+    if (this->unknown_prob != other.unknown_prob) {
       return false;
     }
     if (this->point != other.point) {

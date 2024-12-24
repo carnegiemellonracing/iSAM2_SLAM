@@ -1,9 +1,8 @@
-**/build/*
-**/install/*
-**/log/*
-/workspace/build/*
-/workspace/install/*
-/workspace/log/*
+workspace/build/*
+workspace/install/*
+workspace/log/*
+eufs/*
 eufs/build/*
 eufs/install/*
 eufs/log/*
+workspace/src/isam2/data/*

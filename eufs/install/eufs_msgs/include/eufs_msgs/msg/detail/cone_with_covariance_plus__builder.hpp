@@ -52,16 +52,32 @@ private:
   ::eufs_msgs::msg::ConeWithCovariancePlus msg_;
 };
 
+class Init_ConeWithCovariancePlus_unknown_prob
+{
+public:
+  explicit Init_ConeWithCovariancePlus_unknown_prob(::eufs_msgs::msg::ConeWithCovariancePlus & msg)
+  : msg_(msg)
+  {}
+  Init_ConeWithCovariancePlus_point unknown_prob(::eufs_msgs::msg::ConeWithCovariancePlus::_unknown_prob_type arg)
+  {
+    msg_.unknown_prob = std::move(arg);
+    return Init_ConeWithCovariancePlus_point(msg_);
+  }
+
+private:
+  ::eufs_msgs::msg::ConeWithCovariancePlus msg_;
+};
+
 class Init_ConeWithCovariancePlus_big_orange_prob
 {
 public:
   explicit Init_ConeWithCovariancePlus_big_orange_prob(::eufs_msgs::msg::ConeWithCovariancePlus & msg)
   : msg_(msg)
   {}
-  Init_ConeWithCovariancePlus_point big_orange_prob(::eufs_msgs::msg::ConeWithCovariancePlus::_big_orange_prob_type arg)
+  Init_ConeWithCovariancePlus_unknown_prob big_orange_prob(::eufs_msgs::msg::ConeWithCovariancePlus::_big_orange_prob_type arg)
   {
     msg_.big_orange_prob = std::move(arg);
-    return Init_ConeWithCovariancePlus_point(msg_);
+    return Init_ConeWithCovariancePlus_unknown_prob(msg_);
   }
 
 private:

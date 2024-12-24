@@ -5,5 +5,6 @@ float64 blue_prob
 float64 yellow_prob
 float64 orange_prob
 float64 big_orange_prob
+float64 unknown_prob
 geometry_msgs/Point point
 float64[4] covariance

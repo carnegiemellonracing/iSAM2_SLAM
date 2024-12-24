@@ -65,6 +65,7 @@ class ConeWithCovariancePlus(metaclass=Metaclass_ConeWithCovariancePlus):
         '_yellow_prob',
         '_orange_prob',
         '_big_orange_prob',
+        '_unknown_prob',
         '_point',
         '_covariance',
     ]
@@ -75,12 +76,14 @@ class ConeWithCovariancePlus(metaclass=Metaclass_ConeWithCovariancePlus):
         'yellow_prob': 'double',
         'orange_prob': 'double',
         'big_orange_prob': 'double',
+        'unknown_prob': 'double',
         'point': 'geometry_msgs/Point',
         'covariance': 'double[4]',
     }
 
     SLOT_TYPES = (
         rosidl_parser.definition.BasicType('int32'),  # noqa: E501
+        rosidl_parser.definition.BasicType('double'),  # noqa: E501
         rosidl_parser.definition.BasicType('double'),  # noqa: E501
         rosidl_parser.definition.BasicType('double'),  # noqa: E501
         rosidl_parser.definition.BasicType('double'),  # noqa: E501
@@ -98,6 +101,7 @@ class ConeWithCovariancePlus(metaclass=Metaclass_ConeWithCovariancePlus):
         self.yellow_prob = kwargs.get('yellow_prob', float())
         self.orange_prob = kwargs.get('orange_prob', float())
         self.big_orange_prob = kwargs.get('big_orange_prob', float())
+        self.unknown_prob = kwargs.get('unknown_prob', float())
         from geometry_msgs.msg import Point
         self.point = kwargs.get('point', Point())
         if 'covariance' not in kwargs:
@@ -144,6 +148,8 @@ class ConeWithCovariancePlus(metaclass=Metaclass_ConeWithCovariancePlus):
         if self.orange_prob != other.orange_prob:
             return False
         if self.big_orange_prob != other.big_orange_prob:
+            return False
+        if self.unknown_prob != other.unknown_prob:
             return False
         if self.point != other.point:
             return False
@@ -222,6 +228,19 @@ class ConeWithCovariancePlus(metaclass=Metaclass_ConeWithCovariancePlus):
                 isinstance(value, float), \
                 "The 'big_orange_prob' field must be of type 'float'"
         self._big_orange_prob = value
+
+    @property
+    def unknown_prob(self):
+        """Message field 'unknown_prob'."""
+        return self._unknown_prob
+
+    @unknown_prob.setter
+    def unknown_prob(self, value):
+        if __debug__:
+            assert \
+                isinstance(value, float), \
+                "The 'unknown_prob' field must be of type 'float'"
+        self._unknown_prob = value
 
     @property
     def point(self):

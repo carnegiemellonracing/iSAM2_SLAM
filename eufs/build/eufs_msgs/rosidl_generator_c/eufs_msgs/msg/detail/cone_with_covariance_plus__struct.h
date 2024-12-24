@@ -29,6 +29,7 @@ typedef struct eufs_msgs__msg__ConeWithCovariancePlus
   double yellow_prob;
   double orange_prob;
   double big_orange_prob;
+  double unknown_prob;
   geometry_msgs__msg__Point point;
   double covariance[4];
 } eufs_msgs__msg__ConeWithCovariancePlus;

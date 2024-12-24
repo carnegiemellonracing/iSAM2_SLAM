@@ -8,8 +8,10 @@ endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
+
+set(CMAKE_BUILD_TYPE Debug)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -51,6 +53,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ControlAction.msg"
   "msg/ControlsState.msg"
   "msg/ConeArray.msg"
+  "msg/ConeArrayWithOdom.msg"
   DEPENDENCIES geometry_msgs sensor_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )
 
