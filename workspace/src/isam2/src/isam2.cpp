@@ -50,6 +50,10 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     init_log_reset_stream.open("/home/danielnguyen/gtsam_log.txt");
     init_log_reset_stream << "STARTING LOG" << endl;
     init_log_reset_stream.close();
+
+    ofstream init_step_input_stream;
+    init_step_input_stream.open(STEP_INPUT_FILE, ofstream::out | ofstream::trunc);
+    init_step_input_stream.close();
 }
 
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
@@ -70,7 +74,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         //add prior
         //TODO: need to record the initial bearing because it could be erroneous
         graph.add(prior_factor);
-        
+
 
         cur_pose = Pose2(-offset_x, -offset_y, global_odom.theta());
         values.insert(X(0), Pose2(cur_pose.x(), cur_pose.y(), global_odom.theta()));
@@ -103,7 +107,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
                                                                         odom_model);
         cur_pose = Pose2(new_pose.x(), new_pose.y(), new_pose.theta());
         graph.add(odom_factor);
-            
+
         Pose2 imu_offset_global_odom = Pose2(global_odom.x() - offset_x, global_odom.y() - offset_y, global_odom.theta());
         graph.emplace_shared<UnaryFactor>(X(pose_num), imu_offset_global_odom, unary_model);
         values.insert(X(pose_num), new_pose);
@@ -130,7 +134,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
 void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
                         vector<tuple<Point2, double, Point2>> &new_cones,
                         Pose2 &cur_pose) {
-        
+
 
     /* Bearing range factor will need
         * Types for car pose to landmark node (Pose2, Point2)
@@ -142,7 +146,7 @@ void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
         * insert Point2 for the cones and their actual location
         *
         */
-    for (int o = 0; o < old_cones.size(); o++) {
+    for (size_t o = 0; o < old_cones.size(); o++) {
         Point2 cone_car_frame = get<0>(old_cones.at(o));
         int min_id = get<2>(old_cones.at(o));
         Rot2 b = Rot2::fromAngle(get<1>(old_cones.at(o)));
@@ -157,7 +161,7 @@ void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
     graph.resize(0);
     // values should be empty
 
-    for (int n = 0; n < new_cones.size(); n++) {
+    for (size_t n = 0; n < new_cones.size(); n++) {
         Point2 cone_car_frame = get<0>(new_cones.at(n));
         Rot2 b = Rot2::fromAngle(get<1>(new_cones.at(n)));
         double r = norm2(get<0>(new_cones.at(n)));
@@ -182,11 +186,11 @@ void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
         isam2.update(graph, values);
     }
     // isam2.update(graph, values);
-    
+
     graph.resize(0); //Not resizing your graph will result in long update times
     values.clear();
 
-    
+
 }
 
 
@@ -199,15 +203,16 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
             vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
             vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
             double dt) {
-    
-    print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
+
+    // print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
+    log_step_inputs(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
 
     if (n_landmarks > 0)
     {
         auto start_step  = high_resolution_clock::now();
         auto dur_betw_step = duration_cast<milliseconds>(start_step - end);
         if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "End of prev step to cur step: %d", dur_betw_step.count());
+            RCLCPP_INFO(logger.value(), "End of prev step to cur step: %ld", dur_betw_step.count());
         }
     }
 
@@ -220,7 +225,7 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
     if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "update_poses time: %d", dur_update_poses.count());
+        RCLCPP_INFO(logger.value(), "update_poses time: %ld", dur_update_poses.count());
     }
 
 
@@ -238,7 +243,7 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
     auto end_est_retrieval = high_resolution_clock::now();
     auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
     if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "est_retrieval time: %d", dur_est_retrieval.count());
+        RCLCPP_INFO(logger.value(), "est_retrieval time: %ld", dur_est_retrieval.count());
     }
 
 
@@ -253,7 +258,7 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
     auto end_DA = high_resolution_clock::now();
     auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
     if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "Data association time: %d", dur_DA.count());
+        RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
     }
 
     auto start_update_landmarks = high_resolution_clock::now();
@@ -261,42 +266,51 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
     auto end_update_landmarks = high_resolution_clock::now();
     auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
     if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "update_landmarks time: %d", dur_update_landmarks.count());
+        RCLCPP_INFO(logger.value(), "update_landmarks time: %ld", dur_update_landmarks.count());
     }
 
     pose_num++;
 
-    
-    /* Create a boolean to check if mahalanobis calcs are done for current
-     * time step before proceeding to mahalanobis calcs for next time step
-     *
-     */
 
+
+    /* Logging estimates for visualization */
     auto start_vis_setup = high_resolution_clock::now();
-    std::ofstream ofs;
-    std::ofstream out("squirrel.txt");
-    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    std::cout.rdbuf(out.rdbuf());
-    ofs.open("squirrel.txt", std::ofstream::out | std::ofstream::trunc);
+    ofstream ofs;
+    
+    ofs.open(ESTIMATES_FILE, std::ofstream::out | std::ofstream::trunc);
+    streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+    cout.rdbuf(ofs.rdbuf());
+
     auto estimate = isam2.calculateEstimate();
     estimate.print("Estimate:");
+
     ofs.close();
-    std::cout.rdbuf(coutbuf); //reset to standard output again
+    cout.rdbuf(coutbuf); //reset to standard output again
+
     auto end_vis_setup = high_resolution_clock::now();
     auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
+
     if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "vis_setup time: %d", dur_vis_setup.count());
+        RCLCPP_INFO(logger.value(), "vis_setup time: %ld", dur_vis_setup.count());
     }
 
     end = high_resolution_clock::now();
+
+
+
     auto dur_step_call = duration_cast<milliseconds>(end - start);
     if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "SLAM run step | Step call time: %d\n", dur_step_call.count());
+        RCLCPP_INFO(logger.value(), "SLAM run step | Step call time: %ld\n", dur_step_call.count());
     }
 
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "pose_num: %d | n_landmarks: %d\n\n", pose_num - 1, n_landmarks);
     }
+}
+
+void slamISAM::print_estimates() {
+    auto estimate = isam2.calculateEstimate();
+    estimate.print("Estimate:");
 }
 
 

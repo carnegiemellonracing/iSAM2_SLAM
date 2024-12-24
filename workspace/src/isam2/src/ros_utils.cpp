@@ -70,21 +70,21 @@ void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_
                                             vector<Point2> &yellow_cones,
                                             vector<Point2> &orange_cones) {
     // Trying to find a library that converts ros2 msg array to vector
-    for (uint i = 0; i < cone_data->blue_cones.size(); i++) {
+    for (size_t i = 0; i < cone_data->blue_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->blue_cones.at(i).x,
                                cone_data->blue_cones.at(i).y);
         blue_cones.push_back(to_add);
         cones.push_back(to_add);
     }
 
-    for (uint i = 0; i < cone_data->yellow_cones.size(); i++) {
+    for (size_t i = 0; i < cone_data->yellow_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->yellow_cones.at(i).x,
                                cone_data->yellow_cones.at(i).y);
         yellow_cones.push_back(to_add);
         cones.push_back(to_add);
     }
 
-    for (uint i = 0; i < cone_data->orange_cones.size(); i++) {
+    for (size_t i = 0; i < cone_data->orange_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->orange_cones.at(i).x,
                                cone_data->orange_cones.at(i).y);
         orange_cones.push_back(to_add);
@@ -193,7 +193,7 @@ void header_to_dt(const optional<std_msgs::msg::Header> &prev, const optional<st
  * @brief Removes far away observed cones.Observed cones that are far away are more erroneous
  */
 void remove_far_cones(vector<Point2> &cone_obs) {
-    for (int i = 0; i < (int)cone_obs.size(); i++) {
+    for (size_t i = 0; i < cone_obs.size(); i++) {
         if (norm2(cone_obs.at(i)) > MAX_CONE_RANGE) {
             cone_obs.erase(cone_obs.begin() + i);
             i--;
@@ -204,9 +204,9 @@ void remove_far_cones(vector<Point2> &cone_obs) {
 
 /* Vectorized functions */
 void calc_cone_range_from_car(MatrixXd &range, vector<Point2> &cone_obs) {
-    int num_obs = (int)cone_obs.size();
+    
 
-	for (int i = 0; i < num_obs; i++)
+	for (size_t i = 0; i < cone_obs.size(); i++)
 	{
 	    range(i,0) = norm2(cone_obs.at(i));
 	}
@@ -215,9 +215,8 @@ void calc_cone_range_from_car(MatrixXd &range, vector<Point2> &cone_obs) {
 /** Bearing of cone from the car
  */
 void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs) {
-    int num_obs = (int)cone_obs.size();
 
-    for (int i = 0; i < num_obs; i++)
+    for (size_t i = 0; i < cone_obs.size(); i++)
     {   
         /**
          * Intuition:
@@ -257,9 +256,9 @@ double degrees_to_radians(double degrees) {
 }
 
 void print_cone_obs(vector<Point2> &cone_obs, optional<rclcpp::Logger> logger) {
-    for (int i = 0; i < cone_obs.size(); i++) {
+    for (size_t i = 0; i < cone_obs.size(); i++) {
         if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "cone_obs.at(%d): %f %f", i, 
+            RCLCPP_INFO(logger.value(), "cone_obs.at(%ld): %f %f", i, 
                                                     cone_obs.at(i).x(),
                                                     cone_obs.at(i).y());
         }
@@ -293,4 +292,22 @@ void print_update_poses(Pose2 &prev_pose, Pose2 &new_pose, Pose2 &odometry, Pose
                                                                 imu_offset_global_odom.theta());
         RCLCPP_INFO(logger.value(), "\n");
     }
+}
+
+void log_step_inputs(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
+                vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
+                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt) {
+
+    ofstream outfile;
+    outfile.open(STEP_INPUT_FILE, ofstream::out | ios_base::app); 
+
+    outfile << "global_odom: " << global_odom.x() << " " << global_odom.y() << " " << global_odom.theta() << endl;
+    for (size_t i = 0; i < cone_obs.size(); i++) {
+        outfile << "cone_obs: " << cone_obs.at(i).x() << " " << cone_obs.at(i).y() << endl;
+    }
+    outfile << "velocity: " << velocity.x() << " " << velocity.y() << " " << velocity.theta() << endl;
+    outfile << "dt: " << dt << "\n" << endl;
+
+    outfile.close();
+
 }

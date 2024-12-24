@@ -43,6 +43,13 @@ const double IMU_OFFSET = 0.3; //meters
 const double LIDAR_OFFSET = 0.3; //meters
 const double MAX_CONE_RANGE = 10;
 
+/* This will create the file starting at the workspace directory
+ * 
+ * This is is because the ros node, which is running the step function,
+ * is run at that level.
+ */
+const string STEP_INPUT_FILE = "src/isam2/data/step_input.txt";
+
 #define CONE_DATA_TOPIC "/perc_cones"
 #define VEHICLE_POS_TOPIC "/filter/positionlla"
 #define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
@@ -95,3 +102,7 @@ void print_step_input(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom,
                 vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);
 
 void print_update_poses(Pose2 &prev_pose, Pose2 &new_pose, Pose2 &odometry, Pose2 &imu_offset_global_odom, optional<rclcpp::Logger> logger);
+
+void log_step_inputs(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
+                vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
+                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);

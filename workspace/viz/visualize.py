@@ -10,7 +10,7 @@ plt.show()
 run = True
 while run:
     # with open('src/isam2/data/estimate2.txt') as f:
-    with open("squirrel.txt") as f:
+    with open("../src/isam2/data/current_estimates.txt") as f:
         lines = f.readlines() # list containing lines of file
     # Don't do anything if the file is empty
     if len(lines) == 0:

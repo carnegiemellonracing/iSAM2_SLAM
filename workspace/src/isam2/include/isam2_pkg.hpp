@@ -38,6 +38,8 @@ using namespace std;
 using namespace gtsam;
 using namespace std::chrono;
 
+const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
+
 class slamISAM {
 
 private:
@@ -118,4 +120,6 @@ public:
                 vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
                 vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
                 double dt);
+
+    void print_estimates();
 };

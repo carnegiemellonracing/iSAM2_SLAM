@@ -233,14 +233,10 @@ private:
 };
 
 int main(int argc, char * argv[]){
-  std::ofstream out("squirrel.txt");
-  std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-  std::cout.rdbuf(out.rdbuf());
 
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<SLAMValidation>());
   rclcpp::shutdown();
-  std::cout.rdbuf(coutbuf); //reset to standard output again
 
   return 0;
 }

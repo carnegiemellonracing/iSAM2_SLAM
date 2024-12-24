@@ -27,8 +27,8 @@ void parse_point(string numbers, double &x, double &y) {
 }
 
 
-void parse_variable_name(string variable_name, string remainder, 
-                        vector<Pose2> &all_poses, vector<Pose2> &all_velocities, 
+void parse_variable_name(string variable_name, string remainder,
+                        vector<Pose2> &all_poses, vector<Pose2> &all_velocities,
                         vector<double> &all_dt, vector<Point2> &cone_obs) {
     if (variable_name == "global_odom") {
         // Parse out the pose
@@ -52,25 +52,24 @@ void parse_variable_name(string variable_name, string remainder,
         all_dt.push_back(std::stod(numbers));
         // cout << "dt: " << dt << endl;
 
-    } else if (variable_name.find(".") != string::npos &&
-                variable_name.substr(0, variable_name.find(".")) == "cone_obs") {
+    } else if (variable_name == "cone_obs") {
         string numbers = remainder.substr(1);
         double x = 0.0;
         double y = 0.0;
         parse_point(numbers, x, y);
         cone_obs.emplace_back(x, y);
-        
+
     }
 
 }
 
-void read_inputs_from_file(vector<Pose2> &all_poses, vector<Pose2> &all_velocities, 
+void read_inputs_from_file(vector<Pose2> &all_poses, vector<Pose2> &all_velocities,
                             vector<double> &all_dt, vector<vector<Point2>> &all_cone_obs) {
 
-    ifstream file("/home/danielnguyen/gtsam_fail.txt");
+    ifstream file(STEP_INPUT_FILE);
 
     string line;
-    
+
     vector<Point2> cur_cone_obs = {};
 
     bool reading_cones = false;
@@ -91,7 +90,7 @@ void read_inputs_from_file(vector<Pose2> &all_poses, vector<Pose2> &all_velociti
 
             parse_variable_name(variable_name, remainder, all_poses, all_velocities, all_dt, cur_cone_obs);
 
-             
+
         } else { // we have a new line
             cout << "New time step " << counter << endl;
             counter++;
