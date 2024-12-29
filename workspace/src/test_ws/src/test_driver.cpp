@@ -23,9 +23,10 @@ int main() {
         slam_instance.step(all_poses.at(i), all_cone_obs.at(i),
                             cone_obs_blue, cone_obs_yellow, cone_obs_orange,
                             all_velocities.at(i), all_dt.at(i));
-        this_thread::sleep_for(chrono::milliseconds(100));
         cout << "Finished step iteration: " << i << endl;
-        slam_instance.print_estimates();
+        //slam_instance.print_estimates();
+
+        cout << "\n" << endl;
     }
 
 

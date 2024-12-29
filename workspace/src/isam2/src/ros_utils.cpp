@@ -1,5 +1,5 @@
 /**
- * @file slam_utils.cpp
+ * @file ros_utils.cpp
  * @brief This file contains utility functions used for converting ROS messages
  * to appropriate data types and for any necessary calculations.
  *

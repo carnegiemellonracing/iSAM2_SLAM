@@ -3,7 +3,7 @@
 // Camera observations of landmarks will be stored as Point2 (x, y).
 #include <gtsam/geometry/Point2.h>
 #include <gtsam/geometry/Pose2.h>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 // Each variable in the system (sposes and landmarks) must be identified with a
 // unique key. We can either use simple integer keys (1, 2, 3, ...) or symbols
 // (X1, X2, L1). Here we will use Symbols
@@ -61,8 +61,8 @@ private:
     }
 
     /* Assoc_Args common arguments */
-    vector<Point2> cone_obs_blue;
-    vector<Point2> cone_obs_yellow;
+    std::vector<Point2> cone_obs_blue;
+    std::vector<Point2> cone_obs_yellow;
 
     Eigen::MatrixXd blue_global_cone_x;
     Eigen::MatrixXd blue_global_cone_y;
@@ -73,12 +73,12 @@ private:
     Eigen::MatrixXd blue_bearing;
     Eigen::MatrixXd yellow_bearing;
 
-    vector<Pose2> blue_cone_est;
-    vector<Pose2> yellow_cone_est;
+    std::vector<Pose2> blue_cone_est;
+    std::vector<Pose2> yellow_cone_est;
 
     Pose2 global_odom;
 
-    vector<double> m_dist;
+    std::vector<double> m_dist;
 
 
 public:
@@ -94,8 +94,8 @@ public:
     std::vector<gtsam::Pose2> landmark_est;
 
     /* how the landmark estimates are organized */
-    vector<int> blue_cone_IDs;
-    vector<int> yellow_cone_IDs;
+    std::vector<int> blue_cone_IDs;
+    std::vector<int> yellow_cone_IDs;
 
     gtsam::Vector LandmarkNoiseModel;
     noiseModel::Diagonal::shared_ptr landmark_model;
@@ -112,13 +112,13 @@ public:
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
             Pose2 &velocity,double dt, bool new_gps, optional<rclcpp::Logger> logger);
 
-    void update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
-                        vector<tuple<Point2, double, Point2>> &new_cones,
+    void update_landmarks(std::vector<tuple<Point2, double, int>> &old_cones,
+                        std::vector<tuple<Point2, double, Point2>> &new_cones,
                         Pose2 &cur_pose);
 
-    void step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
-                vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
-                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
+    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
+                std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
+                std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
                 double dt);
 
     void print_estimates();

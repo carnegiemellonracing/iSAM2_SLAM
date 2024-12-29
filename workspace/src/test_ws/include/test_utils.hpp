@@ -12,6 +12,8 @@
 using namespace std;
 using namespace gtsam;
 
+const string SAVED_DATA_FILE = "src/isam2/saved_data/step_input.txt";
+
 void parse_pose(string numbers);
 void parse_point(string numbers);
 void parse_variable_name(string variable_name, string remainder, vector<Point2> &cone_obs);

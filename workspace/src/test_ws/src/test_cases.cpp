@@ -66,7 +66,7 @@ void parse_variable_name(string variable_name, string remainder,
 void read_inputs_from_file(vector<Pose2> &all_poses, vector<Pose2> &all_velocities,
                             vector<double> &all_dt, vector<vector<Point2>> &all_cone_obs) {
 
-    ifstream file(STEP_INPUT_FILE);
+    ifstream file(SAVED_DATA_FILE);
 
     string line;
 
