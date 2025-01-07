@@ -197,7 +197,7 @@ void header_to_dt(const optional<std_msgs::msg::Header> &prev, const optional<st
  * @brief Removes far away observed cones.Observed cones that are far away are more erroneous
  */
 void remove_far_cones(vector<Point2> &cone_obs) {
-    for (size_t i = 0; i < cone_obs.size(); i++) {
+    for (std::size_t i = 0; i < cone_obs.size(); i++) {
         if (norm2(cone_obs.at(i)) > MAX_CONE_RANGE) {
             cone_obs.erase(cone_obs.begin() + i);
             i--;

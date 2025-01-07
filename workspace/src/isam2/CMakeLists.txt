@@ -11,7 +11,13 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
 
-set(CMAKE_BUILD_TYPE Debug)
+# Indicate CMAKE_BUILD_TYPE
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+  message("<---- Building in Debug mode ---->")
+endif()
+if (NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+  message("<---- Building NOT Debug mode ---->")
+endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -31,23 +37,33 @@ find_package(TBB REQUIRED)
 
 # <----  executable ---->
 file(GLOB SOURCES src/*.cpp)
-add_executable(isam_test ${SOURCES})
+add_executable(isam2_run ${SOURCES})
 
 # linking
-target_link_libraries(isam_test PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen )
-ament_target_dependencies(isam_test PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  target_link_libraries(isam2_run PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen )
+endif()
+if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+  target_link_libraries(isam2_run PUBLIC libtbb.so libgtsam.so Eigen3::Eigen)
+endif()
+ament_target_dependencies(isam2_run PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
 
 # including dependencies
-target_include_directories(isam_test PUBLIC include ${GTSAM_INCLUDE_DIR} )
+target_include_directories(isam2_run PUBLIC include ${GTSAM_INCLUDE_DIR} )
 
-install(TARGETS isam_test
+install(TARGETS isam2_run
   DESTINATION lib/${PROJECT_NAME})
 
 
 # <---- isam2_lib ---->
 add_library(isam2_lib SHARED ${SOURCES})
 # target_link_libraries(isam2_lib PUBLIC gtsam)
-target_link_libraries(isam_test PUBLIC libgtsamDebug.so Eigen3::Eigen libtbb.so)
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  target_link_libraries(isam2_lib PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen)
+endif()
+if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+  target_link_libraries(isam2_lib PUBLIC libtbb.so libgtsam.so Eigen3::Eigen)
+endif()
 ament_target_dependencies(isam2_lib PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
 target_include_directories(isam2_lib PUBLIC include ${GTSAM_INCLUDE_DIR})
 ament_export_include_directories(include)
