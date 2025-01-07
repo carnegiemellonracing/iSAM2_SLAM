@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import copy
+import pdb
 
 fig = plt.figure()
 plt.ion()
@@ -43,7 +44,7 @@ while run:
                     temp = np.array(temp.split(','))
                     temp = temp.astype(float)
                     if(poses.size == 0):
-                        poses = temp
+                        poses = np.array([temp])
                     else:
                         poses = np.vstack((poses,temp))
                     pose = 0
@@ -56,7 +57,7 @@ while run:
                     # Case on the line:
                     if line == "]":
                         if(landmarks.size == 0):
-                            landmarks = cur_landmark
+                            landmarks = np.array([cur_landmark])
                             cur_landmark = np.array([])
                         else:
                             landmarks = np.vstack((landmarks, cur_landmark))
@@ -72,6 +73,7 @@ while run:
                         y_coord = float(line[0:len(line)])
                         cur_landmark = np.append(cur_landmark, [y_coord])
 
+    pdb.set_trace()
     # if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2):
     if ((poses.shape[0]) != 0) and ((landmarks.shape[0]) != 0) and (poses.ndim==2 and landmarks.ndim==2):
         scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')
