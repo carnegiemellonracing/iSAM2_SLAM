@@ -46,9 +46,9 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
     // used to be all 0s for EUFS_SIM
     PriorNoiseModel = gtsam::Vector(3);
-    PriorNoiseModel(0) = 0.05;
-    PriorNoiseModel(1) = 0.05;
-    PriorNoiseModel(2) = degrees_to_radians(0.5);
+    PriorNoiseModel(0) = 0.2;
+    PriorNoiseModel(1) = 0.2;
+    PriorNoiseModel(2) = degrees_to_radians(0.05);
 
     prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
@@ -59,13 +59,13 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
      * y error in meters (must be based on velocity error)
      * velocity error = 0.05 m/s RMS
      * Calculation for the error per meter: 1m = (1 +- 0.05 m/s) * (1 +- 1e-9 s)
-     * std. dev = 1 * sqrt((0.05/1)^2 + (1e-9/1)^2) = 
+     * std. dev = 1 * sqrt((0.05/1)^2 + (1e-9/1)^2) = 0.05
      * yaw error in radians
      */
     OdomNoiseModel = gtsam::Vector(3);
-    OdomNoiseModel(0) = 0.05;
-    OdomNoiseModel(1) = 0.05; 
-    OdomNoiseModel(2) = degrees_to_radians(0.5); 
+    OdomNoiseModel(0) = 0.2;
+    OdomNoiseModel(1) = 0.2; 
+    OdomNoiseModel(2) = degrees_to_radians(0.05); 
     odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -76,10 +76,12 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
      * Variance = (std.dev)^2 meaning:
      * Variance = 0.2 => std.dev = sqrt(0.2) = 0.45
      * 
+     * However positionlla already accounts for the covariance
+     * 
      */
     UnaryNoiseModel = gtsam::Vector(2);
-    UnaryNoiseModel(0) = 0.45;
-    UnaryNoiseModel(1) = 0.45;
+    UnaryNoiseModel(0) = 0.01;
+    UnaryNoiseModel(1) = 0.01;
     unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
 
     // Resetting the log file for gtsam
@@ -230,7 +232,7 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
     }
     
     /* All values in graph must be in values parameter */
-    if (n_landmarks > 400) {
+    if (n_landmarks < 400) {
         values.insert(X(pose_num), cur_pose);
         Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
         optimized_val.erase(X(pose_num));

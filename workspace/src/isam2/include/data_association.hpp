@@ -10,7 +10,8 @@
 #include <algorithm>
 #include <float.h>
 #include "ros_utils.hpp"
-const double M_DIST_TH = 0.001;
+const double M_DIST_TH = 0.0001;
+//const double M_DIST_TH = 25.0;
 
 
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
