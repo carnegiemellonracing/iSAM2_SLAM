@@ -13,9 +13,9 @@ int main() {
     vector<Point2> cone_obs_orange = {};
 
     /* Print to validate parameters */
-    cout << "PRINTING" << endl;
-    print_all_cones(all_cone_obs);
-    print_all_poses(all_poses);
+    //cout << "PRINTING" << endl;
+    //print_all_cones(all_cone_obs);
+    //print_all_poses(all_poses);
 
     /* Perform the test */
     slamISAM slam_instance = slamISAM(std::nullopt);
@@ -26,7 +26,7 @@ int main() {
         cout << "Finished step iteration: " << i << endl;
         //slam_instance.print_estimates();
 
-        cout << "\n" << endl;
+        //cout << "\n" << endl;
     }
 
 

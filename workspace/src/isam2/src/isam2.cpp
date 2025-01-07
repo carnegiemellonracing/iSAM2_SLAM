@@ -46,8 +46,8 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
     // used to be all 0s for EUFS_SIM
     PriorNoiseModel = gtsam::Vector(3);
-    PriorNoiseModel(0) = 0.2;
-    PriorNoiseModel(1) = 0.2;
+    PriorNoiseModel(0) = 0.22;
+    PriorNoiseModel(1) = 0.22;
     PriorNoiseModel(2) = degrees_to_radians(0.05);
 
     prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
@@ -63,8 +63,8 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
      * yaw error in radians
      */
     OdomNoiseModel = gtsam::Vector(3);
-    OdomNoiseModel(0) = 0.2;
-    OdomNoiseModel(1) = 0.2; 
+    OdomNoiseModel(0) = 0.22;
+    OdomNoiseModel(1) = 0.22; 
     OdomNoiseModel(2) = degrees_to_radians(0.05); 
     odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 

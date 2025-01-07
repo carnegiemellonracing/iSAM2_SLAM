@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <float.h>
 #include "ros_utils.hpp"
-const double M_DIST_TH = 0.0001;
+const double M_DIST_TH = 0.0005;
 //const double M_DIST_TH = 25.0;
 
 

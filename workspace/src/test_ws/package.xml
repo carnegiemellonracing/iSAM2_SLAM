@@ -21,6 +21,7 @@
   <depend>rclcpp</depend>
   <depend>message_filters</depend>
   <depend>GTSAM</depend>
+  <depend>isam2</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
