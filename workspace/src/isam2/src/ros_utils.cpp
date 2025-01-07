@@ -70,21 +70,21 @@ void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_
                                             vector<Point2> &yellow_cones,
                                             vector<Point2> &orange_cones) {
     // Trying to find a library that converts ros2 msg array to vector
-    for (size_t i = 0; i < cone_data->blue_cones.size(); i++) {
+    for (std::size_t i = 0; i < cone_data->blue_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->blue_cones.at(i).x,
                                cone_data->blue_cones.at(i).y);
         blue_cones.push_back(to_add);
         cones.push_back(to_add);
     }
 
-    for (size_t i = 0; i < cone_data->yellow_cones.size(); i++) {
+    for (std::size_t i = 0; i < cone_data->yellow_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->yellow_cones.at(i).x,
                                cone_data->yellow_cones.at(i).y);
         yellow_cones.push_back(to_add);
         cones.push_back(to_add);
     }
 
-    for (size_t i = 0; i < cone_data->orange_cones.size(); i++) {
+    for (std::size_t i = 0; i < cone_data->orange_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->orange_cones.at(i).x,
                                cone_data->orange_cones.at(i).y);
         orange_cones.push_back(to_add);
@@ -136,8 +136,8 @@ void calc_lateral_velocity_error(double& dx_error, double& dy_error,
     dy_error = ang_velocity * (IMU_OFFSET * cos(yaw));
 }
 
-void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double dt,
-                    Pose2 &prev_pose, Pose2 global_odom) {
+void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, bool &is_moving, Pose2 &velocity, 
+                            double dt, Pose2 &prev_pose, Pose2 global_odom) {
     
     
     double dx_error = 0;
@@ -148,7 +148,11 @@ void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, do
     double dx = velocity.x() - dx_error;
     double dy = velocity.y() - dy_error;
 
-
+    if (sqrt(pow(dx, 2) + pow(dy, 2)) > VELOCITY_MOVING_TH) {
+        is_moving = true;
+    } else {
+        is_moving = false;
+    }
 
     new_pose = Pose2(prev_pose.x() + dx * dt,
                     prev_pose.y() + dy * dt,
@@ -256,7 +260,7 @@ double degrees_to_radians(double degrees) {
 }
 
 void print_cone_obs(vector<Point2> &cone_obs, optional<rclcpp::Logger> logger) {
-    for (size_t i = 0; i < cone_obs.size(); i++) {
+    for (std::size_t i = 0; i < cone_obs.size(); i++) {
         if (logger.has_value()) {
             RCLCPP_INFO(logger.value(), "cone_obs.at(%ld): %f %f", i, 
                                                     cone_obs.at(i).x(),

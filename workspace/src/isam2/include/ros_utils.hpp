@@ -42,6 +42,7 @@ const long SEC_TO_NANOSEC = 1e9;
 const double IMU_OFFSET = 0.3; //meters
 const double LIDAR_OFFSET = 0.3; //meters
 const double MAX_CONE_RANGE = 10;
+const double VELOCITY_MOVING_TH = 0.1; //meters per second
 
 /* This will create the file starting at the workspace directory
  * 
@@ -75,14 +76,15 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
 void calc_lateral_velocity_error(double& dx_error, double& dy_error, 
                                 double ang_velocity, double yaw);
 
-void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double dt,
+void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, bool &is_moving, Pose2 &velocity, double dt,
                     Pose2 &prev_pose, Pose2 global_odom);
 
 void calc_offset_imu_to_car_center(double& offset_x, double& offset_y, double yaw);
 void calc_offset_lidar_to_car_center(double& offset_x, double& offset_y, double yaw);
 void gps_motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double dt,
                     Pose2 &prev_pose, Pose2 global_odom);
-void remove_far_cones(vector<Point2> &cone_obs);
+
+void remove_far_cones(std::vector<gtsam::Point2> &cone_obs);
 
 double header_to_nanosec(const std_msgs::msg::Header &header);
 void header_to_dt(const optional<std_msgs::msg::Header> &prev, const optional<std_msgs::msg::Header> &cur, double &dt);

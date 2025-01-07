@@ -1,6 +1,10 @@
 #include "isam2_pkg.hpp"
 
-
+using namespace std;
+using namespace gtsam;
+using namespace std::chrono;
+using std::size_t;
+using namespace rclcpp;
 
 class SLAMValidation : public rclcpp::Node {
 public:
@@ -213,11 +217,11 @@ private:
     optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
     gtsam::Pose2 prev_odom;
-    vector<Point2> cones; // local variable to load cone observations into SLAM instance
-    vector<Point2> orange_cones; // local variable to load cone observations into SLAM instance
+    std::vector<Point2> cones; // local variable to load cone observations into SLAM instance
+    std::vector<Point2> orange_cones; // local variable to load cone observations into SLAM instance
 
-    vector<Point2> blue_cones; //local variable to store the blue observed cones
-    vector<Point2> yellow_cones; //local variable to store the yellow observed cones
+    std::vector<Point2> blue_cones; //local variable to store the blue observed cones
+    std::vector<Point2> yellow_cones; //local variable to store the yellow observed cones
 
 
     bool file_opened;

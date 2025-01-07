@@ -34,10 +34,6 @@
 #include "unary_factor.hpp"
 #include "ros_utils.hpp"
 
-using namespace std;
-using namespace gtsam;
-using namespace std::chrono;
-
 const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 
 class slamISAM {
@@ -109,8 +105,8 @@ public:
 
     slamISAM(optional<rclcpp::Logger> input_logger);
 
-    void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
-            Pose2 &velocity,double dt, bool new_gps, optional<rclcpp::Logger> logger);
+    void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, Pose2 &global_odom,
+            Pose2 &velocity,double dt, optional<rclcpp::Logger> logger);
 
     void update_landmarks(std::vector<tuple<Point2, double, int>> &old_cones,
                         std::vector<tuple<Point2, double, Point2>> &new_cones,

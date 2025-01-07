@@ -1,4 +1,8 @@
 #include "isam2_pkg.hpp"
+using namespace std;
+using namespace gtsam;
+using namespace std::chrono;
+using std::size_t;
 
 slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
@@ -16,33 +20,66 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     n_landmarks = 0;
     landmark_est = std::vector<gtsam::Pose2>();
 
+
+    /* Bearing and range error
+     * Corresponds to the usage of the BearingRangeFactor we are using
+     *
+     * Source: https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/
+     *         Supplemental_Modules_(Analytical_Chemistry)/Quantifying_Nature/
+     *         Significant_Digits/Propagation_of_Error
+     * Source: User manual for the AT128 Hesai LiDAR
+     * 
+     * bearing error in radians
+     * Calculation for error per radian: 
+     * We use atan2(y, x) and we know that z = atan(u) has derivative 1/(1+u^2) 
+     * std.dev_{u} = sqrt(0.03^2 + 0.03^2) = 0.0424
+     * std.dev_{z} = (1/(1+1^2))^2 * std.dev_{u}^2 = 1/4 * 0.0424^2 = 0.00045
+     * 
+     * Source: User manual for the AT128 Hesai LiDAR
+     * range error in meters 
+     * 
+     */
     LandmarkNoiseModel = gtsam::Vector(2);
-    // used to be 0.01 for real data
-    // 0 for EUFS_SIM
-    //TODO: have a different noise model at the beginning
-    LandmarkNoiseModel(0) = 0;
-    LandmarkNoiseModel(1) = 0;
+    LandmarkNoiseModel(0) = 0.00045; 
+    LandmarkNoiseModel(1) = 0.03; 
     landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
     // used to be all 0s for EUFS_SIM
     PriorNoiseModel = gtsam::Vector(3);
-    PriorNoiseModel(0) = 0;
-    PriorNoiseModel(1) = 0;
-    PriorNoiseModel(2) = 0;
+    PriorNoiseModel(0) = 0.05;
+    PriorNoiseModel(1) = 0.05;
+    PriorNoiseModel(2) = degrees_to_radians(0.5);
 
     prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
-    /* Go from 1 pose to another pose*/
+    /* Go from 1 pose to another pose
+     * Source: https://www.movella.com/products/sensor-modules/xsens-mti-680g-rtk-gnss-ins
+     *
+     * x error in meters (must be based on velocity error)
+     * y error in meters (must be based on velocity error)
+     * velocity error = 0.05 m/s RMS
+     * Calculation for the error per meter: 1m = (1 +- 0.05 m/s) * (1 +- 1e-9 s)
+     * std. dev = 1 * sqrt((0.05/1)^2 + (1e-9/1)^2) = 
+     * yaw error in radians
+     */
     OdomNoiseModel = gtsam::Vector(3);
-    OdomNoiseModel(0) = 0;
-    OdomNoiseModel(1) = 0;
-    OdomNoiseModel(2) = 0;
+    OdomNoiseModel(0) = 0.05;
+    OdomNoiseModel(1) = 0.05; 
+    OdomNoiseModel(2) = degrees_to_radians(0.5); 
     odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
+
+    /* GPS noise model 
+     * Use the covariances from positionlla
+     *
+     * Covariance matrix diagonal elements represent variances
+     * Variance = (std.dev)^2 meaning:
+     * Variance = 0.2 => std.dev = sqrt(0.2) = 0.45
+     * 
+     */
     UnaryNoiseModel = gtsam::Vector(2);
-    UnaryNoiseModel(0) = 0;
-    UnaryNoiseModel(1) = 0;
-    // UnaryNoiseModel(2) = 0.5;
+    UnaryNoiseModel(0) = 0.45;
+    UnaryNoiseModel(1) = 0.45;
     unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
 
     // Resetting the log file for gtsam
@@ -56,8 +93,8 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     init_step_input_stream.close();
 }
 
-void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
-            Pose2 &velocity,double dt, bool new_gps, optional<rclcpp::Logger> logger) {
+void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, Pose2 &global_odom,
+            Pose2 &velocity,double dt, optional<rclcpp::Logger> logger) {
     /* Adding poses to the SLAM factor graph */
     double offset_x = 0;
     double offset_y = 0;
@@ -69,7 +106,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
             RCLCPP_INFO(logger.value(), "Processing first pose");
         }
 
-        gtsam::PriorFactor<Pose2> prior_factor = gtsam::PriorFactor<Pose2>(X(0),
+        PriorFactor<Pose2> prior_factor = PriorFactor<Pose2>(X(0),
                                                             global_odom, prior_model);
         //add prior
         //TODO: need to record the initial bearing because it could be erroneous
@@ -99,13 +136,28 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
 
         //global_odom holds our GPS measurements
-        velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
+        velocity_motion_model(new_pose, odometry, is_moving, velocity, dt, prev_pose, global_odom);
 
-        gtsam::BetweenFactor<Pose2> odom_factor = BetweenFactor<Pose2>(X(pose_num - 1),
-                                                                    X(pose_num),
+        // Do not continue updating if the car is not moving. Only update during the 0th pose. 
+        //TODO: consider when the car slows to a stop?
+        if (!is_moving) {
+            return;
+        }
+
+        if (logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
+            if (is_moving) {
+                RCLCPP_INFO(logger.value(), "Car is moving");
+            } else {
+                RCLCPP_INFO(logger.value(), "Car stopped");
+            }
+        }
+
+        BetweenFactor<Pose2> odom_factor = BetweenFactor<gtsam::Pose2>(X(pose_num - 1),
+                                                                        X(pose_num),
                                                                         odometry,
                                                                         odom_model);
-        cur_pose = Pose2(new_pose.x(), new_pose.y(), new_pose.theta());
+        cur_pose = gtsam::Pose2(new_pose.x(), new_pose.y(), new_pose.theta());
         graph.add(odom_factor);
 
         Pose2 imu_offset_global_odom = Pose2(global_odom.x() - offset_x, global_odom.y() - offset_y, global_odom.theta());
@@ -131,8 +183,8 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
  * to the car
  * 2nd Point2 for new_cones represents the global position
  */
-void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
-                        vector<tuple<Point2, double, Point2>> &new_cones,
+void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &old_cones,
+                        std::vector<std::tuple<Point2, double, Point2>> &new_cones,
                         Pose2 &cur_pose) {
 
 
@@ -146,11 +198,11 @@ void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
         * insert Point2 for the cones and their actual location
         *
         */
-    for (size_t o = 0; o < old_cones.size(); o++) {
-        Point2 cone_car_frame = get<0>(old_cones.at(o));
+    for (std::size_t o = 0; o < old_cones.size(); o++) {
+        Point2 cone_pos_car_frame = get<0>(old_cones.at(o));
         int min_id = get<2>(old_cones.at(o));
         Rot2 b = Rot2::fromAngle(get<1>(old_cones.at(o)));
-        double r = norm2(get<0>(old_cones.at(o)));
+        double r = norm2(cone_pos_car_frame);
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(min_id),
                                         b,
@@ -161,10 +213,11 @@ void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
     graph.resize(0);
     // values should be empty
 
-    for (size_t n = 0; n < new_cones.size(); n++) {
-        Point2 cone_car_frame = get<0>(new_cones.at(n));
+    for (std::size_t n = 0; n < new_cones.size(); n++) {
+        Point2 cone_pos_car_frame = get<0>(new_cones.at(n));
         Rot2 b = Rot2::fromAngle(get<1>(new_cones.at(n)));
-        double r = norm2(get<0>(new_cones.at(n)));
+        double r = norm2(cone_pos_car_frame);
+
         Point2 cone_global_frame = get<2>(new_cones.at(n));
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(n_landmarks),
@@ -175,8 +228,9 @@ void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
         values.insert(L(n_landmarks), cone_global_frame);
         n_landmarks++;
     }
+    
     /* All values in graph must be in values parameter */
-    if (n_landmarks < 400) {
+    if (n_landmarks > 400) {
         values.insert(X(pose_num), cur_pose);
         Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
         optimized_val.erase(X(pose_num));
@@ -195,13 +249,12 @@ void slamISAM::update_landmarks(vector<tuple<Point2, double, int>> &old_cones,
 
 
 /**
- * @brief Obtains information about the observed cones from the current time
- *        step as well as odometry information (to use motion model to
- *        calculate current pose).
+ * @brief step takes in info about the observed cones and the odometry info
+ *        and performs an update step to our iSAM2 model. 
  */
-void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
-            vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
-            vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
+void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
+            std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
+            std::vector<Point2> &orange_ref_cones, Pose2 velocity,
             double dt) {
 
     // print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
@@ -221,9 +274,16 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
     Pose2 cur_pose = Pose2(0, 0, 0);
     Pose2 prev_pose = Pose2(0, 0, 0);
     auto start_update_poses = high_resolution_clock::now();
-    update_poses(cur_pose, prev_pose, global_odom, velocity, dt, false, logger);
+    bool is_moving = false;
+    update_poses(cur_pose, prev_pose, is_moving, global_odom, velocity, dt, logger);
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
+
+    /*Quit the update step if the car is not moving*/ 
+    if (!is_moving && pose_num > 0) {
+        return;
+    }
+
     if(logger.has_value()) {
         RCLCPP_INFO(logger.value(), "update_poses time: %ld", dur_update_poses.count());
     }
@@ -231,12 +291,12 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
 
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     auto start_est_retrieval = high_resolution_clock::now();
-    vector<Point2> slam_est = {};
+    std::vector<Point2> slam_est = {};
     for (int i = 0; i < n_landmarks; i++) {
         slam_est.push_back(isam2.calculateEstimate(L(i)).cast<Point2>());
     }
 
-    vector<MatrixXd> slam_mcov = {};
+    std::vector<MatrixXd> slam_mcov = {};
     for (int i = 0; i < n_landmarks; i++) {
         slam_mcov.push_back(isam2.marginalCovariance(L(i)));
     }
@@ -248,8 +308,8 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
 
 
     /**** Data association ***/
-    vector<tuple<Point2, double, int>> old_cones = {};
-    vector<tuple<Point2, double, Point2>> new_cones = {};
+    std::vector<tuple<Point2, double, int>> old_cones = {};
+    std::vector<tuple<Point2, double, Point2>> new_cones = {};
 
 
     auto start_DA = high_resolution_clock::now();
@@ -286,7 +346,6 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
 
     ofs.close();
     cout.rdbuf(coutbuf); //reset to standard output again
-
     auto end_vis_setup = high_resolution_clock::now();
     auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
 
@@ -295,7 +354,7 @@ void slamISAM::step(gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
     }
 
     end = high_resolution_clock::now();
-
+    
 
 
     auto dur_step_call = duration_cast<milliseconds>(end - start);
