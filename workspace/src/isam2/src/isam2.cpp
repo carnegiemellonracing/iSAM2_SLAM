@@ -95,7 +95,7 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     init_step_input_stream.close();
 }
 
-void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, Pose2 &global_odom,
+void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, bool &is_turning, Pose2 &global_odom,
             Pose2 &velocity,double dt, optional<rclcpp::Logger> logger) {
     /* Adding poses to the SLAM factor graph */
     double offset_x = 0;
@@ -146,6 +146,12 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, 
             return;
         }
 
+        if (velocity.theta() > TURNING_TH) {
+            is_turning = true;
+        } else {
+            is_turning = false;
+        }
+
         if (logger.has_value()) {
             RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
             if (is_moving) {
@@ -153,6 +159,9 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, 
             } else {
                 RCLCPP_INFO(logger.value(), "Car stopped");
             }
+
+            RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
+
         }
 
         BetweenFactor<Pose2> odom_factor = BetweenFactor<gtsam::Pose2>(X(pose_num - 1),
@@ -187,7 +196,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, 
  */
 void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &old_cones,
                         std::vector<std::tuple<Point2, double, Point2>> &new_cones,
-                        Pose2 &cur_pose) {
+                        Pose2 &cur_pose, bool is_turning) {
 
 
     /* Bearing range factor will need
@@ -232,7 +241,9 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
     }
     
     /* All values in graph must be in values parameter */
-    if (n_landmarks < 400) {
+
+    /* Using LM optimizer based on n_landmarks 
+    if (n_landmarks < 50) {
         values.insert(X(pose_num), cur_pose);
         Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
         optimized_val.erase(X(pose_num));
@@ -241,7 +252,19 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
     } else {
         isam2.update(graph, values);
     }
-    // isam2.update(graph, values);
+    */
+    
+
+    /* Using LM optimizer based on turning*/
+    if (is_turning || n_landmarks < 400) {
+        values.insert(X(pose_num), cur_pose);
+        Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
+        optimized_val.erase(X(pose_num));
+        isam2.update(graph, optimized_val);
+    } else {
+        isam2.update(graph, values);
+    }
+    /**/
 
     graph.resize(0); //Not resizing your graph will result in long update times
     values.clear();
@@ -277,7 +300,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     Pose2 prev_pose = Pose2(0, 0, 0);
     auto start_update_poses = high_resolution_clock::now();
     bool is_moving = false;
-    update_poses(cur_pose, prev_pose, is_moving, global_odom, velocity, dt, logger);
+    bool is_turning = false;
+
+    update_poses(cur_pose, prev_pose, is_moving, is_turning, global_odom, velocity, dt, logger);
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
 
@@ -315,7 +340,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
     auto start_DA = high_resolution_clock::now();
-    data_association(old_cones, new_cones, cur_pose, prev_pose,
+    data_association(old_cones, new_cones, cur_pose, prev_pose, is_turning,
                         cone_obs, logger, slam_est, slam_mcov);
     auto end_DA = high_resolution_clock::now();
     auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
@@ -324,7 +349,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     }
 
     auto start_update_landmarks = high_resolution_clock::now();
-    update_landmarks(old_cones, new_cones, cur_pose);
+    update_landmarks(old_cones, new_cones, cur_pose, is_turning);
     auto end_update_landmarks = high_resolution_clock::now();
     auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
     if(logger.has_value()) {

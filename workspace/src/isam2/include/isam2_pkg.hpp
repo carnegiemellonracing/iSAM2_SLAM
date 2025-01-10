@@ -105,12 +105,12 @@ public:
 
     slamISAM(optional<rclcpp::Logger> input_logger);
 
-    void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, Pose2 &global_odom,
+    void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, bool &is_turning, Pose2 &global_odom,
             Pose2 &velocity,double dt, optional<rclcpp::Logger> logger);
 
     void update_landmarks(std::vector<tuple<Point2, double, int>> &old_cones,
                         std::vector<tuple<Point2, double, Point2>> &new_cones,
-                        Pose2 &cur_pose);
+                        Pose2 &cur_pose, bool is_turning);
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,

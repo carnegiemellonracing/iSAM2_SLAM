@@ -5,7 +5,7 @@
 #include "data_association.hpp"
 
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
-                    int num_obs, vector<double> &m_dist,
+                    int num_obs, vector<double> &m_dist, double threshold,
                     vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov,
                     optional<rclcpp::Logger> &logger) {
     for (int i = 0; i < num_obs; i++) {
@@ -19,7 +19,7 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
 
         }
 
-        m_dist.push_back(M_DIST_TH);
+        m_dist.push_back(threshold);
     }
 
 }
@@ -53,7 +53,7 @@ void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
 
 void data_association(vector<tuple<Point2, double, int>> &old_cones,
                 vector<tuple<Point2, double, Point2>> &new_cones,
-                Pose2 &cur_pose, Pose2 &prev_pose,
+                Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
                 vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
                 vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov) {
 
@@ -74,9 +74,13 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
     cone_to_global_frame(range, bearing,
                          global_cone_x, global_cone_y,
                          cone_obs, cur_pose);
-
+    
+    double threshold = M_DIST_TH;
+    if (is_turning) {
+        threshold = TURNING_M_DIST_TH;
+    }
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
-                    slam_est, slam_mcov, logger);
+                    threshold, slam_est, slam_mcov, logger);
 
     get_old_new_cones(old_cones, new_cones,
                     global_cone_x, global_cone_y,bearing,

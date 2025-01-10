@@ -10,12 +10,12 @@
 #include <algorithm>
 #include <float.h>
 #include "ros_utils.hpp"
-const double M_DIST_TH = 0.1;
-//const double M_DIST_TH = 25.0;
+const double M_DIST_TH = 0.001;
+const double TURNING_M_DIST_TH = 0.0001;
 
 
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
-                    int num_obs, std::vector<double> &m_dist,
+                    int num_obs, std::vector<double> &m_dist, double threshold,
                     std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov,
                     rclcpp::Logger &logger);
 
@@ -27,6 +27,6 @@ void get_old_new_cones(std::vector<tuple<Point2, double, int>> &old_cones,
 
 void data_association(std::vector<tuple<Point2, double, int>> &old_cones,
                 std::vector<tuple<Point2, double, Point2>> &new_cones,
-                Pose2 &cur_pose, Pose2 &prev_pose,
+                Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
                 std::vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
                 std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov);
