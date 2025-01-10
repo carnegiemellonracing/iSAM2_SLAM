@@ -24,7 +24,7 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
 
 }
 
-void find_new_cones(vector<tuple<Point2, double, int>> &old_cones,
+void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
             vector<tuple<Point2, double, Point2>> &new_cones,
             MatrixXd &global_cone_x,MatrixXd &global_cone_y,MatrixXd &bearing,
             vector<Point2> &cone_obs, vector<double> &m_dist, int n_landmarks,
@@ -78,7 +78,7 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
                     slam_est, slam_mcov, logger);
 
-    find_new_cones(old_cones, new_cones,
+    get_old_new_cones(old_cones, new_cones,
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
 }

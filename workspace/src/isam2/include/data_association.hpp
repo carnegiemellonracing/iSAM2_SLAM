@@ -19,7 +19,7 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
                     std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov,
                     rclcpp::Logger &logger);
 
-void find_new_cones(std::vector<tuple<Point2, double, int>> &old_cones,
+void get_old_new_cones(std::vector<tuple<Point2, double, int>> &old_cones,
             std::vector<tuple<Point2, double, Point2>> &new_cones,
             MatrixXd &global_cone_x,MatrixXd &global_cone_y,MatrixXd &bearing,
             std::vector<Point2> &cone_obs, std::vector<double> &m_dist, int n_landmarks,
