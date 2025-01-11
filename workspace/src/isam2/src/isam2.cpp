@@ -48,7 +48,7 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     PriorNoiseModel = gtsam::Vector(3);
     PriorNoiseModel(0) = 0.22;
     PriorNoiseModel(1) = 0.22;
-    PriorNoiseModel(2) = degrees_to_radians(0.05);
+    PriorNoiseModel(2) = degrees_to_radians(0.01);
 
     prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
@@ -65,7 +65,7 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     OdomNoiseModel = gtsam::Vector(3);
     OdomNoiseModel(0) = 0.22;
     OdomNoiseModel(1) = 0.22; 
-    OdomNoiseModel(2) = degrees_to_radians(0.05); 
+    OdomNoiseModel(2) = degrees_to_radians(0.01); 
     odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -95,7 +95,7 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     init_step_input_stream.close();
 }
 
-void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, bool &is_turning, Pose2 &global_odom,
+void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
             Pose2 &velocity,double dt, optional<rclcpp::Logger> logger) {
     /* Adding poses to the SLAM factor graph */
     double offset_x = 0;
@@ -138,23 +138,14 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, 
         prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
 
         //global_odom holds our GPS measurements
-        velocity_motion_model(new_pose, odometry, is_moving, velocity, dt, prev_pose, global_odom);
+        velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
 
         // Do not continue updating if the car is not moving. Only update during the 0th pose. 
         //TODO: consider when the car slows to a stop?
-        if (!is_moving) {
-            return;
-        }
-
-        if (velocity.theta() > TURNING_TH) {
-            is_turning = true;
-        } else {
-            is_turning = false;
-        }
 
         if (logger.has_value()) {
             RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
-            if (is_moving) {
+            if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
                 RCLCPP_INFO(logger.value(), "Car is moving");
             } else {
                 RCLCPP_INFO(logger.value(), "Car stopped");
@@ -178,11 +169,9 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, 
         print_update_poses(prev_pose, new_pose, odometry, imu_offset_global_odom, logger);
     }
 
-
     isam2.update(graph, values);
     graph.resize(0);
     values.clear();
-
 
     // Pose2 est_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
     // RCLCPP_INFO(logger, "Diff: x: %.10f | y: %.10f", est_pose.x() - cur_pose.x(), est_pose.y() - cur_pose.y());
@@ -196,7 +185,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, bool &is_moving, 
  */
 void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &old_cones,
                         std::vector<std::tuple<Point2, double, Point2>> &new_cones,
-                        Pose2 &cur_pose, bool is_turning) {
+                        Pose2 &cur_pose) {
 
 
     /* Bearing range factor will need
@@ -255,15 +244,15 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
     */
     
 
-    /* Using LM optimizer based on turning*/
-    if (is_turning || n_landmarks < 400) {
-        values.insert(X(pose_num), cur_pose);
-        Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
-        optimized_val.erase(X(pose_num));
-        isam2.update(graph, optimized_val);
-    } else {
-        isam2.update(graph, values);
-    }
+    /* Using LM optimizer based on */
+    //if ( n_landmarks < 400) {
+    values.insert(X(pose_num), cur_pose);
+    Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
+    optimized_val.erase(X(pose_num));
+    isam2.update(graph, optimized_val);
+    //} else {
+        //isam2.update(graph, values);
+    //}
     /**/
 
     graph.resize(0); //Not resizing your graph will result in long update times
@@ -302,9 +291,23 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     bool is_moving = false;
     bool is_turning = false;
 
-    update_poses(cur_pose, prev_pose, is_moving, is_turning, global_odom, velocity, dt, logger);
+    if (sqrt(pow(velocity.x(), 2) + pow(velocity.y(), 2)) > VELOCITY_MOVING_TH) {
+        is_moving = true;
+    } else {
+        is_moving = false;
+    }
+    if (abs(velocity.theta()) > TURNING_TH) {
+        is_turning = true;
+    } else {
+        is_turning = false;
+    }
+    
+
+    update_poses(cur_pose, prev_pose, global_odom, velocity, dt, logger);
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
+
+    
 
     /*Quit the update step if the car is not moving*/ 
     if (!is_moving && pose_num > 0) {
@@ -349,7 +352,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     }
 
     auto start_update_landmarks = high_resolution_clock::now();
-    update_landmarks(old_cones, new_cones, cur_pose, is_turning);
+    update_landmarks(old_cones, new_cones, cur_pose);
     auto end_update_landmarks = high_resolution_clock::now();
     auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
     if(logger.has_value()) {

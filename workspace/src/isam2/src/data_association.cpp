@@ -60,7 +60,14 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
     vector<double> m_dist = {};
     int n_landmarks = slam_est.size();
 
-    remove_far_cones(cone_obs);
+    double m_dist_th = M_DIST_TH;
+    double cone_dist_th = MAX_CONE_RANGE;
+    if (is_turning) {
+        m_dist_th = TURNING_M_DIST_TH;
+        cone_dist_th = TURNING_MAX_CONE_RANGE;
+    }
+
+    remove_far_cones(cone_obs, cone_dist_th);
 
     // Populating m_dist with mahalanobis distances
     MatrixXd global_cone_x(cone_obs.size(), 1);
@@ -75,12 +82,9 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
                          global_cone_x, global_cone_y,
                          cone_obs, cur_pose);
     
-    double threshold = M_DIST_TH;
-    if (is_turning) {
-        threshold = TURNING_M_DIST_TH;
-    }
+    
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
-                    threshold, slam_est, slam_mcov, logger);
+                    m_dist_th, slam_est, slam_mcov, logger);
 
     get_old_new_cones(old_cones, new_cones,
                     global_cone_x, global_cone_y,bearing,

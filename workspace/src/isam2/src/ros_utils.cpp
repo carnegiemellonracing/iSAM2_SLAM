@@ -136,7 +136,7 @@ void calc_lateral_velocity_error(double& dx_error, double& dy_error,
     dy_error = ang_velocity * (IMU_OFFSET * cos(yaw));
 }
 
-void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, bool &is_moving, Pose2 &velocity, 
+void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, 
                             double dt, Pose2 &prev_pose, Pose2 global_odom) {
     
     
@@ -146,13 +146,7 @@ void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry, bool &is_moving, Po
     calc_lateral_velocity_error(dx_error, dy_error, velocity.theta(), global_odom.theta());
     
     double dx = velocity.x() - dx_error;
-    double dy = velocity.y() - dy_error;
-
-    if (sqrt(pow(dx, 2) + pow(dy, 2)) > VELOCITY_MOVING_TH) {
-        is_moving = true;
-    } else {
-        is_moving = false;
-    }
+    double dy = velocity.y() - dy_error; 
 
     new_pose = Pose2(prev_pose.x() + dx * dt,
                     prev_pose.y() + dy * dt,
@@ -196,9 +190,9 @@ void header_to_dt(const optional<std_msgs::msg::Header> &prev, const optional<st
 /**
  * @brief Removes far away observed cones.Observed cones that are far away are more erroneous
  */
-void remove_far_cones(vector<Point2> &cone_obs) {
+void remove_far_cones(vector<Point2> &cone_obs, double threshold) {
     for (std::size_t i = 0; i < cone_obs.size(); i++) {
-        if (norm2(cone_obs.at(i)) > MAX_CONE_RANGE) {
+        if (norm2(cone_obs.at(i)) > threshold) {
             cone_obs.erase(cone_obs.begin() + i);
             i--;
         }
