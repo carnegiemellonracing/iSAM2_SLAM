@@ -48,7 +48,7 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     PriorNoiseModel = gtsam::Vector(3);
     PriorNoiseModel(0) = 0.22;
     PriorNoiseModel(1) = 0.22;
-    PriorNoiseModel(2) = degrees_to_radians(0.01);
+    PriorNoiseModel(2) = degrees_to_radians(0.009);
 
     prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
 
@@ -65,7 +65,7 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     OdomNoiseModel = gtsam::Vector(3);
     OdomNoiseModel(0) = 0.22;
     OdomNoiseModel(1) = 0.22; 
-    OdomNoiseModel(2) = degrees_to_radians(0.01); 
+    OdomNoiseModel(2) = degrees_to_radians(0.009); 
     odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
 
@@ -287,7 +287,6 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     Pose2 cur_pose = Pose2(0, 0, 0);
     Pose2 prev_pose = Pose2(0, 0, 0);
-    auto start_update_poses = high_resolution_clock::now();
     bool is_moving = false;
     bool is_turning = false;
 
@@ -303,16 +302,16 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     }
     
 
-    update_poses(cur_pose, prev_pose, global_odom, velocity, dt, logger);
-    auto end_update_poses = high_resolution_clock::now();
-    auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
-
     
-
     /*Quit the update step if the car is not moving*/ 
     if (!is_moving && pose_num > 0) {
         return;
     }
+
+    auto start_update_poses = high_resolution_clock::now();
+    update_poses(cur_pose, prev_pose, global_odom, velocity, dt, logger);
+    auto end_update_poses = high_resolution_clock::now();
+    auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
 
     if(logger.has_value()) {
         RCLCPP_INFO(logger.value(), "update_poses time: %ld", dur_update_poses.count());
