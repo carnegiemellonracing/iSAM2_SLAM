@@ -33,6 +33,7 @@
 #include "data_association.hpp"
 #include "unary_factor.hpp"
 #include "ros_utils.hpp"
+#include "loop_closure.hpp"
 
 const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 
@@ -75,6 +76,9 @@ private:
     Pose2 global_odom;
 
     std::vector<double> m_dist;
+    bool loop_closure;
+    std::size_t num_first_obs_cones;
+    Pose2 first_pose;
 
 
 public:
@@ -85,9 +89,6 @@ public:
     int yellow_n_landmarks;
 
     bool heuristic_run;
-
-    //gtsam::Pose2 robot_est;
-    std::vector<gtsam::Pose2> landmark_est;
 
     /* how the landmark estimates are organized */
     std::vector<int> blue_cone_IDs;

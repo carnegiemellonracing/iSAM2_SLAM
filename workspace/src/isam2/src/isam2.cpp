@@ -18,7 +18,6 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     pose_num = 0;
     first_pose_added = false;
     n_landmarks = 0;
-    landmark_est = std::vector<gtsam::Pose2>();
 
 
     /* Bearing and range error
@@ -93,6 +92,10 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     ofstream init_step_input_stream;
     init_step_input_stream.open(STEP_INPUT_FILE, ofstream::out | ofstream::trunc);
     init_step_input_stream.close();
+
+
+    loop_closure = false;
+    num_first_obs_cones = 0;
 }
 
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
@@ -116,6 +119,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
 
 
         cur_pose = Pose2(-offset_x, -offset_y, global_odom.theta());
+        first_pose = cur_pose;
         values.insert(X(0), Pose2(cur_pose.x(), cur_pose.y(), global_odom.theta()));
 
         first_pose_added = true;
@@ -189,15 +193,15 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
 
 
     /* Bearing range factor will need
-        * Types for car pose to landmark node (Pose2, Point2)
-        * Bearing of type Rot2 (Rot2 fromAngle)
-        * Range of type double
-        * Look at PlanarSLAM example in gtsam
-        *
-        * When adding values:
-        * insert Point2 for the cones and their actual location
-        *
-        */
+     * Types for car pose to landmark node (Pose2, Point2)
+     * Bearing of type Rot2 (Rot2 fromAngle)
+     * Range of type double
+     * Look at PlanarSLAM example in gtsam
+     *
+     * When adding values:
+     * insert Point2 for the cones and their actual location
+     *
+     */
     for (std::size_t o = 0; o < old_cones.size(); o++) {
         Point2 cone_pos_car_frame = get<0>(old_cones.at(o));
         int min_id = get<2>(old_cones.at(o));
@@ -229,31 +233,13 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
         n_landmarks++;
     }
     
-    /* All values in graph must be in values parameter */
+    /* NOTE: All values in graph must be in values parameter */
 
-    /* Using LM optimizer based on n_landmarks 
-    if (n_landmarks < 50) {
-        values.insert(X(pose_num), cur_pose);
-        Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
-        optimized_val.erase(X(pose_num));
-        isam2.update(graph, optimized_val);
-
-    } else {
-        isam2.update(graph, values);
-    }
-    */
-    
-
-    /* Using LM optimizer based on */
-    //if ( n_landmarks < 400) {
     values.insert(X(pose_num), cur_pose);
     Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
     optimized_val.erase(X(pose_num));
     isam2.update(graph, optimized_val);
-    //} else {
-        //isam2.update(graph, values);
-    //}
-    /**/
+    
 
     graph.resize(0); //Not resizing your graph will result in long update times
     values.clear();
@@ -273,6 +259,14 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     // print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
     log_step_inputs(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
+
+    if (loop_closure) {
+        if (logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "Loop closure detected. No longer updating");
+        }
+        return;
+    }
+
 
     if (n_landmarks > 0)
     {
@@ -342,6 +336,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
     auto start_DA = high_resolution_clock::now();
+    if (pose_num == 0) {
+        num_first_obs_cones = cone_obs.size();
+    }
     data_association(old_cones, new_cones, cur_pose, prev_pose, is_turning,
                         cone_obs, logger, slam_est, slam_mcov);
     auto end_DA = high_resolution_clock::now();
@@ -380,6 +377,16 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "vis_setup time: %ld", dur_vis_setup.count());
+    }
+
+
+    auto start_loop_closure = high_resolution_clock::now();
+    loop_closure = detect_loop_closure(old_cones, cur_pose, first_pose, pose_num, logger);
+    auto end_loop_closure = high_resolution_clock::now();
+    auto dur_loop_closure = duration_cast<milliseconds>(end_loop_closure - start_loop_closure);
+
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "loop closure time: %ld", dur_loop_closure.count());
     }
 
     end = high_resolution_clock::now();

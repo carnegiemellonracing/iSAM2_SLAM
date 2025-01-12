@@ -109,9 +109,7 @@ void quat_msg_to_yaw(
     double qy = vehicle_angle_data->quaternion.y;
     double qz = vehicle_angle_data->quaternion.z;
 
-    double imu_yaw = atan2(2 * (qz * qw + qx * qy),
-                    -1 + 2 * (qw * qw + qx * qx));
-    yaw = imu_yaw;
+    yaw = atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
 
     global_odom = Pose2(global_odom.x(), global_odom.y(), yaw);
 }

@@ -24,6 +24,14 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
 
 }
 
+/* @brief Determines which of the observed cones are new or old 
+ * @param old_cones a vector of tuples. Point2 is car-relative position of the cone
+ *          double is the bearing from the car, and int is the ID assoc. with cone
+ * 
+ * @param new_cones a vector of tuples. Point2 is car-relative position of the cone
+ *          double is the bearing from the car, and Point2 is the global position.
+ * 
+ */
 void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
             vector<tuple<Point2, double, Point2>> &new_cones,
             MatrixXd &global_cone_x,MatrixXd &global_cone_y,MatrixXd &bearing,
@@ -44,7 +52,9 @@ void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
                                     bearing(i, 0),
                                     global_cone_pos);
         } else {
-            old_cones.emplace_back(cone_obs.at(i), bearing(i, 0), min_id);
+            old_cones.emplace_back(cone_obs.at(i), 
+                                    bearing(i, 0), 
+                                    min_id);
         }
 
         lo = hi;
