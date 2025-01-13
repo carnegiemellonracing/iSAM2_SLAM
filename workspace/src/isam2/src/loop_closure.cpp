@@ -55,8 +55,7 @@ bool start_pose_in_front(Pose2 &cur_pose, Pose2 &first_pose, optional<rclcpp::Lo
 
 }
 
-bool detect_loop_closure(std::vector<tuple<Point2, double, int>> &old_cones, Pose2 &cur_pose, 
-                        Pose2 &first_pose, int pose_num, optional<rclcpp::Logger> logger) {
+bool detect_loop_closure(Pose2 &cur_pose, Pose2 &first_pose, int pose_num, optional<rclcpp::Logger> logger) {
 
     //bool first_cones_in_sight = num_first_cones > (max(num_first_obs_cones / 3, (std::size_t)2));
     bool moved_away_from_start = pose_num > 10;  //fails when you have 10 poses moved backwards

@@ -284,18 +284,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     bool is_moving = false;
     bool is_turning = false;
 
-    if (sqrt(pow(velocity.x(), 2) + pow(velocity.y(), 2)) > VELOCITY_MOVING_TH) {
-        is_moving = true;
-    } else {
-        is_moving = false;
-    }
-    if (abs(velocity.theta()) > TURNING_TH) {
-        is_turning = true;
-    } else {
-        is_turning = false;
-    }
-    
-
+    determine_movement(is_moving, is_turning, velocity);
     
     /*Quit the update step if the car is not moving*/ 
     if (!is_moving && pose_num > 0) {
@@ -381,7 +370,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
     auto start_loop_closure = high_resolution_clock::now();
-    loop_closure = detect_loop_closure(old_cones, cur_pose, first_pose, pose_num, logger);
+    loop_closure = detect_loop_closure(cur_pose, first_pose, pose_num, logger);
     auto end_loop_closure = high_resolution_clock::now();
     auto dur_loop_closure = duration_cast<milliseconds>(end_loop_closure - start_loop_closure);
 

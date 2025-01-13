@@ -73,7 +73,6 @@ while run:
                         y_coord = float(line[0:len(line)])
                         cur_landmark = np.append(cur_landmark, [y_coord])
 
-    pdb.set_trace()
     # if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2):
     if ((poses.shape[0]) != 0) and ((landmarks.shape[0]) != 0) and (poses.ndim==2 and landmarks.ndim==2):
         scatter = plt.scatter(poses[:,0], poses[:,1], s=10, c='b', marker="x", label='pose')

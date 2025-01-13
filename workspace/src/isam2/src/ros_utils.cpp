@@ -177,6 +177,19 @@ void gps_motion_model(Pose2 &new_pose, Pose2 &odometry, Pose2 &velocity, double 
                         global_odom.theta() - prev_pose.theta());
 }
 
+void determine_movement(bool &is_moving, bool &is_turning, Pose2 &velocity) {
+    if (sqrt(pow(velocity.x(), 2) + pow(velocity.y(), 2)) > VELOCITY_MOVING_TH) {
+        is_moving = true;
+    } else {
+        is_moving = false;
+    }
+    if (abs(velocity.theta()) > TURNING_TH) {
+        is_turning = true;
+    } else {
+        is_turning = false;
+    }
+}
+
 double header_to_nanosec(const std_msgs::msg::Header &header) {
     return (header.stamp.sec * (double)1e9) + header.stamp.nanosec;
 }
