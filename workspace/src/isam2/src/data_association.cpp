@@ -2,26 +2,12 @@
  * @file data_association.cpp
  * @brief Perform data association in preparation for feeding data to SLAM
  */
-#include <vector>
-#include <tuple>
-#include <gtsam/geometry/Point2.h>
-#include <gtsam/geometry/Pose2.h>
-#include <Eigen/Dense>
-#include <gtsam/inference/Symbol.h>
-#include <gtsam/nonlinear/ISAM2.h>
-
-#include <algorithm>
-#include <float.h>
-
-#include "ros_utils.cpp"
-const double M_DIST_TH = 50.0;
-
-using namespace Eigen;
+#include "data_association.hpp"
 
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
-                    int num_obs, vector<double> &m_dist,
+                    int num_obs, vector<double> &m_dist, double threshold,
                     vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov,
-                    rclcpp::Logger &logger) {
+                    optional<rclcpp::Logger> &logger) {
     for (int i = 0; i < num_obs; i++) {
         for (int j = 0; j < slam_est.size(); j++) {
 
@@ -33,16 +19,24 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
 
         }
 
-        m_dist.push_back(M_DIST_TH);
+        m_dist.push_back(threshold);
     }
 
 }
 
-void find_new_cones(vector<tuple<Point2, double, int>> &old_cones,
+/* @brief Determines which of the observed cones are new or old 
+ * @param old_cones a vector of tuples. Point2 is car-relative position of the cone
+ *          double is the bearing from the car, and int is the ID assoc. with cone
+ * 
+ * @param new_cones a vector of tuples. Point2 is car-relative position of the cone
+ *          double is the bearing from the car, and Point2 is the global position.
+ * 
+ */
+void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
             vector<tuple<Point2, double, Point2>> &new_cones,
             MatrixXd &global_cone_x,MatrixXd &global_cone_y,MatrixXd &bearing,
             vector<Point2> &cone_obs, vector<double> &m_dist, int n_landmarks,
-            rclcpp::Logger &logger) {
+            optional<rclcpp::Logger> &logger) {
 
     int lo = 0;
     int hi = 0;
@@ -58,7 +52,9 @@ void find_new_cones(vector<tuple<Point2, double, int>> &old_cones,
                                     bearing(i, 0),
                                     global_cone_pos);
         } else {
-            old_cones.emplace_back(cone_obs.at(i), bearing(i, 0), min_id);
+            old_cones.emplace_back(cone_obs.at(i), 
+                                    bearing(i, 0), 
+                                    min_id);
         }
 
         lo = hi;
@@ -67,14 +63,21 @@ void find_new_cones(vector<tuple<Point2, double, int>> &old_cones,
 
 void data_association(vector<tuple<Point2, double, int>> &old_cones,
                 vector<tuple<Point2, double, Point2>> &new_cones,
-                Pose2 &cur_pose, Pose2 &prev_pose,
-                vector<Point2> &cone_obs, rclcpp::Logger &logger,
+                Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
+                vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
                 vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov) {
 
     vector<double> m_dist = {};
     int n_landmarks = slam_est.size();
 
-    remove_far_cones(cone_obs);
+    double m_dist_th = M_DIST_TH;
+    double cone_dist_th = MAX_CONE_RANGE;
+    if (is_turning) {
+        m_dist_th = TURNING_M_DIST_TH;
+        cone_dist_th = TURNING_MAX_CONE_RANGE;
+    }
+
+    remove_far_cones(cone_obs, cone_dist_th);
 
     // Populating m_dist with mahalanobis distances
     MatrixXd global_cone_x(cone_obs.size(), 1);
@@ -88,11 +91,12 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
     cone_to_global_frame(range, bearing,
                          global_cone_x, global_cone_y,
                          cone_obs, cur_pose);
-
+    
+    
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
-                    slam_est, slam_mcov, logger);
+                    m_dist_th, slam_est, slam_mcov, logger);
 
-    find_new_cones(old_cones, new_cones,
+    get_old_new_cones(old_cones, new_cones,
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
 }

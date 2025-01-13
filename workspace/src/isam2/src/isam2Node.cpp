@@ -1,58 +1,13 @@
-#include <memory>
-#include <functional>
-
-#include "rclcpp/rclcpp.hpp"
-
-#include <message_filters/subscriber.h>
-#include <message_filters/sync_policies/approximate_time.h>
-#include <message_filters/synchronizer.h>
-
-#include "interfaces/msg/cone_array.hpp"
-#include "interfaces/msg/cone_array_with_odom.hpp"
-
-#include "geometry_msgs/msg/point.hpp"
-#include "geometry_msgs/msg/vector3_stamped.hpp"
-#include "geometry_msgs/msg/quaternion_stamped.hpp"
-#include "geometry_msgs/msg/twist_stamped.hpp"
-#include "geometry_msgs/msg/twist_with_covariance.hpp"
-#include "geometry_msgs/msg/twist.hpp"
-#include "sensor_msgs/msg/nav_sat_fix.hpp"
-
-#include <gtsam/nonlinear/ISAM2Params.h>
-
-#include "isam2.cpp"
-
-
-#include <boost/shared_ptr.hpp>
-#include <vector>
-#include <deque>
-#include <cmath>
-#include <chrono>
-
-//#define CONE_DATA_TOPIC "/ground_truth/cones"
-//#define VEHICLE_DATA_TOPIC "/ground_truth/state"
-//#define VEHICLE_VEL_TOPIC "/filter/velocity"
-//#define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
-
-
-#define CONE_DATA_TOPIC "/perc_cones"
-#define VEHICLE_POS_TOPIC "/filter/positionlla"
-#define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
-#define VEHICLE_VEL_TOPIC "/filter/twist"
-
-// static const long SLAM_DELAY_MICROSEC = 50000;
+#include "isam2_pkg.hpp"
 
 using namespace std;
+using namespace gtsam;
 using namespace std::chrono;
-using std::placeholders::_1;
-using std::placeholders::_2;
-using std::placeholders::_3;
-using std::placeholders::_4;
+using std::size_t;
+using namespace rclcpp;
 
 class SLAMValidation : public rclcpp::Node {
 public:
-    // builtin_interfaces::Time pos_time_stamp;
-    // builtin_interfaces::Time obs_time_stamp;
     SLAMValidation(): Node("slam_validation")
     {
         const rmw_qos_profile_t best_effort_profile = {
@@ -73,25 +28,25 @@ public:
                best_effort_profile.depth),
            best_effort_profile);
 
+        cone_sub.subscribe(this, CONE_DATA_TOPIC, best_effort_profile);
         vehicle_pos_sub.subscribe(this, VEHICLE_POS_TOPIC, best_effort_profile);
         vehicle_angle_sub.subscribe(this, VEHICLE_ANGLE_TOPIC, best_effort_profile);
         vehicle_vel_sub.subscribe(this, VEHICLE_VEL_TOPIC, best_effort_profile);
 
-        cone_sub = std::make_shared<message_filters::Subscriber<interfaces::msg::ConeArray>>(this, CONE_DATA_TOPIC, best_effort_profile);
-        cone_sub->registerCallback(std::bind(&SLAMValidation::cone_callback, this, _1));
-        gps_sync = std::make_shared<message_filters::Synchronizer<
+        sync = std::make_shared<message_filters::Synchronizer<
                                     message_filters::sync_policies::ApproximateTime<
+                                    interfaces::msg::ConeArray,
                                     geometry_msgs::msg::Vector3Stamped,
                                     geometry_msgs::msg::TwistStamped,
                                     geometry_msgs::msg::QuaternionStamped>>>(
                             message_filters::sync_policies::ApproximateTime<
+                                    interfaces::msg::ConeArray,
                                     geometry_msgs::msg::Vector3Stamped,
                                     geometry_msgs::msg::TwistStamped,
-                                    geometry_msgs::msg::QuaternionStamped>(20),
-                                    vehicle_pos_sub, vehicle_vel_sub,vehicle_angle_sub);
-        gps_sync->setAgePenalty(0.09);
-        gps_sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
-        gps_queue = std::make_shared<std::deque<std::tuple<double, gtsam::Pose2, gtsam::Pose2, double>>>();
+                                    geometry_msgs::msg::QuaternionStamped>(30),
+                                    cone_sub, vehicle_pos_sub, vehicle_vel_sub,vehicle_angle_sub);
+        sync->setAgePenalty(0.09);
+        sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3, _4));
 
         dt = .1;
 
@@ -106,7 +61,8 @@ public:
 
 private:
 
-    void sync_callback(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
+    void sync_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
+                    const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
                     const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                     const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
         RCLCPP_INFO(this->get_logger(), "\nSync Callback");
@@ -130,7 +86,10 @@ private:
         header_to_dt(prev_filter_time, cur_filter_time, dt);
         prev_filter_time.swap(cur_filter_time);
 
-        //cone_callback(cone_data);
+        /* Cone callback */
+        cone_callback(cone_data);
+        
+        /* Vehicle position callback */
         vehicle_pos_callback(vehicle_pos_data);
 
         /* Vehicle velocity callback */
@@ -142,15 +101,10 @@ private:
 
         auto sync_data_end = high_resolution_clock::now();
         auto sync_data_duration = duration_cast<milliseconds>(sync_data_end - sync_data_start);
-        RCLCPP_INFO(this->get_logger(), "\tSync callback time: %ld", sync_data_duration.count());
+        RCLCPP_INFO(this->get_logger(), "\tSync callback time: %ld \n", sync_data_duration.count());
 
 
-        std::lock_guard<std::mutex> lock(gps_queue_mutex);
-        gps_queue->emplace_back(header_to_nanosec(cur_filter_time.value()), global_odom, velocity, dt);
-        if(gps_queue->size() > MAX_QUEUE) {
-            gps_queue->pop_front();
-        }
-        //run_slam();
+        run_slam();
 
         prev_sync_callback_time.emplace(high_resolution_clock::now());
     }
@@ -163,10 +117,6 @@ private:
     {
         // RCLCPP_INFO(this->get_logger(), "\t cone_callback!");
         auto cone_callback_start = high_resolution_clock::now();
-
-        optional<std_msgs::msg::Header> cur_filter_time(cone_data->header);
-        double cur_time = header_to_nanosec(cur_filter_time.value());
-
         cones = {};
 
         /* issue these could clear before you're finished with data association. */
@@ -182,26 +132,6 @@ private:
         auto cone_callback_duration = duration_cast<milliseconds>(cone_callback_end - cone_callback_start);
         RCLCPP_INFO(this->get_logger(), "\tCone callback time: %ld", cone_callback_duration.count());
 
-        std::tuple<double, gtsam::Pose2, gtsam::Pose2, double> bestMsg; 
-        double minTimeDiff = std::numeric_limits<double>::max();
-
-        std::unique_lock<std::mutex> lock(gps_queue_mutex);
-        for (const auto &element : *gps_queue) // Dereference the shared pointer
-        {
-            double time = std::get<0>(element);
-            if(std::abs(time - cur_time) < minTimeDiff) {
-                minTimeDiff = std::abs(time - cur_time);
-                bestMsg = element;
-            }
-            if(time > cur_time) {
-                break;
-            }
-        }
-        global_odom = std::get<1>(bestMsg);
-        velocity = std::get<2>(bestMsg);
-        dt = std::get<3>(bestMsg);
-        lock.unlock();
-        run_slam();
     }
 
     void vehicle_pos_callback(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data)
@@ -260,7 +190,7 @@ private:
 	    * b.) Don't receive GPS message:
 	    * When we don't we want to use velocity and our SLAM estimate
 	    * to model our new pose */
-        slam_instance.step(this->get_logger(), global_odom, cones, blue_cones,
+        slam_instance.step(global_odom, cones, blue_cones,
                   yellow_cones, orange_cones, velocity, dt);
 
 
@@ -270,31 +200,28 @@ private:
     slamISAM slam_instance = slamISAM(this->get_logger());
     high_resolution_clock::time_point cur_sync_callback_time;
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
+    message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
     message_filters::Subscriber<geometry_msgs::msg::Vector3Stamped> vehicle_pos_sub;
     message_filters::Subscriber<geometry_msgs::msg::TwistStamped> vehicle_vel_sub;
     message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
 
-
-    std::mutex gps_queue_mutex;
-    std::shared_ptr<std::deque<std::tuple<double, gtsam::Pose2, gtsam::Pose2, double>>> gps_queue;
-    std::shared_ptr<message_filters::Subscriber<interfaces::msg::ConeArray>> cone_sub;
     std::shared_ptr<message_filters::Synchronizer<
                             message_filters::sync_policies::ApproximateTime<
+                                            interfaces::msg::ConeArray,
                                             geometry_msgs::msg::Vector3Stamped,
                                             geometry_msgs::msg::TwistStamped,
-                                            geometry_msgs::msg::QuaternionStamped>>> gps_sync;
+                                            geometry_msgs::msg::QuaternionStamped>>> sync;
     
     gtsam::Pose2 velocity;
-    int MAX_QUEUE = 20;
 
     optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
     gtsam::Pose2 prev_odom;
-    vector<Point2> cones; // local variable to load cone observations into SLAM instance
-    vector<Point2> orange_cones; // local variable to load cone observations into SLAM instance
+    std::vector<Point2> cones; // local variable to load cone observations into SLAM instance
+    std::vector<Point2> orange_cones; // local variable to load cone observations into SLAM instance
 
-    vector<Point2> blue_cones; //local variable to store the blue observed cones
-    vector<Point2> yellow_cones; //local variable to store the yellow observed cones
+    std::vector<Point2> blue_cones; //local variable to store the blue observed cones
+    std::vector<Point2> yellow_cones; //local variable to store the yellow observed cones
 
 
     bool file_opened;
@@ -310,15 +237,10 @@ private:
 };
 
 int main(int argc, char * argv[]){
-  std::ofstream out("squirrel.txt");
-  std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-  std::cout.rdbuf(out.rdbuf());
 
   rclcpp::init(argc, argv);
-  auto shared_ptr = std::make_shared<SLAMValidation>();
-  rclcpp::executors::MultiThreadedExecutor executor;
-  executor.add_node(shared_ptr);
-  executor.spin();
-  std::cout.rdbuf(coutbuf); //reset to standard output again
+  rclcpp::spin(std::make_shared<SLAMValidation>());
+  rclcpp::shutdown();
+
   return 0;
 }
