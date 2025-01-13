@@ -76,9 +76,14 @@ private:
     Pose2 global_odom;
 
     std::vector<double> m_dist;
+
     bool loop_closure;
-    std::size_t num_first_obs_cones;
+    bool new_lap;
+    std::size_t lap_count;
+
     Pose2 first_pose;
+
+
 
 
 public:

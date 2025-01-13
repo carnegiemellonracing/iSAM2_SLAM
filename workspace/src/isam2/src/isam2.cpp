@@ -95,7 +95,8 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
 
     loop_closure = false;
-    num_first_obs_cones = 0;
+    new_lap = false;
+    lap_count = 0;
 }
 
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
@@ -260,13 +261,6 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     // print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
     log_step_inputs(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
 
-    if (loop_closure) {
-        if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "Loop closure detected. No longer updating");
-        }
-        return;
-    }
-
 
     if (n_landmarks > 0)
     {
@@ -301,47 +295,72 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     }
 
 
+    /**** Perform loop closure ****/
+    auto start_loop_closure = high_resolution_clock::now();
+    bool prev_new_lap_value = new_lap;
+    new_lap = detect_loop_closure(cur_pose, first_pose, pose_num, logger);
+
+    if (!loop_closure && new_lap) {
+        loop_closure = true;
+    }
+
+    bool completed_new_lap = prev_new_lap_value && !new_lap && !start_pose_in_front(cur_pose, first_pose, logger);
+    if (completed_new_lap) {
+        lap_count++;
+    }
+
+    auto end_loop_closure = high_resolution_clock::now();
+    auto dur_loop_closure = duration_cast<milliseconds>(end_loop_closure - start_loop_closure);
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "loop closure time: %ld", dur_loop_closure.count());
+    }
+
+    if (loop_closure) {
+        if (logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "Loop closure detected. No longer updating");
+        }
+    }
+
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
-    auto start_est_retrieval = high_resolution_clock::now();
-    std::vector<Point2> slam_est = {};
-    for (int i = 0; i < n_landmarks; i++) {
-        slam_est.push_back(isam2.calculateEstimate(L(i)).cast<Point2>());
-    }
+    if (!loop_closure) {
+        auto start_est_retrieval = high_resolution_clock::now();
+        std::vector<Point2> slam_est = {};
+        for (int i = 0; i < n_landmarks; i++) {
+            slam_est.push_back(isam2.calculateEstimate(L(i)).cast<Point2>());
+        }
 
-    std::vector<MatrixXd> slam_mcov = {};
-    for (int i = 0; i < n_landmarks; i++) {
-        slam_mcov.push_back(isam2.marginalCovariance(L(i)));
-    }
-    auto end_est_retrieval = high_resolution_clock::now();
-    auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
-    if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "est_retrieval time: %ld", dur_est_retrieval.count());
-    }
-
-
-    /**** Data association ***/
-    std::vector<tuple<Point2, double, int>> old_cones = {};
-    std::vector<tuple<Point2, double, Point2>> new_cones = {};
+        std::vector<MatrixXd> slam_mcov = {};
+        for (int i = 0; i < n_landmarks; i++) {
+            slam_mcov.push_back(isam2.marginalCovariance(L(i)));
+        }
+        auto end_est_retrieval = high_resolution_clock::now();
+        auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
+        if(logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "est_retrieval time: %ld", dur_est_retrieval.count());
+        }
 
 
-    auto start_DA = high_resolution_clock::now();
-    if (pose_num == 0) {
-        num_first_obs_cones = cone_obs.size();
-    }
-    data_association(old_cones, new_cones, cur_pose, prev_pose, is_turning,
-                        cone_obs, logger, slam_est, slam_mcov);
-    auto end_DA = high_resolution_clock::now();
-    auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
-    if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
-    }
+        /**** Data association ***/
+        std::vector<tuple<Point2, double, int>> old_cones = {};
+        std::vector<tuple<Point2, double, Point2>> new_cones = {};
 
-    auto start_update_landmarks = high_resolution_clock::now();
-    update_landmarks(old_cones, new_cones, cur_pose);
-    auto end_update_landmarks = high_resolution_clock::now();
-    auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
-    if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "update_landmarks time: %ld", dur_update_landmarks.count());
+
+        auto start_DA = high_resolution_clock::now();
+        data_association(old_cones, new_cones, cur_pose, prev_pose, is_turning,
+                            cone_obs, logger, slam_est, slam_mcov);
+        auto end_DA = high_resolution_clock::now();
+        auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
+        if(logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
+        }
+
+        auto start_update_landmarks = high_resolution_clock::now();
+        update_landmarks(old_cones, new_cones, cur_pose);
+        auto end_update_landmarks = high_resolution_clock::now();
+        auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
+        if(logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "update_landmarks time: %ld", dur_update_landmarks.count());
+        }
     }
 
     pose_num++;
@@ -366,17 +385,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "vis_setup time: %ld", dur_vis_setup.count());
-    }
-
-
-    auto start_loop_closure = high_resolution_clock::now();
-    loop_closure = detect_loop_closure(cur_pose, first_pose, pose_num, logger);
-    auto end_loop_closure = high_resolution_clock::now();
-    auto dur_loop_closure = duration_cast<milliseconds>(end_loop_closure - start_loop_closure);
-
-    if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "loop closure time: %ld", dur_loop_closure.count());
-    }
+    } 
 
     end = high_resolution_clock::now();
     
