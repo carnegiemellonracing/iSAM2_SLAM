@@ -12,7 +12,8 @@
 using namespace std;
 using namespace gtsam;
 
-const string SAVED_DATA_FILE = "src/isam2/saved_data/step_input.txt";
+// const string SAVED_DATA_FILE = "src/isam2/saved_data/vector_val_err_step_input.txt"; // VectorValues error failing test case
+const string SAVED_DATA_FILE = "src/isam2/saved_data/SLAM_2lap_step_input.txt";
 
 void parse_pose(string numbers);
 void parse_point(string numbers);
