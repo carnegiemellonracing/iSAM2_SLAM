@@ -63,17 +63,13 @@ const string STEP_INPUT_FILE = "src/isam2/data/step_input.txt";
 void imu_axes_to_DV_axes(double &x, double &y);
 
 /* Functions for converting ros messages to relevant data types */
-void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
-                                            vector<Point2> &cones,
-                                            vector<Point2> &blue_cones,
-                                            vector<Point2> &yellow_cones,
-                                            vector<Point2> &orange_cones);
-void velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
-                            Pose2 &velocity);
-void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
-                        Pose2 &global_odom, rclcpp::Logger logger);
-void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
-                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger);
+void cone_msg_to_vectors(vector<Point2> &cones,vector<Point2> &blue_cones,vector<Point2> &yellow_cones,
+                        vector<Point2> &orange_cones, const interfaces::msg::ConeArray::ConstSharedPtr &cone_data);
+void velocity_msg_to_pose2(Pose2 &velocity, const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data);
+void quat_msg_to_yaw(Pose2 &global_odom, const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
+                        rclcpp::Logger logger);
+void vector3_msg_to_gps(Pose2 &global_odom, const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
+                        optional<Point2> &init_lon_lat, rclcpp::Logger logger);
 
 /* Utility functions for motion modeling */
 void calc_lateral_velocity_error(double& dx_error, double& dy_error, 

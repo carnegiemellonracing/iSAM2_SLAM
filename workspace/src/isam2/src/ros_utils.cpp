@@ -19,8 +19,8 @@ void imu_axes_to_DV_axes(double &x, double &y) {
     y = temp_x;
 }
 
-void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
-                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
+void vector3_msg_to_gps(Pose2 &global_odom, const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
+                         optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
     /* Doesn't depend on imu axes. These are global coordinates */
     double latitude = vehicle_pos_data->vector.x;
     double longitude = vehicle_pos_data->vector.y;
@@ -64,11 +64,8 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
 
 }
 
-void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
-                                            vector<Point2> &cones,
-                                            vector<Point2> &blue_cones,
-                                            vector<Point2> &yellow_cones,
-                                            vector<Point2> &orange_cones) {
+void cone_msg_to_vectors(vector<Point2> &cones,vector<Point2> &blue_cones,vector<Point2> &yellow_cones,
+                        vector<Point2> &orange_cones,const interfaces::msg::ConeArray::ConstSharedPtr &cone_data) {
     // Trying to find a library that converts ros2 msg array to vector
     for (std::size_t i = 0; i < cone_data->blue_cones.size(); i++) {
         Point2 to_add = Point2(cone_data->blue_cones.at(i).x,
@@ -92,8 +89,7 @@ void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_
     }
 }
 
-void velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
-                            Pose2 &velocity) {
+void velocity_msg_to_pose2(Pose2 &velocity, const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data) {
     double dx = vehicle_vel_data->twist.linear.x;
     double dy = vehicle_vel_data->twist.linear.y;
     double dw = vehicle_vel_data->twist.angular.z;
@@ -101,16 +97,15 @@ void velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPt
     velocity = Pose2(dx, dy, dw);
 }
 
-void quat_msg_to_yaw(
-    const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
-                        Pose2 &global_odom, rclcpp::Logger logger) {
+void quat_msg_to_yaw(Pose2 &global_odom,
+            const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data, rclcpp::Logger logger) {
     double qw = vehicle_angle_data->quaternion.w;
     double qx = vehicle_angle_data->quaternion.x;
     double qy = vehicle_angle_data->quaternion.y;
     double qz = vehicle_angle_data->quaternion.z;
 
     double yaw = atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
-
+    RCLCPP_INFO(logger, "yaw: %f", yaw);
     global_odom = Pose2(global_odom.x(), global_odom.y(), yaw);
 }
 

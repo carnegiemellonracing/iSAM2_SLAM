@@ -23,7 +23,9 @@ public:
             false
         };
 
-        cone_sub.subscribe(this, CONE_DATA_TOPIC, best_effort_profile);
+        cone_sub = this->create_subscription<interfaces::msg::ConeArray>(CONE_DATA_TOPIC, 10, 
+                                                std::bind(&SLAMValidation::cone_callback, this, _1));
+        
         vehicle_pos_sub.subscribe(this, VEHICLE_POS_TOPIC, best_effort_profile);
         vehicle_angle_sub.subscribe(this, VEHICLE_ANGLE_TOPIC, best_effort_profile);
         vehicle_vel_sub.subscribe(this, VEHICLE_VEL_TOPIC, best_effort_profile);
@@ -40,6 +42,7 @@ public:
                                     vehicle_pos_sub, vehicle_vel_sub,vehicle_angle_sub);
         gps_sync->setAgePenalty(0.09);
         gps_sync->registerCallback(std::bind(&SLAMValidation::gps_sync_callback, this, _1, _2, _3));
+
 
         dt = .1;
 
@@ -125,6 +128,9 @@ private:
      *          then we interpolate the odom message
      */
     void sync_cones_with_gps(synced_gps_msg_t closest_synced_gps_msg, const interfaces::msg::ConeArray::ConstSharedPtr &cone_data) {
+        
+        RCLCPP_INFO(this->get_logger(), "\tsync_cones_with_gps: finding closest_synced_gps_msg");
+        
 
         if (!newer_synced_gps_msg.has_value() && !older_synced_gps_msg.has_value()) {
             return;
@@ -236,7 +242,9 @@ private:
         orange_cones = {};
 
         /* Process cones */
-        cone_msg_to_vectors(cone_data, cones, blue_cones, yellow_cones, orange_cones);        
+        RCLCPP_INFO(this->get_logger(), "processing cone_data into cones");
+        cone_msg_to_vectors(cones, blue_cones, yellow_cones, orange_cones, cone_data);        
+        RCLCPP_INFO(this->get_logger(), "finished processing cone_data into cones");
 
         /* Timers */
         auto cone_callback_end = high_resolution_clock::now();
@@ -259,7 +267,7 @@ private:
         //                                         vehicle_pos_data->header.stamp.sec);
         auto vehicle_pos_callback_start = high_resolution_clock::now();
         
-        vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
+        vector3_msg_to_gps(global_odom, vehicle_pos_data, init_lon_lat, this->get_logger());
 
         /* Timers*/
         auto vehicle_pos_callback_end = high_resolution_clock::now();
@@ -274,7 +282,7 @@ private:
         // RCLCPP_INFO(this->get_logger(), "\t vehicle velocity callback! | time: %d\n",
         //                                         vehicle_vel_data->header.stamp.sec);
         auto vehicle_vel_callback_start = high_resolution_clock::now();
-        velocity_msg_to_pose2(vehicle_vel_data, velocity);
+        velocity_msg_to_pose2(velocity, vehicle_vel_data);
 
         /* Timers*/
         auto vehicle_vel_callback_end = high_resolution_clock::now();
@@ -287,7 +295,7 @@ private:
         // RCLCPP_INFO(this->get_logger(), "\t vehicle angle callback! | time: %d\n",
         //                                       vehicle_angle_data->header.stamp.sec);
         auto vehicle_angle_callback_start = high_resolution_clock::now();
-        quat_msg_to_yaw(vehicle_angle_data, global_odom, this->get_logger());
+        quat_msg_to_yaw(global_odom, vehicle_angle_data, this->get_logger());
 
         /* Timers*/
         auto vehicle_angle_callback_end = high_resolution_clock::now();
@@ -298,7 +306,7 @@ private:
     slamISAM slam_instance = slamISAM(this->get_logger());
     high_resolution_clock::time_point cur_sync_callback_time;
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
-    message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
+    rclcpp::Subscription<interfaces::msg::ConeArray>::SharedPtr cone_sub;
     message_filters::Subscriber<geometry_msgs::msg::Vector3Stamped> vehicle_pos_sub;
     message_filters::Subscriber<geometry_msgs::msg::TwistStamped> vehicle_vel_sub;
     message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
