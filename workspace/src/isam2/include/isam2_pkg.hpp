@@ -36,6 +36,8 @@
 #include "loop_closure.hpp"
 
 const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
+const double MAX_DELAY_BETW_MSGS = 0.09;
+
 
 class slamISAM {
 

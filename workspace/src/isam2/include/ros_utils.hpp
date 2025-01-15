@@ -17,6 +17,7 @@
 #include "geometry_msgs/msg/twist_with_covariance.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
+#include "std_msgs/msg/header.hpp"
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
@@ -70,7 +71,7 @@ void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_
 void velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                             Pose2 &velocity);
 void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
-                        double &yaw, Pose2 &global_odom, rclcpp::Logger logger);
+                        Pose2 &global_odom, rclcpp::Logger logger);
 void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
                         Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger);
 
@@ -94,21 +95,21 @@ double header_to_nanosec(const std_msgs::msg::Header &header);
 void header_to_dt(const optional<std_msgs::msg::Header> &prev, const optional<std_msgs::msg::Header> &cur, double &dt);
 
 /* Calculations for cone positions */
-void calc_cone_range_from_car(MatrixXd &range, vector<Point2> &cone_obs);
-void calc_cone_bearing_from_car(MatrixXd &bearing, vector<Point2> &cone_obs);
+void calc_cone_range_from_car(MatrixXd &range, std::vector<Point2> &cone_obs);
+void calc_cone_bearing_from_car(MatrixXd &bearing, std::vector<Point2> &cone_obs);
 void cone_to_global_frame(MatrixXd &range, MatrixXd &bearing,
                             MatrixXd &global_cone_x, MatrixXd &global_cone_y,
-                            vector<Point2> &cone_obs, Pose2 &cur_pose);
+                            std::vector<Point2> &cone_obs, Pose2 &cur_pose);
 double degrees_to_radians(double degrees);
 
-void print_cone_obs(vector<Point2> &cone_obs, optional<rclcpp::Logger> logger);
+void print_cone_obs(std::vector<Point2> &cone_obs, optional<rclcpp::Logger> logger);
 
-void print_step_input(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
-                vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
-                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);
+void print_step_input(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
+                std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
+                std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);
 
 void print_update_poses(Pose2 &prev_pose, Pose2 &new_pose, Pose2 &odometry, Pose2 &imu_offset_global_odom, optional<rclcpp::Logger> logger);
 
-void log_step_inputs(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, vector<Point2> &cone_obs,
-                vector<Point2> &cone_obs_blue, vector<Point2> &cone_obs_yellow,
-                vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);
+void log_step_inputs(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
+                std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
+                std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);

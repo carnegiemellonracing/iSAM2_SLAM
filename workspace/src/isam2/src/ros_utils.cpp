@@ -103,13 +103,13 @@ void velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPt
 
 void quat_msg_to_yaw(
     const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
-                        double &yaw, Pose2 &global_odom, rclcpp::Logger logger) {
+                        Pose2 &global_odom, rclcpp::Logger logger) {
     double qw = vehicle_angle_data->quaternion.w;
     double qx = vehicle_angle_data->quaternion.x;
     double qy = vehicle_angle_data->quaternion.y;
     double qz = vehicle_angle_data->quaternion.z;
 
-    yaw = atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
+    double yaw = atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
 
     global_odom = Pose2(global_odom.x(), global_odom.y(), yaw);
 }
