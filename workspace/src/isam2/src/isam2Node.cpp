@@ -127,7 +127,7 @@ private:
      *          or if there is no closest message within the allowed threshold,
      *          then we interpolate the odom message
      */
-    void sync_cones_with_gps(synced_gps_msg_t closest_synced_gps_msg, const interfaces::msg::ConeArray::ConstSharedPtr &cone_data) {
+    void sync_cones_with_gps(synced_gps_msg_t &closest_synced_gps_msg, const interfaces::msg::ConeArray::ConstSharedPtr &cone_data) {
         
         RCLCPP_INFO(this->get_logger(), "\tsync_cones_with_gps: finding closest_synced_gps_msg");
         
@@ -255,8 +255,13 @@ private:
         if (older_synced_gps_msg.has_value() && newer_synced_gps_msg.has_value()) {
             synced_gps_msg_t closest_synced_gps_msg;
             sync_cones_with_gps(closest_synced_gps_msg, cone_data);
-            slam_instance.step(get<0>(closest_synced_gps_msg), cones, blue_cones, yellow_cones, orange_cones,
-                                get<1>(closest_synced_gps_msg), dt);
+            Pose2 cur_pose = get<0>(closest_synced_gps_msg);
+            Pose2 cur_velocity = get<1>(closest_synced_gps_msg);
+            RCLCPP_INFO(this->get_logger(), "cur_pose: %f, %f, %f | cur_velocity: %f,  %f, %f",
+                                            cur_pose.x(), cur_pose.y(), cur_pose.theta(), 
+                                            cur_velocity.x(), cur_velocity.y(), cur_velocity.theta());
+            slam_instance.step(cur_pose, cones, blue_cones, yellow_cones, orange_cones,
+                                cur_velocity, dt);
         }
 
     }

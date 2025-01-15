@@ -105,7 +105,6 @@ void quat_msg_to_yaw(Pose2 &global_odom,
     double qz = vehicle_angle_data->quaternion.z;
 
     double yaw = atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
-    RCLCPP_INFO(logger, "yaw: %f", yaw);
     global_odom = Pose2(global_odom.x(), global_odom.y(), yaw);
 }
 
