@@ -314,3 +314,17 @@ void log_step_inputs(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, 
     outfile.close();
 
 }
+
+void motion_info_from_velocity(Pose2 &velocity, optional<rclcpp::Logger> logger) {
+    if (logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
+            if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
+                RCLCPP_INFO(logger.value(), "Car is moving");
+            } else {
+                RCLCPP_INFO(logger.value(), "Car stopped");
+            }
+
+            RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
+
+        }
+}

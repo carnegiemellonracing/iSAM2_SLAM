@@ -109,3 +109,5 @@ void print_update_poses(Pose2 &prev_pose, Pose2 &new_pose, Pose2 &odometry, Pose
 void log_step_inputs(optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
                 std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);
+
+void motion_info_from_velocity(Pose2 &velocity, optional<rclcpp::Logger> logger);

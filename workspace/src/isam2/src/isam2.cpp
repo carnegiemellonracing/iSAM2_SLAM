@@ -145,20 +145,6 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         //global_odom holds our GPS measurements
         velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
 
-        // Do not continue updating if the car is not moving. Only update during the 0th pose. 
-        //TODO: consider when the car slows to a stop?
-
-        if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
-            if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
-                RCLCPP_INFO(logger.value(), "Car is moving");
-            } else {
-                RCLCPP_INFO(logger.value(), "Car stopped");
-            }
-
-            RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
-
-        }
 
         BetweenFactor<Pose2> odom_factor = BetweenFactor<gtsam::Pose2>(X(pose_num - 1),
                                                                         X(pose_num),
@@ -171,7 +157,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         graph.emplace_shared<UnaryFactor>(X(pose_num), imu_offset_global_odom, unary_model);
         values.insert(X(pose_num), new_pose);
 
-        print_update_poses(prev_pose, new_pose, odometry, imu_offset_global_odom, logger);
+        //print_update_poses(prev_pose, new_pose, odometry, imu_offset_global_odom, logger);
     }
 
     isam2.update(graph, values);

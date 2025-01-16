@@ -181,7 +181,7 @@ private:
     void gps_sync_callback(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
                     const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                     const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
-        RCLCPP_INFO(this->get_logger(), "\nSync Callback");
+        RCLCPP_INFO(this->get_logger(), "\tSync Callback");
         
         /* Getting the time between sync callbacks */
         cur_sync_callback_time = high_resolution_clock::now();
@@ -242,9 +242,7 @@ private:
         orange_cones = {};
 
         /* Process cones */
-        RCLCPP_INFO(this->get_logger(), "processing cone_data into cones");
         cone_msg_to_vectors(cones, blue_cones, yellow_cones, orange_cones, cone_data);        
-        RCLCPP_INFO(this->get_logger(), "finished processing cone_data into cones");
 
         /* Timers */
         auto cone_callback_end = high_resolution_clock::now();
@@ -253,13 +251,20 @@ private:
 
         /* Sync with gps data */
         if (older_synced_gps_msg.has_value() && newer_synced_gps_msg.has_value()) {
+            RCLCPP_INFO(this->get_logger(), "\tPairing cones msg with synced gps message");
+
+            auto sync_cones_w_gps_start = high_resolution_clock::now();
             synced_gps_msg_t closest_synced_gps_msg;
             sync_cones_with_gps(closest_synced_gps_msg, cone_data);
             Pose2 cur_pose = get<0>(closest_synced_gps_msg);
             Pose2 cur_velocity = get<1>(closest_synced_gps_msg);
-            RCLCPP_INFO(this->get_logger(), "cur_pose: %f, %f, %f | cur_velocity: %f,  %f, %f",
+            /* RCLCPP_INFO(this->get_logger(), "cur_pose: %f, %f, %f | cur_velocity: %f,  %f, %f",
                                             cur_pose.x(), cur_pose.y(), cur_pose.theta(), 
-                                            cur_velocity.x(), cur_velocity.y(), cur_velocity.theta());
+                                            cur_velocity.x(), cur_velocity.y(), cur_velocity.theta()); */
+            auto sync_cones_w_gps_end = high_resolution_clock::now();
+            auto sync_cones_w_gps_dur = duration_cast<milliseconds>(sync_cones_w_gps_end - sync_cones_w_gps_start);
+            RCLCPP_INFO(this->get_logger(), "\tsync_cones_w_gps time: %ld", sync_cones_w_gps_dur.count());
+
             slam_instance.step(cur_pose, cones, blue_cones, yellow_cones, orange_cones,
                                 cur_velocity, dt);
         }
