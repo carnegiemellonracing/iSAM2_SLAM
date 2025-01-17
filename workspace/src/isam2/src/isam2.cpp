@@ -332,7 +332,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
         auto start_DA = high_resolution_clock::now();
-        data_association(old_cones, new_cones, cur_pose, prev_pose, is_turning,
+        data_association(old_cones, new_cones, pose_num, cur_pose, prev_pose, is_turning,
                             cone_obs, logger, slam_est, slam_mcov);
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
