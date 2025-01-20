@@ -4,6 +4,8 @@ using namespace gtsam;
 using namespace std::chrono;
 using std::size_t;
 
+vector<int> lookup_table;
+
 slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
     // Initializing SLAM Parameters
@@ -406,6 +408,12 @@ void slamISAM::print_estimates() {
     estimate.print("Estimate:");
 }
 
-
-
-
+void identify_chunk(vector<tuple<Point2, double, int>> &old_cones,
+            vector<tuple<Point2, double, Point2>> &new_cones) {
+    //call get_new_old_cones to update new cones and old cones
+    //add new cones to lookup table
+    //define int variable chunkid_sum
+    //for each element in observed_cones
+    //chunkid_sum+=lookuptable[element.cone_id]
+    //return the average of chunkid (chunkid_sum/observed_cones.length)
+}
