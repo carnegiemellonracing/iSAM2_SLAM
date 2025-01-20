@@ -97,6 +97,8 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     loop_closure = false;
     new_lap = false;
     lap_count = 0;
+    
+    cone_cache = {};
 }
 
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,

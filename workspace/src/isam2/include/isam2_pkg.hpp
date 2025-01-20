@@ -37,6 +37,14 @@
 
 const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 
+struct ConeCacheType {
+    Point2 cone; 
+    int ageTimeSteps; //how many time steps sitting in cone cache
+    // int t; //number of times seen of cone
+    ConeCacheType(Point2 cone, int ageTimeSteps): cone(cone), ageTimeSteps(ageTimeSteps) {};
+    ConeCacheType(Point2 cone): cone(cone), ageTimeSteps(0) {};
+};
+
 class slamISAM {
 
 private:
@@ -82,7 +90,7 @@ private:
     std::size_t lap_count;
 
     Pose2 first_pose;
-
+    vector<ConeCacheType> cone_cache;
 
 
 

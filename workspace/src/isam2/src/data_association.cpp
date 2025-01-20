@@ -61,6 +61,54 @@ void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
     }
 }
 
+void remove_stale_cones_from_cone_cache(vector<ConeCacheType> &cone_cache, int timeStepsUntilRemoval) {
+    //update age in cone cache, but remove cones that are too old
+    for (int i=cone_cache.size()-1; i>=0; --i) {
+        cone_cache[i].ageTimeSteps++;
+        if (cone_cache[i].ageTimeSteps >= timeStepsUntilRemoval) {
+            cone_cache.erase(cone_cache.begin()+i);
+        }
+    }
+}
+
+void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>>  new_cones, 
+                                vector<tuple<Point2, double, Point2>> &candidate_new_cones, 
+                                vector<ConeCacheType> &cone_cache,
+                                noiseModel::Diagonal::shared_ptr &landmark_model) {
+
+    for (size_t i = new_cones.size()-1; i >= 0; --i) {  //iterate backwards to not get any iterator issues
+        Point2 cone_global_position = std::get<2>(new_cones[i]);
+
+        double min_dist = std::numeric_limits<double>::max();
+        int mind_dist_cone_index = 0;
+        tuple<Point2, double, Point2> min_dist_cone;      
+
+        for (size_t j = 0; j < cone_cache.size(); ++j) {
+            MatrixXd diff(1,2);
+            diff << cone_cache.at(j).cone.x() - cone_global_position.x(), 
+                    cone_cache.at(j).cone.x() - cone_global_position.x();
+            double dist = diff * landmark_model * diff.tranpose();
+
+            if (dist < min_dist) { //update new minimum distance and corresponding cone
+                min_dist_cone = cone_cache.at(j).cone;
+                min_dist = dist;
+                min_dist_cone_index = j;
+            }
+        }
+
+        //if threshold is greater than mahalanobis distance, it is clearly an existing cone  in cone_cache that needs to be erased from cache
+        if (min_dist < M_DIST_TH)  { 
+            cone_cache.erase(cone_cache.begin() + j);
+            cone_cache_new_cones.push_back(min_dist_cone);
+        }
+        else {
+            cone_cache.push_back(new_cones.at(i));
+        }
+
+        remove_stale_cones_from_cone_cache(cone_cache, 2);
+    }
+}
+
 void data_association(vector<tuple<Point2, double, int>> &old_cones,
                 vector<tuple<Point2, double, Point2>> &new_cones,
                 Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
@@ -95,10 +143,12 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
     
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
                     m_dist_th, slam_est, slam_mcov, logger);
-
-    get_old_new_cones(old_cones, new_cones,
+    vector<> candidate_new_cones;
+    get_old_new_cones(old_cones, new_cones, //replace for candidat new cones
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
+
+    
 }
 
 
