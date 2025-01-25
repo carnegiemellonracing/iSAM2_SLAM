@@ -33,7 +33,7 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
  * 
  */
 void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
-            vector<tuple<Point2, double, Point2>> &new_cones,
+            vector<tuple<Point2, double, Point2>> &candidate_new_cones,
             MatrixXd &global_cone_x,MatrixXd &global_cone_y,MatrixXd &bearing,
             vector<Point2> &cone_obs, vector<double> &m_dist, int n_landmarks,
             optional<rclcpp::Logger> &logger) {
@@ -48,7 +48,7 @@ void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
         int min_id = distance(m_dist.begin() + lo, min_dist);
         if (min_id == n_landmarks) {
             Point2 global_cone_pos = Point2(global_cone_x(i,0), global_cone_y(i,0));
-            new_cones.emplace_back(cone_obs.at(i),
+            candidate_new_cones.emplace_back(cone_obs.at(i),
                                     bearing(i, 0),
                                     global_cone_pos);
         } else {
@@ -71,24 +71,30 @@ void remove_stale_cones_from_cone_cache(vector<ConeCacheType> &cone_cache, int t
     }
 }
 
-void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>>  new_cones, 
-                                vector<tuple<Point2, double, Point2>> &candidate_new_cones, 
+/*
+@brief given candidate new cones, store a cache to find new cones 
+*/
+void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_new_cones, 
+                                vector<tuple<Point2, double, Point2>>  &new_cones, 
                                 vector<ConeCacheType> &cone_cache,
                                 noiseModel::Diagonal::shared_ptr &landmark_model) {
 
-    for (size_t i = new_cones.size()-1; i >= 0; --i) {  //iterate backwards to not get any iterator issues
-        Point2 cone_global_position = std::get<2>(new_cones[i]);
+    for (size_t i = candidate_new_cones.size()-1; i >= 0; --i) {  //iterate backwards through candidate cones to not get any iterator issues
+        Point2 cone_global_position = std::get<2>(candidate_new_cones[i]);
 
-        double min_dist = std::numeric_limits<double>::max();
-        int mind_dist_cone_index = 0;
+        double min_dist = std::numeric_limits<double>::max(); //max double for comparison
+        int min_dist_cone_index = 0;
         tuple<Point2, double, Point2> min_dist_cone;      
 
+        //search cone cache for a cone that may be our cone i
         for (size_t j = 0; j < cone_cache.size(); ++j) {
+            //calculate mahalanobis distance...
             MatrixXd diff(1,2);
             diff << cone_cache.at(j).cone.x() - cone_global_position.x(), 
                     cone_cache.at(j).cone.x() - cone_global_position.x();
             double dist = diff * landmark_model * diff.tranpose();
 
+            //find least mahalanobis distance
             if (dist < min_dist) { //update new minimum distance and corresponding cone
                 min_dist_cone = cone_cache.at(j).cone;
                 min_dist = dist;
@@ -96,24 +102,26 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>>  new_cones,
             }
         }
 
-        //if threshold is greater than mahalanobis distance, it is clearly an existing cone  in cone_cache that needs to be erased from cache
+        //if threshold is less than mahalanobis distance, it is a prexisting cone 
         if (min_dist < M_DIST_TH)  { 
-            cone_cache.erase(cone_cache.begin() + j);
-            cone_cache_new_cones.push_back(min_dist_cone);
+            cone_cache.erase(cone_cache.begin() + min_dist_cone_index); //1. remove preexisting cone from cache
+            new_cones.push_back(min_dist_cone); //2. since this has been seen, we can add it to our "new cones"
         }
+        //if not, then we add a new cone to cone cache
         else {
-            cone_cache.push_back(new_cones.at(i));
+            cone_cache.push_back(candidate_new_cones.at(i));
         }
-
+        //remove stale cones
         remove_stale_cones_from_cone_cache(cone_cache, 2);
     }
 }
 
 void data_association(vector<tuple<Point2, double, int>> &old_cones,
+                vector<tuple<Point2, double, int>> &candidate_new_cones,
                 vector<tuple<Point2, double, Point2>> &new_cones,
                 Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
                 vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
-                vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov) {
+                vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov, noiseModel::Diagonal::shared_ptr &landmark_model) {
 
     vector<double> m_dist = {};
     int n_landmarks = slam_est.size();
@@ -143,11 +151,12 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
     
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
                     m_dist_th, slam_est, slam_mcov, logger);
-    vector<> candidate_new_cones;
-    get_old_new_cones(old_cones, new_cones, //replace for candidat new cones
+
+    get_old_new_cones(old_cones, candidate_new_cones, //replace for candidate new cones
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
 
+    get_cone_cache_new_cones(candidate_new_cones, new_cones, cone_cache, landmark_model);
     
 }
 

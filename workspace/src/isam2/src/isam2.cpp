@@ -341,15 +341,15 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             RCLCPP_INFO(logger.value(), "est_retrieval time: %ld", dur_est_retrieval.count());
         }
 
-
         /**** Data association ***/
         std::vector<tuple<Point2, double, int>> old_cones = {};
         std::vector<tuple<Point2, double, Point2>> new_cones = {};
+        std::vector<tuple<Point2, double, Point2>> candidate_new_cones = {};
 
 
         auto start_DA = high_resolution_clock::now();
-        data_association(old_cones, new_cones, cur_pose, prev_pose, is_turning,
-                            cone_obs, logger, slam_est, slam_mcov);
+        data_association(old_cones, candidate_new_cones, new_cones, cur_pose, prev_pose, is_turning,
+                            cone_obs, logger, slam_est, slam_mcov, landmark_model);
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         if(logger.has_value()) {
