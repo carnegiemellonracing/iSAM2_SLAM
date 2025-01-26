@@ -323,6 +323,14 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         }
     }
 
+    if (!loop_closure) {
+        //call get_new_old_cones to update new cones and old cones
+        get_old_new_cones(old_cones, new_cones,
+                        global_cone_x, global_cone_y,bearing,
+                        cone_obs, m_dist, n_landmarks, logger);
+        RCLCPP_INFO(identify_chunk(), "Chunk you are in");
+    }
+
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     if (!loop_closure) {
         auto start_est_retrieval = high_resolution_clock::now();
@@ -408,9 +416,8 @@ void slamISAM::print_estimates() {
     estimate.print("Estimate:");
 }
 
-void identify_chunk(vector<tuple<Point2, double, int>> &old_cones,
+void identify_chunk(vector<tuple<Point2, double, vector<Point2> &cone_obs,
             vector<tuple<Point2, double, Point2>> &new_cones) {
-    //call get_new_old_cones to update new cones and old cones
     //add new cones to lookup table
     //define int variable chunkid_sum
     //for each element in observed_cones
