@@ -90,12 +90,13 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
         for (size_t j = 0; j < cone_cache.size(); ++j) {
             //calculate mahalanobis distance...
             MatrixXd diff(1,2);
-            diff << cone_cache.at(j).cone.x() - cone_global_position.x(), 
-                    cone_cache.at(j).cone.x() - cone_global_position.x();
-            double dist = diff * landmark_model * diff.tranpose();
+            diff << std::get<2>(cone_cache.at(j).cone).x() - cone_global_position.x(), 
+                    std::get<2>(cone_cache.at(j).cone).x() - cone_global_position.x();
+            double dist = diff * landmark_model * diff.transpose();
 
             //find least mahalanobis distance
             if (dist < min_dist) { //update new minimum distance and corresponding cone
+                // cout <<  cone_cache.at(j).cone;
                 min_dist_cone = cone_cache.at(j).cone;
                 min_dist = dist;
                 min_dist_cone_index = j;
@@ -109,7 +110,7 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
         }
         //if not, then we add a new cone to cone cache
         else {
-            cone_cache.push_back(candidate_new_cones.at(i));
+            cone_cache.push_back(ConeCacheType(candidate_new_cones.at(i)));
         }
         //remove stale cones
         remove_stale_cones_from_cone_cache(cone_cache, 2);
@@ -117,11 +118,13 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
 }
 
 void data_association(vector<tuple<Point2, double, int>> &old_cones,
-                vector<tuple<Point2, double, int>> &candidate_new_cones,
-                vector<tuple<Point2, double, Point2>> &new_cones,
-                Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
-                vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
-                vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov, noiseModel::Diagonal::shared_ptr &landmark_model) {
+                      vector<tuple<Point2, double, Point2>> &candidate_new_cones,
+                      vector<tuple<Point2, double, Point2>> &new_cones,
+                      vector<ConeCacheType> &cone_cache,
+                      Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
+                      vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
+                      vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov, noiseModel::Diagonal::shared_ptr &landmark_model)
+{
 
     vector<double> m_dist = {};
     int n_landmarks = slam_est.size();
@@ -157,9 +160,4 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
                     cone_obs, m_dist, n_landmarks, logger);
 
     get_cone_cache_new_cones(candidate_new_cones, new_cones, cone_cache, landmark_model);
-    
 }
-
-
-
-

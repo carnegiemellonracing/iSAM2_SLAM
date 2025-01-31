@@ -35,15 +35,19 @@
 #include "ros_utils.hpp"
 #include "loop_closure.hpp"
 
+#include <cone_cache_type.h>
+
 const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 
-struct ConeCacheType {
-    Point2 cone; 
-    int ageTimeSteps; //how many time steps sitting in cone cache
-    // int t; //number of times seen of cone
-    ConeCacheType(Point2 cone, int ageTimeSteps): cone(cone), ageTimeSteps(ageTimeSteps) {};
-    ConeCacheType(Point2 cone): cone(cone), ageTimeSteps(0) {};
-};
+// struct ConeCacheType {
+//     //Point2 is car-relative position of the cone double is the bearing from the car, and Point2 is the global position
+//     // Point2 cone; 
+//     tuple<Point2, double, Point2> cone;
+//     int ageTimeSteps; //how many time steps sitting in cone cache
+//     // int t; //number of times seen of cone
+//     ConeCacheType(tuple<Point2, double, Point2> cone, int ageTimeSteps): cone(cone), ageTimeSteps(ageTimeSteps) {};
+//     ConeCacheType(tuple<Point2, double, Point2> cone): cone(cone), ageTimeSteps(0) {};
+// };
 
 class slamISAM {
 
