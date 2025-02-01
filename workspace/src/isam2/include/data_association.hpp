@@ -34,4 +34,5 @@ void data_association(std::vector<tuple<Point2, double, int>> &old_cones,
                       vector<ConeCacheType> &cone_cache,
                       Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
                       std::vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
-                      std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov);
+                      std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov,
+                      noiseModel::Diagonal::shared_ptr &landmark_model);

@@ -91,8 +91,13 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
             //calculate mahalanobis distance...
             MatrixXd diff(1,2);
             diff << std::get<2>(cone_cache.at(j).cone).x() - cone_global_position.x(), 
-                    std::get<2>(cone_cache.at(j).cone).x() - cone_global_position.x();
-            double dist = diff * landmark_model * diff.transpose();
+                    std::get<2>(cone_cache.at(j).cone).y() - cone_global_position.y();
+
+            Eigen::Matrix2d landmark_model_matrix; // 2x2 fixed-size matrix
+            landmark_model_matrix << 0.00045, 0,
+                    0, 0.03;
+
+            double dist = (diff * landmark_model_matrix * diff.transpose())(0,0);
 
             //find least mahalanobis distance
             if (dist < min_dist) { //update new minimum distance and corresponding cone
