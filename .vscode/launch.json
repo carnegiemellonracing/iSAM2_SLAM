@@ -1,13 +1,21 @@
-{    
-    "version": "0.2.0",
-        "configurations": [
-            {
-                "name": "C++ Debugger",
-                "request": "launch",
-                "type": "cppdbg",
-                "miDebuggerServerAddress": "localhost:3000",
-                "cwd": "/",
-                "program": "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test"
-            }
-        ]
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C++ Debugger",
+      "request": "launch",
+      "type": "cppdbg",
+      "miDebuggerServerAddress": "localhost:3000",
+      "cwd": "/",
+      "program": "/home/andrewwhong/classes/16833/iSAM2_SLAM/workspace/install/isam2/lib/isam2/isam_test"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/danielabellido/Documents/iSAM2_SLAM/workspace/src/isam2",
+      "program": "/Users/danielabellido/Documents/iSAM2_SLAM/workspace/src/isam2/build/Debug/outDebug"
     }
+  ]
+}

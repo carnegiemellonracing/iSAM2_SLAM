@@ -4,8 +4,6 @@ using namespace gtsam;
 using namespace std::chrono;
 using std::size_t;
 
-vector<int> lookup_table;
-
 slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
     // Initializing SLAM Parameters
@@ -255,6 +253,7 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
  * @brief step takes in info about the observed cones and the odometry info
  *        and performs an update step to our iSAM2 model. 
  */
+// TODO: change void to option type
 void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
             std::vector<Point2> &orange_ref_cones, Pose2 velocity,
@@ -323,12 +322,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         }
     }
 
-    if (!loop_closure) {
-        //call get_new_old_cones to update new cones and old cones
-        get_old_new_cones(old_cones, new_cones,
-                        global_cone_x, global_cone_y,bearing,
-                        cone_obs, m_dist, n_landmarks, logger);
-        RCLCPP_INFO(identify_chunk(), "Chunk you are in");
+    if (loop_closure) {
+        identify_chunk(some parameters in here)
     }
 
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
@@ -416,11 +411,54 @@ void slamISAM::print_estimates() {
     estimate.print("Estimate:");
 }
 
-void identify_chunk(vector<tuple<Point2, double, vector<Point2> &cone_obs,
+void slamISAM::identify_chunk(vector<tuple<Point2, double, vector<Point2> &cone_obs,
             vector<tuple<Point2, double, Point2>> &new_cones) {
     //add new cones to lookup table
+    //  Assume that chunks has the cones associated with each track bound
+    // TODO: Tell chunking to store this information in the chunk struct
+
     //define int variable chunkid_sum
     //for each element in observed_cones
     //chunkid_sum+=lookuptable[element.cone_id]
     //return the average of chunkid (chunkid_sum/observed_cones.length)
+    //call get_new_old_cones to update new cones and old cones
+
+    // 1.) Identify the cone IDs
+    //- because we have a lookup table 
+    //- New cones will be empty; old_cones will contain vector of tuples, cone position + ID
+    //old_cones is a vector of tuples
+    // what's the type of each tuple
+
+    // TODO: build this data structure
+    unordered_map<int, int> coneID_to_chunkID = {}
+
+    unordered_map<int, int> chunkID_to_vote = {}
+    // Get the ID of the old_cones
+    get_old_new_cones(old_cones, new_cones,
+                    global_cone_x, global_cone_y,bearing,
+                    cone_obs, m_dist, n_landmarks, logger);
+
+    // Start tallying/voting
+    for (size_t i = 0; i < old_cones.size();i++){
+        int cone_id = get<2>(old_cones.at(i));
+        int chunk_id = coneID_to_chunkID[cone_id];
+
+        //Check if the chunkID is already in the voting map
+        if (chunkID_to_vote.find(chunk_id)!=chunkID_to_vote.end()){
+            chunkID_to_vote[chunk_id]++;
+        } else{
+            chunkID_to_vote[chunk_id]=0;
+        }
+
+    }
+    //find max vote
+    for (size_t i=0; i<chunkID_to_vote.size();i++){
+        int id = (chunkID_to_vote.begin()+i)->first;
+        int vote = (chunkID_to_vote.begin()+i)->second;
+        
+    }
+    
+
+    RCLCPP_INFO(identify_chunk(), "Chunk you are in");
+
 }

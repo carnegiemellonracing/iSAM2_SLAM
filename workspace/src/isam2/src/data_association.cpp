@@ -25,8 +25,10 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
 }
 
 /* @brief Determines which of the observed cones are new or old 
- * @param old_cones a vector of tuples. Point2 is car-relative position of the cone
- *          double is the bearing from the car, and int is the ID assoc. with cone
+ * @param old_cones a vector of tuples. 
+ *      Point2 is car-relative position of the cone
+ *      double is the bearing from the car
+ *      int is the ID assoc. with cone
  * 
  * @param new_cones a vector of tuples. Point2 is car-relative position of the cone
  *          double is the bearing from the car, and Point2 is the global position.

@@ -10,7 +10,8 @@
 #ifndef RACELINE
 #define RACELINE
 
-const int prefered_degree = 3,overlap = 0;
+// TODO make separate file for poly things here and in frenet
+
 struct polynomial
 {
     int deg;
@@ -30,6 +31,8 @@ polynomial poly_mult(polynomial a,polynomial b);
 
 double poly_eval(polynomial a,double x);
 
+double get_curvature(polynomial poly_der_1, polynomial poly_der_2, double min_x);
+
 class Spline
 {
 public:
@@ -39,12 +42,13 @@ public:
     polynomial spl_poly;
     polynomial first_der;
     polynomial second_der;
+    polynomial third_der; // TODO add third der constructor
     
     Eigen::MatrixXd points;
-    Eigen::MatrixXd rotated_points;
+    // Eigen::MatrixXd rotated_points;
 
-    Eigen::Matrix2d Q;
-    Eigen::VectorXd translation_vector;
+    // Eigen::Matrix2d Q;
+    // Eigen::VectorXd translation_vector;
     double length;
 
 
@@ -63,14 +67,11 @@ public:
     Eigen::MatrixXd get_points();
     void set_points(Eigen::MatrixXd newpoints);
 
-    Eigen::MatrixXd get_rotated_points();
-    void set_rotated_points(Eigen::MatrixXd newpoints);
+    // Eigen::MatrixXd get_rotated_points();
+    // void set_rotated_points(Eigen::MatrixXd newpoints);
 
-    Eigen::Matrix2d get_Q();
-    void set_Q(Eigen::Matrix2d new_Q);
-
-    Eigen::VectorXd get_translation();
-    void set_translation(Eigen::VectorXd new_trans);
+    // Eigen::VectorXd get_translation();
+    // void set_translation(Eigen::VectorXd new_trans);
 
     int get_path_id();
     void set_path_id(int new_id);
@@ -88,36 +89,38 @@ public:
     bool operator==(Spline const & other) const;
     bool operator<(Spline const & other) const;
 
-    std::tuple<Eigen::VectorXd  ,double, Eigen::VectorXd  ,double> along(double progress, double point_index=0, int precision=20);
     double getderiv(double x);
 
     // std::pair<double, double> along(double progress) const;
 
     Spline(polynomial interpolation_poly);
-    Spline(polynomial interpolation_poly, polynomial first, polynomial second, int path, int sort_ind);
+    Spline(polynomial interpolation_poly, polynomial first, polynomial second, polynomial third, int path, int sort_ind);
     // Spline(polynomial interpolation_poly,Eigen::MatrixXd points_mat,Eigen::MatrixXd rotated,Eigen::Matrix2d Q_mat, Eigen::VectorXd translation,polynomial first, polynomial second, int path, int sort_ind);
-    Spline(polynomial interpolation_poly, Eigen::MatrixXd points_mat,Eigen::MatrixXd rotated,Eigen::Matrix2d Q_mat, Eigen::VectorXd translation,polynomial first, polynomial second, int path, int sort_ind, bool calcLength = false);
+    Spline(polynomial interpolation_poly, Eigen::MatrixXd points_mat,polynomial first, polynomial second, polynomial third, int path, int sort_ind, bool calcLength = false);
 
     Spline();
     ~Spline();
 };
 
+class ParameterizedSpline
+{
+public:
+    Spline spline_x;
+    Spline spline_y;
 
+    ParameterizedSpline(Spline spline_x, Spline spline_y);
 
-
-Eigen::Matrix2d rotation_matrix_gen(rclcpp::Logger logger,Eigen::MatrixXd& pnts);
-Eigen::VectorXd get_translation_vector(Eigen::MatrixXd& group);
-
-Eigen::MatrixXd transform_points(rclcpp::Logger logger,Eigen::MatrixXd& points, Eigen::Matrix2d& Q, Eigen::VectorXd& get_translation_vector);
-
-Eigen::MatrixXd reverse_transform(Eigen::MatrixXd& points, Eigen::Matrix2d& Q, Eigen::VectorXd& get_translation_vector);
-
-polynomial lagrange_gen(Eigen::MatrixXd& points);
+    double get_first_der(double t);
+    double get_second_der(double t);
+    double get_third_der(double t);
+};
 
 double arclength_f(double, void* params);
 
-double arclength(polynomial poly, double x0,double x1);
+double arclength(std::pair<polynomial, polynomial> poly_der, double x0,double x1);
 
-std::pair<std::vector<Spline>,std::vector<double>> raceline_gen(rclcpp::Logger logger, Eigen::MatrixXd& res,int path_id =std::rand(), int points_per_spline = prefered_degree+1,bool loop = true);
+std::pair<std::vector<ParameterizedSpline>,std::vector<double>> parameterized_spline_gen(rclcpp::Logger logger, Eigen::MatrixXd& res,int path_id, int points_per_spline,bool loop);
+
+std::pair<std::vector<ParameterizedSpline>,std::vector<double>> make_splines_vector(std::vector<std::pair<double,double>> points);
 
 #endif
