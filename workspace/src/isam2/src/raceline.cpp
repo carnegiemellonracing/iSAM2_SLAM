@@ -218,7 +218,7 @@ double arclength(std::pair<polynomial, polynomial> poly_der, double x0,double x1
 
 }
 
-std::pair<std::vector<ParameterizedSpline>,std::vector<double>> parameterized_spline_gen(rclcpp::Logger logger, Eigen::MatrixXd& res,int path_id, int points_per_spline,bool loop){    
+std::pair<std::vector<ParameterizedSpline>,std::vector<double>> parameterized_spline_gen(rclcpp::Logger logger, Eigen::MatrixXd& res, std::vector<int> &cone_ids, int path_id, int points_per_spline,bool loop){    
     int n = res.cols();
 
     std::vector<ParameterizedSpline> splines;
@@ -231,11 +231,17 @@ std::pair<std::vector<ParameterizedSpline>,std::vector<double>> parameterized_sp
     for(int i=0; i < res.cols()-3; i++){
         // Eigen::MatrixXd group(res,0,group_numbers*shift,2,3);
         Eigen::MatrixXd group(2, 4);
+        std::vector<int> group_cone_ids = {};
+        for(int j =0; j<4;j++){
+            int curr_cone_id = cone_ids[(i+j)%cone_ids.size()];
+            group_cone_ids.push_back(curr_cone_id);
+        }
 
         for(int k = 0; k < group.cols(); k++) {
             for (int j = 0; j < group.rows(); j++) {
                 group(j, k) = res(j, i + k); 
             }
+            
         }
 
         // not rotating here because doing parametrized spline
@@ -252,8 +258,8 @@ std::pair<std::vector<ParameterizedSpline>,std::vector<double>> parameterized_sp
         lengths.emplace_back(0);
 
         // TODO delete spline rotated points and translation vector
-        Spline spline_x = Spline(interpolation_poly_x,first_der_x,second_der_x,third_der_x,path_id,i);
-        Spline spline_y = Spline(interpolation_poly_y,first_der_y,second_der_y,third_der_y,path_id,i);
+        Spline spline_x = Spline(interpolation_poly_x,first_der_x,second_der_x,third_der_x,path_id,i, group_cone_ids);
+        Spline spline_y = Spline(interpolation_poly_y,first_der_y,second_der_y,third_der_y,path_id,i, group_cone_ids);
         splines.emplace_back(ParameterizedSpline(spline_x, spline_y));
 
         // lengths.push_back(spline.calculateLength());
@@ -277,24 +283,27 @@ std::pair<std::vector<ParameterizedSpline>,std::vector<double>> parameterized_sp
  * @param points The points to make splines from.
  * @return Vector of splines, vector of their cumulative lengths. 
  */
-std::pair<std::vector<ParameterizedSpline>,std::vector<double>> make_splines_vector(std::vector<std::pair<double,double>> points) {
+std::pair<std::vector<ParameterizedSpline>,std::vector<double>> make_splines_vector(std::vector<Cone> points) {
     Eigen::MatrixXd pointMatrix(2, points.size() + 3);
     // Eigen::MatrixXd pointMatrix(2, points.size());
+    std::vector<int> cone_ids = {};
     for(int i = 0; i < points.size(); i++){
         assert((i + 1) < pointMatrix.cols());
-        pointMatrix(0, i + 1) = points[i].first;
-        pointMatrix(1, i + 1) = points[i].second;
+        Cone curr_cone = points[i];
+        pointMatrix(0, i + 1) = curr_cone.x;
+        pointMatrix(1, i + 1) = curr_cone.y;
+        cone_ids.push_back(curr_cone.id);
     }
     // add first point at end, add last point at beginning
     // uncomment with cycle tests
-    pointMatrix(0, 0) = points[points.size()-1].first;
-    pointMatrix(1, 0) = points[points.size()-1].second;
-    pointMatrix(0, points.size() + 1) = points[0].first;
-    pointMatrix(1, points.size() + 1) = points[0].second;
-    pointMatrix(0, points.size() + 2) = points[1].first;
-    pointMatrix(1, points.size() + 2) = points[1].second;
+    pointMatrix(0, 0) = points[points.size()-1].x;
+    pointMatrix(1, 0) = points[points.size()-1].y;
+    pointMatrix(0, points.size() + 1) = points[0].x;
+    pointMatrix(1, points.size() + 1) = points[0].y;
+    pointMatrix(0, points.size() + 2) = points[1].x;
+    pointMatrix(1, points.size() + 2) = points[1].y;
 
     auto dummy_logger = rclcpp::get_logger("du");
-    std::pair<std::vector<ParameterizedSpline>,std::vector<double>> res = parameterized_spline_gen(dummy_logger, pointMatrix, std::rand(), 4, false);
+    std::pair<std::vector<ParameterizedSpline>,std::vector<double>> res = parameterized_spline_gen(dummy_logger, pointMatrix, cone_ids, std::rand(), 4, false);
     return res;
 }

@@ -39,6 +39,8 @@ public:
     int path_id;
     int sort_index;
 
+    std::vector<int> cone_ids;
+
     polynomial spl_poly;
     polynomial first_der;
     polynomial second_der;
@@ -94,7 +96,7 @@ public:
     // std::pair<double, double> along(double progress) const;
 
     Spline(polynomial interpolation_poly);
-    Spline(polynomial interpolation_poly, polynomial first, polynomial second, polynomial third, int path, int sort_ind);
+    Spline(polynomial interpolation_poly, polynomial first, polynomial second, polynomial third, int path, int sort_ind, std::vector<int> cone_ids);
     // Spline(polynomial interpolation_poly,Eigen::MatrixXd points_mat,Eigen::MatrixXd rotated,Eigen::Matrix2d Q_mat, Eigen::VectorXd translation,polynomial first, polynomial second, int path, int sort_ind);
     Spline(polynomial interpolation_poly, Eigen::MatrixXd points_mat,polynomial first, polynomial second, polynomial third, int path, int sort_ind, bool calcLength = false);
 

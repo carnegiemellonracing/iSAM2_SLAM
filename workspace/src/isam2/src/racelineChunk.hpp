@@ -1,5 +1,10 @@
 #include <vector>
 #include "raceline.hpp"
+struct Cone{
+    double x;
+    double y;
+    int id;
+}
 
 /**
  * Chunks represent segments of the track where all points have similar curvature. 
@@ -71,6 +76,6 @@ class Chunk
  * 
  * @return Vector of raceline chunks.
  */
-std::vector<Chunk*>* generateChunks(std::vector<std::pair<double,double>> blueCones,
-                                  std::vector<std::pair<double,double>> yellowCones);
+std::vector<Chunk*>* generateChunks(std::vector<Cone> blueCones,
+                                  std::vector<Cone> yellowCones);
     

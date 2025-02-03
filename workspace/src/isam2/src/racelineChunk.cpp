@@ -101,8 +101,8 @@ double tInterpolate(ParameterizedSpline spline, double targetArclength) {
  */
 
 //TODO: should be returning by reference not value
-std::vector<Chunk*>* generateChunks(std::vector<std::pair<double,double>> blueCones,
-                                  std::vector<std::pair<double,double>> yellowCones) {
+std::vector<Chunk*>* generateChunks(std::vector<Cone> blueCones,
+                                  std::vector<Cone> yellowCones) {
 
     // create chunk vector that stores chunks
     //TODO: use new keyword to create vector in heap not stack
