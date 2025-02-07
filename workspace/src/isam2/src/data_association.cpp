@@ -61,11 +61,12 @@ void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
     }
 }
 
-void remove_stale_cones_from_cone_cache(vector<ConeCacheType> &cone_cache, int timeStepsUntilRemoval) {
+void remove_stale_cones_from_cone_cache(vector<ConeCacheType> &cone_cache, int timeStepsUntilRemoval, optional<rclcpp::Logger> &logger) {
     //update age in cone cache, but remove cones that are too old
     for (int i=cone_cache.size()-1; i>=0; --i) {
-        cone_cache[i].ageTimeSteps++;
-        if (cone_cache[i].ageTimeSteps >= timeStepsUntilRemoval) {
+        cone_cache.at(i).ageTimeSteps++;
+        if (cone_cache.at(i).ageTimeSteps >= timeStepsUntilRemoval) {
+            if (logger.has_value()) RCLCPP_INFO(logger.value(), "removed stale cone cache index %d with age %d", i, cone_cache.at(i).ageTimeSteps);
             cone_cache.erase(cone_cache.begin()+i);
         }
     }
@@ -77,9 +78,9 @@ void remove_stale_cones_from_cone_cache(vector<ConeCacheType> &cone_cache, int t
 void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_new_cones, 
                                 vector<tuple<Point2, double, Point2>>  &new_cones, 
                                 vector<ConeCacheType> &cone_cache,
-                                noiseModel::Diagonal::shared_ptr &landmark_model) {
+                                noiseModel::Diagonal::shared_ptr &landmark_model, optional<rclcpp::Logger> &logger) {
 
-    for (size_t i = candidate_new_cones.size()-1; i >= 0; --i) {  //iterate backwards through candidate cones to not get any iterator issues
+    for (int i = candidate_new_cones.size()-1; i >= 0; --i) {  //iterate backwards through candidate cones to not get any iterator issues
         Point2 cone_global_position = std::get<2>(candidate_new_cones[i]);
 
         double min_dist = std::numeric_limits<double>::max(); //max double for comparison
@@ -87,21 +88,22 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
         tuple<Point2, double, Point2> min_dist_cone;      
 
         //search cone cache for a cone that may be our cone i
-        for (size_t j = 0; j < cone_cache.size(); ++j) {
+        for (int j = 0; j < cone_cache.size(); ++j) {
             //calculate mahalanobis distance...
             MatrixXd diff(1,2);
             diff << std::get<2>(cone_cache.at(j).cone).x() - cone_global_position.x(), 
                     std::get<2>(cone_cache.at(j).cone).y() - cone_global_position.y();
 
-            Eigen::Matrix2d landmark_model_matrix; // 2x2 fixed-size matrix
-            landmark_model_matrix << 0.00045, 0,
-                    0, 0.03;
+            // Eigen::Matrix2d landmark_model_matrix; // 2x2 fixed-size matrix
+            // landmark_model_matrix << 0.00045, 0,
+            //         0, 0.03;
 
-            double dist = (diff * landmark_model_matrix * diff.transpose())(0,0);
+            // double dist = (diff * landmark_model_matrix * diff.transpose())(0,0);
+            double dist = (diff * diff.transpose())(0,0);
+            dist = sqrt(dist);
 
             //find least mahalanobis distance
             if (dist < min_dist) { //update new minimum distance and corresponding cone
-                // cout <<  cone_cache.at(j).cone;
                 min_dist_cone = cone_cache.at(j).cone;
                 min_dist = dist;
                 min_dist_cone_index = j;
@@ -109,17 +111,25 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
         }
 
         //if threshold is less than mahalanobis distance, it is a prexisting cone 
-        if (min_dist < M_DIST_TH)  { 
+        if (min_dist < 3.0)  { 
+            if(logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "cone_cache_erase index: %d", min_dist_cone_index);
+                RCLCPP_INFO(logger.value(), "cone_cache_erase_size: %ld", cone_cache.size());
+            }
             cone_cache.erase(cone_cache.begin() + min_dist_cone_index); //1. remove preexisting cone from cache
-            new_cones.push_back(min_dist_cone); //2. since this has been seen, we can add it to our "new cones"
+            new_cones.push_back(candidate_new_cones.at(i)); //2. since this has been seen, we can add it to our "new cones"
         }
         //if not, then we add a new cone to cone cache
         else {
             cone_cache.push_back(ConeCacheType(candidate_new_cones.at(i)));
         }
         //remove stale cones
-        remove_stale_cones_from_cone_cache(cone_cache, 2);
+        if(logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "removing stale cones");
+        }
     }
+
+    // remove_stale_cones_from_cone_cache(cone_cache, 5, logger);
 }
 
 void data_association(vector<tuple<Point2, double, int>> &old_cones,
@@ -164,5 +174,7 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
 
-    get_cone_cache_new_cones(candidate_new_cones, new_cones, cone_cache, landmark_model);
+    get_cone_cache_new_cones(candidate_new_cones, new_cones, cone_cache, landmark_model, logger);
+
+    RCLCPP_INFO(logger.value(), "new cones size %ld", new_cones.size());
 }
