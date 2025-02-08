@@ -101,6 +101,63 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
                     cone_obs, m_dist, n_landmarks, logger);
 }
 
+typedef std::vector<std::pair<Point2, Point2>> association_set
 
 
+/**
+ * @brief This function will perform Joint Compatibility Branch and Bound
+ * 1.) Calculate all of the association lists and filter out the ones that 
+ * obey the individual association check (The associations where the 
+ * distance between the observed and old cone being associated < M_DIST_TH)
+ * 
+ * 2.) Calculate the Joint compatibility of the association set E_{k}. 
+ * 
+ * 3.) Find the association set with the highest compatibility
+ */
+void jcbb() {
+    std::vector<association_sets> all_association_sets = {};
+    /**
+     * Get the cones and their global positions so that we can do 
+     * data association using the global positions of the cones
+     */
+    vector<double> m_dist = {};
+    int n_landmarks = slam_est.size();
 
+    double m_dist_th = M_DIST_TH;
+    double cone_dist_th = MAX_CONE_RANGE;
+    if (is_turning) {
+        m_dist_th = TURNING_M_DIST_TH;
+        cone_dist_th = TURNING_MAX_CONE_RANGE;
+    }
+
+    remove_far_cones(cone_obs, cone_dist_th);
+
+    // Populating m_dist with mahalanobis distances
+    MatrixXd global_cone_x(cone_obs.size(), 1);
+    MatrixXd global_cone_y(cone_obs.size(), 1);
+    MatrixXd bearing(cone_obs.size(), 1);
+    MatrixXd range(cone_obs.size(), 1);
+
+    calc_cone_range_from_car(range, cone_obs);
+    calc_cone_bearing_from_car(bearing, cone_obs);
+
+    cone_to_global_frame(range, bearing,
+                         global_cone_x, global_cone_y,
+                         cone_obs, cur_pose);
+    
+    
+    populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
+                    m_dist_th, slam_est, slam_mcov, logger);    
+
+    /**
+     * Generate association sets
+     * 1.) Find the valid matches for a given observed cone (each match must
+     * satisfy the individual compatibility test)
+     * 
+     * 2.) Generate all possible sets from these matches
+     */
+    generate_association_sets(all_association_sets);
+
+    /* Calculate compatibility for each association set*/
+    compute_joint_compatibilities(all_association_sets);
+}

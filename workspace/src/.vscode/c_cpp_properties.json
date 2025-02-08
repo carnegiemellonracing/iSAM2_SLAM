@@ -6,9 +6,10 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/include/**",
-        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/eufs_msgs/include/**",
-        "/opt/ros/foxy/include/**",
+        "/home/daniel/cmr/iSAM2_SLAM/workspace/install/interfaces/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/daniel/cmr/iSAM2_SLAM/workspace/src/isam2/include/**",
+        "/home/daniel/cmr/iSAM2_SLAM/workspace/src/test_ws/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",

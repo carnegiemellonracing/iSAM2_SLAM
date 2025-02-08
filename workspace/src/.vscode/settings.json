@@ -1,16 +1,14 @@
 {
     "python.autoComplete.extraPaths": [
-        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/lib/python3.8/site-packages",
-        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages",
-        "/opt/ros/foxy/lib/python3.8/site-packages",
-        "/home/danielnguyen/cmr/driverless",
-        "/home/danielnguyen/cmr/PerceptionsLibrary22a"
+        "/home/daniel/cmr/iSAM2_SLAM/workspace/install/interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages",
+        "/home/daniel/cmr/PerceptionsLibrary22a"
     ],
     "python.analysis.extraPaths": [
-        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/lib/python3.8/site-packages",
-        "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/eufs_msgs/lib/python3.8/site-packages",
-        "/opt/ros/foxy/lib/python3.8/site-packages",
-        "/home/danielnguyen/cmr/driverless",
-        "/home/danielnguyen/cmr/PerceptionsLibrary22a"
+        "/home/daniel/cmr/iSAM2_SLAM/workspace/install/interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages",
+        "/home/daniel/cmr/PerceptionsLibrary22a"
     ]
 }
