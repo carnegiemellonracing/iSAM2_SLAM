@@ -6,11 +6,28 @@
 #include <tuple>
 #include <cmath>
 #include <rclcpp/rclcpp.hpp>
+#include <chrono>
 
 #ifndef RACELINE
 #define RACELINE
 
 // TODO make separate file for poly things here and in frenet
+
+struct Cone 
+{
+    double x;
+    double y;
+    int id;
+
+    Cone (double x, double y, int id) 
+        : x(x)
+        , y(y)
+        , id(id)
+        {}
+    
+};
+
+
 
 struct polynomial
 {
@@ -38,8 +55,6 @@ class Spline
 public:
     int path_id;
     int sort_index;
-
-    std::vector<int> cone_ids;
 
     polynomial spl_poly;
     polynomial first_der;
@@ -96,7 +111,7 @@ public:
     // std::pair<double, double> along(double progress) const;
 
     Spline(polynomial interpolation_poly);
-    Spline(polynomial interpolation_poly, polynomial first, polynomial second, polynomial third, int path, int sort_ind, std::vector<int> cone_ids);
+    Spline(polynomial interpolation_poly, polynomial first, polynomial second, polynomial third, int path, int sort_ind);
     // Spline(polynomial interpolation_poly,Eigen::MatrixXd points_mat,Eigen::MatrixXd rotated,Eigen::Matrix2d Q_mat, Eigen::VectorXd translation,polynomial first, polynomial second, int path, int sort_ind);
     Spline(polynomial interpolation_poly, Eigen::MatrixXd points_mat,polynomial first, polynomial second, polynomial third, int path, int sort_ind, bool calcLength = false);
 
@@ -109,6 +124,8 @@ class ParameterizedSpline
 public:
     Spline spline_x;
     Spline spline_y;
+
+    int start_cone_id;
 
     ParameterizedSpline(Spline spline_x, Spline spline_y);
 
@@ -123,6 +140,6 @@ double arclength(std::pair<polynomial, polynomial> poly_der, double x0,double x1
 
 std::pair<std::vector<ParameterizedSpline>,std::vector<double>> parameterized_spline_gen(rclcpp::Logger logger, Eigen::MatrixXd& res,int path_id, int points_per_spline,bool loop);
 
-std::pair<std::vector<ParameterizedSpline>,std::vector<double>> make_splines_vector(std::vector<std::pair<double,double>> points);
+std::pair<std::vector<ParameterizedSpline>,std::vector<double>> make_splines_vector(std::vector<std::tuple<double,double,int>> points);
 
 #endif

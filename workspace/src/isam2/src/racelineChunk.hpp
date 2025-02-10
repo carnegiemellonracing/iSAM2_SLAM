@@ -1,10 +1,6 @@
 #include <vector>
 #include "raceline.hpp"
-struct Cone{
-    double x;
-    double y;
-    int id;
-}
+#define CHUNK_FILENAME "src/planning/src/planning_codebase/raceline"
 
 /**
  * Chunks represent segments of the track where all points have similar curvature. 
@@ -15,6 +11,12 @@ class Chunk
         // t start and end are only representative of yellow splines, 
         double tStart; // t start of the first spline in yellowSplines
         double tEnd; // t end for the last spline in yellowSplines
+
+        std::vector<int> blueConeIds;
+        std::vector<int> yellowConeIds;
+
+        double minThirdDer;
+        double maxThirdDer;
 
         double blueArclengthStart;
         double blueArclengthEnd;
@@ -49,6 +51,12 @@ class Chunk
         double yellowEndY;
         double yellowFirstDerMidX;
         double yellowFirstDerMidY;
+
+        double blueFirstSplineArclength;
+        double blueLastSplineArclength;
+        double yellowFirstSplineArclength;
+        double yellowLastSplineArclength;
+
         
 
         std::vector<ParameterizedSpline> blueSplines;
@@ -77,5 +85,5 @@ class Chunk
  * @return Vector of raceline chunks.
  */
 std::vector<Chunk*>* generateChunks(std::vector<Cone> blueCones,
-                                  std::vector<Cone> yellowCones);
+                                    std::vector<Cone> yellowCones);
     
