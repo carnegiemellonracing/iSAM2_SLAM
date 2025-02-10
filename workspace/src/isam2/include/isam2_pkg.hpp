@@ -37,6 +37,28 @@
 
 const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 
+struct New_cone_info {
+    Point2 local_cone_pos;
+    double bearing;
+    Point2 global_cone_pos;
+    New_cone_info (Point2 local_cone_pos, double bearing, Point2 global_cone_pos)
+        : local_cone_pos(local_cone_pos)
+        , bearing(bearing)
+        , global_cone_pos(global_cone_pos)
+    {}
+};
+
+struct Old_cone_info {
+    Point2 local_cone_pos;
+    double bearing;
+    int min_id; // The id of the old cone observed cone was associated with
+    Old_cone_info (Point2 local_cone_pos, double bearing, int min_id)
+        : local_cone_pos(local_cone_pos)
+        , bearing(bearing)
+        , min_id(min_id)
+    {}
+}
+
 class slamISAM {
 
 private:
@@ -72,6 +94,9 @@ private:
 
     std::vector<Pose2> blue_cone_est;
     std::vector<Pose2> yellow_cone_est;
+    
+    std::vector<int> blue_cone_ids;
+    std::vector<int> yellow_cone_ids;
 
     Pose2 global_odom;
 
@@ -82,6 +107,7 @@ private:
     std::size_t lap_count;
 
     Pose2 first_pose;
+    bool completed_chunking;
 
 
 
@@ -124,4 +150,5 @@ public:
                 double dt);
 
     void print_estimates();
+
 };

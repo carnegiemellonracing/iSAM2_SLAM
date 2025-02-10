@@ -19,14 +19,14 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
                     std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov,
                     rclcpp::Logger &logger);
 
-void get_old_new_cones(std::vector<tuple<Point2, double, int>> &old_cones,
-            std::vector<tuple<Point2, double, Point2>> &new_cones,
+void get_old_new_cones(std::vector<Old_cone_info> &old_cones,
+            std::vector<New_cone_info> &new_cones,
             MatrixXd &global_cone_x,MatrixXd &global_cone_y,MatrixXd &bearing,
             std::vector<Point2> &cone_obs, std::vector<double> &m_dist, int n_landmarks,
             rclcpp::Logger &logger);
 
-void data_association(std::vector<tuple<Point2, double, int>> &old_cones,
-                std::vector<tuple<Point2, double, Point2>> &new_cones,
+void data_association(std::vector<Old_cone_info> &old_cones,
+                std::vector<New_cone_info> &new_cones,
                 Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
                 std::vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
                 std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov);

@@ -99,6 +99,8 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     loop_closure = false;
     new_lap = false;
     lap_count = 0;
+
+    completed_chunking = false;
 }
 
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
@@ -326,9 +328,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         }
     }
 
-    if (loop_closure) {
-        identify_chunk(some parameters in here)
-    }
+    
 
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     if (!loop_closure) {
@@ -373,12 +373,31 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         }
 
         auto start_update_landmarks = high_resolution_clock::now();
-        update_landmarks(old_cones, new_cones, cur_pose);
+        update_landmarks(blue_old_cones, blue_new_cones, blue_cone_ids, cur_pose);
+        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_cone_ids, cur_pose);
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
         if(logger.has_value()) {
             RCLCPP_INFO(logger.value(), "update_landmarks time: %ld", dur_update_landmarks.count());
         }
+    } else{
+        // populate yellow and blue cone arrays with cone locations
+        for (int i = 0; i < blue_cones_id.size(); i++){
+            int id = blue_cones_id.at(i);
+            Point2 curr_cone = isam2.calculateEstimate(L(id)).cast<Point2>();
+            blue_cones.emplace_back(curr_cone.x(),
+                                    curr_cone.y(),
+                                    id);
+        }
+        for (int i = 0; i < yellow_cones_id.size(); i++){
+            int id = yellow_cones_id.at(i);
+            Point2 curr_cone = isam2.calculateEstimate(L(id)).cast<Point2>();
+            yellow_cones.emplace_back(curr_cone.x(),
+                                    curr_cone.y(),
+                                    id);
+        }
+        std::vector<Chunks*> = *generateChunks(blue_cones, yellow_cones);
+        identify_chunk
     }
 
     pose_num++;
