@@ -75,10 +75,13 @@ private:
         return Symbol('x', robot_pose_id);
     }
 
-    gtsam::Symbol L(int cone_pose_id) {
-        return Symbol('l', cone_pose_id);
+    gtsam::Symbol BLUE_L(int cone_pose_id) {
+        return Symbol('bl', cone_pose_id);
     }
 
+    gtsam::Symbol YELLOW_L(int cone_pose_id) {
+        return Symbol('yl', cone_pose_id);
+    }
     /* Assoc_Args common arguments */
     std::vector<Point2> cone_obs_blue;
     std::vector<Point2> cone_obs_yellow;
@@ -115,9 +118,11 @@ private:
 public:
     high_resolution_clock::time_point start;
     high_resolution_clock::time_point end;
-    int n_landmarks;
     int blue_n_landmarks;
     int yellow_n_landmarks;
+    sttd::vector<int> blue_cone_to_chunk;
+    sttd::vector<int> yellow_cone_to_chunk;
+    sttd::vector<Chunk*> all_chunks;
 
     bool heuristic_run;
 

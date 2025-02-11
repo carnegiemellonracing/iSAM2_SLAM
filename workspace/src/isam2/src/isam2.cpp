@@ -4,12 +4,19 @@ using namespace gtsam;
 using namespace std::chrono;
 using std::size_t;
 
-slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
+slamISAM::slamISAM(optional<rclcpp::Logger> input_logger)
+{
 
     // Initializing SLAM Parameters
     blue_cone_ids = {};
     yellow_cone_ids = {};
-    parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
+
+    // Chunking
+    all_chunks = {};
+    blue_cone_to_chunk = {};
+    yellow_cone_to_chunk = {};
+
+    parameters = ISAM2Params(ISAM2DoglegParams(), 0.1, 10, true);
     parameters.setFactorization("QR");
     // parameters.enablePartialRelinearizationCheck = true;
     logger = input_logger;
@@ -21,7 +28,6 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     first_pose_added = false;
     n_landmarks = 0;
 
-
     /* Bearing and range error
      * Corresponds to the usage of the BearingRangeFactor we are using
      *
@@ -29,20 +35,20 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
      *         Supplemental_Modules_(Analytical_Chemistry)/Quantifying_Nature/
      *         Significant_Digits/Propagation_of_Error
      * Source: User manual for the AT128 Hesai LiDAR
-     * 
+     *
      * bearing error in radians
-     * Calculation for error per radian: 
-     * We use atan2(y, x) and we know that z = atan(u) has derivative 1/(1+u^2) 
+     * Calculation for error per radian:
+     * We use atan2(y, x) and we know that z = atan(u) has derivative 1/(1+u^2)
      * std.dev_{u} = sqrt(0.03^2 + 0.03^2) = 0.0424
      * std.dev_{z} = (1/(1+1^2))^2 * std.dev_{u}^2 = 1/4 * 0.0424^2 = 0.00045
-     * 
+     *
      * Source: User manual for the AT128 Hesai LiDAR
-     * range error in meters 
-     * 
+     * range error in meters
+     *
      */
     LandmarkNoiseModel = gtsam::Vector(2);
-    LandmarkNoiseModel(0) = 0.00045; 
-    LandmarkNoiseModel(1) = 0.03; 
+    LandmarkNoiseModel(0) = 0.00045;
+    LandmarkNoiseModel(1) = 0.03;
     landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
     // used to be all 0s for EUFS_SIM
@@ -65,20 +71,19 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
      */
     OdomNoiseModel = gtsam::Vector(3);
     OdomNoiseModel(0) = 0.22;
-    OdomNoiseModel(1) = 0.22; 
-    OdomNoiseModel(2) = degrees_to_radians(0.009); 
+    OdomNoiseModel(1) = 0.22;
+    OdomNoiseModel(2) = degrees_to_radians(0.009);
     odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
 
-
-    /* GPS noise model 
+    /* GPS noise model
      * Use the covariances from positionlla
      *
      * Covariance matrix diagonal elements represent variances
      * Variance = (std.dev)^2 meaning:
      * Variance = 0.2 => std.dev = sqrt(0.2) = 0.45
-     * 
+     *
      * However positionlla already accounts for the covariance
-     * 
+     *
      */
     UnaryNoiseModel = gtsam::Vector(2);
     UnaryNoiseModel(0) = 0.01;
@@ -95,7 +100,6 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     init_step_input_stream.open(STEP_INPUT_FILE, ofstream::out | ofstream::trunc);
     init_step_input_stream.close();
 
-
     loop_closure = false;
     new_lap = false;
     lap_count = 0;
@@ -104,7 +108,8 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 }
 
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
-            Pose2 &velocity,double dt, optional<rclcpp::Logger> logger) {
+                            Pose2 &velocity, double dt, optional<rclcpp::Logger> logger)
+{
     /* Adding poses to the SLAM factor graph */
     double offset_x = 0;
     double offset_y = 0;
@@ -112,16 +117,16 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
 
     if (pose_num == 0)
     {
-        if (logger.has_value()) {
+        if (logger.has_value())
+        {
             RCLCPP_INFO(logger.value(), "Processing first pose");
         }
 
         PriorFactor<Pose2> prior_factor = PriorFactor<Pose2>(X(0),
-                                                            global_odom, prior_model);
-        //add prior
-        //TODO: need to record the initial bearing because it could be erroneous
+                                                             global_odom, prior_model);
+        // add prior
+        // TODO: need to record the initial bearing because it could be erroneous
         graph.add(prior_factor);
-
 
         cur_pose = Pose2(-offset_x, -offset_y, global_odom.theta());
         first_pose = cur_pose;
@@ -129,45 +134,49 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
 
         first_pose_added = true;
 
-        //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
-        //Add orange cone left and right
-        //hopefully it's only 2 cones
-        if (logger.has_value()) {
+        // ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
+        // Add orange cone left and right
+        // hopefully it's only 2 cones
+        if (logger.has_value())
+        {
             RCLCPP_INFO(logger.value(), "Finished processing first pose");
         }
     }
     else
     {
-        //create a factor between current and previous robot pose
-        //add odometry estimates
-        //Motion model
+        // create a factor between current and previous robot pose
+        // add odometry estimates
+        // Motion model
         Pose2 new_pose = Pose2(0, 0, 0);
         Pose2 odometry = Pose2(0, 0, 0);
 
         prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<Pose2>();
 
-        //global_odom holds our GPS measurements
+        // global_odom holds our GPS measurements
         velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
 
-        // Do not continue updating if the car is not moving. Only update during the 0th pose. 
-        //TODO: consider when the car slows to a stop?
+        // Do not continue updating if the car is not moving. Only update during the 0th pose.
+        // TODO: consider when the car slows to a stop?
 
-        if (logger.has_value()) {
+        if (logger.has_value())
+        {
             RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
-            if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
+            if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH)
+            {
                 RCLCPP_INFO(logger.value(), "Car is moving");
-            } else {
+            }
+            else
+            {
                 RCLCPP_INFO(logger.value(), "Car stopped");
             }
 
             RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
-
         }
 
         BetweenFactor<Pose2> odom_factor = BetweenFactor<gtsam::Pose2>(X(pose_num - 1),
-                                                                        X(pose_num),
-                                                                        odometry,
-                                                                        odom_model);
+                                                                       X(pose_num),
+                                                                       odometry,
+                                                                       odom_model);
         cur_pose = gtsam::Pose2(new_pose.x(), new_pose.y(), new_pose.theta());
         graph.add(odom_factor);
 
@@ -184,8 +193,6 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
 
     // Pose2 est_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
     // RCLCPP_INFO(logger, "Diff: x: %.10f | y: %.10f", est_pose.x() - cur_pose.x(), est_pose.y() - cur_pose.y());
-
-
 }
 
 /* Cones represented by a tuple: the 1st element is the relative position
@@ -193,10 +200,10 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
  * 2nd Point2 for new_cones represents the global position
  */
 void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
-                        std::vector<New_cone_info> &new_cones,
-                        std::vector<int> &cone_ids,
-                        Pose2 &cur_pose) {
-
+                                std::vector<New_cone_info> &new_cones,
+                                std::vector<int> &cone_ids, int &n_landmarks,
+                                Pose2 &cur_pose)
+{
 
     /* Bearing range factor will need
      * Types for car pose to landmark node (Pose2, Point2)
@@ -208,22 +215,24 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
      * insert Point2 for the cones and their actual location
      *
      */
-    for (std::size_t o = 0; o < old_cones.size(); o++) {
+    for (std::size_t o = 0; o < old_cones.size(); o++)
+    {
         Point2 cone_pos_car_frame = old_cones.at(o).local_cone_pos;
         int min_id = (old_cones.at(o)).min_id;
         Rot2 b = Rot2::fromAngle((old_cones.at(o)).bearing);
         double r = norm2(cone_pos_car_frame);
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(min_id),
-                                        b,
-                                        r,
-                                        landmark_model));
+                                                    b,
+                                                    r,
+                                                    landmark_model));
     }
     isam2.update(graph, values);
     graph.resize(0);
     // values should be empty
 
-    for (std::size_t n = 0; n < new_cones.size(); n++) {
+    for (std::size_t n = 0; n < new_cones.size(); n++)
+    {
         Point2 cone_pos_car_frame = (new_cones.at(n).local_cone_pos);
         Rot2 b = Rot2::fromAngle((new_cones.at(n)).bearing);
         double r = norm2(cone_pos_car_frame);
@@ -231,49 +240,46 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
         Point2 cone_global_frame = (new_cones.at(n).global_cone_pos);
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(n_landmarks),
-                                        b,
-                                        r,
-                                        landmark_model));
+                                                    b,
+                                                    r,
+                                                    landmark_model));
         cone_ids.push_back(n_landmarks);
 
         values.insert(L(n_landmarks), cone_global_frame);
         n_landmarks++;
     }
-    
+
     /* NOTE: All values in graph must be in values parameter */
 
     values.insert(X(pose_num), cur_pose);
     Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
     optimized_val.erase(X(pose_num));
     isam2.update(graph, optimized_val);
-    
 
-    graph.resize(0); //Not resizing your graph will result in long update times
+    graph.resize(0); // Not resizing your graph will result in long update times
     values.clear();
-
-
 }
-
 
 /**
  * @brief step takes in info about the observed cones and the odometry info
- *        and performs an update step to our iSAM2 model. 
+ *        and performs an update step to our iSAM2 model.
  */
 // TODO: change void to option type
 void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
-            std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
-            std::vector<Point2> &orange_ref_cones, Pose2 velocity,
-            double dt) {
+                    std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
+                    std::vector<Point2> &orange_ref_cones, Pose2 velocity,
+                    double dt)
+{
 
     // print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
     log_step_inputs(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
 
-
     if (n_landmarks > 0)
     {
-        auto start_step  = high_resolution_clock::now();
+        auto start_step = high_resolution_clock::now();
         auto dur_betw_step = duration_cast<milliseconds>(start_step - end);
-        if (logger.has_value()) {
+        if (logger.has_value())
+        {
             RCLCPP_INFO(logger.value(), "End of prev step to cur step: %ld", dur_betw_step.count());
         }
     }
@@ -286,9 +292,10 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     bool is_turning = false;
 
     determine_movement(is_moving, is_turning, velocity);
-    
-    /*Quit the update step if the car is not moving*/ 
-    if (!is_moving && pose_num > 0) {
+
+    /*Quit the update step if the car is not moving*/
+    if (!is_moving && pose_num > 0)
+    {
         return;
     }
 
@@ -297,200 +304,284 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
 
-    if(logger.has_value()) {
+    if (logger.has_value())
+    {
         RCLCPP_INFO(logger.value(), "update_poses time: %ld", dur_update_poses.count());
     }
-
 
     /**** Perform loop closure ****/
     auto start_loop_closure = high_resolution_clock::now();
     bool prev_new_lap_value = new_lap;
     new_lap = detect_loop_closure(cur_pose, first_pose, pose_num, logger);
 
-    if (!loop_closure && new_lap) {
+    if (!loop_closure && new_lap)
+    {
         loop_closure = true;
     }
 
     bool completed_new_lap = prev_new_lap_value && !new_lap && !start_pose_in_front(cur_pose, first_pose, logger);
-    if (completed_new_lap) {
+    if (completed_new_lap)
+    {
         lap_count++;
     }
 
     auto end_loop_closure = high_resolution_clock::now();
     auto dur_loop_closure = duration_cast<milliseconds>(end_loop_closure - start_loop_closure);
-    if (logger.has_value()) {
+    if (logger.has_value())
+    {
         RCLCPP_INFO(logger.value(), "loop closure time: %ld", dur_loop_closure.count());
     }
 
-    if (loop_closure) {
-        if (logger.has_value()) {
+    if (loop_closure)
+    {
+        if (logger.has_value())
+        {
             RCLCPP_INFO(logger.value(), "Loop closure detected. No longer updating");
         }
     }
 
-    
+    auto start_est_retrieval = high_resolution_clock::now();
+    std::vector<Point2> slam_est = {};
+    for (int i = 0; i < blue_n_landmarks; i++)
+    {
+        blue_slam_est.push_back(isam2.calculateEstimate(BLUE_L(i)).cast<Point2>());
+    }
+
+    for (int i = 0; i < yellow_n_landmarks; i++)
+    {
+        yellow_slam_est.push_back(isam2.calculateEstimate(YELLOW_L(i)).cast<Point2>());
+    }
+
+    std::vector<MatrixXd> slam_mcov = {};
+    for (int i = 0; i < blue_n_landmarks; i++)
+    {
+        blue_slam_mcov.push_back(isam2.marginalCovariance(BLUE_L(i)));
+    }
+    for (int i = 0; i < yellow_n_landmarks; i++)
+    {
+        yellow_slam_mcov.push_back(isam2.marginalCovariance(YELLOW_L(i)));
+    }
+
+    auto end_est_retrieval = high_resolution_clock::now();
+    auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
+    if (logger.has_value())
+    {
+        RCLCPP_INFO(logger.value(), "est_retrieval time: %ld", dur_est_retrieval.count());
+    }
+    /**** Data association ***/
+    // std::vector<tuple<Point2, double, int>> old_cones = {};
+    // std::vector<tuple<Point2, double, Point2>> new_cones = {};
+
+    std::vector<Old_cone_info> blue_old_cones;
+    std::vector<Old_cone_info> yellow_old_cones;
+
+    std::vector<New_cone_info> blue_new_cones;
+    std::vector<New_cone_info> yellow_new_cones;
+
+    auto start_DA = high_resolution_clock::now();
+    data_association(blue_old_cones, blue_new_cones, blue_cone_ids, cur_pose, prev_pose, is_turning,
+                     cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
+
+    data_association(yellow_old_cones, yellow_new_cones, yellow_cone_ids, cur_pose, prev_pose, is_turning,
+                     cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov);
+
+    auto end_DA = high_resolution_clock::now();
+    auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
+    if (logger.has_value())
+    {
+        RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
+    }
 
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
-    if (!loop_closure) {
-        auto start_est_retrieval = high_resolution_clock::now();
-        std::vector<Point2> slam_est = {};
-        for (int i = 0; i < n_landmarks; i++) {
-            slam_est.push_back(isam2.calculateEstimate(L(i)).cast<Point2>());
-        }
-
-        std::vector<MatrixXd> slam_mcov = {};
-        for (int i = 0; i < n_landmarks; i++) {
-            slam_mcov.push_back(isam2.marginalCovariance(L(i)));
-        }
-        auto end_est_retrieval = high_resolution_clock::now();
-        auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "est_retrieval time: %ld", dur_est_retrieval.count());
-        }
-
-
-        /**** Data association ***/
-        // std::vector<tuple<Point2, double, int>> old_cones = {};
-        // std::vector<tuple<Point2, double, Point2>> new_cones = {};
-
-        std::vector<Old_cone_info> blue_old_cones;
-        std::vector<Old_cone_info> yellow_old_cones;
-
-        std::vector<New_cone_info> blue_new_cones;
-        std::vector<New_cone_info> yellow_new_cones;
-        
-        auto start_DA = high_resolution_clock::now();
-        data_association(blue_old_cones, blue_new_cones, blue_cone_ids, cur_pose, prev_pose, is_turning,
-                            cone_obs_blue, logger, slam_est, slam_mcov);
-        
-        data_association(yellow_old_cones, yellow_new_cones, yellow_cone_ids, cur_pose, prev_pose, is_turning,
-                            cone_obs_yellow, logger, slam_est, slam_mcov);
-        
-        auto end_DA = high_resolution_clock::now();
-        auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
-        }
-
+    if (!loop_closure)
+    {
         auto start_update_landmarks = high_resolution_clock::now();
-        update_landmarks(blue_old_cones, blue_new_cones, blue_cone_ids, cur_pose);
-        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_cone_ids, cur_pose);
+        update_landmarks(blue_old_cones, blue_new_cones, blue_cone_ids, blue_n_landmarks, cur_pose);
+        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_cone_ids, yellow_n_landmarks, cur_pose);
+
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
-        if(logger.has_value()) {
+        if (logger.has_value())
+        {
             RCLCPP_INFO(logger.value(), "update_landmarks time: %ld", dur_update_landmarks.count());
         }
-    } else{
+    }
+    else
+    {
+        /* This should only run once after loop closure */
         // populate yellow and blue cone arrays with cone locations
-        for (int i = 0; i < blue_cones_id.size(); i++){
-            int id = blue_cones_id.at(i);
-            Point2 curr_cone = isam2.calculateEstimate(L(id)).cast<Point2>();
-            blue_cones.emplace_back(curr_cone.x(),
-                                    curr_cone.y(),
-                                    id);
+        if (!completed_chunking)
+        {
+
+            blue_cone_to_chunk.resize(blue_cone_ids.size(), 0);
+            yellow_cone_to_chunk.resize(yellow_cone_ids.size(), 0);
+
+            for (int i = 0; i < blue_cones_id.size(); i++)
+            {
+                int id = blue_cones_id.at(i);
+                Point2 curr_cone = isam2.calculateEstimate(BLUE_L(id)).cast<Point2>();
+                blue_cones.emplace_back(curr_cone.x(),
+                                        curr_cone.y(),
+                                        id);
+            }
+
+            for (int i = 0; i < yellow_cones_id.size(); i++)
+            {
+                int id = yellow_cones_id.at(i);
+                Point2 curr_cone = isam2.calculateEstimate(YELLOW_L(id)).cast<Point2>();
+                yellow_cones.emplace_back(curr_cone.x(),
+                                          curr_cone.y(),
+                                          id);
+            }
+
+            all_chunks = *generateChunks(blue_cones, yellow_cones);
+            /* Process the chunks to create the map from cone_ids to chunk_ids*/
+            // make cone to chunk tables (for blue and yellow cones separately)
+            for (int i = 0; i < all_chunks.size(); i++)
+            {
+                Chunks *curr_chunk = all_chunks.at(i);
+
+                // blue cones
+                for (int j = 0; j < curr_chunk->blueConeIds.size(); j++)
+                {
+                    int id = curr_chunk->blueConeIds.at(j);
+                    blue_cone_to_chunk.at(id) = curr_chunk;
+                }
+
+                // yellow cones
+                for (int j = 0; j < curr_chunk->yellowConeIds.size(); j++)
+                {
+                    int id = curr_chunk->yellowConeIds.at(j);
+                    yellow_cone_to_chunk.at(id) = curr_chunk;
+                }
+            }
+
+            completed_chunking = true;
         }
-        for (int i = 0; i < yellow_cones_id.size(); i++){
-            int id = yellow_cones_id.at(i);
-            Point2 curr_cone = isam2.calculateEstimate(L(id)).cast<Point2>();
-            yellow_cones.emplace_back(curr_cone.x(),
-                                    curr_cone.y(),
-                                    id);
+        else
+        {
+            int cur_chunk_id = identify_chunks();
         }
-        std::vector<Chunks*> = *generateChunks(blue_cones, yellow_cones);
-        identify_chunk
     }
 
     pose_num++;
 
-
-
     /* Logging estimates for visualization */
     auto start_vis_setup = high_resolution_clock::now();
     ofstream ofs;
-    
+
     ofs.open(ESTIMATES_FILE, std::ofstream::out | std::ofstream::trunc);
-    streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+    streambuf *coutbuf = std::cout.rdbuf(); // save old buf
     cout.rdbuf(ofs.rdbuf());
 
     auto estimate = isam2.calculateEstimate();
     estimate.print("Estimate:");
 
     ofs.close();
-    cout.rdbuf(coutbuf); //reset to standard output again
+    cout.rdbuf(coutbuf); // reset to standard output again
     auto end_vis_setup = high_resolution_clock::now();
     auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
 
-    if (logger.has_value()) {
+    if (logger.has_value())
+    {
         RCLCPP_INFO(logger.value(), "vis_setup time: %ld", dur_vis_setup.count());
-    } 
+    }
 
     end = high_resolution_clock::now();
-    
-
 
     auto dur_step_call = duration_cast<milliseconds>(end - start);
-    if (logger.has_value()) {
+    if (logger.has_value())
+    {
         RCLCPP_INFO(logger.value(), "SLAM run step | Step call time: %ld\n", dur_step_call.count());
     }
 
-    if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "pose_num: %d | n_landmarks: %d\n\n", pose_num - 1, n_landmarks);
+    if (logger.has_value())
+    {
+        RCLCPP_INFO(logger.value(), "pose_num: %d | blue_n_landmarks: %d | yellow_n_landmarks: %d\n\n",
+                    pose_num - 1, blue_n_landmarks, yellow_n_landmarks);
     }
 }
 
-void slamISAM::print_estimates() {
+void slamISAM::print_estimates()
+{
     auto estimate = isam2.calculateEstimate();
     estimate.print("Estimate:");
 }
 
-void slamISAM::identify_chunk(vector<tuple<Point2, double, vector<Point2> &cone_obs,
-            vector<tuple<Point2, double, Point2>> &new_cones) {
-    //add new cones to lookup table
-    //  Assume that chunks has the cones associated with each track bound
-    // TODO: Tell chunking to store this information in the chunk struct
+void slamISAM::identify_chunk()
+{
+    // add new cones to lookup table
+    //   Assume that chunks has the cones associated with each track bound
+    //  TODO: Tell chunking to store this information in the chunk struct
 
-    //define int variable chunkid_sum
-    //for each element in observed_cones
-    //chunkid_sum+=lookuptable[element.cone_id]
-    //return the average of chunkid (chunkid_sum/observed_cones.length)
-    //call get_new_old_cones to update new cones and old cones
+    // define int variable chunkid_sum
+    // for each element in observed_cones
+    // chunkid_sum+=lookuptable[element.cone_id]
+    // return the average of chunkid (chunkid_sum/observed_cones.length)
+    // call get_new_old_cones to update new cones and old cones
 
     // 1.) Identify the cone IDs
-    //- because we have a lookup table 
+    //- because we have a lookup table
     //- New cones will be empty; old_cones will contain vector of tuples, cone position + ID
-    //old_cones is a vector of tuples
+    // old_cones is a vector of tuples
     // what's the type of each tuple
 
     // TODO: build this data structure
-    unordered_map<int, int> coneID_to_chunkID = {}
-
-    unordered_map<int, int> chunkID_to_vote = {}
     // Get the ID of the old_cones
-    get_old_new_cones(old_cones, new_cones,
-                    global_cone_x, global_cone_y,bearing,
-                    cone_obs, m_dist, n_landmarks, logger);
 
-    // Start tallying/voting
-    for (size_t i = 0; i < old_cones.size();i++){
-        int cone_id = get<2>(old_cones.at(i));
-        int chunk_id = coneID_to_chunkID[cone_id];
+    // make unordered map to store votes for each chunk (only three chunks at a time)
 
-        //Check if the chunkID is already in the voting map
-        if (chunkID_to_vote.find(chunk_id)!=chunkID_to_vote.end()){
-            chunkID_to_vote[chunk_id]++;
-        } else{
-            chunkID_to_vote[chunk_id]=0;
-        }
-
-    }
-    //find max vote
-    for (size_t i=0; i<chunkID_to_vote.size();i++){
-        int id = (chunkID_to_vote.begin()+i)->first;
-        int vote = (chunkID_to_vote.begin()+i)->second;
-        
-    }
     
+    /**
+     * 1.) Iterate through the old_cones (we can get the ids of those)
+     * 2.) Update the chunkID_to_vote data structure accordingly
+     */
+    unordered_map<int, int> chunkID_to_vote = {};
+
+    // vote on behalf of blue cones! 
+    for (size_t i = 0; i < blue_old_cones.size(); i++)
+    {
+        int cone_id = old_cones.at(i).id;
+        int chunk_id = blue_cone_to_chunk[cone_id];
+
+        /* Check if the chunkID is already in the voting map */ 
+        if (chunkID_to_vote.find(chunk_id) != chunkID_to_vote.end())
+        {
+            chunkID_to_vote[chunk_id]++;
+        }
+        else
+        {
+            chunkID_to_vote[chunk_id] = 1;
+        }
+    }
+
+    // vote on behalf of yellow cones! 
+    for (size_t i = 0; i < yellow_old_cones.size(); i++)
+    {
+        int cone_id = old_cones.at(i).id;
+        int chunk_id = yellow_cone_to_chunk[cone_id];
+
+        /* Check if the chunkID is already in the voting map */ 
+        if (chunkID_to_vote.find(chunk_id) != chunkID_to_vote.end())
+        {
+            chunkID_to_vote[chunk_id]++;
+        }
+        else
+        {
+            chunkID_to_vote[chunk_id] = 1;
+        }
+    }
+
+    // find max vote
+    int max_chunk_id = -1;
+    int max_votes = -1;
+    for (const std::pair<int, int>& chunkID_and_vote : chunkID_to_vote)
+    {
+        if (chunkID_and_vote->second > max_votes) {
+            max_votes = chunkID_and_vote->second;
+            max_chunk_id = chunkID_and_vote->first;
+        }
+    }
 
     RCLCPP_INFO(identify_chunk(), "Chunk you are in");
-
 }
