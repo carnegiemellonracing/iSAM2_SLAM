@@ -101,8 +101,51 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
                     cone_obs, m_dist, n_landmarks, logger);
 }
 
-typedef std::vector<std::pair<Point2, Point2>> association_set
+/**
+ * The 1st element in the pair is the observed cone idx
+ * The 2nd element in the pair is the old cone id
+ */
+typedef std::vector<gtsam::Point2> association_list_t;
 
+/**
+ * @brief Calculates the measurement model jacobian for the given innovation.
+ * The jacobian should be a 2 row by 5 column matrix.
+ */
+void get_measurement_model_jacobian(Eigen::MatrixXd& jacobian, gtsam::Point2 innovation) {
+    double q = norm2(innovation);
+    jacobian << (-sqrt(q) * innovation.x()), (-sqrt(q) * innovation.y()), 0, (sqrt(q) * innovation.x()), (sqrt(q) * innovation.y()),
+                innovation.y(), -innovation.x(), -q, -innovation.y(), innovation.x();
+    jacobian = jacobian * (1/q);
+
+}
+/** 
+ * @brief This function will take in a vector of association sets.
+ * An association set is of observed cone mapped to old cone id pairing.
+ * We want to find the association set with the highest compatibility.
+ */
+void compute_joint_compatibilities (std::vector<std::pair<association_list_t, std::vector<double>>> &association_data) {
+    std::vector<double> compatibilities = {};
+    for (int i = 0; i < association_data.size(); i++) {
+        /* Get the current association set */
+        std::pair<association_list_t, std::vector<double>> cur_association_list_info = association_data.at(i);
+        association_list_t association_list = cur_association_list_info.first;
+        std::vector<double> innovations = cur_association_list_info.second;
+
+        /* Update the covariance matrix */
+        get_measurement_model_jacobian        
+
+        /* Get the vector of innovations for the current association set */
+        /* Recall that innovation is the different between the 
+         * observation from the estimate */
+        Eigen::VectorXd innovation(all_association_sets.size());
+        
+
+
+
+
+
+    }
+}
 
 /**
  * @brief This function will perform Joint Compatibility Branch and Bound
