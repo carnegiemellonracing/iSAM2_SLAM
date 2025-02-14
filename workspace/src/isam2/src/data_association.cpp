@@ -204,3 +204,31 @@ void jcbb() {
     /* Calculate compatibility for each association set*/
     compute_joint_compatibilities(all_association_sets);
 }
+
+void dfs(int cur, int num_obs, const vector<vector<int>> &allowed, 
+    vector<bool> &visited, vector<int> &pairing, vector<vector<pair<int, int>>> &ans) {
+        if(cur == num_obs) {
+            vector<pair<int, int>> all_pairings;
+            for(int i = 0; i < num_obs; i++) {
+                all_pairings.push_back(make_pair(i, pairing[i]));
+            }
+        }
+        else {
+            for(int j: allowed[cur]) {
+                if(!visited[j]) {
+                    visited[j] = true;
+                    pairing[cur] = j;
+                    dfs(cur + 1, num_obs, allowed, visited, pairing, ans);
+                    visited[j] = false;
+                }
+            }
+        }
+    }
+
+vector<vector<pair<int, int>>> generate_pairings(int num_obs, int num_landmarks, const vector<vector<int>> &allowed) {
+    vector<bool> visited(num_landmarks, false);
+    vector<int> pairing(num_obs, -1);
+    vector<vector<pair<int, int>>> ans;
+    
+    generateInjections(0, n, allowed, visited, pairing, ans);
+}
