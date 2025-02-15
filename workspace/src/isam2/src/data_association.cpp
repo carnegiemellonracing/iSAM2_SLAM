@@ -123,7 +123,7 @@ void get_measurement_model_jacobian(Eigen::MatrixXd& jacobian, gtsam::Point2 inn
  * An association set is of observed cone mapped to old cone id pairing.
  * We want to find the association set with the highest compatibility.
  */
-void compute_joint_compatibilities (std::vector<std::pair<association_list_t, std::vector<double>>> &association_data) {
+void compute_joint_compatibilities (std::vector<std::pair<association_list_t, std::vector<gtsam::Point2>>> &association_data) {
     std::vector<double> compatibilities = {};
     for (int i = 0; i < association_data.size(); i++) {
         /* Get the current association set */
@@ -209,12 +209,14 @@ void jcbb() {
  * Generates all viable pairings by checking if each Mahalanobis
  * Distance is under the threshold.
  */
-vector<vector<pair<int, double>>> get_viable_pairings(int num_obs, int num_landmarks, const vector<double> &m_dist) {
+vector<vector<pair<int, gtsam::Point2>>> get_viable_pairings(int num_obs, int num_landmarks, const vector<double> &m_dist, 
+    const vector<gtsam::Point2> &old_cone_ests, const vector<gtsam::Point2> &cone_obs) {
     vector<vector<int>> ans(num_obs);
     for(int i = 0; i < num_obs; i++) {
         for(int j = 0; j < num_landmarks; j++) {
             if(m_dist[i * num_landmarks + j] < M_DIST_TH) {
-                ans[i].push_back(make_pair(j, m_dist[i * num_landmarks + j]));
+                gtsam::Point2 cur_diffs = gtsam::Point2(cone_obs[i].x - old_cone_ests[j].x, cone_obs[i].y - old_cone_ests[j].y);
+                ans[i].push_back(make_pair(j, cur_diffs));
             }
         }
     }
@@ -226,18 +228,24 @@ vector<vector<pair<int, double>>> get_viable_pairings(int num_obs, int num_landm
  * generate all possible injective functions and adds them to the
  * vector of all association sets.
  */
-void generate_pairings_helper(int cur, int num_obs, const vector<vector<pair<int, double>>> &allowed, 
-    vector<bool> &visited, vector<pair<int, double>> pairing, vector<pair<association_list_t, vector<double>>> &ans) {
+void generate_pairings_helper(int cur, int num_obs, const vector<vector<pair<int, gtsam::Point2>>> &allowed, 
+    vector<bool> &visited, vector<pair<int, gtsam::Point2>> pairing, vector<pair<association_list_t, vector<gtsam::Point2>>> &ans) {
         if(cur == num_obs) {
-            
+            association_list_t cur_pairs;
+            vector<gtsam::Point2> cur_dists;
+            for(auto p: pairing) {
+                cur_pairs.push_back(p.first);
+                cur_dists.push_back(p.second);
+            }
+            ans.push_back(make_pair(cur_pairs, cur_dists));
         }
         else {
             for(auto j: allowed[cur]) {
-                if(!visited[j]) {
-                    visited[j] = true;
-                    pairing[cur] = {};
+                if(!visited[j.first]) {
+                    visited[j.first] = true;
+                    pairing[cur] = j;
                     dfs(cur + 1, num_obs, allowed, visited, pairing, ans);
-                    visited[j] = false;
+                    visited[j.first] = false;
                 }
             }
         }
@@ -248,10 +256,10 @@ void generate_pairings_helper(int cur, int num_obs, const vector<vector<pair<int
      * of all possible landmarks given a observation and returns 
      * a set of all injective functions from landmarks to observations.
      */
-vector<pair<association_list_t, vector<double>>> generate_pairings(int num_obs, int num_landmarks, const vector<vector<pair<int, double>>> &allowed) {
+vector<pair<association_list_t, vector<gtsam::Point2>>> generate_pairings(int num_obs, int num_landmarks, const vector<vector<pair<int, gtsam::Point2>>> &allowed) {
     vector<bool> visited(num_landmarks, false);
-    vector<int> pairing(num_obs, -1);
-    vector<pair<association_list_t, vector<double>>> ans;
+    vector<pair<int, gtsam::Point2>> pairing(num_obs);
+    vector<pair<association_list_t, vector<gtsam::Point2>>> ans;
     
     generate_pairings_helper(0, n, allowed, visited, pairing, ans);
     return ans;
