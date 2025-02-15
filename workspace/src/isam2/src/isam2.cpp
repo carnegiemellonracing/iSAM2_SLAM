@@ -8,7 +8,7 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
     // Initializing SLAM Parameters
     parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
-    parameters.setFactorization("QR");
+    parameters.setFactorization("Cholesky");
     // parameters.enablePartialRelinearizationCheck = true;
     logger = input_logger;
     isam2 = gtsam::ISAM2(parameters);
