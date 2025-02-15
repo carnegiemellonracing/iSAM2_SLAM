@@ -42,7 +42,7 @@ using std::placeholders::_4;
 const long SEC_TO_NANOSEC = 1e9;
 const double IMU_OFFSET = 0.3; //meters; offset from the center of the car
 const double LIDAR_OFFSET = 0.3; //meters; offset from the center of the car
-const double MAX_CONE_RANGE = 15;
+const double MAX_CONE_RANGE = 7.5;
 const double TURNING_MAX_CONE_RANGE = 15;
 const double VELOCITY_MOVING_TH = 0.1; //meters per second
 const double TURNING_TH = 0.2;
