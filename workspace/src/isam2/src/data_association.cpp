@@ -111,7 +111,7 @@ typedef std::vector<int> association_list_t;
  * @brief Calculates the measurement model jacobian for the given innovation.
  * The jacobian should be a 2 row by 5 column matrix.
  */
-void get_measurement_model_jacobian(Eigen::MatrixXd& jacobian, gtsam::Point2 innovation) {
+Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Point2 innovation) {
     double q = norm2(innovation);
     jacobian << (-sqrt(q) * innovation.x()), (-sqrt(q) * innovation.y()), 0, (sqrt(q) * innovation.x()), (sqrt(q) * innovation.y()),
                 innovation.y(), -innovation.x(), -q, -innovation.y(), innovation.x();
@@ -123,16 +123,21 @@ void get_measurement_model_jacobian(Eigen::MatrixXd& jacobian, gtsam::Point2 inn
  * An association set is of observed cone mapped to old cone id pairing.
  * We want to find the association set with the highest compatibility.
  */
-void compute_joint_compatibilities (std::vector<std::pair<association_list_t, std::vector<double>>> &association_data) {
+void compute_joint_compatibilities (std::vector<std::pair<association_list_t, std::vector<gtsam::Point2>>> &association_data, int num_obs) {
     std::vector<double> compatibilities = {};
     for (int i = 0; i < association_data.size(); i++) {
         /* Get the current association set */
         std::pair<association_list_t, std::vector<double>> cur_association_list_info = association_data.at(i);
         association_list_t association_list = cur_association_list_info.first;
-        std::vector<double> innovations = cur_association_list_info.second;
+        std::vector<gtsam::Point2> innovations = cur_association_list_info.second;
 
         /* Update the covariance matrix */
-        get_measurement_model_jacobian        
+        Eigen::MatrixXd association_list_jacobian(2 * num_obs, 5);
+        for (int i = 0; i < num_obs; i++) {
+            association_list_jacobian.block<2, 5>(2 * num_obs, 0) = get_measurement_model_jacobian(innovations.at(i));
+        }
+
+        
 
         /* Get the vector of innovations for the current association set */
         /* Recall that innovation is the different between the 
@@ -199,7 +204,7 @@ void jcbb() {
      * 
      * 2.) Generate all possible sets from these matches
      */
-    generate_association_sets(all_association_sets);
+    generate_pairings(all_association_sets);
 
     /* Calculate compatibility for each association set*/
     compute_joint_compatibilities(all_association_sets);
