@@ -80,12 +80,13 @@ void posestamped_msg_to_gps(const geometry_msgs::msg::PoseStamped::ConstSharedPt
     double y = vehicle_pos_data->pose.position.y;
 
     /* Process the orientation */
-    double qw = vehicle_pos_data->pose.orientation.w;
-    double qx = vehicle_pos_data->pose.orientation.x;
-    double qy = vehicle_pos_data->pose.orientation.y;
-    double qz = vehicle_pos_data->pose.orientation.z;
+    double yaw = vehicle_pos_data->pose.position.z;
+    //double qw = vehicle_pos_data->pose.orientation.w;
+    //double qx = vehicle_pos_data->pose.orientation.x;
+    //double qy = vehicle_pos_data->pose.orientation.y;
+    //double qz = vehicle_pos_data->pose.orientation.z;
 
-    double yaw = atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
+    //double yaw = atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
 
     global_odom = gtsam::Pose2(x, y, yaw);
 
