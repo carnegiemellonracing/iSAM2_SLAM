@@ -105,7 +105,7 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
  * The 1st element in the pair is the observed cone idx
  * The 2nd element in the pair is the old cone id
  */
-typedef std::vector<gtsam::Point2> association_list_t;
+typedef std::vector<int> association_list_t;
 
 /**
  * @brief Calculates the measurement model jacobian for the given innovation.
@@ -205,7 +205,11 @@ void jcbb() {
     compute_joint_compatibilities(all_association_sets);
 }
 
-vector<vector<int>> get_viable_pairings(int num_obs, int num_landmarks, vector<double> m_dist) {
+/**
+ * Generates all viable pairings by checking if each Mahalanobis
+ * Distance is under the threshold.
+ */
+vector<vector<int>> get_viable_pairings(int num_obs, int num_landmarks, const vector<double> &m_dist) {
     vector<vector<int>> ans(num_obs);
     for(int i = 0; i < num_obs; i++) {
         for(int j = 0; j < num_landmarks; j++) {
@@ -218,15 +222,14 @@ vector<vector<int>> get_viable_pairings(int num_obs, int num_landmarks, vector<d
 }
 
 /**
- * 
+ * Helper function for generate_pairings that uses dfs to
+ * generate all possible injective functions and adds them to the
+ * vector of all association sets.
  */
-void dfs(int cur, int num_obs, const vector<vector<int>> &allowed, 
-    vector<bool> &visited, vector<int> &pairing, vector<vector<pair<int, int>>> &ans) {
+void generate_pairings_helper(int cur, int num_obs, const vector<vector<int>> &allowed, 
+    vector<bool> &visited, vector<int> pairing, vector<association_list_t> &ans) {
         if(cur == num_obs) {
-            vector<pair<int, int>> all_pairings;
-            for(int i = 0; i < num_obs; i++) {
-                all_pairings.push_back(make_pair(i, pairing[i]));
-            }
+            ans.push_back(pairing);
         }
         else {
             for(int j: allowed[cur]) {
@@ -242,12 +245,14 @@ void dfs(int cur, int num_obs, const vector<vector<int>> &allowed,
 
     /**
      * Generates all association sets. Takes in a adjacency list
-     * of all possible landmarks given a observation.
+     * of all possible landmarks given a observation and returns 
+     * a set of all injective functions from landmarks to observations.
      */
-vector<vector<pair<int, int>>> generate_pairings(int num_obs, int num_landmarks, const vector<vector<int>> &allowed) {
+vector<association_list_t> generate_pairings(int num_obs, int num_landmarks, const vector<vector<int>> &allowed) {
     vector<bool> visited(num_landmarks, false);
     vector<int> pairing(num_obs, -1);
     vector<vector<pair<int, int>>> ans;
     
-    dfs(0, n, allowed, visited, pairing, ans);
+    generate_pairings_helper(0, n, allowed, visited, pairing, ans);
+    return ans;
 }
