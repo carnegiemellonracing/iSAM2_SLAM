@@ -209,12 +209,12 @@ void jcbb() {
  * Generates all viable pairings by checking if each Mahalanobis
  * Distance is under the threshold.
  */
-vector<vector<int>> get_viable_pairings(int num_obs, int num_landmarks, const vector<double> &m_dist) {
+vector<vector<pair<int, double>>> get_viable_pairings(int num_obs, int num_landmarks, const vector<double> &m_dist) {
     vector<vector<int>> ans(num_obs);
     for(int i = 0; i < num_obs; i++) {
         for(int j = 0; j < num_landmarks; j++) {
             if(m_dist[i * num_landmarks + j] < M_DIST_TH) {
-                ans[i].push_back(j);
+                ans[i].push_back(make_pair(j, m_dist[i * num_landmarks + j]));
             }
         }
     }
@@ -226,16 +226,16 @@ vector<vector<int>> get_viable_pairings(int num_obs, int num_landmarks, const ve
  * generate all possible injective functions and adds them to the
  * vector of all association sets.
  */
-void generate_pairings_helper(int cur, int num_obs, const vector<vector<int>> &allowed, 
-    vector<bool> &visited, vector<int> pairing, vector<association_list_t> &ans) {
+void generate_pairings_helper(int cur, int num_obs, const vector<vector<pair<int, double>>> &allowed, 
+    vector<bool> &visited, vector<pair<int, double>> pairing, vector<pair<association_list_t, vector<double>>> &ans) {
         if(cur == num_obs) {
-            ans.push_back(pairing);
+            
         }
         else {
-            for(int j: allowed[cur]) {
+            for(auto j: allowed[cur]) {
                 if(!visited[j]) {
                     visited[j] = true;
-                    pairing[cur] = j;
+                    pairing[cur] = {};
                     dfs(cur + 1, num_obs, allowed, visited, pairing, ans);
                     visited[j] = false;
                 }
@@ -248,10 +248,10 @@ void generate_pairings_helper(int cur, int num_obs, const vector<vector<int>> &a
      * of all possible landmarks given a observation and returns 
      * a set of all injective functions from landmarks to observations.
      */
-vector<association_list_t> generate_pairings(int num_obs, int num_landmarks, const vector<vector<int>> &allowed) {
+vector<pair<association_list_t, vector<double>>> generate_pairings(int num_obs, int num_landmarks, const vector<vector<pair<int, double>>> &allowed) {
     vector<bool> visited(num_landmarks, false);
     vector<int> pairing(num_obs, -1);
-    vector<vector<pair<int, int>>> ans;
+    vector<pair<association_list_t, vector<double>>> ans;
     
     generate_pairings_helper(0, n, allowed, visited, pairing, ans);
     return ans;
