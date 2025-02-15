@@ -205,6 +205,21 @@ void jcbb() {
     compute_joint_compatibilities(all_association_sets);
 }
 
+vector<vector<int>> get_viable_pairings(int num_obs, int num_landmarks, vector<double> m_dist) {
+    vector<vector<int>> ans(num_obs);
+    for(int i = 0; i < num_obs; i++) {
+        for(int j = 0; j < num_landmarks; j++) {
+            if(m_dist[i * num_landmarks + j] < M_DIST_TH) {
+                ans[i].push_back(j);
+            }
+        }
+    }
+    return ans;
+}
+
+/**
+ * 
+ */
 void dfs(int cur, int num_obs, const vector<vector<int>> &allowed, 
     vector<bool> &visited, vector<int> &pairing, vector<vector<pair<int, int>>> &ans) {
         if(cur == num_obs) {
@@ -225,10 +240,14 @@ void dfs(int cur, int num_obs, const vector<vector<int>> &allowed,
         }
     }
 
+    /**
+     * Generates all association sets. Takes in a adjacency list
+     * of all possible landmarks given a observation.
+     */
 vector<vector<pair<int, int>>> generate_pairings(int num_obs, int num_landmarks, const vector<vector<int>> &allowed) {
     vector<bool> visited(num_landmarks, false);
     vector<int> pairing(num_obs, -1);
     vector<vector<pair<int, int>>> ans;
     
-    generateInjections(0, n, allowed, visited, pairing, ans);
+    dfs(0, n, allowed, visited, pairing, ans);
 }
