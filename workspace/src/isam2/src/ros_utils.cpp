@@ -21,8 +21,7 @@ void imu_axes_to_DV_axes(double &x, double &y) {
 
 void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
                         Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
-    /* Doesn't depend on imu axes. These are global coordinates */
-    double latitude = vehicle_pos_data->vector.x;
+    /* Doesn't depend on imu axes. These are global coordinates */ double latitude = vehicle_pos_data->vector.x;
     double longitude = vehicle_pos_data->vector.y;
 
     if (!(init_lon_lat.has_value())) {
@@ -61,6 +60,37 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
 
 
     global_odom = Pose2(x, y, global_odom.theta());
+
+}
+
+void posestamped_msg_to_gps(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
+                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
+    /** 
+     * PoseStamped message has:
+     * 1.) Header header
+     * 2.) Pose pose
+     * 
+     * geometry_msgs Pose type has:
+     * 1.) Point position
+     * 2.) Quaternion orientation
+     */
+
+    /* Process the pose */
+    double x = vehicle_pos_data->pose.position.x;
+    double y = vehicle_pos_data->pose.position.y;
+
+    /* Process the orientation */
+    double qw = vehicle_pos_data->pose.orientation.w;
+    double qx = vehicle_pos_data->pose.orientation.x;
+    double qy = vehicle_pos_data->pose.orientation.y;
+    double qz = vehicle_pos_data->pose.orientation.z;
+
+    double yaw = atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
+
+    global_odom = gtsam::Pose2(x, y, yaw);
+
+
+
 
 }
 

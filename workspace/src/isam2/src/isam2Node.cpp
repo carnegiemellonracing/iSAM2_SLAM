@@ -36,12 +36,12 @@ public:
         sync = std::make_shared<message_filters::Synchronizer<
                                     message_filters::sync_policies::ApproximateTime<
                                     interfaces::msg::ConeArray,
-                                    geometry_msgs::msg::Vector3Stamped,
+                                    geometry_msgs::msg::PoseStamped,
                                     geometry_msgs::msg::TwistStamped,
                                     geometry_msgs::msg::QuaternionStamped>>>(
                             message_filters::sync_policies::ApproximateTime<
                                     interfaces::msg::ConeArray,
-                                    geometry_msgs::msg::Vector3Stamped,
+                                    geometry_msgs::msg::PoseStamped,
                                     geometry_msgs::msg::TwistStamped,
                                     geometry_msgs::msg::QuaternionStamped>(30),
                                     cone_sub, vehicle_pos_sub, vehicle_vel_sub,vehicle_angle_sub);
@@ -62,7 +62,7 @@ public:
 private:
 
     void sync_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
-                    const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
+                    const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
                     const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                     const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
         RCLCPP_INFO(this->get_logger(), "\nSync Callback");
@@ -134,14 +134,14 @@ private:
 
     }
 
-    void vehicle_pos_callback(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data)
+    void vehicle_pos_callback(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data)
     {
         // RCLCPP_INFO(this->get_logger(), "\t vehicle position callback! | time: %d\n",
         //                                         vehicle_pos_data->header.stamp.sec);
         auto vehicle_pos_callback_start = high_resolution_clock::now();
         
-        vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
-
+        //vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
+	posestamped_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
         /* Timers*/
         auto vehicle_pos_callback_end = high_resolution_clock::now();
         auto vehicle_pos_callback_duration = duration_cast<milliseconds>(vehicle_pos_callback_end - vehicle_pos_callback_start);
@@ -201,14 +201,14 @@ private:
     high_resolution_clock::time_point cur_sync_callback_time;
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
     message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
-    message_filters::Subscriber<geometry_msgs::msg::Vector3Stamped> vehicle_pos_sub;
+    message_filters::Subscriber<geometry_msgs::msg::PoseStamped> vehicle_pos_sub;
     message_filters::Subscriber<geometry_msgs::msg::TwistStamped> vehicle_vel_sub;
     message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
 
     std::shared_ptr<message_filters::Synchronizer<
                             message_filters::sync_policies::ApproximateTime<
                                             interfaces::msg::ConeArray,
-                                            geometry_msgs::msg::Vector3Stamped,
+                                            geometry_msgs::msg::PoseStamped,
                                             geometry_msgs::msg::TwistStamped,
                                             geometry_msgs::msg::QuaternionStamped>>> sync;
     
