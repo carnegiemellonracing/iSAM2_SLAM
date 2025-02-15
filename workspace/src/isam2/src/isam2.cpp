@@ -39,12 +39,17 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
      * 
      */
     LandmarkNoiseModel = gtsam::Vector(2);
-    LandmarkNoiseModel(0) = 0.00045; 
-    LandmarkNoiseModel(1) = 0.03; 
+    //LandmarkNoiseModel(0) = 0.00045; 
+    //LandmarkNoiseModel(1) = 0.03; 
+    LandmarkNoiseModel(0) = 0.0;
+    LandmarkNoiseModel(1) = 0.0;
     landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
 
     // used to be all 0s for EUFS_SIM
     PriorNoiseModel = gtsam::Vector(3);
+    //PriorNoiseModel(0) = 0.22;
+    //PriorNoiseModel(1) = 0.22;
+    //PriorNoiseModel(2) = degrees_to_radians(0.009);
     PriorNoiseModel(0) = 0.22;
     PriorNoiseModel(1) = 0.22;
     PriorNoiseModel(2) = degrees_to_radians(0.009);
@@ -62,6 +67,10 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
      * yaw error in radians
      */
     OdomNoiseModel = gtsam::Vector(3);
+    //OdomNoiseModel(0) = 0.22;
+    //OdomNoiseModel(1) = 0.22; 
+    //OdomNoiseModel(2) = degrees_to_radians(0.009); 
+
     OdomNoiseModel(0) = 0.22;
     OdomNoiseModel(1) = 0.22; 
     OdomNoiseModel(2) = degrees_to_radians(0.009); 
@@ -79,8 +88,11 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
      * 
      */
     UnaryNoiseModel = gtsam::Vector(2);
-    UnaryNoiseModel(0) = 0.01;
-    UnaryNoiseModel(1) = 0.01;
+    //UnaryNoiseModel(0) = 0.01;
+    //UnaryNoiseModel(1) = 0.01;
+    
+    UnaryNoiseModel(0) = 0.0;
+    UnaryNoiseModel(1) = 0.0;
     unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
 
     // Resetting the log file for gtsam

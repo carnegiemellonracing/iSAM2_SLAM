@@ -37,16 +37,14 @@ public:
                                     message_filters::sync_policies::ApproximateTime<
                                     interfaces::msg::ConeArray,
                                     geometry_msgs::msg::PoseStamped,
-                                    geometry_msgs::msg::TwistStamped,
-                                    geometry_msgs::msg::QuaternionStamped>>>(
+                                    geometry_msgs::msg::TwistStamped>>>(
                             message_filters::sync_policies::ApproximateTime<
                                     interfaces::msg::ConeArray,
                                     geometry_msgs::msg::PoseStamped,
-                                    geometry_msgs::msg::TwistStamped,
-                                    geometry_msgs::msg::QuaternionStamped>(30),
-                                    cone_sub, vehicle_pos_sub, vehicle_vel_sub,vehicle_angle_sub);
+                                    geometry_msgs::msg::TwistStamped>(30),
+                                    cone_sub, vehicle_pos_sub, vehicle_vel_sub);
         sync->setAgePenalty(0.09);
-        sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3, _4));
+        sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
 
         dt = .1;
 
@@ -63,8 +61,7 @@ private:
 
     void sync_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
                     const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
-                    const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
-                    const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
+                    const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data) {
         RCLCPP_INFO(this->get_logger(), "\nSync Callback");
         
         /* Getting the time between sync callbacks */
@@ -96,7 +93,7 @@ private:
         vehicle_vel_callback(vehicle_vel_data);
 
         /* Vehicle angle callback */
-        vehicle_angle_callback(vehicle_angle_data);
+        //vehicle_angle_callback(vehicle_angle_data);
         
 
         auto sync_data_end = high_resolution_clock::now();
@@ -209,8 +206,7 @@ private:
                             message_filters::sync_policies::ApproximateTime<
                                             interfaces::msg::ConeArray,
                                             geometry_msgs::msg::PoseStamped,
-                                            geometry_msgs::msg::TwistStamped,
-                                            geometry_msgs::msg::QuaternionStamped>>> sync;
+                                            geometry_msgs::msg::TwistStamped>>> sync;
     
     gtsam::Pose2 velocity;
 
