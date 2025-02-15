@@ -79,6 +79,11 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
 
     remove_far_cones(cone_obs, cone_dist_th);
 
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "Num cone_obs after removing far cones: %ld",
+                     cone_obs.size());
+    }
+
     // Populating m_dist with mahalanobis distances
     MatrixXd global_cone_x(cone_obs.size(), 1);
     MatrixXd global_cone_y(cone_obs.size(), 1);

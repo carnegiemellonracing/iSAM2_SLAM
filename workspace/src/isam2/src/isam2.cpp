@@ -352,6 +352,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         if(logger.has_value()) {
             RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
+	    RCLCPP_INFO(logger.value(), "Num cone_obs: %ld", cone_obs.size());
         }
 
         auto start_update_landmarks = high_resolution_clock::now();
