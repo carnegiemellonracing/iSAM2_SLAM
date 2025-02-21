@@ -14,6 +14,31 @@ const double M_DIST_TH = 0.0009;
 const double TURNING_M_DIST_TH = 0.0009;
 // const double M_DIST_TH = 0.0005;
 // const double TURNING_M_DIST_TH = 0.0005;
+
+struct New_cone_info {
+    Point2 local_cone_pos;
+    double bearing;
+    Point2 global_cone_pos;
+    New_cone_info (Point2 local_cone_pos, double bearing, Point2 global_cone_pos)
+        : local_cone_pos(local_cone_pos)
+        , bearing(bearing)
+        , global_cone_pos(global_cone_pos)
+    {}
+};
+
+struct Old_cone_info {
+    Point2 local_cone_pos;
+    double bearing;
+    int min_id; // The id of the old cone observed cone was associated with
+    Old_cone_info (Point2 local_cone_pos, double bearing, int min_id)
+        : local_cone_pos(local_cone_pos)
+        , bearing(bearing)
+        , min_id(min_id)
+    {}
+};
+
+
+
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
                     int num_obs, std::vector<double> &m_dist, double threshold,
                     std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov,

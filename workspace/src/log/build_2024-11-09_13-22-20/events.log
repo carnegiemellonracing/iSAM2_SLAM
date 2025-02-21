@@ -1,9 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000805] (interfaces) JobQueued: {'identifier': 'interfaces', 'dependencies': OrderedDict()}
-[0.000930] (isam2) JobQueued: {'identifier': 'isam2', 'dependencies': OrderedDict([('interfaces', '/iSAM2_SLAM/workspace/src/install/interfaces')])}
-[0.001050] (interfaces) JobStarted: {'identifier': 'interfaces'}
-[0.005721] (interfaces) JobProgress: {'identifier': 'interfaces', 'progress': 'cmake'}
-[0.006366] (interfaces) StderrLine: {'line': b'Traceback (most recent call last):\n  File "/usr/local/lib/python3.10/dist-packages/colcon_core/executor/__init__.py", line 91, in __call__\n    rc = await self.task(*args, **kwargs)\n  File "/usr/local/lib/python3.10/dist-packages/colcon_core/task/__init__.py", line 93, in __call__\n    return await task_method(*args, **kwargs)\n  File "/usr/local/lib/python3.10/dist-packages/colcon_ros/task/ament_cmake/build.py", line 59, in build\n    rc = await extension.build(\n  File "/usr/local/lib/python3.10/dist-packages/colcon_cmake/task/cmake/build.py", line 87, in build\n    rc = await self._reconfigure(args, env)\n  File "/usr/local/lib/python3.10/dist-packages/colcon_cmake/task/cmake/build.py", line 173, in _reconfigure\n    raise RuntimeError("Could not find \'cmake\' executable")\nRuntimeError: Could not find \'cmake\' executable\n'}
-[0.007652] (interfaces) JobEnded: {'identifier': 'interfaces', 'rc': 1}
-[0.017909] (isam2) JobSkipped: {'identifier': 'isam2'}
-[0.017955] (-) EventReactorShutdown: {}

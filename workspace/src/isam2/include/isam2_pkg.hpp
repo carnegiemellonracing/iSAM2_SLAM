@@ -37,27 +37,7 @@
 
 const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 
-struct New_cone_info {
-    Point2 local_cone_pos;
-    double bearing;
-    Point2 global_cone_pos;
-    New_cone_info (Point2 local_cone_pos, double bearing, Point2 global_cone_pos)
-        : local_cone_pos(local_cone_pos)
-        , bearing(bearing)
-        , global_cone_pos(global_cone_pos)
-    {}
-};
 
-struct Old_cone_info {
-    Point2 local_cone_pos;
-    double bearing;
-    int min_id; // The id of the old cone observed cone was associated with
-    Old_cone_info (Point2 local_cone_pos, double bearing, int min_id)
-        : local_cone_pos(local_cone_pos)
-        , bearing(bearing)
-        , min_id(min_id)
-    {}
-}
 
 class slamISAM {
 
@@ -120,9 +100,9 @@ public:
     high_resolution_clock::time_point end;
     int blue_n_landmarks;
     int yellow_n_landmarks;
-    sttd::vector<int> blue_cone_to_chunk;
-    sttd::vector<int> yellow_cone_to_chunk;
-    sttd::vector<Chunk*> all_chunks;
+    std::vector<int> blue_cone_to_chunk;
+    std::vector<int> yellow_cone_to_chunk;
+    std::vector<Chunk*> all_chunks;
 
     bool heuristic_run;
 
@@ -155,5 +135,7 @@ public:
                 double dt);
 
     void print_estimates();
+
+    int identify_chunks();
 
 };

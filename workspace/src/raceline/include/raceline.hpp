@@ -13,22 +13,6 @@
 
 // TODO make separate file for poly things here and in frenet
 
-struct Cone 
-{
-    double x;
-    double y;
-    int id;
-
-    Cone (double x, double y, int id) 
-        : x(x)
-        , y(y)
-        , id(id)
-        {}
-    
-};
-
-
-
 struct polynomial
 {
     int deg;

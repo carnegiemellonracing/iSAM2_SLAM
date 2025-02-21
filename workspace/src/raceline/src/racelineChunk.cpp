@@ -131,8 +131,8 @@ double tEstimate(double currArclength, double targetArclength) {
  */
 
 //TODO: should be returning by reference not value
-std::vector<Chunk*>* generateChunks(std::vector<Cone> blueCones,
-                                    std::vector<Cone> yellowCones) {
+std::vector<Chunk*>* generateChunks(std::vector<std::tuple<double,double,int>> blueCones,
+                                  std::vector<std::tuple<double,double,int>> yellowCones) {
     
     auto start_generate_chunks = std::chrono::high_resolution_clock::now();
     // create chunk vector that stores chunks
@@ -154,6 +154,18 @@ std::vector<Chunk*>* generateChunks(std::vector<Cone> blueCones,
 
     std::vector<ParameterizedSpline> yellowRacetrackSplines = yellow.first;
     std::vector<double> yellowCumulativeLen = yellow.second;
+
+    // swap yellow and blue if curr blue is not the inside
+    bool blueIsInside = blueCumulativeLen[blueCumulativeLen.size() - 1] <= yellowCumulativeLen[yellowCumulativeLen.size() - 1];
+
+    if (!blueIsInside) {
+        std::vector<ParameterizedSpline> tempRaceSplines = blueRacetrackSplines;
+        std::vector<double> tempLen = blueCumulativeLen;
+        blueRacetrackSplines = yellowRacetrackSplines;
+        blueCumulativeLen = yellowCumulativeLen;
+        yellowRacetrackSplines = tempRaceSplines;
+        yellowCumulativeLen = tempLen;
+    }
 
     // create a chunk
     Chunk* chunk = new Chunk();

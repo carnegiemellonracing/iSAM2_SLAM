@@ -412,7 +412,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         // populate yellow and blue cone arrays with cone locations
         if (!completed_chunking)
         {
-
+            /* This is a map from cone ID (the index) to chunk ID, the element*/
             blue_cone_to_chunk.resize(blue_cone_ids.size(), 0);
             yellow_cone_to_chunk.resize(yellow_cone_ids.size(), 0);
 
@@ -461,6 +461,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         else
         {
             int cur_chunk_id = identify_chunks();
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "Current chunk ID: %d",  cur_chunk_id);
+            }
         }
     }
 
@@ -508,7 +511,7 @@ void slamISAM::print_estimates()
     estimate.print("Estimate:");
 }
 
-void slamISAM::identify_chunk()
+int slamISAM::identify_chunk()
 {
     // add new cones to lookup table
     //   Assume that chunks has the cones associated with each track bound
@@ -582,6 +585,5 @@ void slamISAM::identify_chunk()
             max_chunk_id = chunkID_and_vote->first;
         }
     }
-
-    RCLCPP_INFO(identify_chunk(), "Chunk you are in");
+    return max_chunk_id;
 }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(isam2)
+project(raceline)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -29,48 +29,44 @@ find_package(geometry_msgs REQUIRED)
 find_package(interfaces REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ament_cmake REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(message_filters REQUIRED)
-find_package(GTSAM REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(TBB REQUIRED)
-
-# import the raceline library
-add_library(imported_raceline_lib SHARED IMPORTED)
-set_property(TARGET imported_raceline_lib PROPERTY IMPORTED_LOCATION "${PROJECT_BINARY_DIR}/../raceline/libraceline_lib.so")
+find_package(GSL REQUIRED)
 
 
 # <----  executable ---->
 file(GLOB SOURCES src/*.cpp)
-add_executable(isam2_run ${SOURCES})
+add_executable(raceline_run ${SOURCES}) # not actually used
 
 # linking
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
-    target_link_libraries(isam2_run PUBLIC imported_raceline_lib libtbb.so libgtsamDebug.so Eigen3::Eigen )
+  target_link_libraries(raceline_run PUBLIC Eigen3::Eigen )
 endif()
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
-  target_link_libraries(isam2_run PUBLIC imported_raceline_lib libtbb.so libgtsam.so Eigen3::Eigen)
+  target_link_libraries(raceline_run PUBLIC Eigen3::Eigen)
 endif()
-ament_target_dependencies(isam2_run PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
+ament_target_dependencies(raceline_run PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs Eigen3 GSL)
 
 # including dependencies
-target_include_directories(isam2_run PUBLIC include ${GTSAM_INCLUDE_DIR} "../raceline/include")
+target_include_directories(raceline_run PUBLIC include)
 
-install(TARGETS isam2_run
+install(TARGETS raceline_run
   DESTINATION lib/${PROJECT_NAME})
 
 
-# <---- isam2_lib ---->
-add_library(isam2_lib SHARED ${SOURCES})
-# target_link_libraries(isam2_lib PUBLIC gtsam)
+# <---- raceline_lib ---->
+add_library(raceline_lib SHARED ${SOURCES})
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
-  target_link_libraries(isam2_lib PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen)
+  target_link_libraries(raceline_lib PUBLIC  Eigen3::Eigen)
 endif()
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
-  target_link_libraries(isam2_lib PUBLIC libtbb.so libgtsam.so Eigen3::Eigen)
+  target_link_libraries(raceline_lib PUBLIC  Eigen3::Eigen)
 endif()
-ament_target_dependencies(isam2_lib PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
-target_include_directories(isam2_lib PUBLIC include ${GTSAM_INCLUDE_DIR})
+ament_target_dependencies(raceline_lib PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs GSL Eigen3)
+target_include_directories(raceline_lib PUBLIC include)
 ament_export_include_directories(include)
 ament_package()
 
