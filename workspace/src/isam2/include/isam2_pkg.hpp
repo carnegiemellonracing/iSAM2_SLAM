@@ -56,11 +56,11 @@ private:
     }
 
     gtsam::Symbol BLUE_L(int cone_pose_id) {
-        return Symbol('bl', cone_pose_id);
+        return Symbol('b', cone_pose_id);
     }
 
     gtsam::Symbol YELLOW_L(int cone_pose_id) {
-        return Symbol('yl', cone_pose_id);
+        return Symbol('y', cone_pose_id);
     }
     /* Assoc_Args common arguments */
     std::vector<Point2> cone_obs_blue;
