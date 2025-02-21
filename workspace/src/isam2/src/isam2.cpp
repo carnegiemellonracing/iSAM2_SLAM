@@ -8,7 +8,7 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
     // Initializing SLAM Parameters
     parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
-    parameters.setFactorization("Cholesky");
+    parameters.setFactorization("QR");
     // parameters.enablePartialRelinearizationCheck = true;
     logger = input_logger;
     isam2 = gtsam::ISAM2(parameters);
@@ -149,14 +149,14 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         //TODO: consider when the car slows to a stop?
 
         if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
-            if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
-                RCLCPP_INFO(logger.value(), "Car is moving");
-            } else {
-                RCLCPP_INFO(logger.value(), "Car stopped");
-            }
+            //RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
+            //if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
+                //RCLCPP_INFO(logger.value(), "Car is moving");
+            //} else {
+                //RCLCPP_INFO(logger.value(), "Car stopped");
+            //}
 
-            RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
+            //RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
 
         }
 
