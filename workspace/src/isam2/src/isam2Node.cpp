@@ -51,8 +51,8 @@ public:
         dt = .1;
 
         //TODO: std::optional where init is set to None
-        // init_lon_lat = std::nullopt;
-        init_lon_lat = gtsam::Point2(-71.458633,43.358253);
+        init_lon_lat = std::nullopt;
+        // init_lon_lat = gtsam::Point2(-71.458633,43.358253);
         file_opened = true;
 
         prev_filter_time = std::nullopt;
