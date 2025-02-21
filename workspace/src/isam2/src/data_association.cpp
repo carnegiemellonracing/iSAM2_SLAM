@@ -110,13 +110,43 @@ typedef std::vector<int> association_list_t;
 /**
  * @brief Calculates the measurement model jacobian for the given innovation.
  * The jacobian should be a 2 row by 5 column matrix.
+ * 
+ * The innovation is the difference in global position between an observed cone
+ * and a cone estimate
  */
-Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Point2 innovation) {
-    double q = norm2(innovation);
-    jacobian << (-sqrt(q) * innovation.x()), (-sqrt(q) * innovation.y()), 0, (sqrt(q) * innovation.x()), (sqrt(q) * innovation.y()),
-                innovation.y(), -innovation.x(), -q, -innovation.y(), innovation.x();
-    jacobian = jacobian * (1/q);
+Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 pose, gtsam::Point2 cone, int num_obs, int association_idx) {
+    double xy_from_car = norm2(cone);
+    Eigen::MatrixXd jacobian(2, 2 * num_obs + 3);
+    Eigen::MatrixXd range_bearing_state_deriv_block(2, 3);
+    range_bearing_state_deriv_block << (-sqrt(q) * innovation.x()), (-sqrt(q) * innovation.y()), 0,
+                                                    innovation.y(), -innovation.x(), -q;
+    
+    Eigen::MatrixXd measurement_block(2, 2);
+    measurement_block << (sqrt(q) * innovation.x()), (sqrt(q) * innovation.y()),
+                         -innovation.y(), innovation.x();
+    
+    jacobian.block<2, 3>(0, 0) = range_bearing_state_deriv_block;
+    jacobian.block<2, 2>(0, 3 + 2 * association_idx) = measurement_block;
+    jacobian = jacobian * 1/q;
 
+    return jacobian;
+
+}
+
+Eigen::MatrixXd get_covariance_estimate(gtsam::Pose2 prev_state, Eigen::MatrixXd prev_cov_matrix, gtsam::Pose2 velocity, double dt, int num_obs) {
+    Eigen::MatrixXd state_jacobian_G = Eigen::MatrixXd::Identity(2 * num_obs + 3, 2 * num_obs + 3);
+    double velocity_mag = norm2(Point2(velocity.x(), velocity.y()));
+    state_jacobian_G(0, 2) = (-(velocity_mag / velocity.theta()) * cos(prev_state.theta()) + 
+                                (velocity_mag/velocity.theta()) * cos(prev_state.theta() + velocity.theta() * dt));
+    state_jacobian_G(1, 2) = (-(velocity_mag / velocity.theta()) * sin(prev_state.theta()) + 
+                                (velocity_mag/velocity.theta()) * sin(prev_state.theta() + velocity.theta() * dt));
+
+    Eigen::MatrixXd noise_matrix_R = Eigen::MatrixXd::Zero(2 * num_obs + 3, 2 * num_obs + 3);
+    noise_matrix_R(0, 0) = 0.22;
+    noise_matrix_R(1, 1) = 0.22;
+    noise_matrix_R(2, 2) = degrees_to_radians(0.009);
+
+    return state_jacobian_G * prev_cov_matrix * state_jacobian_G.transpose() + noise_matrix_R;
 }
 /** 
  * @brief This function will take in a vector of association sets.

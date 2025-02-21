@@ -47,7 +47,7 @@ const double VELOCITY_MOVING_TH = 0.1; //meters per second
 const double TURNING_TH = 0.2;
 
 /* This will create the file starting at the workspace directory
- * 
+ *
  * This is is because the ros node, which is running the step function,
  * is run at that level.
  */
@@ -75,7 +75,7 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
                         Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger);
 
 /* Utility functions for motion modeling */
-void calc_lateral_velocity_error(double& dx_error, double& dy_error, 
+void calc_lateral_velocity_error(double& dx_error, double& dy_error,
                                 double ang_velocity, double yaw);
 
 void velocity_motion_model(Pose2 &new_pose, Pose2 &odometry,Pose2 &velocity, double dt,

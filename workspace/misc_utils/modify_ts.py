@@ -6,8 +6,8 @@ import os
 import shutil
 from typing import TYPE_CHECKING, cast
 
-input_bag = 'fourth-run-mock-demo-clone/'
-output_bag = 'fourth-run-mock-demo-stamped/'
+input_bag = '/home/dale/rosbags/fourth-run-mock-demo/'
+output_bag = '/home/dale/rosbags/fourth-run-mock-demo-stamped/'
 
 # How were these calculated: ros2 topic echo /lidar_points and
 # /filter/velocity and then end the rosbag and analyze the timestamps
