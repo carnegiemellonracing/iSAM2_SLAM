@@ -111,23 +111,27 @@ typedef std::vector<int> association_list_t;
  * @brief Calculates the measurement model jacobian for the given innovation.
  * The jacobian should be a 2 row by 5 column matrix.
  * 
- * The innovation is the difference in global position between an observed cone
- * and a cone estimate
+ * The cone should be in global frame coordinates. This is because we need the
+ * change in x and y in the global frame. 
  */
-Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 pose, gtsam::Point2 cone, int num_obs, int association_idx) {
-    double xy_from_car = norm2(cone);
+Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 pose, gtsam::Point2 cone_global_frame, int num_obs, int association_idx) {
+    Eigen::Vector2d diff = Eigen::Vector2d(cone_global_frame.x() - pose.x(), cone_global_frame.y() - pose.y());
+    double q = diff.squaredNorm();
     Eigen::MatrixXd jacobian(2, 2 * num_obs + 3);
     Eigen::MatrixXd range_bearing_state_deriv_block(2, 3);
-    range_bearing_state_deriv_block << (-sqrt(q) * innovation.x()), (-sqrt(q) * innovation.y()), 0,
-                                                    innovation.y(), -innovation.x(), -q;
+
+    /* Calculate the jacobian in blocks */
+    range_bearing_state_deriv_block << (-sqrt(q) * diff.x()), (-sqrt(q) * diff.y()), 0,
+                                                   diff.y(), -diff.x(), -q;
+    range_bearing_state_deriv_block = range_bearing_state_deriv_block *   1/q;
     
     Eigen::MatrixXd measurement_block(2, 2);
-    measurement_block << (sqrt(q) * innovation.x()), (sqrt(q) * innovation.y()),
-                         -innovation.y(), innovation.x();
-    
+    measurement_block << (sqrt(q) * diff.x()), (sqrt(q) * diff.y()),
+                         -diff.y(), diff.x();
+    measurement_block = measurement_block * 1/q;
+
     jacobian.block<2, 3>(0, 0) = range_bearing_state_deriv_block;
     jacobian.block<2, 2>(0, 3 + 2 * association_idx) = measurement_block;
-    jacobian = jacobian * 1/q;
 
     return jacobian;
 
@@ -141,13 +145,41 @@ Eigen::MatrixXd get_covariance_estimate(gtsam::Pose2 prev_state, Eigen::MatrixXd
     state_jacobian_G(1, 2) = (-(velocity_mag / velocity.theta()) * sin(prev_state.theta()) + 
                                 (velocity_mag/velocity.theta()) * sin(prev_state.theta() + velocity.theta() * dt));
 
-    Eigen::MatrixXd noise_matrix_R = Eigen::MatrixXd::Zero(2 * num_obs + 3, 2 * num_obs + 3);
-    noise_matrix_R(0, 0) = 0.22;
-    noise_matrix_R(1, 1) = 0.22;
-    noise_matrix_R(2, 2) = degrees_to_radians(0.009);
+    Eigen::MatrixXd cov_estimate = state_jacobian_G * prev_cov_matrix * state_jacobian_G.transpose();
 
-    return state_jacobian_G * prev_cov_matrix * state_jacobian_G.transpose() + noise_matrix_R;
+    cov_estimate(0, 0) = pow(0.22, 2);
+    cov_estimate(1, 1) = pow(0.22, 2);
+    cov_estimate(2, 2) = pow(degrees_to_radians(0.009), 2);
+
+    return cov_estimate;
 }
+
+
+/**
+ * @brief Gets the kalman gain matrix for the ith observed cone. Provide the covariance estimate matrix
+ * and the measurement jacobian for the ith observed cone.
+ * 
+ * This is to be used to correct the covariance matrix.
+ */
+Eigen::MatrixXd get_kalman_gain(Eigen::MatrixXd &covariance, Eigen::MatrixXd &msmt_jacobian) {
+    Eigen::MatrixXd msmt_noise_Q(2, 2);
+    msmt_noise_Q << pow(0.00045, 2), 0.0, 
+                    0.0, pow(0.03, 2); 
+    
+    return (covariance * msmt_jacobian.transpose() * 
+            (msmt_jacobian * covariance * msmt_jacobian.transpose() + msmt_noise_Q).inverse());
+}
+
+/**
+ * @brief Correct the covariance matrix using the kalman gain and the measurement jacobian.
+ */
+Eigen::MatrixXd covariance_correction(Eigen::MatrixXd &kalman_gain, Eigen::MatrixXd &msmt_jacobian, Eigen::MatrixXd &covariance, int num_obs) {
+    Eigen::MatrixXd identity = Eigen::MatrixXd::Identity(2 * num_obs + 3, 2 * num_obs + 3);
+
+    return (identity - (kalman_gain * msmt_jacobian)) * covariance;
+}
+
+
 /** 
  * @brief This function will take in a vector of association sets.
  * An association set is of observed cone mapped to old cone id pairing.
