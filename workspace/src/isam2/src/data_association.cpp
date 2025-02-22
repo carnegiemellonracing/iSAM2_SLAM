@@ -137,21 +137,20 @@ Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 pose, gtsam::Point2 
 
 }
 
-Eigen::MatrixXd get_covariance_estimate(gtsam::Pose2 prev_state, Eigen::MatrixXd prev_cov_matrix, gtsam::Pose2 velocity, double dt, int num_obs) {
+void get_covariance_estimate(gtsam::Pose2 prev_pose, Eigen::MatrixXd &covariance, gtsam::Pose2 velocity, double dt, int num_obs) {
     Eigen::MatrixXd state_jacobian_G = Eigen::MatrixXd::Identity(2 * num_obs + 3, 2 * num_obs + 3);
     double velocity_mag = norm2(Point2(velocity.x(), velocity.y()));
-    state_jacobian_G(0, 2) = (-(velocity_mag / velocity.theta()) * cos(prev_state.theta()) + 
-                                (velocity_mag/velocity.theta()) * cos(prev_state.theta() + velocity.theta() * dt));
-    state_jacobian_G(1, 2) = (-(velocity_mag / velocity.theta()) * sin(prev_state.theta()) + 
-                                (velocity_mag/velocity.theta()) * sin(prev_state.theta() + velocity.theta() * dt));
+    state_jacobian_G(0, 2) = (-(velocity_mag / velocity.theta()) * cos(prev_pose.theta()) + 
+                                (velocity_mag/velocity.theta()) *  cos(prev_pose.theta() + velocity.theta() * dt));
+    state_jacobian_G(1, 2) = (-(velocity_mag / velocity.theta()) * sin(prev_pose.theta()) + 
+                                (velocity_mag/velocity.theta()) *  sin(prev_pose.theta() + velocity.theta() * dt));
 
-    Eigen::MatrixXd cov_estimate = state_jacobian_G * prev_cov_matrix * state_jacobian_G.transpose();
+    covariance = state_jacobian_G * covariance * state_jacobian_G.transpose();
 
-    cov_estimate(0, 0) = pow(0.22, 2);
-    cov_estimate(1, 1) = pow(0.22, 2);
-    cov_estimate(2, 2) = pow(degrees_to_radians(0.009), 2);
+    covariance(0, 0) = pow(0.22, 2);
+    covariance(1, 1) = pow(0.22, 2);
+    covariance(2, 2) = pow(degrees_to_radians(0.009), 2);
 
-    return cov_estimate;
 }
 
 
@@ -173,44 +172,57 @@ Eigen::MatrixXd get_kalman_gain(Eigen::MatrixXd &covariance, Eigen::MatrixXd &ms
 /**
  * @brief Correct the covariance matrix using the kalman gain and the measurement jacobian.
  */
-Eigen::MatrixXd covariance_correction(Eigen::MatrixXd &kalman_gain, Eigen::MatrixXd &msmt_jacobian, Eigen::MatrixXd &covariance, int num_obs) {
+void covariance_correction(Eigen::MatrixXd &kalman_gain, Eigen::MatrixXd &msmt_jacobian, Eigen::MatrixXd &covariance, int num_obs) {
     Eigen::MatrixXd identity = Eigen::MatrixXd::Identity(2 * num_obs + 3, 2 * num_obs + 3);
 
-    return (identity - (kalman_gain * msmt_jacobian)) * covariance;
+    covariance = (identity - (kalman_gain * msmt_jacobian)) * covariance;
 }
 
 
 /** 
  * @brief This function will take in a vector of association sets.
- * An association set is of observed cone mapped to old cone id pairing.
- * We want to find the association set with the highest compatibility.
+ * 
+ * The input is a vector of pairs.
+ * Each pair is an association list and a vector of global cone positions.
+ * 
+ * An association list is a list where the indices represents the ith 
+ * observed cone and the element represents the old cone ID mapped to the 
+ * observed cone.
  */
-void compute_joint_compatibilities (std::vector<std::pair<association_list_t, std::vector<gtsam::Point2>>> &association_data) {
+void compute_joint_compatibilities (std::vector<std::pair<association_list_t, std::vector<gtsam::Point2>>> &association_data, 
+                                    gtsam::Pose2 prev_pose, gtsam::Pose2 pose, gtsam::Pose2 velocity, double dt, int num_obs) {
     std::vector<double> compatibilities = {};
+    Eigen::MatrixXd prev_cov_matrix; /* TODO INITIALIZE THIS GLOBALLY */
+    
+    /* Get covariance estimate */
+    association_list_t best_association_list;
+    std::vector<gtsam::Point2> best_association_estimates;
+    get_covariance_estimate(prev_pose, covariance, velocity, dt, num_obs);
+
     for (int i = 0; i < association_data.size(); i++) {
         /* Get the current association set */
-        std::pair<association_list_t, std::vector<double>> cur_association_list_info = association_data.at(i);
-        association_list_t association_list = cur_association_list_info.first;
-        std::vector<gtsam::Point2> innovations = cur_association_list_info.second;
-
-        /* Update the covariance matrix */
-        Eigen::MatrixXd association_list_jacobian(2 * num_obs, 5);
-        for (int i = 0; i < num_obs; i++) {
-            association_list_jacobian.block<2, 5>(2 * num_obs, 0) = get_measurement_model_jacobian(innovations.at(i));
-        }
+        association_list_t association_list = association_data.at(i).first;
+        std::vector<gtsam::Point2> global_cone_est = association_data.at(i).second;
 
         
-
         /* Get the vector of innovations for the current association set */
         /* Recall that innovation is the different between the 
          * observation from the estimate */
-        Eigen::VectorXd innovation(all_association_sets.size());
-        
+
+        /* innov. cov = stack jacobians vertically; multiply them with the previous covariance matrix; multilpy with stacked jacobs. transposed add R */
+        /* joint compatibility is the innovation vector transposed * innovation covariance * innovation vector */
 
 
+    }
 
+    /* After you have identified the association set to use */
+    for (int j = 0; j < num_obs; j++) {
+        /* For each landmark, calculate the measurement jacobian and the kalman gain to update the covariance */
+        /* association_idx is the old cone_ID the current/jth observed cone is associated to */
+        Eigen::MatrixXd measurement_jacobian = get_measurement_model_jacobian(pose, best_association_list.at(j), num_obs, best_association_estimates.at(j));
+        Eigen::MatrixXd kalman_gain = get_kalman_gain(covariance, measurement_jacobian);
 
-
+        covariance_correction(kalman_gain, measurement_jacobian, covariance, num_obs);
     }
 }
 
