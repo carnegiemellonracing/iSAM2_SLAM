@@ -1,0 +1,487 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Darwin - 23.5.0 - arm64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /opt/homebrew/bin/avr-gcc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is GNU, found in:
+        /Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/3.29.5/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /opt/homebrew/bin/avr-g++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is GNU, found in:
+        /Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/3.29.5/CompilerIdCXX/a.out
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:67 (try_compile)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-oDazaj"
+      binary: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-oDazaj"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-oDazaj'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.5/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_27870/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_27870.dir/build.make CMakeFiles/cmTC_27870.dir/build
+        Building C object CMakeFiles/cmTC_27870.dir/CMakeCCompilerABI.c.o
+        /opt/homebrew/bin/avr-gcc   -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk   -v -Wl,-v -o CMakeFiles/cmTC_27870.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeCCompilerABI.c
+        avr-gcc: error: arm64: No such file or directory
+        Using built-in specs.
+        Reading specs from /opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/lib/avr-gcc/9/gcc/avr/9.4.0/device-specs/specs-avr2
+        COLLECT_GCC=/opt/homebrew/bin/avr-gcc
+        avr-gcc: error: unrecognized command line option '-arch'
+        Target: avr
+        Configured with: ../configure --target=avr --prefix=/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1 --libdir=/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/lib/avr-gcc/9 --enable-languages=c,c++ --with-ld=/opt/homebrew/opt/avr-binutils/bin/avr-ld --with-as=/opt/homebrew/opt/avr-binutils/bin/avr-as --disable-nls --disable-libssp --disable-shared --disable-threads --disable-libgomp --with-dwarf2 --with-avrlibc --with-system-zlib --with-pkgversion='Homebrew AVR GCC 9.4.0_1' --with-bugurl=https://github.com/osx-cross/homebrew-avr/issues SED=/usr/bin/sed
+        Thread model: single
+        gcc version 9.4.0 (Homebrew AVR GCC 9.4.0_1) 
+        make[1]: *** [CMakeFiles/cmTC_27870.dir/CMakeCCompilerABI.c.o] Error 1
+        make: *** [cmTC_27870/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeTestCCompiler.cmake:56 (try_compile)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Check for working C compiler: /opt/homebrew/bin/avr-gcc"
+    directories:
+      source: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-BTCn4c"
+      binary: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-BTCn4c"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_C_COMPILER_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-BTCn4c'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.5/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_fd601/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_fd601.dir/build.make CMakeFiles/cmTC_fd601.dir/build
+        Building C object CMakeFiles/cmTC_fd601.dir/testCCompiler.c.o
+        /opt/homebrew/bin/avr-gcc   -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/cmTC_fd601.dir/testCCompiler.c.o -c "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-BTCn4c/testCCompiler.c"
+        avr-gcc: error: arm64: No such file or directory
+        avr-gcc: error: unrecognized command line option '-arch'
+        make[1]: *** [CMakeFiles/cmTC_fd601.dir/testCCompiler.c.o] Error 1
+        make: *** [cmTC_fd601/fast] Error 2
+        
+      exitCode: 2
+...
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /opt/homebrew/bin/avr-gcc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is GNU, found in:
+        /Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/3.29.5/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /opt/homebrew/bin/avr-g++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is GNU, found in:
+        /Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/3.29.5/CompilerIdCXX/a.out
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:67 (try_compile)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-JBpvxQ"
+      binary: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-JBpvxQ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-JBpvxQ'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.5/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b648e/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_b648e.dir/build.make CMakeFiles/cmTC_b648e.dir/build
+        Building C object CMakeFiles/cmTC_b648e.dir/CMakeCCompilerABI.c.o
+        /opt/homebrew/bin/avr-gcc   -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk   -v -Wl,-v -o CMakeFiles/cmTC_b648e.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeCCompilerABI.c
+        avr-gcc: error: arm64: No such file or directory
+        Using built-in specs.
+        Reading specs from /opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/lib/avr-gcc/9/gcc/avr/9.4.0/device-specs/specs-avr2
+        COLLECT_GCC=/opt/homebrew/bin/avr-gcc
+        avr-gcc: error: unrecognized command line option '-arch'
+        Target: avr
+        Configured with: ../configure --target=avr --prefix=/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1 --libdir=/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/lib/avr-gcc/9 --enable-languages=c,c++ --with-ld=/opt/homebrew/opt/avr-binutils/bin/avr-ld --with-as=/opt/homebrew/opt/avr-binutils/bin/avr-as --disable-nls --disable-libssp --disable-shared --disable-threads --disable-libgomp --with-dwarf2 --with-avrlibc --with-system-zlib --with-pkgversion='Homebrew AVR GCC 9.4.0_1' --with-bugurl=https://github.com/osx-cross/homebrew-avr/issues SED=/usr/bin/sed
+        Thread model: single
+        gcc version 9.4.0 (Homebrew AVR GCC 9.4.0_1) 
+        make[1]: *** [CMakeFiles/cmTC_b648e.dir/CMakeCCompilerABI.c.o] Error 1
+        make: *** [cmTC_b648e/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeTestCCompiler.cmake:56 (try_compile)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Check for working C compiler: /opt/homebrew/bin/avr-gcc"
+    directories:
+      source: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-A0HPMO"
+      binary: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-A0HPMO"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_C_COMPILER_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-A0HPMO'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.5/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b16c8/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_b16c8.dir/build.make CMakeFiles/cmTC_b16c8.dir/build
+        Building C object CMakeFiles/cmTC_b16c8.dir/testCCompiler.c.o
+        /opt/homebrew/bin/avr-gcc   -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/cmTC_b16c8.dir/testCCompiler.c.o -c "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-A0HPMO/testCCompiler.c"
+        avr-gcc: error: arm64: No such file or directory
+        avr-gcc: error: unrecognized command line option '-arch'
+        make[1]: *** [CMakeFiles/cmTC_b16c8.dir/testCCompiler.c.o] Error 1
+        make: *** [cmTC_b16c8/fast] Error 2
+        
+      exitCode: 2
+...
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /opt/homebrew/bin/avr-gcc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is GNU, found in:
+        /Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/3.29.5/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /opt/homebrew/bin/avr-g++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is GNU, found in:
+        /Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/3.29.5/CompilerIdCXX/a.out
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:67 (try_compile)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-wmrur7"
+      binary: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-wmrur7"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-wmrur7'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.5/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_3b699/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_3b699.dir/build.make CMakeFiles/cmTC_3b699.dir/build
+        Building C object CMakeFiles/cmTC_3b699.dir/CMakeCCompilerABI.c.o
+        /opt/homebrew/bin/avr-gcc   -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk   -v -Wl,-v -o CMakeFiles/cmTC_3b699.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeCCompilerABI.c
+        avr-gcc: error: arm64: No such file or directory
+        Using built-in specs.
+        Reading specs from /opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/lib/avr-gcc/9/gcc/avr/9.4.0/device-specs/specs-avr2
+        COLLECT_GCC=/opt/homebrew/bin/avr-gcc
+        avr-gcc: error: unrecognized command line option '-arch'
+        Target: avr
+        Configured with: ../configure --target=avr --prefix=/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1 --libdir=/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/lib/avr-gcc/9 --enable-languages=c,c++ --with-ld=/opt/homebrew/opt/avr-binutils/bin/avr-ld --with-as=/opt/homebrew/opt/avr-binutils/bin/avr-as --disable-nls --disable-libssp --disable-shared --disable-threads --disable-libgomp --with-dwarf2 --with-avrlibc --with-system-zlib --with-pkgversion='Homebrew AVR GCC 9.4.0_1' --with-bugurl=https://github.com/osx-cross/homebrew-avr/issues SED=/usr/bin/sed
+        Thread model: single
+        gcc version 9.4.0 (Homebrew AVR GCC 9.4.0_1) 
+        make[1]: *** [CMakeFiles/cmTC_3b699.dir/CMakeCCompilerABI.c.o] Error 1
+        make: *** [cmTC_3b699/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeTestCCompiler.cmake:56 (try_compile)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Check for working C compiler: /opt/homebrew/bin/avr-gcc"
+    directories:
+      source: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-lAzeCI"
+      binary: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-lAzeCI"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_C_COMPILER_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-lAzeCI'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.5/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7d7c5/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_7d7c5.dir/build.make CMakeFiles/cmTC_7d7c5.dir/build
+        Building C object CMakeFiles/cmTC_7d7c5.dir/testCCompiler.c.o
+        /opt/homebrew/bin/avr-gcc   -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/cmTC_7d7c5.dir/testCCompiler.c.o -c "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-lAzeCI/testCCompiler.c"
+        avr-gcc: error: arm64: No such file or directory
+        avr-gcc: error: unrecognized command line option '-arch'
+        make[1]: *** [CMakeFiles/cmTC_7d7c5.dir/testCCompiler.c.o] Error 1
+        make: *** [cmTC_7d7c5/fast] Error 2
+        
+      exitCode: 2
+...
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /opt/homebrew/bin/avr-gcc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is GNU, found in:
+        /Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/3.29.5/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /opt/homebrew/bin/avr-g++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is GNU, found in:
+        /Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/3.29.5/CompilerIdCXX/a.out
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:67 (try_compile)"
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-nBDcdx"
+      binary: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-nBDcdx"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-nBDcdx'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.5/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_66d17/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_66d17.dir/build.make CMakeFiles/cmTC_66d17.dir/build
+        Building C object CMakeFiles/cmTC_66d17.dir/CMakeCCompilerABI.c.o
+        /opt/homebrew/bin/avr-gcc   -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk   -v -Wl,-v -o CMakeFiles/cmTC_66d17.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeCCompilerABI.c
+        avr-gcc: error: arm64: No such file or directory
+        Using built-in specs.
+        Reading specs from /opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/lib/avr-gcc/9/gcc/avr/9.4.0/device-specs/specs-avr2
+        COLLECT_GCC=/opt/homebrew/bin/avr-gcc
+        avr-gcc: error: unrecognized command line option '-arch'
+        Target: avr
+        Configured with: ../configure --target=avr --prefix=/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1 --libdir=/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/lib/avr-gcc/9 --enable-languages=c,c++ --with-ld=/opt/homebrew/opt/avr-binutils/bin/avr-ld --with-as=/opt/homebrew/opt/avr-binutils/bin/avr-as --disable-nls --disable-libssp --disable-shared --disable-threads --disable-libgomp --with-dwarf2 --with-avrlibc --with-system-zlib --with-pkgversion='Homebrew AVR GCC 9.4.0_1' --with-bugurl=https://github.com/osx-cross/homebrew-avr/issues SED=/usr/bin/sed
+        Thread model: single
+        gcc version 9.4.0 (Homebrew AVR GCC 9.4.0_1) 
+        make[1]: *** [CMakeFiles/cmTC_66d17.dir/CMakeCCompilerABI.c.o] Error 1
+        make: *** [cmTC_66d17/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.5/share/cmake/Modules/CMakeTestCCompiler.cmake:56 (try_compile)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Check for working C compiler: /opt/homebrew/bin/avr-gcc"
+    directories:
+      source: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-uEEVdR"
+      binary: "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-uEEVdR"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_C_COMPILER_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-uEEVdR'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.5/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7ffee/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_7ffee.dir/build.make CMakeFiles/cmTC_7ffee.dir/build
+        Building C object CMakeFiles/cmTC_7ffee.dir/testCCompiler.c.o
+        /opt/homebrew/bin/avr-gcc   -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/cmTC_7ffee.dir/testCCompiler.c.o -c "/Users/adityadewan/Documents/PROFESSIONAL./UNIVERSITY./CARNEGIE MELLON UNIVERSITY./CARNEGIE MELLON RACING./iSAM2_SLAM/build/CMakeFiles/CMakeScratch/TryCompile-uEEVdR/testCCompiler.c"
+        avr-gcc: error: arm64: No such file or directory
+        avr-gcc: error: unrecognized command line option '-arch'
+        make[1]: *** [CMakeFiles/cmTC_7ffee.dir/testCCompiler.c.o] Error 1
+        make: *** [cmTC_7ffee/fast] Error 2
+        
+      exitCode: 2
+...
