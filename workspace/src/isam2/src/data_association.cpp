@@ -91,27 +91,36 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
         for (int j = 0; j < cone_cache.size(); ++j) {
             //calculate mahalanobis distance...
             MatrixXd diff(1,2);
-            diff << std::get<2>(cone_cache.at(j).cone).x() - cone_global_position.x(), 
-                    std::get<2>(cone_cache.at(j).cone).y() - cone_global_position.y();
+            diff << (std::get<2>(cone_cache.at(j).cone)).x() - cone_global_position.x(), 
+                    (std::get<2>(cone_cache.at(j).cone)).y() - cone_global_position.y();
 
-            // Eigen::Matrix2d landmark_model_matrix; // 2x2 fixed-size matrix
-            // landmark_model_matrix << 0.00045, 0,
-            //         0, 0.03;
+            //A. We can either use Mahalanobis Distance
+            Eigen::Matrix2d landmark_model_matrix; // 2x2 fixed-size matrix
+            landmark_model_matrix << 0.00045, 0,
+                    0, 0.03;
 
-            // double dist = (diff * landmark_model_matrix * diff.transpose())(0,0);
-            double dist = (diff * diff.transpose())(0,0);
-            dist = sqrt(dist);
+            double maha_dist = (diff * landmark_model_matrix * diff.transpose())(0,0);
+            // if(logger.has_value()) {
+            //     RCLCPP_INFO(logger.value(), "mahalanobis distance cone_cache[%d] and candidate[%d]: %d", j, i, maha_dist);
+            // }
 
+            //B. or Use Euclidean Distance
+            double euclid_dist = (diff * diff.transpose())(0,0);
+            euclid_dist = sqrt(euclid_dist);
+            if(logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "euclide distance: cone_cache[%d] <-> candidate[%d]: %d", j, i, euclid_dist);
+            }
+                
             //find least mahalanobis distance
-            if (dist < min_dist) { //update new minimum distance and corresponding cone
+            if (euclid_dist < min_dist) { //update new minimum distance and corresponding cone
                 min_dist_cone = cone_cache.at(j).cone;
-                min_dist = dist;
+                min_dist = euclid_dist;
                 min_dist_cone_index = j;
             }
         }
 
-        //if threshold is less than mahalanobis distance, it is a prexisting cone 
-        if (min_dist < 3.0)  { 
+        //if threshold is less than mahalanobis distance, it is a cone we have seen in cone cache - we are sure about this being a new cone 
+        if (min_dist < 0.8)  { 
             if(logger.has_value()) {
                 RCLCPP_INFO(logger.value(), "cone_cache_erase index: %d", min_dist_cone_index);
                 RCLCPP_INFO(logger.value(), "cone_cache_erase_size: %ld", cone_cache.size());
@@ -129,7 +138,7 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
         }
     }
 
-    // remove_stale_cones_from_cone_cache(cone_cache, 5, logger);
+    remove_stale_cones_from_cone_cache(cone_cache, 2, logger);
 }
 
 void data_association(vector<tuple<Point2, double, int>> &old_cones,
