@@ -23,7 +23,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
   # remember that you may need to do -O0 when using gdb to debug
 endif()
-
+message(PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}")
+message(PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 # find dependencies
 find_package(geometry_msgs REQUIRED)
 find_package(interfaces REQUIRED)

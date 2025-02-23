@@ -34,6 +34,7 @@
 #include "unary_factor.hpp"
 #include "ros_utils.hpp"
 #include "loop_closure.hpp"
+#include "racelineChunk.hpp"
 
 const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 
