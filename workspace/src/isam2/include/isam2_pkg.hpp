@@ -76,11 +76,8 @@ private:
     Eigen::MatrixXd blue_bearing;
     Eigen::MatrixXd yellow_bearing;
 
-    std::vector<Pose2> blue_cone_est;
-    std::vector<Pose2> yellow_cone_est;
-    
-    std::vector<int> blue_cone_ids;
-    std::vector<int> yellow_cone_ids;
+    std::vector<gtsam::Point2> blue_cone_est;
+    std::vector<gtsam::Point2> yellow_cone_est;
 
     Pose2 global_odom;
 
@@ -107,9 +104,6 @@ public:
 
     bool heuristic_run;
 
-    /* how the landmark estimates are organized */
-    std::vector<int> blue_cone_IDs;
-    std::vector<int> yellow_cone_IDs;
 
     gtsam::Vector LandmarkNoiseModel;
     noiseModel::Diagonal::shared_ptr landmark_model;
@@ -126,9 +120,9 @@ public:
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
             Pose2 &velocity,double dt, optional<rclcpp::Logger> logger);
 
-    void update_landmarks(std::vector<tuple<Point2, double, int>> &old_cones,
-                        std::vector<tuple<Point2, double, Point2>> &new_cones,
-                        Pose2 &cur_pose);
+    void update_landmarks(std::vector<Old_cone_info> &old_cones,
+                        std::vector<New_cone_info> &new_cones, int &n_landmarks,
+                        char color, gtsam::Pose2 &cur_pose);
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
@@ -137,6 +131,7 @@ public:
 
     void print_estimates();
 
-    int identify_chunks();
+    int identify_chunk(std::vector<Old_cone_info> &blue_old_cones,
+                       std::vector<Old_cone_info> &yellow_old_cones);
 
 };

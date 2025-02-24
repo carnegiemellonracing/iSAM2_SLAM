@@ -7,10 +7,6 @@ using std::size_t;
 slamISAM::slamISAM(optional<rclcpp::Logger> input_logger)
 {
 
-    // Initializing SLAM Parameters
-    blue_cone_ids = {};
-    yellow_cone_ids = {};
-
     // Chunking
     all_chunks = {};
     blue_cone_to_chunk = {};
@@ -26,8 +22,9 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger)
 
     pose_num = 0;
     first_pose_added = false;
-    n_landmarks = 0;
-
+    blue_n_landmarks = 0;
+    yellow_n_landmarks = 0;
+    
     /* Bearing and range error
      * Corresponds to the usage of the BearingRangeFactor we are using
      *
@@ -201,7 +198,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
  */
 void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
                                 std::vector<New_cone_info> &new_cones,
-                                std::vector<int> &cone_ids, int &n_landmarks,
+                                int &n_landmarks, char color,
                                 Pose2 &cur_pose)
 {
 
@@ -222,7 +219,17 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
         Rot2 b = Rot2::fromAngle((old_cones.at(o)).bearing);
         double r = norm2(cone_pos_car_frame);
 
-        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(min_id),
+
+        gtsam::Symbol landmark_symbol;
+        if (color == 'b')
+        {
+            landmark_symbol = BLUE_L(min_id);
+        }
+        else
+        {
+            landmark_symbol = YELLOW_L(min_id);
+        }
+        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), landmark_symbol,
                                                     b,
                                                     r,
                                                     landmark_model));
@@ -239,13 +246,22 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
 
         Point2 cone_global_frame = (new_cones.at(n).global_cone_pos);
 
-        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(n_landmarks),
+        gtsam::Symbol landmark_symbol;
+        if (color == 'b')
+        {
+            landmark_symbol = BLUE_L(n_landmarks);
+        }
+        else
+        {
+            landmark_symbol = YELLOW_L(n_landmarks);
+        }
+
+        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), landmark_symbol,
                                                     b,
                                                     r,
                                                     landmark_model));
-        cone_ids.push_back(n_landmarks);
 
-        values.insert(L(n_landmarks), cone_global_frame);
+        values.insert(landmark_symbol, cone_global_frame);
         n_landmarks++;
     }
 
@@ -274,7 +290,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     // print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
     log_step_inputs(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
 
-    if (n_landmarks > 0)
+    if (blue_n_landmarks+yellow_n_landmarks > 0) 
     {
         auto start_step = high_resolution_clock::now();
         auto dur_betw_step = duration_cast<milliseconds>(start_step - end);
@@ -344,22 +360,23 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     std::vector<Point2> slam_est = {};
     for (int i = 0; i < blue_n_landmarks; i++)
     {
-        blue_slam_est.push_back(isam2.calculateEstimate(BLUE_L(i)).cast<Point2>());
+        blue_cone_est.push_back(isam2.calculateEstimate(BLUE_L(i)).cast<gtsam::Point2>());
     }
 
     for (int i = 0; i < yellow_n_landmarks; i++)
     {
-        yellow_slam_est.push_back(isam2.calculateEstimate(YELLOW_L(i)).cast<Point2>());
+        yellow_cone_est.push_back(isam2.calculateEstimate(YELLOW_L(i)).cast<gtsam::Point2>());
     }
 
-    std::vector<MatrixXd> slam_mcov = {};
+    std::vector<MatrixXd> blue_cone_mcov = {};
+    std::vector<MatrixXd> yellow_cone_mcov = {};
     for (int i = 0; i < blue_n_landmarks; i++)
     {
-        blue_slam_mcov.push_back(isam2.marginalCovariance(BLUE_L(i)));
+        blue_cone_mcov.push_back(isam2.marginalCovariance(BLUE_L(i)));
     }
     for (int i = 0; i < yellow_n_landmarks; i++)
     {
-        yellow_slam_mcov.push_back(isam2.marginalCovariance(YELLOW_L(i)));
+        yellow_cone_mcov.push_back(isam2.marginalCovariance(YELLOW_L(i)));
     }
 
     auto end_est_retrieval = high_resolution_clock::now();
@@ -379,11 +396,11 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     std::vector<New_cone_info> yellow_new_cones;
 
     auto start_DA = high_resolution_clock::now();
-    data_association(blue_old_cones, blue_new_cones, blue_cone_ids, cur_pose, prev_pose, is_turning,
-                     cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
+    data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
+                     cone_obs_blue, logger, blue_cone_est, blue_cone_mcov);
 
-    data_association(yellow_old_cones, yellow_new_cones, yellow_cone_ids, cur_pose, prev_pose, is_turning,
-                     cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov);
+    data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
+                     cone_obs_yellow, logger, yellow_cone_est, yellow_cone_mcov);
 
     auto end_DA = high_resolution_clock::now();
     auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
@@ -396,8 +413,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     if (!loop_closure)
     {
         auto start_update_landmarks = high_resolution_clock::now();
-        update_landmarks(blue_old_cones, blue_new_cones, blue_cone_ids, blue_n_landmarks, cur_pose);
-        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_cone_ids, yellow_n_landmarks, cur_pose);
+        update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, 'b', cur_pose);
+        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, 'y', cur_pose);
 
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
@@ -413,21 +430,24 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         if (!completed_chunking)
         {
             /* This is a map from cone ID (the index) to chunk ID, the element*/
-            blue_cone_to_chunk.resize(blue_cone_ids.size(), 0);
-            yellow_cone_to_chunk.resize(yellow_cone_ids.size(), 0);
+            blue_cone_to_chunk.resize(blue_n_landmarks, 0);
+            yellow_cone_to_chunk.resize(yellow_n_landmarks, 0);
 
-            for (int i = 0; i < blue_cones_id.size(); i++)
+            std::vector<std::tuple<double, double, int>> blue_cones;
+            std::vector<std::tuple<double, double, int>> yellow_cones;
+
+            for (int i = 0; i < blue_n_landmarks; i++)
             {
-                int id = blue_cones_id.at(i);
+                int id = i;
                 Point2 curr_cone = isam2.calculateEstimate(BLUE_L(id)).cast<Point2>();
                 blue_cones.emplace_back(curr_cone.x(),
                                         curr_cone.y(),
                                         id);
             }
 
-            for (int i = 0; i < yellow_cones_id.size(); i++)
+            for (int i = 0; i < yellow_n_landmarks; i++)
             {
-                int id = yellow_cones_id.at(i);
+                int id = i;
                 Point2 curr_cone = isam2.calculateEstimate(YELLOW_L(id)).cast<Point2>();
                 yellow_cones.emplace_back(curr_cone.x(),
                                           curr_cone.y(),
@@ -437,22 +457,22 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             all_chunks = *generateChunks(blue_cones, yellow_cones);
             /* Process the chunks to create the map from cone_ids to chunk_ids*/
             // make cone to chunk tables (for blue and yellow cones separately)
-            for (int i = 0; i < all_chunks.size(); i++)
+            for (int chunk_id = 0; chunk_id < all_chunks.size(); chunk_id++)
             {
-                Chunks *curr_chunk = all_chunks.at(i);
+                Chunk *curr_chunk = all_chunks.at(chunk_id);
 
                 // blue cones
                 for (int j = 0; j < curr_chunk->blueConeIds.size(); j++)
                 {
-                    int id = curr_chunk->blueConeIds.at(j);
-                    blue_cone_to_chunk.at(id) = curr_chunk;
+                    int cone_id = curr_chunk->blueConeIds.at(j);
+                    blue_cone_to_chunk.at(cone_id) = chunk_id;
                 }
 
                 // yellow cones
                 for (int j = 0; j < curr_chunk->yellowConeIds.size(); j++)
                 {
-                    int id = curr_chunk->yellowConeIds.at(j);
-                    yellow_cone_to_chunk.at(id) = curr_chunk;
+                    int cone_id = curr_chunk->yellowConeIds.at(j);
+                    yellow_cone_to_chunk.at(cone_id) = chunk_id;
                 }
             }
 
@@ -460,7 +480,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         }
         else
         {
-            int cur_chunk_id = identify_chunks();
+            int cur_chunk_id = identify_chunk(blue_old_cones, yellow_old_cones);
             if (logger.has_value()) {
                 RCLCPP_INFO(logger.value(), "Current chunk ID: %d",  cur_chunk_id);
             }
@@ -511,7 +531,8 @@ void slamISAM::print_estimates()
     estimate.print("Estimate:");
 }
 
-int slamISAM::identify_chunk()
+int slamISAM::identify_chunk(std::vector<Old_cone_info> &blue_old_cones,
+                       std::vector<Old_cone_info> &yellow_old_cones)
 {
     // add new cones to lookup table
     //   Assume that chunks has the cones associated with each track bound
@@ -544,7 +565,7 @@ int slamISAM::identify_chunk()
     // vote on behalf of blue cones! 
     for (size_t i = 0; i < blue_old_cones.size(); i++)
     {
-        int cone_id = old_cones.at(i).id;
+        int cone_id = blue_old_cones.at(i).min_id;
         int chunk_id = blue_cone_to_chunk[cone_id];
 
         /* Check if the chunkID is already in the voting map */ 
@@ -561,7 +582,7 @@ int slamISAM::identify_chunk()
     // vote on behalf of yellow cones! 
     for (size_t i = 0; i < yellow_old_cones.size(); i++)
     {
-        int cone_id = old_cones.at(i).id;
+        int cone_id = yellow_old_cones.at(i).min_id;
         int chunk_id = yellow_cone_to_chunk[cone_id];
 
         /* Check if the chunkID is already in the voting map */ 
@@ -580,9 +601,9 @@ int slamISAM::identify_chunk()
     int max_votes = -1;
     for (const std::pair<int, int>& chunkID_and_vote : chunkID_to_vote)
     {
-        if (chunkID_and_vote->second > max_votes) {
-            max_votes = chunkID_and_vote->second;
-            max_chunk_id = chunkID_and_vote->first;
+        if (chunkID_and_vote.second > max_votes) {
+            max_votes = chunkID_and_vote.second;
+            max_chunk_id = chunkID_and_vote.first;
         }
     }
     return max_chunk_id;
