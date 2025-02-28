@@ -72,6 +72,15 @@ void remove_stale_cones_from_cone_cache(vector<ConeCacheType> &cone_cache, int t
     }
 }
 
+
+void print_cone_cache(vector<ConeCacheType> &cone_cache, optional<rclcpp::Logger> &logger) {
+    if (logger.has_value()) {
+        for (int i=0; i<cone_cache.size(); ++i) {
+            RCLCPP_INFO(logger.value(), "cone_cache[%d]: %f, %f", i, (std::get<2>(cone_cache.at(i).cone)).x(), (std::get<2>(cone_cache.at(i).cone)).y());
+        }
+    }
+}
+
 /*
 @brief given candidate new cones, store a cache to find new cones 
 */
@@ -81,6 +90,10 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
                                 noiseModel::Diagonal::shared_ptr &landmark_model, optional<rclcpp::Logger> &logger) {
 
     for (int i = candidate_new_cones.size()-1; i >= 0; --i) {  //iterate backwards through candidate cones to not get any iterator issues
+        if (logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "<---- cur candidate_new_cone[%d] x:%f y:%f ---->", i, std::get<2>(candidate_new_cones[i]).x(), std::get<2>(candidate_new_cones[i]).y());
+        }
+
         Point2 cone_global_position = std::get<2>(candidate_new_cones[i]);
 
         double min_dist = std::numeric_limits<double>::max(); //max double for comparison
@@ -99,16 +112,11 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
             landmark_model_matrix << 0.00045, 0,
                     0, 0.03;
 
-            double maha_dist = (diff * landmark_model_matrix * diff.transpose())(0,0);
-            // if(logger.has_value()) {
-            //     RCLCPP_INFO(logger.value(), "mahalanobis distance cone_cache[%d] and candidate[%d]: %d", j, i, maha_dist);
-            // }
-
             //B. or Use Euclidean Distance
             double euclid_dist = (diff * diff.transpose())(0,0);
             euclid_dist = sqrt(euclid_dist);
             if(logger.has_value()) {
-                RCLCPP_INFO(logger.value(), "euclide distance: cone_cache[%d] <-> candidate[%d]: %d", j, i, euclid_dist);
+                RCLCPP_INFO(logger.value(), "euclide distance: cone_cache[%d] <-> candidate[%d]: %f", j, i, euclid_dist);
             }
                 
             //find least mahalanobis distance
@@ -119,8 +127,8 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
             }
         }
 
-        //if threshold is less than mahalanobis distance, it is a cone we have seen in cone cache - we are sure about this being a new cone 
         if (min_dist < 0.8)  { 
+        //if threshold is less than mahalanobis distance, it is a cone we have seen in cone cache - we are sure about this being a new cone 
             if(logger.has_value()) {
                 RCLCPP_INFO(logger.value(), "cone_cache_erase index: %d", min_dist_cone_index);
                 RCLCPP_INFO(logger.value(), "cone_cache_erase_size: %ld", cone_cache.size());
@@ -132,13 +140,14 @@ void get_cone_cache_new_cones(vector<tuple<Point2, double, Point2>> &candidate_n
         else {
             cone_cache.push_back(ConeCacheType(candidate_new_cones.at(i)));
         }
-        //remove stale cones
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "removing stale cones");
-        }
+    }
+    //remove stale cones
+    if(logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "removing stale cones\n");
     }
 
     remove_stale_cones_from_cone_cache(cone_cache, 2, logger);
+
 }
 
 void data_association(vector<tuple<Point2, double, int>> &old_cones,
@@ -190,5 +199,7 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
 
     get_cone_cache_new_cones(candidate_new_cones, new_cones, cone_cache, landmark_model, logger);
 
-    RCLCPP_INFO(logger.value(), "new cones size %ld", new_cones.size());
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "new cones size %ld", new_cones.size());
+    }
 }

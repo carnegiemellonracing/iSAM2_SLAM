@@ -13,8 +13,8 @@
 
 #include <cone_cache_type.h>
 
-const double M_DIST_TH = 0.0001;
-const double TURNING_M_DIST_TH = 0.0001;
+const double M_DIST_TH = 0.0009;
+const double TURNING_M_DIST_TH = 0.0005;
 // const double M_DIST_TH = 0.0005;
 // const double TURNING_M_DIST_TH = 0.0005;
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
