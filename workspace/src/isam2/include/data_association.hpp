@@ -35,10 +35,12 @@ struct New_cone_info {
 
 struct Old_cone_info {
     Point2 local_cone_pos;
+    Point2 global_cone_pos;
     double bearing;
     int min_id; // The id of the old cone observed cone was associated with
-    Old_cone_info (Point2 local_cone_pos, double bearing, int min_id)
+    Old_cone_info (Point2 local_cone_pos, Point2 global_cone_pos, double bearing, int min_id)
         : local_cone_pos(local_cone_pos)
+        , global_cone_pos(global_cone_pos)
         , bearing(bearing)
         , min_id(min_id)
     {}
@@ -185,9 +187,6 @@ class CSP {
      * 
      * This function will be used whenever we assign a value to variable B
      * 
-     * @param removed A boolean to indicate if a domain value was removed. Will inform
-     * AC-3 algo if we need to enforce any more edges
-     * 
      * @param arc_to_enforce A pair where the first element is the tail
      * and the last element is the head of the arc.
      * 
@@ -195,10 +194,10 @@ class CSP {
      * 
      * @param logger An optional logger for debugging
      * 
-     * @return True if the arc is consistent and we can continue with the 
-     * current assignment. False otherwise
+     * @return A boolean to indicate if a domain value was removed. Will inform
+     * AC-3 algo if we need to enforce any more edges
      */
-    bool enforce_arc_consistency(bool& removed, std::pair<int, int> arc_to_enforce, int backtracking_index, std::optional<rclcpp::Logger>& logger);
+    bool enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index, std::optional<rclcpp::Logger>& logger);
 
     
 
@@ -208,7 +207,7 @@ class CSP {
      * arc consistency of A->B, you must enforce the arc consistency
      * from N->A for all neighbors N of A 
      */
-    void ac3();
+    void ac3(int index);
 };
 
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,

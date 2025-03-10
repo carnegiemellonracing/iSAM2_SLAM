@@ -4,6 +4,152 @@
  */
 #include "data_association.hpp"
 
+
+class CSP {
+    CSP::CSP(CSP::CarInfo input_car_info, Eigen::MatrixXd& global_cone_x, Eigen::MatrixXd& global_cone_y, Eigen::MatrixXd& bearing,
+        std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
+        Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, int input_num_obs) {  
+        
+        car_info = input_car_info;
+
+        covariance_est = input_covariance_est;
+        
+        int dim = landmark_noise.size()
+        innovation_noise = MatrixXd::Zero(dim, dim);
+        for(int i = 0; i < dim; i++) {
+            innovation_noise(i, i) = landmark_noise(i) * landmark_noise(i);
+        }
+        
+        num_obs_old_cones = old_cones.size();
+        n_landmarks = old_n_landmarks;
+
+        for (int i = 0; i < num_obs_old_cones; i++) {
+            obs_cone_global_positions.push_back(old_cones[i].global_cone_pos);
+            VariableInfo cur_info;
+            for (int n = 0; n < n_landmarks; n++) {
+                if (m_dist.at(i * n_landmarks + n) < M_DIST_TH) {
+                    cur_info.domain[n] = {n, slam_est.at(n)};
+                    cur_info.bearing = old_cones[i].bearing;
+                    cur_info.local_cone_position = old_cones[i].local_cone_pos;
+                    cur_info.global_cone_position = old_cones[i].global_cone_pos;
+                }
+            }
+            all_variable_info.push_back(cur_info);
+        }
+    }
+
+    std::vector<Old_cone_info> find_best_association_list(optional<rclcpp::Logger>& logger) {
+        std::vector<Old_cone_info> ans;
+        for(int i = 0; i < num_obs_old_cones; i++) {
+            auto& elem = best_association_list[i];
+            ans.push_back({elem.local_cone_position, elem.bearing, assignment[i].index});
+        }
+    }
+
+    void backtracking_search(int backtracking_index, optional<rclcpp::Logger>& logger) {
+        if(std::all_of(assignment.begin(), assignment.end(), [](const std::optional<EstimateConeInfo>& opt) {
+            return opt.has_value();
+        })) {
+            double cur_jcbb = compute_joint_compatibility(covariance_est, obs_cone_global_positions, 
+                assignment, car_info.cur_pose, innovation_noise, num_obs_old_cones, n_landmarks)
+            if (cur_jcbb < best_joint_compatibility) {
+                best_joint_compatibility = cur_jcbb;
+                best_association_list = assignment;
+            }
+            return;
+        }
+
+        //TODO implement MRV and LCV for faster runtime
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (!assigned[i])
+                q.push(i);
+        }
+
+        if(q.empty()) return;
+
+        int cur_obs = q.top();
+        auto& cur_domain = all_variable_info[cur_obs].domain;
+        
+        bool is_assigned = false;
+        for(const auto pair : cur_domain) {
+            for(int i = 0; i < num_obs_old_cones; i++) {
+                if(assignment[i].has_value() && assignment[i] != pair.first) {
+                    is_assigned = true;
+                    break;
+                }
+            }
+            if(is_assigned) continue;
+
+            assignment[i] = pair.first;
+            for(const auto pair2 : cur_domain) {
+                if(pair2.first != pair.first) {
+                    all_variable_info[cur_obs].removal_history.push({backtracking_index, pair2.second});
+                }
+            }
+            all_variable_info[cur_obs].domain.clear();
+            all_variable_info[cur_obs].domain.insert({pair.first, pair.second});
+
+            association_list_t partial_assignment(assignment.begin(), assignment.begin()+backtracking_index + 1);
+
+            if(compute_joint_compatibility(covariance_est, obs_cone_global_positions, partial_assignment,
+               car_info.cur_pose, innovation_noise, backtracking_index + 1, n_landmarks) 
+             < JC_TH && ac3(backtracking_index, logger)) {
+                backtracking_search(backtracking_index + 1, logger);
+            }
+            rollback(backtracking_index);
+        }
+    }
+
+    void rollback(int index) {
+        for(auto info: all_variable_info) {
+            while(!info.removal_history.isEmpty() && info.removal_history.top().backtracking_index >= index) {
+                auto& cur_removal = info.removal_history.top().removed_domain_info;
+                info.domain.insert({cur_removal.index, cur_removal});
+                info.removal_history.pop();
+            }
+        }
+    }
+
+    bool ensure_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index, std::optional<rclcpp::Logger>& logger) {
+        bool changed = false;
+        auto& info_a = all_variable_info[arc_to_enforce.first];
+        auto& info_b = all_variable_info[arc_to_enforce.second];
+        for(const auto &paira: info_a.domain) {
+            bool consistent = false;
+            for (const auto &pairb: info_b.domain) {
+                if(a != b) {
+                    consistent = true;
+                    break;
+                }
+            }
+            if(!consistent) {
+                info_a.domain.erase(paira.first);
+                changed = true;
+            }
+        }
+        return changed;
+    }
+    
+    void ac3(int index, optional<rclcpp::Logger>& logger) {
+        queue<pair<int, int>> arc;
+        for(int i = 0; i < num_obs_old_cones; i++) 
+            for(int j = 0; j < num_obs_old_cones; j++)
+                if (i != j)
+                    arcs.push({i, j});
+        while(!arcs.empty()) {
+            auto [xi, xj] = arcs.front();
+            arcs.pop();
+            if (ensure_arc_consistency({xi, xj}, index, logger)) {
+                if (domains[xi].empty())
+                    return false;
+                for (int k = 0; k < n; k++)
+                    if (k != xi)
+                        arcs.push({k, xi});
+            }
+        }
+    }
+}
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
                     int num_obs, vector<double> &m_dist, double threshold,
                     vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov,
@@ -107,7 +253,9 @@ void get_old_new_cones(std::vector<Old_cone_info> &old_cones,std::vector<New_con
 
 
         } else {
+            Point2 global_cone_pos = Point2(global_cone_x(i,0), global_cone_y(i,0));
             old_cones.emplace_back(cone_obs.at(i), 
+                                    global_cone_pos,
                                     bearing(i, 0), 
                                     min_id);
         }
