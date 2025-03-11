@@ -5,7 +5,6 @@
 #include "data_association.hpp"
 
 
-class CSP {
     CSP::CSP(CSP::CarInfo input_car_info, Eigen::MatrixXd& global_cone_x, Eigen::MatrixXd& global_cone_y, Eigen::MatrixXd& bearing,
         std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
         Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, int input_num_obs) {  
@@ -14,7 +13,7 @@ class CSP {
 
         covariance_est = input_covariance_est;
         
-        int dim = landmark_noise.size()
+        int dim = landmark_noise.size();
         innovation_noise = MatrixXd::Zero(dim, dim);
         for(int i = 0; i < dim; i++) {
             innovation_noise(i, i) = landmark_noise(i) * landmark_noise(i);
@@ -38,20 +37,20 @@ class CSP {
         }
     }
 
-    std::vector<Old_cone_info> find_best_association_list(optional<rclcpp::Logger>& logger) {
+    std::vector<Old_cone_info> CSP::find_best_association_list(optional<rclcpp::Logger>& logger) {
         std::vector<Old_cone_info> ans;
         for(int i = 0; i < num_obs_old_cones; i++) {
-            auto& elem = best_association_list[i];
-            ans.push_back({elem.local_cone_position, elem.bearing, assignment[i].index});
+            auto& elem = best_association_list[i].value();
+            ans.push_back({all_variable_info[i].local_cone_position, all_variable_info[i].global_cone_position, all_variable_info[i].bearing, elem.index});
         }
     }
 
-    void backtracking_search(int backtracking_index, optional<rclcpp::Logger>& logger) {
+    void CSP::backtracking_search(int backtracking_index, optional<rclcpp::Logger>& logger) {
         if(std::all_of(assignment.begin(), assignment.end(), [](const std::optional<EstimateConeInfo>& opt) {
             return opt.has_value();
         })) {
             double cur_jcbb = compute_joint_compatibility(covariance_est, obs_cone_global_positions, 
-                assignment, car_info.cur_pose, innovation_noise, num_obs_old_cones, n_landmarks)
+                assignment, car_info.cur_pose, innovation_noise, num_obs_old_cones, n_landmarks);
             if (cur_jcbb < best_joint_compatibility) {
                 best_joint_compatibility = cur_jcbb;
                 best_association_list = assignment;
@@ -61,27 +60,27 @@ class CSP {
 
         //TODO implement MRV and LCV for faster runtime
         queue<int> q;
-        for (int i = 0; i < n; i++) {
-            if (!assigned[i])
+        for (int i = 0; i < num_obs_old_cones; i++) {
+            if (!assignment[i].has_value())
                 q.push(i);
         }
 
         if(q.empty()) return;
 
-        int cur_obs = q.top();
+        int cur_obs = q.front();
         auto& cur_domain = all_variable_info[cur_obs].domain;
         
         bool is_assigned = false;
         for(const auto pair : cur_domain) {
             for(int i = 0; i < num_obs_old_cones; i++) {
-                if(assignment[i].has_value() && assignment[i] != pair.first) {
+                if(assignment[i].has_value() && assignment[i].value().index != pair.first) {
                     is_assigned = true;
                     break;
                 }
             }
             if(is_assigned) continue;
 
-            assignment[i] = pair.first;
+            assignment[cur_obs] = pair.second;
             for(const auto pair2 : cur_domain) {
                 if(pair2.first != pair.first) {
                     all_variable_info[cur_obs].removal_history.push({backtracking_index, pair2.second});
@@ -101,9 +100,9 @@ class CSP {
         }
     }
 
-    void rollback(int index) {
+    void CSP::rollback(int index) {
         for(auto info: all_variable_info) {
-            while(!info.removal_history.isEmpty() && info.removal_history.top().backtracking_index >= index) {
+            while(!info.removal_history.empty() && info.removal_history.top().backtracking_index >= index) {
                 auto& cur_removal = info.removal_history.top().removed_domain_info;
                 info.domain.insert({cur_removal.index, cur_removal});
                 info.removal_history.pop();
@@ -111,14 +110,14 @@ class CSP {
         }
     }
 
-    bool ensure_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index, std::optional<rclcpp::Logger>& logger) {
+    bool CSP::enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index, std::optional<rclcpp::Logger>& logger) {
         bool changed = false;
         auto& info_a = all_variable_info[arc_to_enforce.first];
         auto& info_b = all_variable_info[arc_to_enforce.second];
         for(const auto &paira: info_a.domain) {
             bool consistent = false;
             for (const auto &pairb: info_b.domain) {
-                if(a != b) {
+                if(paira.first != pairb.first) {
                     consistent = true;
                     break;
                 }
@@ -131,8 +130,8 @@ class CSP {
         return changed;
     }
     
-    void ac3(int index, optional<rclcpp::Logger>& logger) {
-        queue<pair<int, int>> arc;
+    bool CSP::ac3(int index, optional<rclcpp::Logger>& logger) {
+        queue<pair<int, int>> arcs;
         for(int i = 0; i < num_obs_old_cones; i++) 
             for(int j = 0; j < num_obs_old_cones; j++)
                 if (i != j)
@@ -140,16 +139,17 @@ class CSP {
         while(!arcs.empty()) {
             auto [xi, xj] = arcs.front();
             arcs.pop();
-            if (ensure_arc_consistency({xi, xj}, index, logger)) {
-                if (domains[xi].empty())
+            if (enforce_arc_consistency({xi, xj}, index, logger)) {
+                if (all_variable_info[xi].domain.empty())
                     return false;
-                for (int k = 0; k < n; k++)
+                for (int k = 0; k < num_obs_old_cones; k++)
                     if (k != xi)
                         arcs.push({k, xi});
             }
         }
+        return true;
     }
-}
+
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
                     int num_obs, vector<double> &m_dist, double threshold,
                     vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov,

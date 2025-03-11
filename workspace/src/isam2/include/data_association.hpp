@@ -207,7 +207,7 @@ class CSP {
      * arc consistency of A->B, you must enforce the arc consistency
      * from N->A for all neighbors N of A 
      */
-    void ac3(int index);
+    bool ac3(int index, optional<rclcpp::Logger> &logger);
 };
 
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
@@ -228,3 +228,6 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
             std::vector<gtsam::Point2> &cone_obs, optional<rclcpp::Logger> &logger,
             std::vector<gtsam::Point2> &slam_est, std::vector<gtsam::Matrix> &slam_mcov);
 
+double compute_joint_compatibility(Eigen::MatrixXd &covariance_est, std::vector<gtsam::Point2> obs_global_cones,
+                                   CSP::association_list_t association_list_from_csp, gtsam::Pose2 cur_pose,
+                                   Eigen::MatrixXd innovation_noise, int num_obs, int n_landmarks);
