@@ -66,7 +66,6 @@ target_include_directories(isam2_run PUBLIC include ${GTSAM_INCLUDE_DIR} "${PROJ
 install(TARGETS isam2_run
   DESTINATION lib/${PROJECT_NAME})
 
-
 # <---- isam2_lib ---->
 add_library(isam2_lib SHARED ${SOURCES})
 # target_link_libraries(isam2_lib PUBLIC gtsam)
@@ -78,6 +77,12 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 ament_target_dependencies(isam2_lib PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs raceline)
 target_include_directories(isam2_lib PUBLIC include ${GTSAM_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/../raceline/include")
+set_target_properties(isam2_run PROPERTIES
+    INSTALL_RPATH "/home/dale/driverless-packages/iSAM2_SLAM/workspace/build/raceline"
+    BUILD_RPATH "/home/dale/driverless-packages/iSAM2_SLAM/workspace/build/raceline"
+    BUILD_WITH_INSTALL_RPATH TRUE
+)
+
 ament_export_include_directories(include)
 ament_package()
 
