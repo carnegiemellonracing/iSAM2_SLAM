@@ -592,6 +592,7 @@ bool CSP::enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtr
         }
         if(!consistent) {
             info_a.domain.erase(paira.first);
+            info_a.removal_history.push({backtracking_index, paira.second});
             changed = true;
         }
     }
