@@ -5,155 +5,11 @@
 #include "data_association.hpp"
 
 
-    CSP::CSP(CSP::CarInfo input_car_info, Eigen::MatrixXd& global_cone_x, Eigen::MatrixXd& global_cone_y, Eigen::MatrixXd& bearing,
-        std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
-        Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, int input_num_obs) {  
-        
-        car_info = input_car_info;
 
-        covariance_est = input_covariance_est;
-        
-        int dim = landmark_noise.size();
-        innovation_noise = MatrixXd::Zero(dim, dim);
-        for(int i = 0; i < dim; i++) {
-            innovation_noise(i, i) = landmark_noise(i) * landmark_noise(i);
-        }
-        
-        num_obs_old_cones = old_cones.size();
-        n_landmarks = old_n_landmarks;
-
-        for (int i = 0; i < num_obs_old_cones; i++) {
-            obs_cone_global_positions.push_back(old_cones[i].global_cone_pos);
-            VariableInfo cur_info;
-            for (int n = 0; n < n_landmarks; n++) {
-                if (m_dist.at(i * n_landmarks + n) < M_DIST_TH) {
-                    cur_info.domain[n] = {n, slam_est.at(n)};
-                    cur_info.bearing = old_cones[i].bearing;
-                    cur_info.local_cone_position = old_cones[i].local_cone_pos;
-                    cur_info.global_cone_position = old_cones[i].global_cone_pos;
-                }
-            }
-            all_variable_info.push_back(cur_info);
-        }
-    }
-
-    std::vector<Old_cone_info> CSP::find_best_association_list(optional<rclcpp::Logger>& logger) {
-        std::vector<Old_cone_info> ans;
-        for(int i = 0; i < num_obs_old_cones; i++) {
-            auto& elem = best_association_list[i].value();
-            ans.push_back({all_variable_info[i].local_cone_position, all_variable_info[i].global_cone_position, all_variable_info[i].bearing, elem.index});
-        }
-    }
-
-    void CSP::backtracking_search(int backtracking_index, optional<rclcpp::Logger>& logger) {
-        if(std::all_of(assignment.begin(), assignment.end(), [](const std::optional<EstimateConeInfo>& opt) {
-            return opt.has_value();
-        })) {
-            double cur_jcbb = compute_joint_compatibility(covariance_est, obs_cone_global_positions, 
-                assignment, car_info.cur_pose, innovation_noise, num_obs_old_cones, n_landmarks);
-            if (cur_jcbb < best_joint_compatibility) {
-                best_joint_compatibility = cur_jcbb;
-                best_association_list = assignment;
-            }
-            return;
-        }
-
-        //TODO implement MRV and LCV for faster runtime
-        queue<int> q;
-        for (int i = 0; i < num_obs_old_cones; i++) {
-            if (!assignment[i].has_value())
-                q.push(i);
-        }
-
-        if(q.empty()) return;
-
-        int cur_obs = q.front();
-        auto& cur_domain = all_variable_info[cur_obs].domain;
-        
-        bool is_assigned = false;
-        for(const auto pair : cur_domain) {
-            for(int i = 0; i < num_obs_old_cones; i++) {
-                if(assignment[i].has_value() && assignment[i].value().index != pair.first) {
-                    is_assigned = true;
-                    break;
-                }
-            }
-            if(is_assigned) continue;
-
-            assignment[cur_obs] = pair.second;
-            for(const auto pair2 : cur_domain) {
-                if(pair2.first != pair.first) {
-                    all_variable_info[cur_obs].removal_history.push({backtracking_index, pair2.second});
-                }
-            }
-            all_variable_info[cur_obs].domain.clear();
-            all_variable_info[cur_obs].domain.insert({pair.first, pair.second});
-
-            association_list_t partial_assignment(assignment.begin(), assignment.begin()+backtracking_index + 1);
-
-            if(compute_joint_compatibility(covariance_est, obs_cone_global_positions, partial_assignment,
-               car_info.cur_pose, innovation_noise, backtracking_index + 1, n_landmarks) 
-             < JC_TH && ac3(backtracking_index, logger)) {
-                backtracking_search(backtracking_index + 1, logger);
-            }
-            rollback(backtracking_index);
-        }
-    }
-
-    void CSP::rollback(int index) {
-        for(auto info: all_variable_info) {
-            while(!info.removal_history.empty() && info.removal_history.top().backtracking_index >= index) {
-                auto& cur_removal = info.removal_history.top().removed_domain_info;
-                info.domain.insert({cur_removal.index, cur_removal});
-                info.removal_history.pop();
-            }
-        }
-    }
-
-    bool CSP::enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index, std::optional<rclcpp::Logger>& logger) {
-        bool changed = false;
-        auto& info_a = all_variable_info[arc_to_enforce.first];
-        auto& info_b = all_variable_info[arc_to_enforce.second];
-        for(const auto &paira: info_a.domain) {
-            bool consistent = false;
-            for (const auto &pairb: info_b.domain) {
-                if(paira.first != pairb.first) {
-                    consistent = true;
-                    break;
-                }
-            }
-            if(!consistent) {
-                info_a.domain.erase(paira.first);
-                changed = true;
-            }
-        }
-        return changed;
-    }
-    
-    bool CSP::ac3(int index, optional<rclcpp::Logger>& logger) {
-        queue<pair<int, int>> arcs;
-        for(int i = 0; i < num_obs_old_cones; i++) 
-            for(int j = 0; j < num_obs_old_cones; j++)
-                if (i != j)
-                    arcs.push({i, j});
-        while(!arcs.empty()) {
-            auto [xi, xj] = arcs.front();
-            arcs.pop();
-            if (enforce_arc_consistency({xi, xj}, index, logger)) {
-                if (all_variable_info[xi].domain.empty())
-                    return false;
-                for (int k = 0; k < num_obs_old_cones; k++)
-                    if (k != xi)
-                        arcs.push({k, xi});
-            }
-        }
-        return true;
-    }
-
-void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
-                    int num_obs, vector<double> &m_dist, double threshold,
-                    vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov,
-                    optional<rclcpp::Logger> &logger) {
+void populate_m_dist(Eigen::MatrixXd &global_cone_x, Eigen::MatrixXd &global_cone_y,
+                    int num_obs, std::vector<double> &m_dist, double threshold,
+                    std::vector<gtsam::Point2> &slam_est, std::vector<Eigen::MatrixXd> &slam_mcov,
+                    std::optional<rclcpp::Logger> &logger) {
     for (int i = 0; i < num_obs; i++) {
         for (int j = 0; j < slam_est.size(); j++) {
 
@@ -572,8 +428,8 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
     int num_obs_old_cones = old_cones.size();
     auto start_constructor = std::chrono::high_resolution_clock::now();
     CSP::CarInfo car_info = {prev_pose, cur_pose, velocity, dt, num_obs_old_cones}; 
-    CSP csp = CSP(car_info, global_cone_x, global_cone_y, bearing, old_cones, m_dist, slam_est, 
-                    jcbb_state_covariance, landmark_noise, slam_est.size(), n_landmarks, old_cones.size());
+    CSP csp = CSP(car_info, old_cones, m_dist, slam_est, 
+                    jcbb_state_covariance, landmark_noise, slam_est.size(), n_landmarks);
                     
     auto end_constructor = std::chrono::high_resolution_clock::now();
     auto dur_constructor = std::chrono::duration_cast<std::chrono::milliseconds>(end_constructor - start_constructor);
@@ -598,3 +454,170 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
 
 
 
+CSP::CSP(CSP::CarInfo input_car_info, std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
+    Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks) {  
+    
+    car_info = input_car_info;
+
+    covariance_est = input_covariance_est;
+    
+    int dim = landmark_noise.size();
+    innovation_noise = MatrixXd::Zero(dim, dim);
+    for(int i = 0; i < dim; i++) {
+        innovation_noise(i, i) = landmark_noise(i) * landmark_noise(i);
+    }
+    
+    num_obs_old_cones = old_cones.size();
+
+    /* Defining the variables in the CSP and their domains 
+     * We use old_n_landmarks because m_dist was created with respect to old_n_landmarks 
+     * (before we registered any new cones)
+     */
+    int lo = 0;
+    for (int i = 0; i < num_obs_old_cones; i++) {
+        obs_cone_global_positions.push_back(old_cones[i].global_cone_pos);
+        VariableInfo cur_info;
+        for (int n = lo; n < lo + old_n_landmarks + 1; n++) {
+            if (m_dist.at(n) < M_DIST_TH) {
+                cur_info.domain[n] = {n, slam_est.at(n)};
+                cur_info.bearing = old_cones[i].bearing;
+                cur_info.local_cone_position = old_cones[i].local_cone_pos;
+                cur_info.global_cone_position = old_cones[i].global_cone_pos;
+            }
+        }
+
+        lo += old_n_landmarks + 1;
+        all_variable_info.push_back(cur_info);
+    }
+
+    /* The state and other matrices for computing the joint compatibility 
+     * uses new_n_landmarks (because the new_cones have been incorporated in the dimensions)
+     */
+    n_landmarks = new_n_landmarks;
+
+    best_association_list_measurement_jacobian = Eigen::MatrixXd::Zero(2 * num_obs_old_cones, 2 * n_landmarks + 3);
+}
+
+std::vector<Old_cone_info> CSP::find_best_association_list(std::optional<rclcpp::Logger>& logger) {
+    std::vector<Old_cone_info> ans;
+    for(int i = 0; i < num_obs_old_cones; i++) {
+        auto& elem = best_association_list[i].value();
+        ans.push_back({all_variable_info[i].local_cone_position, all_variable_info[i].global_cone_position, all_variable_info[i].bearing, elem.index});
+    }
+}
+
+void CSP::backtracking_search(int backtracking_index, optional<rclcpp::Logger>& logger) {
+    if(std::all_of(assignment.begin(), assignment.end(), [](const std::optional<EstimateConeInfo>& opt) {
+        return opt.has_value();
+    })) {
+
+        double cur_jcbb = compute_joint_compatibility(covariance_est, obs_cone_global_positions, 
+            assignment, car_info.cur_pose, innovation_noise, num_obs_old_cones, n_landmarks);
+        if (cur_jcbb < best_joint_compatibility) {
+            best_joint_compatibility = cur_jcbb;
+            best_association_list = assignment;
+
+            for (int i = 0; i < num_obs_old_cones; i++) {
+                Eigen::MatrixXd ith_msmt_jacobian = get_measurement_model_jacobian(car_info.cur_pose, best_association_list.at(i).value(), num_obs_old_cones);
+                best_association_list_measurement_jacobian.block(2 * i, 0, 2, 2 * n_landmarks + 3) = ith_msmt_jacobian;
+            }
+
+        }
+        return;
+    }
+
+    //TODO implement MRV and LCV for faster runtime
+    queue<int> q;
+    for (int i = 0; i < num_obs_old_cones; i++) {
+        if (!assignment[i].has_value())
+            q.push(i);
+    }
+
+    if(q.empty()) return;
+
+    int cur_obs = q.front();
+    auto& cur_domain = all_variable_info[cur_obs].domain;
+    
+    bool is_assigned = false;
+    for(const std::pair<int, CSP::EstimateConeInfo>& pair : cur_domain) {
+        for(int i = 0; i < num_obs_old_cones; i++) {
+            if(assignment[i].has_value() && assignment[i].value().index != pair.first) {
+                is_assigned = true;
+                break;
+            }
+        }
+        if(is_assigned) continue;
+
+        assignment[cur_obs] = pair.second;
+        for(const std::pair<int, CSP::EstimateConeInfo>& pair2 : cur_domain) {
+            if(pair2.first != pair.first) {
+                all_variable_info[cur_obs].removal_history.push({backtracking_index, pair2.second});
+            }
+        }
+        all_variable_info[cur_obs].domain.clear();
+        all_variable_info[cur_obs].domain.insert({pair.first, pair.second});
+
+        association_list_t partial_assignment(assignment.begin(), assignment.begin()+backtracking_index + 1);
+
+        if(compute_joint_compatibility(covariance_est, obs_cone_global_positions, partial_assignment,
+            car_info.cur_pose, innovation_noise, backtracking_index + 1, n_landmarks) 
+            < JC_TH && ac3(backtracking_index, logger)) {
+            backtracking_search(backtracking_index + 1, logger);
+        }
+        rollback(backtracking_index);
+    }
+}
+
+void CSP::rollback(int index) {
+    for(auto info: all_variable_info) {
+        while(!info.removal_history.empty() && info.removal_history.top().backtracking_index >= index) {
+            auto& cur_removal = info.removal_history.top().removed_domain_info;
+            info.domain.insert({cur_removal.index, cur_removal});
+            info.removal_history.pop();
+        }
+    }
+}
+
+bool CSP::enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index, std::optional<rclcpp::Logger>& logger) {
+    bool changed = false;
+    auto& info_a = all_variable_info[arc_to_enforce.first];
+    auto& info_b = all_variable_info[arc_to_enforce.second];
+    for(const auto &paira: info_a.domain) {
+        bool consistent = false;
+        for (const auto &pairb: info_b.domain) {
+            if(paira.first != pairb.first) {
+                consistent = true;
+                break;
+            }
+        }
+        if(!consistent) {
+            info_a.domain.erase(paira.first);
+            changed = true;
+        }
+    }
+    return changed;
+}
+
+bool CSP::ac3(int index, optional<rclcpp::Logger>& logger) {
+    queue<pair<int, int>> arcs;
+    for(int i = 0; i < num_obs_old_cones; i++) 
+        for(int j = 0; j < num_obs_old_cones; j++)
+            if (i != j)
+                arcs.push({i, j});
+    while(!arcs.empty()) {
+        auto [xi, xj] = arcs.front();
+        arcs.pop();
+        if (enforce_arc_consistency({xi, xj}, index, logger)) {
+            if (all_variable_info[xi].domain.empty())
+                return false;
+            for (int k = 0; k < num_obs_old_cones; k++)
+                if (k != xi)
+                    arcs.push({k, xi});
+        }
+    }
+    return true;
+}
+
+Eigen::MatrixXd CSP::get_best_hypothesis_msmt_jacobian() {
+    return best_association_list_measurement_jacobian;
+}

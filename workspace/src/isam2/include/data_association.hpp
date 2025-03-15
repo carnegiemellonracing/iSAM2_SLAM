@@ -74,6 +74,8 @@ class CSP {
 
     using association_list_t = std::vector<std::optional<EstimateConeInfo>>;
     association_list_t assignment;
+
+
     /**
      * @brief A constructor for the CSP
      * 
@@ -88,14 +90,13 @@ class CSP {
      * @param new_n_landmarks The number of landmarks after get_old_new_cones in the 
      * current time step. This is used for the measurement model jacobian later. 
      */
-    CSP(CSP::CarInfo input_car_info, Eigen::MatrixXd& global_cone_x, Eigen::MatrixXd& global_cone_y, Eigen::MatrixXd& bearing,
-            std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
-            Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, int input_num_obs);
+    CSP(CSP::CarInfo input_car_info, std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
+            Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks);
 
-
+    
     Eigen::MatrixXd get_best_hypothesis_msmt_jacobian();
 
-    std::vector<Old_cone_info> find_best_association_list(optional<rclcpp::Logger>& logger);
+    std::vector<Old_cone_info> find_best_association_list(std::optional<rclcpp::Logger>& logger);
 
     private: 
 
@@ -225,8 +226,10 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
             gtsam::Vector& landmark_noise, Eigen::MatrixXd &jcbb_state_covariance, Eigen::MatrixXd &jcbb_state_noise, 
             gtsam::Pose2 &prev_pose, gtsam::Pose2 &cur_pose, gtsam::Pose2 &velocity, 
             double dt, int num_obs, int& n_landmarks, bool is_turning,
-            std::vector<gtsam::Point2> &cone_obs, optional<rclcpp::Logger> &logger,
+            std::vector<gtsam::Point2> &cone_obs, std::optional<rclcpp::Logger> &logger,
             std::vector<gtsam::Point2> &slam_est, std::vector<gtsam::Matrix> &slam_mcov);
+
+
 
 double compute_joint_compatibility(Eigen::MatrixXd &covariance_est, std::vector<gtsam::Point2> obs_global_cones,
                                    CSP::association_list_t association_list_from_csp, gtsam::Pose2 cur_pose,

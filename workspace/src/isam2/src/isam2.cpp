@@ -97,6 +97,15 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     loop_closure = false;
     new_lap = false;
     lap_count = 0;
+
+    jcbb_state_covariance = Eigen::MatrixXd::Identity(3, 3);
+
+    jcbb_state_noise = Eigen::MatrixXd::Identity(3, 3);
+    jcbb_state_noise(0, 0) = OdomNoiseModel(0);
+    jcbb_state_noise(1, 1) = OdomNoiseModel(1);
+    jcbb_state_noise(2, 2) = OdomNoiseModel(2);
+
+
 }
 
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
@@ -188,8 +197,8 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
  * to the car
  * 2nd Point2 for new_cones represents the global position
  */
-void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &old_cones,
-                        std::vector<std::tuple<Point2, double, Point2>> &new_cones,
+void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
+                        std::vector<New_cone_info> &new_cones,
                         Pose2 &cur_pose) {
 
 
@@ -204,9 +213,9 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
      *
      */
     for (std::size_t o = 0; o < old_cones.size(); o++) {
-        Point2 cone_pos_car_frame = get<0>(old_cones.at(o));
-        int min_id = get<2>(old_cones.at(o));
-        Rot2 b = Rot2::fromAngle(get<1>(old_cones.at(o)));
+        Point2 cone_pos_car_frame = (old_cones.at(o)).local_cone_pos;
+        int min_id = (old_cones.at(o)).min_id;
+        Rot2 b = Rot2::fromAngle((old_cones.at(o)).bearing);
         double r = norm2(cone_pos_car_frame);
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(min_id),
@@ -219,11 +228,11 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
     // values should be empty
 
     for (std::size_t n = 0; n < new_cones.size(); n++) {
-        Point2 cone_pos_car_frame = get<0>(new_cones.at(n));
-        Rot2 b = Rot2::fromAngle(get<1>(new_cones.at(n)));
+        Point2 cone_pos_car_frame = (new_cones.at(n)).local_cone_pos;
+        Rot2 b = Rot2::fromAngle((new_cones.at(n)).bearing);
         double r = norm2(cone_pos_car_frame);
 
-        Point2 cone_global_frame = get<2>(new_cones.at(n));
+        Point2 cone_global_frame = (new_cones.at(n)).global_cone_pos;
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(n_landmarks),
                                         b,
@@ -341,13 +350,16 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
         /**** Data association ***/
-        std::vector<tuple<Point2, double, int>> old_cones = {};
-        std::vector<tuple<Point2, double, Point2>> new_cones = {};
+        std::vector<Old_cone_info> old_cones = {};
+        std::vector<New_cone_info> new_cones = {};
 
 
         auto start_DA = high_resolution_clock::now();
-        data_association(old_cones, new_cones, cur_pose, prev_pose, is_turning,
-                            cone_obs, logger, slam_est, slam_mcov);
+        jcbb(old_cones, new_cones, 
+            LandmarkNoiseModel, jcbb_state_covariance, jcbb_state_noise, 
+            cur_pose, prev_pose, velocity, dt, cone_obs.size(), n_landmarks,
+            is_turning, cone_obs, logger, slam_est, slam_mcov);
+
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         if(logger.has_value()) {
