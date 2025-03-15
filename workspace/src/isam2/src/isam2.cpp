@@ -234,13 +234,12 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
 
         Point2 cone_global_frame = (new_cones.at(n)).global_cone_pos;
 
-        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(n_landmarks),
+        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L((new_cones.at(n).new_id)),
                                         b,
                                         r,
                                         landmark_model));
 
-        values.insert(L(n_landmarks), cone_global_frame);
-        n_landmarks++;
+        values.insert(L(new_cones.at(n).new_id), cone_global_frame);
     }
     
     /* NOTE: All values in graph must be in values parameter */
@@ -364,6 +363,14 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         if(logger.has_value()) {
             RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
+        }
+
+        /* Printing out the new cones to make sure we are adding the right ones */
+        if (logger.has_value()) {
+            for (int i = 0; i < new_cones.size(); i++) {
+                RCLCPP_INFO(logger.value(), "New_cone to add: id=%d", new_cones[i].new_id);
+            }
+
         }
 
         auto start_update_landmarks = high_resolution_clock::now();

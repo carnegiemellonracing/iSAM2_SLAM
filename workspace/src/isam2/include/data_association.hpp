@@ -76,6 +76,7 @@ class CSP {
     association_list_t assignment;
 
 
+    std::optional<rclcpp::Logger> csp_logger;
     /**
      * @brief A constructor for the CSP
      * 
@@ -91,12 +92,12 @@ class CSP {
      * current time step. This is used for the measurement model jacobian later. 
      */
     CSP(CSP::CarInfo input_car_info, std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
-            Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks);
+            Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, std::optional<rclcpp::Logger> logger);
 
     
     Eigen::MatrixXd get_best_hypothesis_msmt_jacobian();
 
-    std::vector<Old_cone_info> find_best_association_list(std::optional<rclcpp::Logger>& logger);
+    std::vector<Old_cone_info> find_best_association_list();
 
     private: 
 
@@ -173,7 +174,7 @@ class CSP {
      * index represents the observed cone index being assigned. The element
      * represents the old cone ID being assigned to the observed cone. 
      */
-    void backtracking_search(int backtracking_index, optional<rclcpp::Logger>& logger);
+    void backtracking_search(int backtracking_index);
 
     /**
      * @brief A function to enforce arc consistency on the CSP.
@@ -198,7 +199,7 @@ class CSP {
      * @return A boolean to indicate if a domain value was removed. Will inform
      * AC-3 algo if we need to enforce any more edges
      */
-    bool enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index, std::optional<rclcpp::Logger>& logger);
+    bool enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index);
 
     
 
@@ -208,7 +209,7 @@ class CSP {
      * arc consistency of A->B, you must enforce the arc consistency
      * from N->A for all neighbors N of A 
      */
-    bool ac3(int index, optional<rclcpp::Logger> &logger);
+    bool ac3(int index);
 };
 
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
