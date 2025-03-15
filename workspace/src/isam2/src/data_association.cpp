@@ -124,6 +124,7 @@
             }
             if(!consistent) {
                 info_a.domain.erase(paira.first);
+                info_a.removal_history.push({backtracking_index, paira.second});
                 changed = true;
             }
         }
