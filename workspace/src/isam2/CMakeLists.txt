@@ -77,6 +77,8 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 ament_target_dependencies(isam2_lib PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs raceline)
 target_include_directories(isam2_lib PUBLIC include ${GTSAM_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/../raceline/include")
+
+# libraceline.so thing
 set_target_properties(isam2_run PROPERTIES
     INSTALL_RPATH "/home/dale/driverless-packages/iSAM2_SLAM/workspace/build/raceline"
     BUILD_RPATH "/home/dale/driverless-packages/iSAM2_SLAM/workspace/build/raceline"
