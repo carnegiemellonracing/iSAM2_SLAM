@@ -80,9 +80,7 @@ target_include_directories(isam2_lib PUBLIC include ${GTSAM_INCLUDE_DIR} "${PROJ
 
 # libraceline.so thing
 set_target_properties(isam2_run PROPERTIES
-    INSTALL_RPATH "/home/dale/driverless-packages/iSAM2_SLAM/workspace/build/raceline"
-    BUILD_RPATH "/home/dale/driverless-packages/iSAM2_SLAM/workspace/build/raceline"
-    BUILD_WITH_INSTALL_RPATH TRUE
+	INSTALL_RPATH "${PROJECT_BINARY_DIR}/../raceline/"
 )
 
 ament_export_include_directories(include)
