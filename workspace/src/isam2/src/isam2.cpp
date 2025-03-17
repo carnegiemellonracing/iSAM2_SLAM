@@ -357,7 +357,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     }
 
     auto start_est_retrieval = high_resolution_clock::now();
-    std::vector<Point2> slam_est = {};
+    std::vector<gtsam::Point2> blue_cone_est = {};
+    std::vector<gtsam::Point2> yellow_cone_est = {};
     for (int i = 0; i < blue_n_landmarks; i++)
     {
         blue_cone_est.push_back(isam2.calculateEstimate(BLUE_L(i)).cast<gtsam::Point2>());
@@ -396,6 +397,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     std::vector<New_cone_info> yellow_new_cones;
 
     auto start_DA = high_resolution_clock::now();
+    assert(blue_cone_est.size() == blue_cone_mcov.size());
+    assert(yellow_cone_est.size() == yellow_cone_mcov.size());
     data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
                      cone_obs_blue, logger, blue_cone_est, blue_cone_mcov);
 

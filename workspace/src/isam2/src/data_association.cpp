@@ -8,6 +8,10 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
                     int num_obs, vector<double> &m_dist, double threshold,
                     vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov,
                     optional<rclcpp::Logger> &logger) {
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "\tpopulate_m_dist: num_obs: %d  | global_cone size: %d", num_obs, global_cone_x.rows());
+        RCLCPP_INFO(logger.value(), "\tpopulate_m_dist: slam_est.size(): %d | slam_mcov.size(): %d", slam_est.size(), slam_mcov.size());
+    }
     for (int i = 0; i < num_obs; i++) {
         for (int j = 0; j < slam_est.size(); j++) {
 
@@ -90,16 +94,28 @@ void data_association(vector<Old_cone_info> &old_cones,
     calc_cone_range_from_car(range, cone_obs);
     calc_cone_bearing_from_car(bearing, cone_obs);
 
+    if (logger.has_value()){
+        RCLCPP_INFO(logger.value(), "data association: calculated range and bearing for observed cones");
+    }
+
     cone_to_global_frame(range, bearing,
                          global_cone_x, global_cone_y,
                          cone_obs, cur_pose);
     
+    if (logger.has_value()){
+        RCLCPP_INFO(logger.value(), "data association: cone_to_global_frame finished");
+    }
     populate_m_dist(global_cone_x, global_cone_y, cone_obs.size(), m_dist,
                     m_dist_th, slam_est, slam_mcov, logger);
-
+    if (logger.has_value()){
+        RCLCPP_INFO(logger.value(), "data association: populate_m_dist finished");
+    }
     get_old_new_cones(old_cones, new_cones,
                     global_cone_x, global_cone_y,bearing,
                     cone_obs, m_dist, n_landmarks, logger);
+    if (logger.has_value()){
+        RCLCPP_INFO(logger.value(), "data association: get_old_new_cones finished");
+    }
 }
 
 
