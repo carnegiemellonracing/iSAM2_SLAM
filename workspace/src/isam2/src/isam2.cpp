@@ -432,6 +432,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         // populate yellow and blue cone arrays with cone locations
         if (!completed_chunking)
         {
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "performing chunking");
+            }
             /* This is a map from cone ID (the index) to chunk ID, the element*/
             blue_cone_to_chunk.resize(blue_n_landmarks, 0);
             yellow_cone_to_chunk.resize(yellow_n_landmarks, 0);
@@ -456,8 +459,13 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
                                           curr_cone.y(),
                                           id);
             }
-
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "obtained estimates for chunking");
+            }
             all_chunks = *generateChunks(blue_cones, yellow_cones);
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "finish chunking");
+            }
             /* Process the chunks to create the map from cone_ids to chunk_ids*/
             // make cone to chunk tables (for blue and yellow cones separately)
             for (int chunk_id = 0; chunk_id < all_chunks.size(); chunk_id++)
@@ -477,6 +485,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
                     int cone_id = curr_chunk->yellowConeIds.at(j);
                     yellow_cone_to_chunk.at(cone_id) = chunk_id;
                 }
+            }
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "created cone to chunk map");
             }
 
             completed_chunking = true;
