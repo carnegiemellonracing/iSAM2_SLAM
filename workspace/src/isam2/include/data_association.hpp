@@ -234,4 +234,4 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
 
 double compute_joint_compatibility(Eigen::MatrixXd &covariance_est, std::vector<gtsam::Point2> obs_global_cones,
                                    CSP::association_list_t association_list_from_csp, gtsam::Pose2 cur_pose,
-                                   Eigen::MatrixXd innovation_noise, int num_obs, int n_landmarks);
+                                   Eigen::MatrixXd innovation_noise, int num_obs, int n_landmarks, std::optional<rclcpp::Logger> logger);
