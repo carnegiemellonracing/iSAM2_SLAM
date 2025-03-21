@@ -7,3 +7,4 @@ eufs/install/*
 eufs/log/*
 workspace/src/isam2/data/*
 .vscode/settings.json
+workspace/.vscode/*
