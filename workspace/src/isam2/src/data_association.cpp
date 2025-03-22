@@ -145,7 +145,7 @@ void get_old_new_cones(std::vector<Old_cone_info> &old_cones,std::vector<New_con
  * 
  * @return Returns a 2 by 2n+3 matrix
  */
-Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 cur_pose, CSP::EstimateConeInfo est_cone_info, int num_obs, std::optional<rclcpp::Logger> logger) {
+Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 cur_pose, CSP::EstimateConeInfo est_cone_info, int n_landmarks, std::optional<rclcpp::Logger> logger) {
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "inside get_measurement_model_jacobian");
     }
@@ -157,7 +157,7 @@ Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 cur_pose, CSP::Estim
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "get_measurement_model_jacobian: calculated q vector");
     }
-    Eigen::MatrixXd jacobian(2, 2 * num_obs + 3);
+    Eigen::MatrixXd jacobian(2, 2 * n_landmarks + 3);
     Eigen::MatrixXd range_bearing_state_deriv_block(2, 3);
 
     /* Calculate the jacobian in blocks */
@@ -175,6 +175,12 @@ Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 cur_pose, CSP::Estim
 
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "measurement_block shape: %d x %d", measurement_block.rows(), measurement_block.cols());
+    }
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "jacobian shape: %d x %d", jacobian.rows(), jacobian.cols());
+    }
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "association_idx: %d ", association_idx);
     }
     jacobian.block<2, 3>(0, 0) = range_bearing_state_deriv_block;
     jacobian.block<2, 2>(0, 3 + 2 * association_idx) = measurement_block;
@@ -302,17 +308,17 @@ void covariance_correction(Eigen::MatrixXd &covariance, Eigen::VectorXd &landmar
  */
 double compute_joint_compatibility (Eigen::MatrixXd& covariance_est, std::vector<gtsam::Point2> obs_global_cones, 
                                     CSP::association_list_t association_list_from_csp, gtsam::Pose2 cur_pose,
-                                    Eigen::MatrixXd innovation_noise, int num_obs, int n_landmarks, std::optional<rclcpp::Logger> logger) {
+                                    Eigen::MatrixXd innovation_noise, int num_assigned, int n_landmarks, std::optional<rclcpp::Logger> logger) {
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "inside compuate_joint_compatibility");
     }
     std::vector<CSP::EstimateConeInfo> association_list = {};
-    for (int i = 0; i < num_obs; i++) {
+    for (int i = 0; i < num_assigned; i++) {
         assert(association_list_from_csp.at(i).has_value());
         association_list.push_back(association_list_from_csp.at(i).value());
     }
 
-    assert(association_list.size() == num_obs);
+    assert(association_list.size() == num_assigned);
     /**
      * Calculate the innovation between observation and estimate
      * innovation = observation - estimate
@@ -320,8 +326,8 @@ double compute_joint_compatibility (Eigen::MatrixXd& covariance_est, std::vector
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "compute_joint_compatibility: computing innovation");
     }
-    Eigen::VectorXd innovation(2 * num_obs);
-    for (int i = 0; i < num_obs; i++) {
+    Eigen::VectorXd innovation(2 * num_assigned);
+    for (int i = 0; i < num_assigned; i++) {
         int x_idx = i * 2;
         int y_idx = i * 2 + 1; 
         
@@ -338,9 +344,9 @@ double compute_joint_compatibility (Eigen::MatrixXd& covariance_est, std::vector
     if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "compute_joint_compatibility: computing hypothesis_msmt_jacobian");
     }
-    Eigen::MatrixXd hypothesis_msmt_jacobian(2 * num_obs, 2 * n_landmarks + 3);
-    for (int i = 0; i < num_obs; i++) {
-        Eigen::MatrixXd ith_msmt_jacobian = get_measurement_model_jacobian(cur_pose, association_list.at(i), num_obs, logger);
+    Eigen::MatrixXd hypothesis_msmt_jacobian(2 * num_assigned, 2 * n_landmarks + 3);
+    for (int i = 0; i < num_assigned; i++) {
+        Eigen::MatrixXd ith_msmt_jacobian = get_measurement_model_jacobian(cur_pose, association_list.at(i), n_landmarks, logger);
         if (logger.has_value()) {
             RCLCPP_INFO(logger.value(), "ith_msmt_jacobian shape: %ld x %ld", ith_msmt_jacobian.rows(), ith_msmt_jacobian.cols());
         }   
@@ -352,8 +358,11 @@ double compute_joint_compatibility (Eigen::MatrixXd& covariance_est, std::vector
      * This will be a 
      */
     if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "hypothesis_msms_jacobian shape: %ld x %ld | covariance_est shape: %ld x %ld", 
-                            hypothesis_msmt_jacobian.rows(), hypothesis_msmt_jacobian.cols(), covariance_est.rows(), covariance_est.cols());
+        RCLCPP_INFO(logger.value(), "hypothesis_msmt_jacobian shape: %ld x %ld", 
+                            hypothesis_msmt_jacobian.rows(), hypothesis_msmt_jacobian.cols());
+        RCLCPP_INFO(logger.value(),"covariance_est shape: %ld x %ld", covariance_est.rows(), covariance_est.cols());
+        RCLCPP_INFO(logger.value(),"innovation_noise shape: %ld x %ld", innovation_noise.rows(), innovation_noise.cols());
+        RCLCPP_INFO(logger.value(),"innovation shape: %ld", innovation.size());
     }
     Eigen::MatrixXd innovation_covariance = hypothesis_msmt_jacobian * covariance_est * hypothesis_msmt_jacobian.transpose() + innovation_noise;
 
@@ -557,9 +566,12 @@ std::vector<Old_cone_info> CSP::find_best_association_list() {
 }
 
 void CSP::backtracking_search(int backtracking_index) {
-    if(std::all_of(assignment.begin(), assignment.end(), [](const std::optional<EstimateConeInfo>& opt) {
-        return opt.has_value();
-    })) {
+    bool all_assigned = std::all_of(assignment.cbegin(), assignment.cend(), [](const std::optional<EstimateConeInfo>& opt) {return opt.has_value();});
+    if(csp_logger.has_value() && all_assigned) {
+        RCLCPP_INFO(csp_logger.value(), "all variables are assigned");
+    }
+
+    if(all_assigned) {
 
         if(csp_logger.has_value()) {
             RCLCPP_INFO(csp_logger.value(), "Found association list");
@@ -572,7 +584,7 @@ void CSP::backtracking_search(int backtracking_index) {
             best_association_list = assignment;
 
             for (int i = 0; i < num_obs_old_cones; i++) {
-                Eigen::MatrixXd ith_msmt_jacobian = get_measurement_model_jacobian(car_info.cur_pose, best_association_list.at(i).value(), num_obs_old_cones, csp_logger);
+                Eigen::MatrixXd ith_msmt_jacobian = get_measurement_model_jacobian(car_info.cur_pose, best_association_list.at(i).value(), n_landmarks, csp_logger);
                 best_association_list_measurement_jacobian.block(2 * i, 0, 2, 2 * n_landmarks + 3) = ith_msmt_jacobian;
             }
 
@@ -605,8 +617,11 @@ void CSP::backtracking_search(int backtracking_index) {
 
     /* Get the observed cone variable to process */
     int cur_obs = q.front();
+
     auto& cur_domain = all_variable_info[cur_obs].domain;
-    
+    if (csp_logger.has_value()) {
+        RCLCPP_INFO(csp_logger.value(), "all_variable_info size: %d | cur_obs: %d", all_variable_info.size(), cur_obs);
+    }   
     /* Go through each domain element and try to assign */
     bool is_assigned = false;
     for(const std::pair<int, CSP::EstimateConeInfo>& pair : cur_domain) {
@@ -660,6 +675,9 @@ void CSP::rollback(int index) {
 }
 
 bool CSP::enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtracking_index) {
+    if (csp_logger.has_value()) {
+        RCLCPP_INFO(csp_logger.value(), "inside enforce_arc_consistency");
+    }
     bool changed = false;
     auto& info_a = all_variable_info[arc_to_enforce.first];
     auto& info_b = all_variable_info[arc_to_enforce.second];
@@ -681,11 +699,17 @@ bool CSP::enforce_arc_consistency(std::pair<int, int> arc_to_enforce, int backtr
 }
 
 bool CSP::ac3(int index) {
+    if (csp_logger.has_value()) {
+        RCLCPP_INFO(csp_logger.value(), "inside ac3");
+    }
+
     queue<pair<int, int>> arcs;
     for(int i = 0; i < num_obs_old_cones; i++) 
         for(int j = 0; j < num_obs_old_cones; j++)
             if (i != j)
                 arcs.push({i, j});
+
+
     while(!arcs.empty()) {
         auto [xi, xj] = arcs.front();
         arcs.pop();

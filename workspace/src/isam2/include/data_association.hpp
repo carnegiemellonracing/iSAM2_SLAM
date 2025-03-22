@@ -231,6 +231,7 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
             std::vector<gtsam::Point2> &slam_est, std::vector<gtsam::Matrix> &slam_mcov);
 
 
+Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 cur_pose, CSP::EstimateConeInfo est_cone_info, int n_landmarks, std::optional<rclcpp::Logger> logger);
 
 double compute_joint_compatibility(Eigen::MatrixXd &covariance_est, std::vector<gtsam::Point2> obs_global_cones,
                                    CSP::association_list_t association_list_from_csp, gtsam::Pose2 cur_pose,
