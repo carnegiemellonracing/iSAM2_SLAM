@@ -45,22 +45,12 @@ void populate_m_dist(Eigen::MatrixXd &global_cone_x, Eigen::MatrixXd &global_con
 
 void get_old_new_cones(std::vector<Old_cone_info> &old_cones,
             std::vector<New_cone_info> &new_cones,
-<<<<<<< Updated upstream
             MatrixXd &global_cone_x,MatrixXd &global_cone_y,MatrixXd &bearing,
-=======
-            Eigen::MatrixXd &global_cone_x, Eigen::MatrixXd &global_cone_y, Eigen::MatrixXd &bearing,
->>>>>>> Stashed changes
             std::vector<Point2> &cone_obs, std::vector<double> &m_dist, int n_landmarks,
             rclcpp::Logger &logger);
 
 void data_association(std::vector<Old_cone_info> &old_cones,
                 std::vector<New_cone_info> &new_cones,
-<<<<<<< Updated upstream
-                Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
-                std::vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
-                std::vector<Point2> &slam_est, std::vector<MatrixXd> &slam_mcov);
-=======
                 gtsam::Pose2 &cur_pose, gtsam::Pose2 &prev_pose, bool is_turning,
                 std::vector<gtsam::Point2> &cone_obs, std::optional<rclcpp::Logger> &logger,
                 std::vector<gtsam::Point2> &slam_est, std::vector<MatrixXd> &slam_mcov);
->>>>>>> Stashed changes
