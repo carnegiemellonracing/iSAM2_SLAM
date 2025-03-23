@@ -3,3 +3,4 @@ workspace/install/*
 workspace/log/*
 **/eufs/*
 workspace/src/isam2/data/*
+test.txt
