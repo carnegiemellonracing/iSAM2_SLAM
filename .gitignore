@@ -1,6 +1,5 @@
 workspace/build/*
 workspace/install/*
 workspace/log/*
-**/eufs/*
+eufs/*
 workspace/src/isam2/data/*
-test.txt
