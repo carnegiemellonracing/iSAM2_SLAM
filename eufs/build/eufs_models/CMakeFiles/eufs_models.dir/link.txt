@@ -1,2 +1,0 @@
-/usr/bin/ar qc libeufs_models.a  CMakeFiles/eufs_models.dir/src/dynamic_bicycle.cpp.o CMakeFiles/eufs_models.dir/src/point_mass.cpp.o CMakeFiles/eufs_models.dir/src/vehicle_model.cpp.o
-/usr/bin/ranlib libeufs_models.a

@@ -1,9 +1,0 @@
-Metadata-Version: 2.1
-Name: eufs-rqt
-Version: 2.0.0
-Summary: RQT GUIs for eufs_sim
-Maintainer: Cameron Matthew
-Maintainer-email: cambobmat@icloud.com
-License: MIT
-License-File: LICENSE
-Requires-Dist: setuptools

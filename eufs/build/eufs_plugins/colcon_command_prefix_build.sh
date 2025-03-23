@@ -1,3 +1,0 @@
-# generated from colcon_core/shell/template/command_prefix.sh.em
-. "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_msgs/share/eufs_msgs/package.sh"
-. "/home/andrewwhong/classes/16833/iSAM2_SLAM/eufs/install/eufs_models/share/eufs_models/package.sh"
