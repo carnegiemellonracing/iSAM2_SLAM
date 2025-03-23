@@ -32,8 +32,8 @@ void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
  *          double is the bearing from the car, and Point2 is the global position.
  * 
  */
-void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
-            vector<tuple<Point2, double, Point2>> &new_cones,
+void get_old_new_cones(vector<Old_cone_info> &old_cones,
+            vector<New_cone_info> &new_cones,
             MatrixXd &global_cone_x,MatrixXd &global_cone_y,MatrixXd &bearing,
             vector<Point2> &cone_obs, vector<double> &m_dist, int n_landmarks,
             optional<rclcpp::Logger> &logger) {
@@ -61,8 +61,8 @@ void get_old_new_cones(vector<tuple<Point2, double, int>> &old_cones,
     }
 }
 
-void data_association(vector<tuple<Point2, double, int>> &old_cones,
-                vector<tuple<Point2, double, Point2>> &new_cones,
+void data_association(vector<Old_cone_info> &old_cones,
+                vector<New_cone_info> &new_cones,
                 Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
                 vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
                 vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov) {

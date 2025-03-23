@@ -114,8 +114,8 @@ public:
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
             Pose2 &velocity,double dt, optional<rclcpp::Logger> logger);
 
-    void update_landmarks(std::vector<tuple<Point2, double, int>> &old_cones,
-                        std::vector<tuple<Point2, double, Point2>> &new_cones,
+    void update_landmarks(std::vector<Old_cone_info> &old_cones,
+                        std::vector<New_cone_info> &new_cones,
                         Pose2 &cur_pose);
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,

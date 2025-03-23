@@ -188,8 +188,8 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
  * to the car
  * 2nd Point2 for new_cones represents the global position
  */
-void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &old_cones,
-                        std::vector<std::tuple<Point2, double, Point2>> &new_cones,
+void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
+                        std::vector<New_cone_info> &new_cones,
                         Pose2 &cur_pose) {
 
 
@@ -204,9 +204,10 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
      *
      */
     for (std::size_t o = 0; o < old_cones.size(); o++) {
-        Point2 cone_pos_car_frame = get<0>(old_cones.at(o));
-        int min_id = get<2>(old_cones.at(o));
-        Rot2 b = Rot2::fromAngle(get<1>(old_cones.at(o)));
+        Old_cone_info old_cone = old_cones.at(o);
+        Point2 cone_pos_car_frame = old_cone.local_cone_pos;
+        int min_id = old_cone.min_id;
+        Rot2 b = Rot2::fromAngle(old_cone.bearing);
         double r = norm2(cone_pos_car_frame);
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(min_id),
@@ -219,11 +220,12 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
     // values should be empty
 
     for (std::size_t n = 0; n < new_cones.size(); n++) {
-        Point2 cone_pos_car_frame = get<0>(new_cones.at(n));
-        Rot2 b = Rot2::fromAngle(get<1>(new_cones.at(n)));
+        New_cone_info new_cone = new_cones.at(n);
+        Point2 cone_pos_car_frame = new_cone.local_cone_pos;
+        Rot2 b = Rot2::fromAngle(new_cone.bearing);
         double r = norm2(cone_pos_car_frame);
 
-        Point2 cone_global_frame = get<2>(new_cones.at(n));
+        Point2 cone_global_frame = new_cone.global_cone_pos;
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(n_landmarks),
                                         b,
@@ -341,8 +343,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
         /**** Data association ***/
-        std::vector<tuple<Point2, double, int>> old_cones = {};
-        std::vector<tuple<Point2, double, Point2>> new_cones = {};
+        std::vector<Old_cone_info> old_cones = {};
+        std::vector<New_cone_info> new_cones = {};
 
 
         auto start_DA = high_resolution_clock::now();
