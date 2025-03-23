@@ -192,5 +192,3 @@ void data_association(vector<tuple<Point2, double, int>> &old_cones,
         numSorted = numSorted + 1;
     }
 };
-    //Starting with the left and right cones, project a series of vectors in front
-    //
