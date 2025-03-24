@@ -81,8 +81,9 @@ def display_lap(filename, cone_color):
         plt.scatter(landmarks[:,0],landmarks[:,1], s=10, c=cone_color, marker="o", label='landmark')
         print("plotting")
         plt.pause(1)
-        
 
-display_lap("../src/isam2/saved_data/lap1_estimates.txt", 'g')
+
+#display_lap("../src/isam2/saved_data/lap1_estimates.txt", 'g')
+display_lap("../src/isam2/data/current_estimates.txt", 'g')
 display_lap("../src/isam2/saved_data/lap2_estimates.txt", 'r')
 plt.show(block=True)
