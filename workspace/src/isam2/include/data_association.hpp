@@ -16,7 +16,7 @@
 #include "ros_utils.hpp"
 const double M_DIST_TH = 0.0009;
 const double TURNING_M_DIST_TH = 0.0009;
-const double JC_TH = 0.1; /* Joint compatibility threshold */
+const double JC_TH = 3; /* Joint compatibility threshold */
 // const double M_DIST_TH = 0.0005;
 // const double TURNING_M_DIST_TH = 0.0005;
 
@@ -97,7 +97,7 @@ class CSP {
     
     Eigen::MatrixXd get_best_hypothesis_msmt_jacobian();
 
-    std::vector<Old_cone_info> find_best_association_list();
+    std::optional<std::vector<Old_cone_info>> find_best_association_list();
 
     private: 
 
@@ -210,6 +210,15 @@ class CSP {
      * from N->A for all neighbors N of A 
      */
     bool ac3(int index);
+
+    /**
+     * @brief A function to print the current assignment. Used for debugging
+     * 
+     */
+    void print_assignment();
+    void print_csp_problem();
+
+
 };
 
 void populate_m_dist(MatrixXd &global_cone_x, MatrixXd &global_cone_y,
