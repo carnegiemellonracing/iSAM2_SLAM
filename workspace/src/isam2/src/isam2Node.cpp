@@ -8,8 +8,27 @@ using namespace rclcpp;
 
 class SLAMValidation : public rclcpp::Node {
 public:
-    SLAMValidation(): Node("slam_validation")
+    SLAMValidation(const rclcpp::NodeOptions& options): Node("slam_validation", options)
     {
+        rclcpp::Parameter input_m_dist_th = this->get_parameter("M_DIST_TH");
+        rclcpp::Parameter input_turning_m_dist_th = this->get_parameter("TURNING_M_DIST_TH");
+        rclcpp::Parameter input_jc_th = this->get_parameter("JC_TH");
+        double m_dist_th = M_DIST_TH;
+        double turning_m_dist_th = TURNING_M_DIST_TH;
+        double jc_th = JC_TH;
+
+        if(input_m_dist_th.get_type() != rclcpp::PARAMETER_NOT_SET) {
+            m_dist_th = input_m_dist_th.as_double();
+        }
+        if(input_turning_m_dist_th.get_type() != rclcpp::PARAMETER_NOT_SET) {
+            turning_m_dist_th = input_turning_m_dist_th.as_double();
+        }
+        if(input_jc_th.get_type() != rclcpp::PARAMETER_NOT_SET) {
+            jc_th = input_m_dist_th.as_double();
+        }      
+
+        slam_instance = slamISAM(this->get_logger(), m_dist_th, turning_m_dist_th, jc_th);
+
         const rmw_qos_profile_t best_effort_profile = {
             RMW_QOS_POLICY_HISTORY_KEEP_LAST,
             30,
@@ -197,7 +216,7 @@ private:
     }
 
 
-    slamISAM slam_instance = slamISAM(this->get_logger());
+    slamISAM slam_instance;
     high_resolution_clock::time_point cur_sync_callback_time;
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
     message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
@@ -237,9 +256,10 @@ private:
 };
 
 int main(int argc, char * argv[]){
-
+  rclcpp::NodeOptions options;
+  options.allow_undeclared_parameters(true);
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<SLAMValidation>());
+  rclcpp::spin(std::make_shared<SLAMValidation>(options));
   rclcpp::shutdown();
 
   return 0;

@@ -40,6 +40,11 @@ const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 class slamISAM {
 
 private:
+    double m_dist_th;
+    double turning_m_dist_th;
+    double jc_th;
+
+
     ISAM2Params parameters;
     ISAM2 isam2;
     //Create a factor graph and values for new data
@@ -113,7 +118,8 @@ public:
     noiseModel::Diagonal::shared_ptr unary_model;
     optional<rclcpp::Logger> logger;
 
-    slamISAM(optional<rclcpp::Logger> input_logger);
+    slamISAM();
+    slamISAM(optional<rclcpp::Logger> input_logger, double input_m_dist_th, double input_turning_m_dist_th, double input_jc_th);
 
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
             Pose2 &velocity,double dt, optional<rclcpp::Logger> logger);

@@ -4,7 +4,14 @@ using namespace gtsam;
 using namespace std::chrono;
 using std::size_t;
 
-slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
+slamISAM::slamISAM() {
+    
+}
+slamISAM::slamISAM(optional<rclcpp::Logger> input_logger, double input_m_dist_th, double input_turning_m_dist_th, double input_jc_th) {
+    // Initializing data association parameters
+    m_dist_th = input_m_dist_th;
+    turning_m_dist_th = input_turning_m_dist_th;
+    jc_th = input_jc_th;
 
     // Initializing SLAM Parameters
     parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
@@ -357,7 +364,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         jcbb(old_cones, new_cones, 
             LandmarkNoiseModel, jcbb_state_covariance, jcbb_state_noise, 
             cur_pose, prev_pose, velocity, dt, cone_obs.size(), n_landmarks,
-            is_turning, cone_obs, logger, slam_est, slam_mcov);
+            is_turning, cone_obs, logger, slam_est, slam_mcov, m_dist_th, turning_m_dist_th, jc_th);
 
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);

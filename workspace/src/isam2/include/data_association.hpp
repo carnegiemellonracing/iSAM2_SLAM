@@ -55,6 +55,9 @@ struct Old_cone_info {
  */
 class CSP {
     public: 
+    double m_dist_th;
+    double jc_th;
+
     struct CarInfo  {
         gtsam::Pose2 prev_pose;
         gtsam::Pose2 cur_pose;
@@ -92,7 +95,8 @@ class CSP {
      * current time step. This is used for the measurement model jacobian later. 
      */
     CSP(CSP::CarInfo input_car_info, std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
-            Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, std::optional<rclcpp::Logger> logger);
+            Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, std::optional<rclcpp::Logger> logger,
+            double input_m_dist_th, double input_jc_th);
 
     
     Eigen::MatrixXd get_best_hypothesis_msmt_jacobian();
@@ -237,7 +241,8 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
             gtsam::Pose2 &prev_pose, gtsam::Pose2 &cur_pose, gtsam::Pose2 &velocity, 
             double dt, int num_obs, int& n_landmarks, bool is_turning,
             std::vector<gtsam::Point2> &cone_obs, std::optional<rclcpp::Logger> &logger,
-            std::vector<gtsam::Point2> &slam_est, std::vector<gtsam::Matrix> &slam_mcov);
+            std::vector<gtsam::Point2> &slam_est, std::vector<gtsam::Matrix> &slam_mcov,
+            double m_dist_th, double turning_m_dist_th, double jc_th);
 
 
 Eigen::MatrixXd get_measurement_model_jacobian(gtsam::Pose2 cur_pose, CSP::EstimateConeInfo est_cone_info, int n_landmarks, std::optional<rclcpp::Logger> logger);

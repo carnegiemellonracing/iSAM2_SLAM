@@ -400,7 +400,8 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
             gtsam::Pose2 &prev_pose, gtsam::Pose2 &cur_pose, gtsam::Pose2 &velocity, 
             double dt, int num_obs, int& n_landmarks, bool is_turning,
             std::vector<gtsam::Point2> &cone_obs, optional<rclcpp::Logger> &logger,
-            std::vector<gtsam::Point2> &slam_est, std::vector<gtsam::Matrix> &slam_mcov) {
+            std::vector<gtsam::Point2> &slam_est, std::vector<gtsam::Matrix> &slam_mcov,
+            double m_dist_th, double turning_m_dist_th, double jc_th) {
 
     assert(num_obs == cone_obs.size());
     assert(n_landmarks == slam_est.size());
@@ -418,10 +419,10 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
      */
     std::vector<double> m_dist = {};
 
-    double m_dist_th = M_DIST_TH;
+
     double cone_dist_th = MAX_CONE_RANGE;
     if (is_turning) {
-        m_dist_th = TURNING_M_DIST_TH;
+        m_dist_th = turning_m_dist_th;
         cone_dist_th = TURNING_MAX_CONE_RANGE;
     }
 
@@ -473,7 +474,8 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
         auto start_constructor = std::chrono::high_resolution_clock::now();
         CSP::CarInfo car_info = {prev_pose, cur_pose, velocity, dt, num_obs_old_cones}; 
         CSP csp = CSP(car_info, old_cones, m_dist, slam_est, 
-                        jcbb_state_covariance, landmark_noise, slam_est.size(), n_landmarks, logger);
+                        jcbb_state_covariance, landmark_noise, slam_est.size(), n_landmarks, logger, 
+                    m_dist_th, jc_th);
         
                         
         auto end_constructor = std::chrono::high_resolution_clock::now();
@@ -514,7 +516,11 @@ void jcbb(std::vector<Old_cone_info> &old_cones, std::vector<New_cone_info> &new
 
 
 CSP::CSP(CSP::CarInfo input_car_info, std::vector<Old_cone_info>& old_cones, std::vector<double>& m_dist, std::vector<gtsam::Point2>& slam_est, 
-    Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, std::optional<rclcpp::Logger> logger) {  
+    Eigen::MatrixXd input_covariance_est, Eigen::VectorXd landmark_noise, int old_n_landmarks, int new_n_landmarks, std::optional<rclcpp::Logger> logger,
+    double input_m_dist_th, double input_jc_th) {  
+
+    m_dist_th = input_m_dist_th;
+    jc_th = input_jc_th;
 
     csp_logger = logger;
     
@@ -546,7 +552,7 @@ CSP::CSP(CSP::CarInfo input_car_info, std::vector<Old_cone_info>& old_cones, std
 
         /* Find candidates that satisfy the individual compatibility test */
         for (int n = 0; n < old_n_landmarks + 1; n++) {
-            if (m_dist.at(n + lo) < M_DIST_TH) {
+            if (m_dist.at(n + lo) < m_dist_th) {
                 cur_info.domain[n] = {n, slam_est.at(n)};
 
             }
@@ -627,7 +633,7 @@ void CSP::backtracking_search(int backtracking_index) {
 
         double cur_jcbb = compute_joint_compatibility(covariance_est, obs_cone_global_positions, 
             assignment, car_info.cur_pose, innovation_noise, num_obs_old_cones, n_landmarks, csp_logger);
-        if (cur_jcbb < best_joint_compatibility) {
+        if (cur_jcbb < jc_th && cur_jcbb < best_joint_compatibility) {
             best_joint_compatibility = cur_jcbb;
             best_association_list = assignment;
 
@@ -707,7 +713,7 @@ void CSP::backtracking_search(int backtracking_index) {
         }
         
         /* Continue the search and build off of the current association list */
-        if( compatibility < JC_TH && ac3(backtracking_index)) {
+        if( compatibility < jc_th && ac3(backtracking_index)) {
             backtracking_search(backtracking_index + 1);
         }
         if (csp_logger.has_value()) {
