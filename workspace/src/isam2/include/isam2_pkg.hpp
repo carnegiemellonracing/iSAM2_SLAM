@@ -119,10 +119,13 @@ private:
         return Symbol('x', robot_pose_id);
     }
 
-    gtsam::Symbol L(int cone_pose_id) {
-        return Symbol('l', cone_pose_id);
+    gtsam::Symbol BLUE_L(int cone_pose_id) {
+        return Symbol('b', cone_pose_id);
     }
 
+    gtsam::Symbol YELLOW_L(int cone_pose_id) {
+        return Symbol('y', cone_pose_id);
+    }
     /* Assoc_Args common arguments */
     std::vector<Point2> cone_obs_blue;
     std::vector<Point2> cone_obs_yellow;
