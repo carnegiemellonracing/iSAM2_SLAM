@@ -4,7 +4,7 @@ using namespace gtsam;
 using namespace std::chrono;
 using std::size_t;
 
-slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
+slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs> &yaml_noise_inputs) {
 
     // Initializing SLAM Parameters
     parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
@@ -17,7 +17,8 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
 
     pose_num = 0;
     first_pose_added = false;
-    n_landmarks = 0;
+    blue_n_landmarks = 0;
+    yellow_n_landmarks = 0;
 
 
     
@@ -25,37 +26,69 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     OdomNoiseModel = gtsam::Vector(3);
     PriorNoiseModel = gtsam::Vector(3);
     UnaryNoiseModel = gtsam::Vector(2);
-    if (true) {
+    if (!yaml_noise_inputs.has_value()) {
+        switch (RunSettings::Real) {
+            case RunSettings::Real:
+                LandmarkNoiseModel(0) = BEARING_STD_DEV; 
+                LandmarkNoiseModel(1) = RANGE_STD_DEV; 
 
-        LandmarkNoiseModel(0) = BEARING_STD_DEV; 
-        LandmarkNoiseModel(1) = RANGE_STD_DEV; 
+                OdomNoiseModel(0) = IMU_X_STD_DEV;
+                OdomNoiseModel(1) = IMU_Y_STD_DEV; 
+                OdomNoiseModel(2) = IMU_HEADING_STD_DEV; 
+                // used to be all 0s for EUFS_SIM
+                PriorNoiseModel(0) = IMU_X_STD_DEV;
+                PriorNoiseModel(1) = IMU_Y_STD_DEV;
+                PriorNoiseModel(2) = IMU_HEADING_STD_DEV;
 
-        OdomNoiseModel(0) = IMU_X_STD_DEV;
-        OdomNoiseModel(1) = IMU_Y_STD_DEV; 
-        OdomNoiseModel(2) = IMU_HEADING_STD_DEV; 
-        // used to be all 0s for EUFS_SIM
-        PriorNoiseModel(0) = IMU_X_STD_DEV;
-        PriorNoiseModel(1) = IMU_Y_STD_DEV;
-        PriorNoiseModel(2) = IMU_HEADING_STD_DEV;
+                UnaryNoiseModel(0) = GPS_X_STD_DEV;
+                UnaryNoiseModel(1) = GPS_Y_STD_DEV;
+                break;
+            case RunSettings::EUFSSim:
+                LandmarkNoiseModel(0) = EUFS_SIM_BEARING_STD_DEV; 
+                LandmarkNoiseModel(1) = EUFS_SIM_RANGE_STD_DEV; 
 
-        UnaryNoiseModel(0) = GPS_X_STD_DEV;
-        UnaryNoiseModel(1) = GPS_Y_STD_DEV;
+                OdomNoiseModel(0) = EUFS_SIM_IMU_X_STD_DEV;
+                OdomNoiseModel(1) = EUFS_SIM_IMU_Y_STD_DEV; 
+                OdomNoiseModel(2) = EUFS_SIM_IMU_HEADING_STD_DEV; 
+                // used to be all 0s for EUFS_SIM
+                PriorNoiseModel(0) = EUFS_SIM_IMU_X_STD_DEV;
+                PriorNoiseModel(1) = EUFS_SIM_IMU_Y_STD_DEV;
+                PriorNoiseModel(2) = EUFS_SIM_IMU_HEADING_STD_DEV;
+
+                UnaryNoiseModel(0) = EUFS_SIM_GPS_X_STD_DEV;
+                UnaryNoiseModel(1) = EUFS_SIM_GPS_Y_STD_DEV;
+                break;
+            case RunSettings::ControlsSim:
+                LandmarkNoiseModel(0) = CONTROLS_BEARING_STD_DEV; 
+                LandmarkNoiseModel(1) = CONTROLS_RANGE_STD_DEV; 
+
+                OdomNoiseModel(0) = CONTROLS_IMU_X_STD_DEV;
+                OdomNoiseModel(1) = CONTROLS_IMU_Y_STD_DEV; 
+                OdomNoiseModel(2) = CONTROLS_IMU_HEADING_STD_DEV; 
+                // used to be all 0s for EUFS_SIM
+                PriorNoiseModel(0) = CONTROLS_IMU_X_STD_DEV;
+                PriorNoiseModel(1) = CONTROLS_IMU_Y_STD_DEV;
+                PriorNoiseModel(2) = CONTROLS_IMU_HEADING_STD_DEV;
+
+                UnaryNoiseModel(0) = CONTROLS_GPS_X_STD_DEV;
+                UnaryNoiseModel(1) = CONTROLS_GPS_Y_STD_DEV;
+                break;
+        }
     } else {
-        LandmarkNoiseModel(0) = EUFS_SIM_BEARING_STD_DEV; 
-        LandmarkNoiseModel(1) = EUFS_SIM_RANGE_STD_DEV; 
+        LandmarkNoiseModel(0) = yaml_noise_inputs.value().yaml_bearing_std_dev; 
+        LandmarkNoiseModel(1) = yaml_noise_inputs.value().yaml_range_std_dev; 
 
-        OdomNoiseModel(0) = EUFS_SIM_IMU_X_STD_DEV;
-        OdomNoiseModel(1) = EUFS_SIM_IMU_Y_STD_DEV; 
-        OdomNoiseModel(2) = EUFS_SIM_IMU_HEADING_STD_DEV; 
+        OdomNoiseModel(0) = yaml_noise_inputs.value().yaml_imu_x_std_dev;
+        OdomNoiseModel(1) = yaml_noise_inputs.value().yaml_imu_y_std_dev; 
+        OdomNoiseModel(2) = yaml_noise_inputs.value().yaml_imu_heading_std_dev; 
         // used to be all 0s for EUFS_SIM
-        PriorNoiseModel(0) = EUFS_SIM_IMU_X_STD_DEV;
-        PriorNoiseModel(1) = EUFS_SIM_IMU_Y_STD_DEV;
-        PriorNoiseModel(2) = EUFS_SIM_IMU_HEADING_STD_DEV;
+        PriorNoiseModel(0) = yaml_noise_inputs.value().yaml_imu_x_std_dev;
+        PriorNoiseModel(1) = yaml_noise_inputs.value().yaml_imu_y_std_dev;
+        PriorNoiseModel(2) = yaml_noise_inputs.value().yaml_imu_heading_std_dev;
 
-        UnaryNoiseModel(0) = EUFS_SIM_GPS_X_STD_DEV;
-        UnaryNoiseModel(1) = EUFS_SIM_GPS_Y_STD_DEV;
+        UnaryNoiseModel(0) = yaml_noise_inputs.value().yaml_gps_x_std_dev;          
+        UnaryNoiseModel(1) = yaml_noise_inputs.value().yaml_gps_y_std_dev;
     }
-
 
 
 
@@ -170,9 +203,10 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
  * 2nd Point2 for new_cones represents the global position
  */
 void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
-                        std::vector<New_cone_info> &new_cones,
-                        gtsam::Pose2 &cur_pose) {
-
+                                std::vector<New_cone_info> &new_cones,
+                                int &n_landmarks, ConeColor color,
+                                Pose2 &cur_pose)
+{
 
     /* Bearing range factor will need
      * Types for car pose to landmark node (Pose2, Point2)
@@ -184,51 +218,69 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
      * insert Point2 for the cones and their actual location
      *
      */
-    for (std::size_t o = 0; o < old_cones.size(); o++) {
-        Old_cone_info old_cone = old_cones.at(o);
-        Point2 cone_pos_car_frame = old_cone.local_cone_pos;
-        int min_id = old_cone.min_id;
-        Rot2 b = Rot2::fromAngle(old_cone.bearing);
+    for (std::size_t o = 0; o < old_cones.size(); o++)
+    {
+        Point2 cone_pos_car_frame = old_cones.at(o).local_cone_pos;
+        int min_id = (old_cones.at(o)).min_id;
+        Rot2 b = Rot2::fromAngle((old_cones.at(o)).bearing);
         double r = norm2(cone_pos_car_frame);
 
-        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(min_id),
-                                        b,
-                                        r,
-                                        landmark_model));
+
+        gtsam::Symbol landmark_symbol;
+
+        switch (color) {
+            case ConeColor::Blue:
+                landmark_symbol = BLUE_L(min_id);
+                break;
+            case ConeColor::Yellow:
+                landmark_symbol = YELLOW_L(min_id);
+                break;
+        }
+
+        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), landmark_symbol,
+                                                    b,
+                                                    r,
+                                                    landmark_model));
     }
     isam2.update(graph, values);
     graph.resize(0);
     // values should be empty
 
-    for (std::size_t n = 0; n < new_cones.size(); n++) {
-        New_cone_info new_cone = new_cones.at(n);
-        Point2 cone_pos_car_frame = new_cone.local_cone_pos;
-        Rot2 b = Rot2::fromAngle(new_cone.bearing);
+    for (std::size_t n = 0; n < new_cones.size(); n++)
+    {
+        Point2 cone_pos_car_frame = (new_cones.at(n).local_cone_pos);
+        Rot2 b = Rot2::fromAngle((new_cones.at(n)).bearing);
         double r = norm2(cone_pos_car_frame);
 
-        Point2 cone_global_frame = new_cone.global_cone_pos;
+        Point2 cone_global_frame = (new_cones.at(n).global_cone_pos);
 
-        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(n_landmarks),
-                                        b,
-                                        r,
-                                        landmark_model));
+        gtsam::Symbol landmark_symbol;
+        switch (color) {
+            case ConeColor::Blue:
+                landmark_symbol = BLUE_L(n_landmarks);
+                break;
+            case ConeColor::Yellow:
+                landmark_symbol = YELLOW_L(n_landmarks);
+                break;
+        }
+        graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), landmark_symbol,
+                                                    b,
+                                                    r,
+                                                    landmark_model));
 
-        values.insert(L(n_landmarks), cone_global_frame);
+        values.insert(landmark_symbol, cone_global_frame);
         n_landmarks++;
     }
-    
+
     /* NOTE: All values in graph must be in values parameter */
 
     values.insert(X(pose_num), cur_pose);
     Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
     optimized_val.erase(X(pose_num));
     isam2.update(graph, optimized_val);
-    
 
-    graph.resize(0); //Not resizing your graph will result in long update times
+    graph.resize(0); // Not resizing your graph will result in long update times
     values.clear();
-
-
 }
 
 
@@ -245,7 +297,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     log_step_inputs(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
 
 
-    if (n_landmarks > 0)
+    if (blue_n_landmarks + yellow_n_landmarks > 0)
     {
         auto start_step  = high_resolution_clock::now();
         auto dur_betw_step = duration_cast<milliseconds>(start_step - end);
@@ -307,15 +359,24 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     if (!loop_closure) {
         auto start_est_retrieval = high_resolution_clock::now();
-        std::vector<Point2> slam_est = {};
-        for (int i = 0; i < n_landmarks; i++) {
-            slam_est.push_back(isam2.calculateEstimate(L(i)).cast<Point2>());
+        std::vector<gtsam::Point2> blue_slam_est = {};
+        for (int i = 0; i < blue_n_landmarks; i++) {
+            blue_slam_est.push_back(isam2.calculateEstimate(BLUE_L(i)).cast<Point2>());
+        }
+        std::vector<Eigen::MatrixXd> blue_slam_mcov = {};
+        for (int i = 0; i < blue_n_landmarks; i++) {
+            blue_slam_mcov.push_back(isam2.marginalCovariance(BLUE_L(i)));
         }
 
-        std::vector<MatrixXd> slam_mcov = {};
-        for (int i = 0; i < n_landmarks; i++) {
-            slam_mcov.push_back(isam2.marginalCovariance(L(i)));
+        std::vector<gtsam::Point2> yellow_slam_est = {};
+        for (int i = 0; i < yellow_n_landmarks; i++) {
+            yellow_slam_est.push_back(isam2.calculateEstimate(YELLOW_L(i)).cast<Point2>());
         }
+        std::vector<Eigen::MatrixXd> yellow_slam_mcov = {};
+        for (int i = 0; i < yellow_n_landmarks; i++) {
+            yellow_slam_mcov.push_back(isam2.marginalCovariance(YELLOW_L(i)));
+        }
+
         auto end_est_retrieval = high_resolution_clock::now();
         auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
         if(logger.has_value()) {
@@ -324,13 +385,17 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
         /**** Data association ***/
-        std::vector<Old_cone_info> old_cones = {};
-        std::vector<New_cone_info> new_cones = {};
-
+        std::vector<Old_cone_info> blue_old_cones = {};
+        std::vector<New_cone_info> blue_new_cones = {};
+        std::vector<Old_cone_info> yellow_old_cones = {};
+        std::vector<New_cone_info> yellow_new_cones = {};
 
         auto start_DA = high_resolution_clock::now();
-        data_association(old_cones, new_cones, cur_pose, prev_pose, is_turning,
-                            cone_obs, logger, slam_est, slam_mcov);
+        data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
+                            cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
+        data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
+                            cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov);
+
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         if(logger.has_value()) {
@@ -339,9 +404,11 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         }
 
         auto start_update_landmarks = high_resolution_clock::now();
-        update_landmarks(old_cones, new_cones, cur_pose);
+        update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, ConeColor::Blue, cur_pose);
+        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, ConeColor::Yellow, cur_pose);
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
+
         if(logger.has_value()) {
             RCLCPP_INFO(logger.value(), "update_landmarks time: %ld", dur_update_landmarks.count());
         }
@@ -381,7 +448,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     }
 
     if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "pose_num: %d | n_landmarks: %d\n\n", pose_num - 1, n_landmarks);
+        RCLCPP_INFO(logger.value(), "pose_num: %d | blue_n_landmarks: %d | yellow_n_landmarks : %d\n\n", 
+                        pose_num - 1, blue_n_landmarks, yellow_n_landmarks);
     }
 }
 

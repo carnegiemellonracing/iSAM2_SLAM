@@ -1,3 +1,14 @@
+/**
+ * @file isam2Node.cpp
+ * @author Andrew Chong, Manan Agarwal, Daniel Nguyen
+ * @brief Note that if you are running with controls, you must source the 
+ * interfaces from iSAM2 because we have the right messages.
+ * @version 0.1
+ * @date 2025-03-30
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "isam2_pkg.hpp"
 
 using namespace std;
@@ -7,58 +18,45 @@ using std::size_t;
 using namespace rclcpp;
 
 class SLAMValidation : public rclcpp::Node {
-public:
-    SLAMValidation(): Node("slam_validation")
-    {
-        const rmw_qos_profile_t best_effort_profile = {
-            RMW_QOS_POLICY_HISTORY_KEEP_LAST,
-            30,
-            RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
-            RMW_QOS_POLICY_DURABILITY_VOLATILE,
-            RMW_QOS_DEADLINE_DEFAULT,
-            RMW_QOS_LIFESPAN_DEFAULT,
-            RMW_QOS_POLICY_LIVELINESS_SYSTEM_DEFAULT,
-            RMW_QOS_LIVELINESS_LEASE_DURATION_DEFAULT,
-            false
-        };
-
-        const rclcpp::QoS best_effort_qos = rclcpp::QoS(
-           rclcpp::QoSInitialization(
-               best_effort_profile.history,
-               best_effort_profile.depth),
-           best_effort_profile);
-
-        cone_sub.subscribe(this, CONE_DATA_TOPIC, best_effort_profile);
-        vehicle_pos_sub.subscribe(this, VEHICLE_POS_TOPIC, best_effort_profile);
-        vehicle_angle_sub.subscribe(this, VEHICLE_ANGLE_TOPIC, best_effort_profile);
-        vehicle_vel_sub.subscribe(this, VEHICLE_VEL_TOPIC, best_effort_profile);
-
-        sync = std::make_shared<message_filters::Synchronizer<
-                                    message_filters::sync_policies::ApproximateTime<
-                                    interfaces::msg::ConeArray,
-                                    geometry_msgs::msg::PoseStamped,
-                                    geometry_msgs::msg::TwistStamped>>>(
-                            message_filters::sync_policies::ApproximateTime<
-                                    interfaces::msg::ConeArray,
-                                    geometry_msgs::msg::PoseStamped,
-                                    geometry_msgs::msg::TwistStamped>(30),
-                                    cone_sub, vehicle_pos_sub, vehicle_vel_sub);
-        sync->setAgePenalty(0.09);
-        sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
-
-        dt = .1;
-
-        //TODO: std::optional where init is set to None
-        init_lon_lat = std::nullopt;
-        // init_lon_lat = gtsam::Point2(-71.458633,43.358253);
-        file_opened = true;
-
-        prev_filter_time = std::nullopt;
-
-        prev_sync_callback_time = std::nullopt;
-    }
-
 private:
+
+    slamISAM slam_instance = slamISAM(); /* We need to initialize this because it is used in the constructor of SLAMValidation*/
+    high_resolution_clock::time_point cur_sync_callback_time;
+    optional<high_resolution_clock::time_point> prev_sync_callback_time;
+    message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
+    message_filters::Subscriber<geometry_msgs::msg::PoseStamped> vehicle_pos_sub;
+    message_filters::Subscriber<geometry_msgs::msg::TwistStamped> vehicle_vel_sub;
+    message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
+
+    std::shared_ptr<message_filters::Synchronizer<
+                            message_filters::sync_policies::ApproximateTime<
+                                            interfaces::msg::ConeArray,
+                                            geometry_msgs::msg::PoseStamped,
+                                            geometry_msgs::msg::TwistStamped>>> sync;
+    
+    gtsam::Pose2 velocity;
+
+    optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
+    gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
+    gtsam::Pose2 prev_odom;
+    std::vector<Point2> cones; // local variable to load cone observations into SLAM instance
+    std::vector<Point2> orange_cones; // local variable to load cone observations into SLAM instance
+
+    std::vector<Point2> blue_cones; //local variable to store the blue observed cones
+    std::vector<Point2> yellow_cones; //local variable to store the yellow observed cones
+
+
+    bool file_opened;
+
+    rclcpp::TimerBase::SharedPtr timer;
+    double dt;
+
+    optional<std_msgs::msg::Header> prev_filter_time;
+
+    //print files
+    std::ofstream outfile;
+    std::ofstream pose_cones;
+
 
     void sync_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
                     const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
@@ -197,44 +195,80 @@ private:
 
 
     }
-
-
-    slamISAM slam_instance = slamISAM(this->get_logger());
-    high_resolution_clock::time_point cur_sync_callback_time;
-    optional<high_resolution_clock::time_point> prev_sync_callback_time;
-    message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
-    message_filters::Subscriber<geometry_msgs::msg::PoseStamped> vehicle_pos_sub;
-    message_filters::Subscriber<geometry_msgs::msg::TwistStamped> vehicle_vel_sub;
-    message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
-
-    std::shared_ptr<message_filters::Synchronizer<
-                            message_filters::sync_policies::ApproximateTime<
-                                            interfaces::msg::ConeArray,
-                                            geometry_msgs::msg::PoseStamped,
-                                            geometry_msgs::msg::TwistStamped>>> sync;
     
-    gtsam::Pose2 velocity;
 
-    optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
-    gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
-    gtsam::Pose2 prev_odom;
-    std::vector<Point2> cones; // local variable to load cone observations into SLAM instance
-    std::vector<Point2> orange_cones; // local variable to load cone observations into SLAM instance
+public:
+    SLAMValidation(): Node("slam_validation")
+    {
+        this->declare_parameter<bool>("use_yaml", false);
+        this->declare_parameter<double>("yaml_bearing_std_dev", BEARING_STD_DEV);
+        this->declare_parameter<double>("yaml_range_std_dev", RANGE_STD_DEV);
+        this->declare_parameter<double>("yaml_imu_x_std_dev", IMU_X_STD_DEV);
+        this->declare_parameter<double>("yaml_imu_y_std_dev", IMU_Y_STD_DEV);
+        this->declare_parameter<double>("yaml_imu_heading_std_dev", IMU_HEADING_STD_DEV);
+        this->declare_parameter<double>("yaml_gps_x_std_dev", GPS_X_STD_DEV);
+        this->declare_parameter<double>("yaml_gps_y_std_dev", GPS_Y_STD_DEV);
 
-    std::vector<Point2> blue_cones; //local variable to store the blue observed cones
-    std::vector<Point2> yellow_cones; //local variable to store the yellow observed cones
 
+        const rmw_qos_profile_t best_effort_profile = {
+            RMW_QOS_POLICY_HISTORY_KEEP_LAST,
+            30,
+            RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
+            RMW_QOS_POLICY_DURABILITY_VOLATILE,
+            RMW_QOS_DEADLINE_DEFAULT,
+            RMW_QOS_LIFESPAN_DEFAULT,
+            RMW_QOS_POLICY_LIVELINESS_SYSTEM_DEFAULT,
+            RMW_QOS_LIVELINESS_LEASE_DURATION_DEFAULT,
+            false
+        };
 
-    bool file_opened;
+        const rclcpp::QoS best_effort_qos = rclcpp::QoS(
+           rclcpp::QoSInitialization(
+               best_effort_profile.history,
+               best_effort_profile.depth),
+           best_effort_profile);
 
-    rclcpp::TimerBase::SharedPtr timer;
-    double dt;
+        cone_sub.subscribe(this, CONE_DATA_TOPIC, best_effort_profile);
+        vehicle_pos_sub.subscribe(this, VEHICLE_POS_TOPIC, best_effort_profile);
+        vehicle_angle_sub.subscribe(this, VEHICLE_ANGLE_TOPIC, best_effort_profile);
+        vehicle_vel_sub.subscribe(this, VEHICLE_VEL_TOPIC, best_effort_profile);
 
-    optional<std_msgs::msg::Header> prev_filter_time;
+        sync = std::make_shared<message_filters::Synchronizer<
+                                    message_filters::sync_policies::ApproximateTime<
+                                    interfaces::msg::ConeArray,
+                                    geometry_msgs::msg::PoseStamped,
+                                    geometry_msgs::msg::TwistStamped>>>(
+                            message_filters::sync_policies::ApproximateTime<
+                                    interfaces::msg::ConeArray,
+                                    geometry_msgs::msg::PoseStamped,
+                                    geometry_msgs::msg::TwistStamped>(100),
+                                    cone_sub, vehicle_pos_sub, vehicle_vel_sub);
+        sync->setAgePenalty(0.1);
+        sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
 
-    //print files
-    std::ofstream outfile;
-    std::ofstream pose_cones;
+        dt = .1;
+        std::optional<struct NoiseInputs> noise_inputs = std::nullopt;
+        if (this->has_parameter("use_yaml") && this->get_parameter("use_yaml").as_bool()) {
+            noise_inputs = {this->get_parameter("yaml_bearing_std_dev").as_double(),
+                            this->get_parameter("yaml_range_std_dev").as_double(),
+                            this->get_parameter("yaml_imu_x_std_dev").as_double(),
+                            this->get_parameter("yaml_imu_y_std_dev").as_double(),
+                            this->get_parameter("yaml_imu_heading_std_dev").as_double(),
+                            this->get_parameter("yaml_gps_x_std_dev").as_double(),
+                            this->get_parameter("yaml_gps_y_std_dev").as_double(),
+                            };
+        } 
+        slam_instance = slamISAM(this->get_logger(), noise_inputs);
+
+        //TODO: std::optional where init is set to None
+        init_lon_lat = std::nullopt;
+        // init_lon_lat = gtsam::Point2(-71.458633,43.358253);
+        file_opened = true;
+
+        prev_filter_time = std::nullopt;
+
+        prev_sync_callback_time = std::nullopt;
+    }
 };
 
 int main(int argc, char * argv[]){

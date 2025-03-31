@@ -102,6 +102,35 @@ const double EUFS_SIM_IMU_HEADING_STD_DEV = 0.0;
 const double EUFS_SIM_GPS_X_STD_DEV = 0.0;
 const double EUFS_SIM_GPS_Y_STD_DEV = 0.0;
 
+/***** CONTROLS SIM ******/
+const double CONTROLS_BEARING_STD_DEV = 0.00045;
+const double CONTROLS_RANGE_STD_DEV = 0.03;
+const double CONTROLS_IMU_X_STD_DEV = 0.22;
+const double CONTROLS_IMU_Y_STD_DEV = 0.22;
+const double CONTROLS_IMU_HEADING_STD_DEV = degrees_to_radians(0.009);
+const double CONTROLS_GPS_X_STD_DEV = 0.01;
+const double CONTROLS_GPS_Y_STD_DEV = 0.01;
+
+struct NoiseInputs {
+    double yaml_bearing_std_dev;
+    double yaml_range_std_dev;
+    double yaml_imu_x_std_dev;
+    double yaml_imu_y_std_dev;
+    double yaml_imu_heading_std_dev;
+    double yaml_gps_x_std_dev;
+    double yaml_gps_y_std_dev;
+};
+
+enum class RunSettings {
+    Real,
+    EUFSSim,
+    ControlsSim
+};
+
+enum class ConeColor {
+    Blue,
+    Yellow
+};
 
 class slamISAM {
 
@@ -178,19 +207,22 @@ public:
     noiseModel::Diagonal::shared_ptr unary_model;
     optional<rclcpp::Logger> logger;
 
-    slamISAM(optional<rclcpp::Logger> input_logger);
+    slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs>& yaml_noise_inputs);
+    slamISAM(){}; /* Empty constructor */
 
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
-            Pose2 &velocity,double dt, optional<rclcpp::Logger> logger);
+            Pose2 &velocity,double dt, std::optional<rclcpp::Logger> logger);
 
     void update_landmarks(std::vector<Old_cone_info> &old_cones,
-                        std::vector<New_cone_info> &new_cones,
-                        Pose2 &cur_pose);
+                                std::vector<New_cone_info> &new_cones,
+                                int &n_landmarks, ConeColor color,
+                                Pose2 &cur_pose);
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
                 std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
                 double dt);
+    
 
     void print_estimates();
 };
