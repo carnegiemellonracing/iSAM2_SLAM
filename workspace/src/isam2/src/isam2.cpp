@@ -310,9 +310,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     if (blue_n_landmarks + yellow_n_landmarks > 0)
     {
         auto start_step  = high_resolution_clock::now();
-        auto dur_betw_step = duration_cast<milliseconds>(start_step - end);
+        auto dur_betw_step = duration_cast<milliseconds>(start_step - start);
         if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "--------End of prev step to cur step: %ld--------\n\n", dur_betw_step.count());
+            RCLCPP_INFO(logger.value(), "--------End of prev step. Time between step calls: %ld--------\n\n", dur_betw_step.count());
         }
     }
 
@@ -373,6 +373,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     if (!loop_closure) {
         auto start_est_retrieval = high_resolution_clock::now();
+
         std::vector<gtsam::Point2> blue_slam_est = {};
         for (int i = 0; i < blue_n_landmarks; i++) {
             blue_slam_est.push_back(isam2.calculateEstimate(BLUE_L(i)).cast<Point2>());

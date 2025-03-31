@@ -98,4 +98,3 @@ const std::string STEP_INPUT_FILE = "src/isam2/data/step_input.txt";
 #define VEHICLE_POS_TOPIC "/filter/pose"
 #define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
 #define VEHICLE_VEL_TOPIC "/filter/twist"
-

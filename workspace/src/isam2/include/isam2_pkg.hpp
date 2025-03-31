@@ -110,6 +110,7 @@ private:
 public:
     high_resolution_clock::time_point start;
     high_resolution_clock::time_point end;
+    high_resolution_clock::time_point 
     int n_landmarks;
     int blue_n_landmarks;
     int yellow_n_landmarks;
