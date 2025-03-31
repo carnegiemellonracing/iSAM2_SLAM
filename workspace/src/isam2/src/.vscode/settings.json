@@ -1,0 +1,14 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/chip/Documents/driverless-packages/iSAM2_SLAM/workspace/install/interfaces/lib/python3.8/site-packages",
+        "/home/chip/Documents/driverless-packages/PlanningLibrary22a",
+        "/home/chip/Documents/driverless-packages/PerceptionsLibrary22a",
+        "/opt/ros/foxy/lib/python3.8/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/chip/Documents/driverless-packages/iSAM2_SLAM/workspace/install/interfaces/lib/python3.8/site-packages",
+        "/home/chip/Documents/driverless-packages/PlanningLibrary22a",
+        "/home/chip/Documents/driverless-packages/PerceptionsLibrary22a",
+        "/opt/ros/foxy/lib/python3.8/site-packages"
+    ]
+}

@@ -50,6 +50,7 @@ public:
 
         //TODO: std::optional where init is set to None
         init_lon_lat = std::nullopt;
+        // init_lon_lat = gtsam::Point2(-71.458633,43.358253);
         file_opened = true;
 
         prev_filter_time = std::nullopt;
@@ -96,6 +97,10 @@ private:
         //vehicle_angle_callback(vehicle_angle_data);
         
 
+        if (init_lon_lat.has_value()) {
+            RCLCPP_INFO(this->get_logger(), "init_lon_lat: x:%f | y:%f\n", init_lon_lat.value().x(), init_lon_lat.value().y());
+        }
+
         auto sync_data_end = high_resolution_clock::now();
         auto sync_data_duration = duration_cast<milliseconds>(sync_data_end - sync_data_start);
         RCLCPP_INFO(this->get_logger(), "\tSync callback time: %ld \n", sync_data_duration.count());
@@ -138,7 +143,7 @@ private:
         auto vehicle_pos_callback_start = high_resolution_clock::now();
         
         //vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
-	posestamped_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
+        posestamped_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
         /* Timers*/
         auto vehicle_pos_callback_end = high_resolution_clock::now();
         auto vehicle_pos_callback_duration = duration_cast<milliseconds>(vehicle_pos_callback_end - vehicle_pos_callback_start);

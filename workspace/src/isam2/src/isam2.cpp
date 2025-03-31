@@ -20,79 +20,48 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger) {
     n_landmarks = 0;
 
 
-    /* Bearing and range error
-     * Corresponds to the usage of the BearingRangeFactor we are using
-     *
-     * Source: https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/
-     *         Supplemental_Modules_(Analytical_Chemistry)/Quantifying_Nature/
-     *         Significant_Digits/Propagation_of_Error
-     * Source: User manual for the AT128 Hesai LiDAR
-     * 
-     * bearing error in radians
-     * Calculation for error per radian: 
-     * We use atan2(y, x) and we know that z = atan(u) has derivative 1/(1+u^2) 
-     * std.dev_{u} = sqrt(0.03^2 + 0.03^2) = 0.0424
-     * std.dev_{z} = (1/(1+1^2))^2 * std.dev_{u}^2 = 1/4 * 0.0424^2 = 0.00045
-     * 
-     * Source: User manual for the AT128 Hesai LiDAR
-     * range error in meters 
-     * 
-     */
-    LandmarkNoiseModel = gtsam::Vector(2);
-    //LandmarkNoiseModel(0) = 0.00045; 
-    //LandmarkNoiseModel(1) = 0.03; 
-    LandmarkNoiseModel(0) = 0.0;
-    LandmarkNoiseModel(1) = 0.0;
-    landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
-
-    // used to be all 0s for EUFS_SIM
-    PriorNoiseModel = gtsam::Vector(3);
-    //PriorNoiseModel(0) = 0.22;
-    //PriorNoiseModel(1) = 0.22;
-    //PriorNoiseModel(2) = degrees_to_radians(0.009);
-    PriorNoiseModel(0) = 0.22;
-    PriorNoiseModel(1) = 0.22;
-    PriorNoiseModel(2) = degrees_to_radians(0.009);
-
-    prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
-
-    /* Go from 1 pose to another pose
-     * Source: https://www.movella.com/products/sensor-modules/xsens-mti-680g-rtk-gnss-ins
-     *
-     * x error in meters (must be based on velocity error)
-     * y error in meters (must be based on velocity error)
-     * velocity error = 0.05 m/s RMS
-     * Calculation for the error per meter: 1m = (1 +- 0.05 m/s) * (1 +- 1e-9 s)
-     * std. dev = 1 * sqrt((0.05/1)^2 + (1e-9/1)^2) = 0.05
-     * yaw error in radians
-     */
-    OdomNoiseModel = gtsam::Vector(3);
-    //OdomNoiseModel(0) = 0.22;
-    //OdomNoiseModel(1) = 0.22; 
-    //OdomNoiseModel(2) = degrees_to_radians(0.009); 
-
-    OdomNoiseModel(0) = 0.22;
-    OdomNoiseModel(1) = 0.22; 
-    OdomNoiseModel(2) = degrees_to_radians(0.009); 
-    odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
-
-
-    /* GPS noise model 
-     * Use the covariances from positionlla
-     *
-     * Covariance matrix diagonal elements represent variances
-     * Variance = (std.dev)^2 meaning:
-     * Variance = 0.2 => std.dev = sqrt(0.2) = 0.45
-     * 
-     * However positionlla already accounts for the covariance
-     * 
-     */
-    UnaryNoiseModel = gtsam::Vector(2);
-    //UnaryNoiseModel(0) = 0.01;
-    //UnaryNoiseModel(1) = 0.01;
     
-    UnaryNoiseModel(0) = 0.0;
-    UnaryNoiseModel(1) = 0.0;
+    LandmarkNoiseModel = gtsam::Vector(2);
+    OdomNoiseModel = gtsam::Vector(3);
+    PriorNoiseModel = gtsam::Vector(3);
+    UnaryNoiseModel = gtsam::Vector(2);
+    if (true) {
+
+        LandmarkNoiseModel(0) = BEARING_STD_DEV; 
+        LandmarkNoiseModel(1) = RANGE_STD_DEV; 
+
+        OdomNoiseModel(0) = IMU_X_STD_DEV;
+        OdomNoiseModel(1) = IMU_Y_STD_DEV; 
+        OdomNoiseModel(2) = IMU_HEADING_STD_DEV; 
+        // used to be all 0s for EUFS_SIM
+        PriorNoiseModel(0) = IMU_X_STD_DEV;
+        PriorNoiseModel(1) = IMU_Y_STD_DEV;
+        PriorNoiseModel(2) = IMU_HEADING_STD_DEV;
+
+        UnaryNoiseModel(0) = GPS_X_STD_DEV;
+        UnaryNoiseModel(1) = GPS_Y_STD_DEV;
+    } else {
+        LandmarkNoiseModel(0) = EUFS_SIM_BEARING_STD_DEV; 
+        LandmarkNoiseModel(1) = EUFS_SIM_RANGE_STD_DEV; 
+
+        OdomNoiseModel(0) = EUFS_SIM_IMU_X_STD_DEV;
+        OdomNoiseModel(1) = EUFS_SIM_IMU_Y_STD_DEV; 
+        OdomNoiseModel(2) = EUFS_SIM_IMU_HEADING_STD_DEV; 
+        // used to be all 0s for EUFS_SIM
+        PriorNoiseModel(0) = EUFS_SIM_IMU_X_STD_DEV;
+        PriorNoiseModel(1) = EUFS_SIM_IMU_Y_STD_DEV;
+        PriorNoiseModel(2) = EUFS_SIM_IMU_HEADING_STD_DEV;
+
+        UnaryNoiseModel(0) = EUFS_SIM_GPS_X_STD_DEV;
+        UnaryNoiseModel(1) = EUFS_SIM_GPS_Y_STD_DEV;
+    }
+
+
+
+
+    landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
+    odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
+    prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
     unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
 
     // Resetting the log file for gtsam
@@ -161,14 +130,14 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         //TODO: consider when the car slows to a stop?
 
         if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
-            if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
-                RCLCPP_INFO(logger.value(), "Car is moving");
-            } else {
-                RCLCPP_INFO(logger.value(), "Car stopped");
-            }
+            //RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
+            //if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
+                //RCLCPP_INFO(logger.value(), "Car is moving");
+            //} else {
+                //RCLCPP_INFO(logger.value(), "Car stopped");
+            //}
 
-            RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
+            //RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
 
         }
 
@@ -200,9 +169,9 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
  * to the car
  * 2nd Point2 for new_cones represents the global position
  */
-void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &old_cones,
-                        std::vector<std::tuple<Point2, double, Point2>> &new_cones,
-                        Pose2 &cur_pose) {
+void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
+                        std::vector<New_cone_info> &new_cones,
+                        gtsam::Pose2 &cur_pose) {
 
 
     /* Bearing range factor will need
@@ -216,9 +185,10 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
      *
      */
     for (std::size_t o = 0; o < old_cones.size(); o++) {
-        Point2 cone_pos_car_frame = get<0>(old_cones.at(o));
-        int min_id = get<2>(old_cones.at(o));
-        Rot2 b = Rot2::fromAngle(get<1>(old_cones.at(o)));
+        Old_cone_info old_cone = old_cones.at(o);
+        Point2 cone_pos_car_frame = old_cone.local_cone_pos;
+        int min_id = old_cone.min_id;
+        Rot2 b = Rot2::fromAngle(old_cone.bearing);
         double r = norm2(cone_pos_car_frame);
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(min_id),
@@ -231,11 +201,12 @@ void slamISAM::update_landmarks(std::vector<std::tuple<Point2, double, int>> &ol
     // values should be empty
 
     for (std::size_t n = 0; n < new_cones.size(); n++) {
-        Point2 cone_pos_car_frame = get<0>(new_cones.at(n));
-        Rot2 b = Rot2::fromAngle(get<1>(new_cones.at(n)));
+        New_cone_info new_cone = new_cones.at(n);
+        Point2 cone_pos_car_frame = new_cone.local_cone_pos;
+        Rot2 b = Rot2::fromAngle(new_cone.bearing);
         double r = norm2(cone_pos_car_frame);
 
-        Point2 cone_global_frame = get<2>(new_cones.at(n));
+        Point2 cone_global_frame = new_cone.global_cone_pos;
 
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), L(n_landmarks),
                                         b,
@@ -353,8 +324,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
         /**** Data association ***/
-        std::vector<tuple<Point2, double, int>> old_cones = {};
-        std::vector<tuple<Point2, double, Point2>> new_cones = {};
+        std::vector<Old_cone_info> old_cones = {};
+        std::vector<New_cone_info> new_cones = {};
 
 
         auto start_DA = high_resolution_clock::now();
