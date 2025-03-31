@@ -28,6 +28,7 @@
 
 #include <gtsam/geometry/Point2.h>
 #include <gtsam/geometry/Pose2.h>
+#include "constants.hpp"
 
 using namespace std;
 using namespace gtsam;
@@ -39,25 +40,6 @@ using std::placeholders::_2;
 using std::placeholders::_3;
 using std::placeholders::_4;
 
-const long SEC_TO_NANOSEC = 1e9;
-const double IMU_OFFSET = 0.3; //meters; offset from the center of the car
-const double LIDAR_OFFSET = 0.3; //meters; offset from the center of the car
-const double MAX_CONE_RANGE = 15;
-const double TURNING_MAX_CONE_RANGE = 15;
-const double VELOCITY_MOVING_TH = 0.1; //meters per second
-const double TURNING_TH = 0.2;
-
-/* This will create the file starting at the workspace directory
- * 
- * This is is because the ros node, which is running the step function,
- * is run at that level.
- */
-const string STEP_INPUT_FILE = "src/isam2/data/step_input.txt";
-
-#define CONE_DATA_TOPIC "/perc_cones"
-#define VEHICLE_POS_TOPIC "/filter/pose"
-#define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
-#define VEHICLE_VEL_TOPIC "/filter/twist"
 
 
 void imu_axes_to_DV_axes(double &x, double &y);

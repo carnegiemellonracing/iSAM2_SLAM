@@ -9,7 +9,6 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
     // Initializing SLAM Parameters
     parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
     parameters.setFactorization("QR");
-    // parameters.enablePartialRelinearizationCheck = true;
     logger = input_logger;
     isam2 = gtsam::ISAM2(parameters);
     graph = gtsam::NonlinearFactorGraph();
@@ -113,6 +112,18 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
     lap_count = 0;
 }
 
+/**
+ * @brief Updates the poses in the SLAM model. 
+ * 
+ * @param cur_pose: the current pose of the car
+ * @param prev_pose: the previous pose of the car
+ * @param global_odom: the global odometry measurement
+ * @param velocity: the velocity of the car
+ * @param dt: the change in time
+ * @param logger: the logger
+ * 
+ * @return: void
+ */
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
             Pose2 &velocity,double dt, optional<rclcpp::Logger> logger) {
     /* Adding poses to the SLAM factor graph */
@@ -159,20 +170,8 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         //global_odom holds our GPS measurements
         velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
 
-        // Do not continue updating if the car is not moving. Only update during the 0th pose. 
-        //TODO: consider when the car slows to a stop?
-
-        if (logger.has_value()) {
-            //RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
-            //if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH) {
-                //RCLCPP_INFO(logger.value(), "Car is moving");
-            //} else {
-                //RCLCPP_INFO(logger.value(), "Car stopped");
-            //}
-
-            //RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
-
-        }
+        /* Do not continue updating if the car is not moving. Only update during the 0th pose. */
+        
 
         BetweenFactor<Pose2> odom_factor = BetweenFactor<gtsam::Pose2>(X(pose_num - 1),
                                                                         X(pose_num),
@@ -184,23 +183,28 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         Pose2 imu_offset_global_odom = Pose2(global_odom.x() - offset_x, global_odom.y() - offset_y, global_odom.theta());
         graph.emplace_shared<UnaryFactor>(X(pose_num), imu_offset_global_odom, unary_model);
         values.insert(X(pose_num), new_pose);
-
-        print_update_poses(prev_pose, new_pose, odometry, imu_offset_global_odom, logger);
     }
 
     isam2.update(graph, values);
     graph.resize(0);
     values.clear();
 
-    // Pose2 est_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
-    // RCLCPP_INFO(logger, "Diff: x: %.10f | y: %.10f", est_pose.x() - cur_pose.x(), est_pose.y() - cur_pose.y());
-
-
 }
 
-/* Cones represented by a tuple: the 1st element is the relative position
- * to the car
- * 2nd Point2 for new_cones represents the global position
+
+/**
+ * @brief Updates the landmarks in the SLAM model. This function
+ * is used to update the landmarks for a given cone color at a time.
+ * This function will update the SLAM model accordingly using the 
+ * cone information stored in old_cones and new_cones.
+ * 
+ * @param old_cones: the old cones
+ * @param new_cones: the new cones
+ * @param n_landmarks: the number of landmarks
+ * @param color: the color of the cones
+ * @param cur_pose: the current pose of the car
+ * 
+ * @return: void
  */
 void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
                                 std::vector<New_cone_info> &new_cones,
@@ -285,28 +289,37 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
 
 
 /**
- * @brief step takes in info about the observed cones and the odometry info
- *        and performs an update step to our iSAM2 model. 
+ * @brief Processes odometry information and cone information 
+ * to perform an update step on the SLAM model. 
+ * 
+ * @param global_odom: the global odometry measurement
+ * @param cone_obs: the observed cones
+ * @param cone_obs_blue: the observed blue cones
+ * @param cone_obs_yellow: the observed yellow cones
+ * @param orange_ref_cones: the orange reference cones
+ * @param velocity: the velocity of the car
+ * @param dt: the change in time
+ * 
+ * @return: void
  */
 void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
             std::vector<Point2> &orange_ref_cones, Pose2 velocity,
             double dt) {
 
-    // print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
-    log_step_inputs(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
-
-
     if (blue_n_landmarks + yellow_n_landmarks > 0)
     {
         auto start_step  = high_resolution_clock::now();
         auto dur_betw_step = duration_cast<milliseconds>(start_step - end);
         if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "End of prev step to cur step: %ld", dur_betw_step.count());
+            RCLCPP_INFO(logger.value(), "--------End of prev step to cur step: %ld--------\n\n", dur_betw_step.count());
         }
     }
 
     start = high_resolution_clock::now();
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "--------Start of SLAM Step--------");
+    }
 
     Pose2 cur_pose = Pose2(0, 0, 0);
     Pose2 prev_pose = Pose2(0, 0, 0);
@@ -320,13 +333,14 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         return;
     }
 
+    /**** Update the car pose ****/
     auto start_update_poses = high_resolution_clock::now();
     update_poses(cur_pose, prev_pose, global_odom, velocity, dt, logger);
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
 
     if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "update_poses time: %ld", dur_update_poses.count());
+        RCLCPP_INFO(logger.value(), "\tUpdate_poses time: %ld", dur_update_poses.count());
     }
 
 
@@ -347,12 +361,12 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     auto end_loop_closure = high_resolution_clock::now();
     auto dur_loop_closure = duration_cast<milliseconds>(end_loop_closure - start_loop_closure);
     if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "loop closure time: %ld", dur_loop_closure.count());
+        RCLCPP_INFO(logger.value(), "\tLoop closure time: %ld", dur_loop_closure.count());
     }
 
     if (loop_closure) {
         if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "Loop closure detected. No longer updating");
+            RCLCPP_INFO(logger.value(), "\tLoop closure detected. No longer updating");
         }
     }
 
@@ -380,7 +394,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         auto end_est_retrieval = high_resolution_clock::now();
         auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
         if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "est_retrieval time: %ld", dur_est_retrieval.count());
+            RCLCPP_INFO(logger.value(), "\tEst_retrieval time: %ld", dur_est_retrieval.count());
         }
 
 
@@ -399,8 +413,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
-	    RCLCPP_INFO(logger.value(), "Num cone_obs: %ld", cone_obs.size());
+            RCLCPP_INFO(logger.value(), "\tData association time: %ld", dur_DA.count());
         }
 
         auto start_update_landmarks = high_resolution_clock::now();
@@ -410,7 +423,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
 
         if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "update_landmarks time: %ld", dur_update_landmarks.count());
+            RCLCPP_INFO(logger.value(), "\tUpdate_landmarks time: %ld", dur_update_landmarks.count());
         }
     }
 
@@ -435,7 +448,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
 
     if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "vis_setup time: %ld", dur_vis_setup.count());
+        RCLCPP_INFO(logger.value(), "\tVis_setup time: %ld", dur_vis_setup.count());
     } 
 
     end = high_resolution_clock::now();
@@ -444,11 +457,11 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     auto dur_step_call = duration_cast<milliseconds>(end - start);
     if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "SLAM run step | Step call time: %ld\n", dur_step_call.count());
+        RCLCPP_INFO(logger.value(), "\tSLAM run step | Step call time: %ld\n", dur_step_call.count());
     }
 
     if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "pose_num: %d | blue_n_landmarks: %d | yellow_n_landmarks : %d\n\n", 
+        RCLCPP_INFO(logger.value(), "\tpose_num: %d | blue_n_landmarks: %d | yellow_n_landmarks : %d", 
                         pose_num - 1, blue_n_landmarks, yellow_n_landmarks);
     }
 }

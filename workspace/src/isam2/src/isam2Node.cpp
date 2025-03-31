@@ -1,6 +1,5 @@
 /**
  * @file isam2Node.cpp
- * @author Andrew Chong, Manan Agarwal, Daniel Nguyen
  * @brief Note that if you are running with controls, you must source the 
  * interfaces from iSAM2 because we have the right messages.
  * @version 0.1
@@ -17,22 +16,28 @@ using namespace std::chrono;
 using std::size_t;
 using namespace rclcpp;
 
+typedef interfaces::msg::ConeArray cone_msg_t; 
+typedef geometry_msgs::msg::PoseStamped position_msg_t; 
+typedef geometry_msgs::msg::TwistStamped velocity_msg_t; 
+typedef geometry_msgs::msg::QuaternionStamped orientation_msg_t;
+
 class SLAMValidation : public rclcpp::Node {
 private:
 
     slamISAM slam_instance = slamISAM(); /* We need to initialize this because it is used in the constructor of SLAMValidation*/
     high_resolution_clock::time_point cur_sync_callback_time;
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
-    message_filters::Subscriber<interfaces::msg::ConeArray> cone_sub;
-    message_filters::Subscriber<geometry_msgs::msg::PoseStamped> vehicle_pos_sub;
-    message_filters::Subscriber<geometry_msgs::msg::TwistStamped> vehicle_vel_sub;
-    message_filters::Subscriber<geometry_msgs::msg::QuaternionStamped> vehicle_angle_sub;
+
+    message_filters::Subscriber<cone_msg_t> cone_sub;
+    message_filters::Subscriber<position_msg_t> vehicle_pos_sub;
+    message_filters::Subscriber<velocity_msg_t> vehicle_vel_sub;
+    message_filters::Subscriber<orientation_msg_t> vehicle_angle_sub;
 
     std::shared_ptr<message_filters::Synchronizer<
                             message_filters::sync_policies::ApproximateTime<
-                                            interfaces::msg::ConeArray,
-                                            geometry_msgs::msg::PoseStamped,
-                                            geometry_msgs::msg::TwistStamped>>> sync;
+                                            cone_msg_t,
+                                            position_msg_t,
+                                            velocity_msg_t>>> sync;
     
     gtsam::Pose2 velocity;
 
@@ -51,7 +56,7 @@ private:
     rclcpp::TimerBase::SharedPtr timer;
     double dt;
 
-    optional<std_msgs::msg::Header> prev_filter_time;
+    std::optional<std_msgs::msg::Header> prev_filter_time;
 
     //print files
     std::ofstream outfile;
@@ -61,7 +66,7 @@ private:
     void sync_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
                     const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
                     const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data) {
-        RCLCPP_INFO(this->get_logger(), "\nSync Callback");
+        RCLCPP_INFO(this->get_logger(), "--------Start of Sync Callback--------");
         
         /* Getting the time between sync callbacks */
         cur_sync_callback_time = high_resolution_clock::now();
@@ -106,6 +111,7 @@ private:
 
         run_slam();
 
+        RCLCPP_INFO(this->get_logger(), "--------End of Sync Callback--------\n\n");
         prev_sync_callback_time.emplace(high_resolution_clock::now());
     }
 
@@ -235,13 +241,13 @@ public:
 
         sync = std::make_shared<message_filters::Synchronizer<
                                     message_filters::sync_policies::ApproximateTime<
-                                    interfaces::msg::ConeArray,
-                                    geometry_msgs::msg::PoseStamped,
-                                    geometry_msgs::msg::TwistStamped>>>(
+                                    cone_msg_t,
+                                    position_msg_t,
+                                    velocity_msg_t>>>(
                             message_filters::sync_policies::ApproximateTime<
-                                    interfaces::msg::ConeArray,
-                                    geometry_msgs::msg::PoseStamped,
-                                    geometry_msgs::msg::TwistStamped>(100),
+                                    cone_msg_t,
+                                    position_msg_t,
+                                    velocity_msg_t>(100),
                                     cone_sub, vehicle_pos_sub, vehicle_vel_sub);
         sync->setAgePenalty(0.1);
         sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
@@ -262,7 +268,6 @@ public:
 
         //TODO: std::optional where init is set to None
         init_lon_lat = std::nullopt;
-        // init_lon_lat = gtsam::Point2(-71.458633,43.358253);
         file_opened = true;
 
         prev_filter_time = std::nullopt;

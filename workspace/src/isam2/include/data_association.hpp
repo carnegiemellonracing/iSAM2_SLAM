@@ -10,8 +10,6 @@
 #include <algorithm>
 #include <float.h>
 #include "ros_utils.hpp"
-const double M_DIST_TH = 0.0009;
-const double TURNING_M_DIST_TH = 0.0009;
 
 
 struct New_cone_info {
