@@ -18,7 +18,7 @@ plt.ion()
 plt.show()
 run = True
 while run:
-    # with open('src/isam2/data/estimate2.txt') as f:
+    # with open('../src/isam2/saved_data/controls_sim_colored_cones_track.txt') as f:
     with open("../src/isam2/data/current_estimates.txt") as f:
         lines = f.readlines() # list containing lines of file
         # Don't do anything if the file is empty
@@ -72,7 +72,7 @@ while run:
 
                 idx += NEXT_INDIC_FROM_YELLOW
 
-            elif indic == POSE_INDIC: 
+            elif indic == POSE_INDIC:
                 data_line = lines[idx + 1].strip()
                 first_comma_index = data_line.find(',')
                 second_comma_index = data_line.find(',', first_comma_index + 1)
@@ -96,10 +96,10 @@ while run:
             scatter.remove()
             scatter2.remove()
             scatter3.remove()
-        
 
 
 
 
-    
-    
+
+
+
