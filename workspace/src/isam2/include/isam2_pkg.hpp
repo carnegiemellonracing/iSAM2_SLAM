@@ -67,14 +67,14 @@ const double RANGE_STD_DEV = 0.03;
 * y error in meters (must be based on velocity error)
 * velocity error = 0.05 m/s RMS
 * Calculation for the error per meter: 1m = (1 +- 0.05 m/s) * (1 +- 1e-9 s)
-* std. dev = 1 * sqrt((0.05/1)^2 + (1e-9/1)^2) = 0.05 -> changed to 0.05
+* std. dev = 1 * sqrt((0.05/1)^2 + (1e-9/1)^2) = 0.05 
 *
 * yaw error in radians changed to 0.009 
 */
 
 const double IMU_X_STD_DEV = 0.22;
 const double IMU_Y_STD_DEV = 0.22;
-const double IMU_HEADING_STD_DEV = degrees_to_radians(0.009);
+const double IMU_HEADING_STD_DEV = degrees_to_radians(0.05);
 
 
 
@@ -107,7 +107,7 @@ const double CONTROLS_BEARING_STD_DEV = 0.00045;
 const double CONTROLS_RANGE_STD_DEV = 0.03;
 const double CONTROLS_IMU_X_STD_DEV = 0.22;
 const double CONTROLS_IMU_Y_STD_DEV = 0.22;
-const double CONTROLS_IMU_HEADING_STD_DEV = degrees_to_radians(0.009);
+const double CONTROLS_IMU_HEADING_STD_DEV = degrees_to_radians(0.05);
 const double CONTROLS_GPS_X_STD_DEV = 0.01;
 const double CONTROLS_GPS_Y_STD_DEV = 0.01;
 
