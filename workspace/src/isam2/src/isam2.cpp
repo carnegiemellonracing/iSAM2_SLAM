@@ -112,6 +112,17 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
     lap_count = 0;
 }
 
+gtsam::Symbol slamISAM::X(int robot_pose_id) {
+    return Symbol('x', robot_pose_id);
+}
+
+gtsam::Symbol slamISAM::BLUE_L(int cone_pose_id) {
+    return Symbol('b', cone_pose_id);
+}
+
+gtsam::Symbol slamISAM::YELLOW_L(int cone_pose_id) {
+    return Symbol('y', cone_pose_id);
+}
 /**
  * @brief Updates the poses in the SLAM model. 
  * 
@@ -190,6 +201,8 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
     values.clear();
 
 }
+
+
 
 
 /**
@@ -287,6 +300,73 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
     values.clear();
 }
 
+void slamISAM::cone_proximity_updates(int lowest_id, int highest_id, int n_landmarks,
+                                    std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                    gtsam::Symbol (*cone_key)(int)) {
+
+    for (int i = std::max(lowest_id - LOOK_RADIUS, 0); i < std::min(lowest_id + LOOK_RADIUS, n_landmarks); i++) {
+        gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
+        color_slam_est.at(i) = updated_est;
+    }
+
+    for (int i = std::max(highest_id - LOOK_RADIUS, 0); i < std::min(highest_id + LOOK_RADIUS, n_landmarks); i++) {
+        gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
+        color_slam_est.at(i) = updated_est;
+    }
+
+    for (int i = std::max(lowest_id - LOOK_RADIUS, 0); i < std::min(lowest_id + LOOK_RADIUS, n_landmarks); i++) {
+        Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
+        color_slam_mcov.at(i) = updated_mcov;
+    }
+
+    for (int i = std::max(highest_id - LOOK_RADIUS, 0); i < std::min(highest_id + LOOK_RADIUS, n_landmarks); i++) {
+        Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
+        color_slam_mcov.at(i) = updated_mcov;
+    }
+}
+
+std::pair<int, int> slamISAM::update_slam_est_and_mcov_with_old(std::vector<Old_cone_info>& old_cones,
+                                    std::vector<gtsam::Point2>& color_slam_est, 
+                                    std::vector<Eigen::MatrixXd>& color_slam_mcov, gtsam::Symbol(*cone_key)(int)) {
+
+    int lowest_id = INT_MAX;
+    int highest_id = -1;
+    for (int i=0; i < old_cones.size(); i++) {
+        Old_cone_info curr = old_cones.at(i);
+        gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(curr.min_id)).cast<Point2>();
+        color_slam_est.at(curr.min_id) = updated_est;
+
+        if (curr.min_id < lowest_id) {
+            lowest_id = curr.min_id;
+        }
+        if (curr.min_id > highest_id) {
+            highest_id = curr.min_id;
+        }
+    }
+
+    for (int i=0; i < old_cones.size(); i++) {
+        Old_cone_info curr = old_cones.at(i);
+        Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(curr.min_id));
+        color_slam_mcov.at(curr.min_id) = updated_mcov;
+    }                                     
+    std::pair<int, int> lo_and_hi(lowest_id, highest_id);
+    return lo_and_hi;
+}
+
+void slamISAM::update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_landmarks, 
+                                                                std::vector<gtsam::Point2>& color_slam_est, 
+                                                                std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                                                gtsam::Symbol(*cone_key)(int)) {
+    for (int i = old_n_landmarks; i < new_n_landmarks; i++) {
+        gtsam::Point2 new_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
+        color_slam_est.push_back(new_est);
+    }
+
+    for (int i = old_n_landmarks; i < new_n_landmarks; i++) {
+        Eigen::MatrixXd new_mcov = isam2.marginalCovariance(cone_key(i));
+        color_slam_mcov.push_back(new_mcov);
+    }
+}
 
 /**
  * @brief Processes odometry information and cone information 
@@ -372,34 +452,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     if (!loop_closure) {
-        auto start_est_retrieval = high_resolution_clock::now();
 
-        std::vector<gtsam::Point2> blue_slam_est = {};
-        for (int i = 0; i < blue_n_landmarks; i++) {
-            blue_slam_est.push_back(isam2.calculateEstimate(BLUE_L(i)).cast<Point2>());
-        }
-        std::vector<Eigen::MatrixXd> blue_slam_mcov = {};
-        for (int i = 0; i < blue_n_landmarks; i++) {
-            blue_slam_mcov.push_back(isam2.marginalCovariance(BLUE_L(i)));
-        }
-
-        std::vector<gtsam::Point2> yellow_slam_est = {};
-        for (int i = 0; i < yellow_n_landmarks; i++) {
-            yellow_slam_est.push_back(isam2.calculateEstimate(YELLOW_L(i)).cast<Point2>());
-        }
-        std::vector<Eigen::MatrixXd> yellow_slam_mcov = {};
-        for (int i = 0; i < yellow_n_landmarks; i++) {
-            yellow_slam_mcov.push_back(isam2.marginalCovariance(YELLOW_L(i)));
-        }
-
-        auto end_est_retrieval = high_resolution_clock::now();
-        auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "\tEst_retrieval time: %ld", dur_est_retrieval.count());
-        }
-
-
-        /**** Data association ***/
+        /**** Data association ****/
         std::vector<Old_cone_info> blue_old_cones = {};
         std::vector<New_cone_info> blue_new_cones = {};
         std::vector<Old_cone_info> yellow_old_cones = {};
@@ -410,7 +464,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
                             cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
         data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
                             cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov);
-
+        
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         if(logger.has_value()) {
@@ -418,8 +472,34 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         }
 
         auto start_update_landmarks = high_resolution_clock::now();
+
+        int old_blue_n_landmarks = blue_n_landmarks;
+        int old_yellow_n_landmarks = yellow_n_landmarks;
+
         update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, ConeColor::Blue, cur_pose);
         update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, ConeColor::Yellow, cur_pose);
+
+
+
+        /* Updating slam_est and slam_mcov vectors with the old cone information */         
+        std::pair<int, int> blue_lo_and_hi = update_slam_est_and_mcov_with_old(blue_old_cones, 
+                                                                        blue_slam_est, blue_slam_mcov, BLUE_L);
+        std::pair<int, int> yellow_lo_and_hi = update_slam_est_and_mcov_with_old(yellow_old_cones, 
+                                                                        yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+        int lowest_blue_id = blue_lo_and_hi.first;
+        int highest_blue_id = blue_lo_and_hi.second;
+        int lowest_yellow_id =  yellow_lo_and_hi.first;
+        int highest_yellow_id = yellow_lo_and_hi.second;       
+
+        /* Updating slam_est and slam_mcov with the new cone information */
+        update_slam_est_and_mcov_with_new(old_blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+        update_slam_est_and_mcov_with_new(old_yellow_n_landmarks, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+
+
+        /* Extra updates */
+        cone_proximity_updates(lowest_blue_id, highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+        cone_proximity_updates(lowest_yellow_id, highest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
 

@@ -67,17 +67,12 @@ private:
     int pose_num = 0;
     bool first_pose_added = false;
 
-    gtsam::Symbol X(int robot_pose_id) {
-        return Symbol('x', robot_pose_id);
-    }
+    static gtsam::Symbol X(int robot_pose_id);
 
-    gtsam::Symbol BLUE_L(int cone_pose_id) {
-        return Symbol('b', cone_pose_id);
-    }
+    static gtsam::Symbol BLUE_L(int cone_pose_id);
 
-    gtsam::Symbol YELLOW_L(int cone_pose_id) {
-        return Symbol('y', cone_pose_id);
-    }
+    static gtsam::Symbol YELLOW_L(int cone_pose_id);
+
     /* Assoc_Args common arguments */
     std::vector<Point2> cone_obs_blue;
     std::vector<Point2> cone_obs_yellow;
@@ -91,9 +86,6 @@ private:
     Eigen::MatrixXd blue_bearing;
     Eigen::MatrixXd yellow_bearing;
 
-    std::vector<Pose2> blue_cone_est;
-    std::vector<Pose2> yellow_cone_est;
-
     Pose2 global_odom;
 
     std::vector<double> m_dist;
@@ -104,14 +96,15 @@ private:
 
     Pose2 first_pose;
 
+    std::vector<gtsam::Point2> blue_slam_est;
+    std::vector<Eigen::MatrixXd> blue_slam_mcov;
 
-
+    std::vector<gtsam::Point2> yellow_slam_est;
+    std::vector<Eigen::MatrixXd> yellow_slam_mcov;
 
 public:
     high_resolution_clock::time_point start;
     high_resolution_clock::time_point end;
-    high_resolution_clock::time_point 
-    int n_landmarks;
     int blue_n_landmarks;
     int yellow_n_landmarks;
 
@@ -147,6 +140,18 @@ public:
                 std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
                 double dt);
     
+    void update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_landmarks, 
+                                                                std::vector<gtsam::Point2>& color_slam_est, 
+                                                                std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                                                gtsam::Symbol(*cone_key)(int));
+
+    std::pair<int, int> update_slam_est_and_mcov_with_old(std::vector<Old_cone_info>& old_cones,
+                                    std::vector<gtsam::Point2>& color_slam_est, 
+                                    std::vector<Eigen::MatrixXd>& color_slam_mcov, gtsam::Symbol(*cone_key)(int));
+
+    void cone_proximity_updates(int lowest_id, int highest_id, int n_landmarks,
+                                    std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                    gtsam::Symbol (*cone_key)(int));
 
     void print_estimates();
 };

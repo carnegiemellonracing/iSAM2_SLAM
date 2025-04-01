@@ -94,7 +94,9 @@ const double TURNING_M_DIST_TH = 0.0009;
 
 const std::string STEP_INPUT_FILE = "src/isam2/data/step_input.txt";
 
-#define CONE_DATA_TOPIC "/perc_cones"
-#define VEHICLE_POS_TOPIC "/filter/pose"
-#define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
-#define VEHICLE_VEL_TOPIC "/filter/twist"
+const std::string CONE_DATA_TOPIC = "/perc_cones";
+const std::string VEHICLE_POS_TOPIC = "/filter/pose";
+const std::string VEHICLE_ANGLE_TOPIC = "/filter/quaternion";
+const std::string VEHICLE_VEL_TOPIC = "/filter/twist";
+
+const int LOOK_RADIUS = 10;

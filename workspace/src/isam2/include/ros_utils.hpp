@@ -25,6 +25,7 @@
 #include <deque>
 #include <cmath>
 #include <chrono>
+#include <climits>
 
 #include <gtsam/geometry/Point2.h>
 #include <gtsam/geometry/Pose2.h>
