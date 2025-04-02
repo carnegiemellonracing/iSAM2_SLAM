@@ -74,9 +74,6 @@ private:
 
     static gtsam::Symbol YELLOW_L(int cone_pose_id);
 
-    gtsam::Symbol YELLOW_L(int cone_pose_id) {
-        return Symbol('y', cone_pose_id);
-    }
     /* Assoc_Args common arguments */
     std::vector<Point2> cone_obs_blue;
     std::vector<Point2> cone_obs_yellow;

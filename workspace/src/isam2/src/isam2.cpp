@@ -461,26 +461,24 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         }
     }
 
-    /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
-    if (!loop_closure) {
 
-        /**** Data association ****/
-        std::vector<Old_cone_info> blue_old_cones = {};
-        std::vector<New_cone_info> blue_new_cones = {};
-        std::vector<Old_cone_info> yellow_old_cones = {};
-        std::vector<New_cone_info> yellow_new_cones = {};
+    /**** Data association ****/
+    std::vector<Old_cone_info> blue_old_cones = {};
+    std::vector<New_cone_info> blue_new_cones = {};
+    std::vector<Old_cone_info> yellow_old_cones = {};
+    std::vector<New_cone_info> yellow_new_cones = {};
 
-        auto start_DA = high_resolution_clock::now();
-        data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
-                            cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
-        data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
-                            cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov);
-        
-        auto end_DA = high_resolution_clock::now();
-        auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "\tData association time: %ld", dur_DA.count());
-        }
+    auto start_DA = high_resolution_clock::now();
+    data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
+                        cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
+    data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
+                        cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov);
+    
+    auto end_DA = high_resolution_clock::now();
+    auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
+    if(logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "\tData association time: %ld", dur_DA.count());
+    }
 
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     if (!loop_closure)

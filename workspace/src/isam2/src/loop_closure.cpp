@@ -56,9 +56,9 @@ bool detect_loop_closure(Pose2 &cur_pose, Pose2 &first_pose, int pose_num, optio
     bool moved_away_from_start = pose_num > 10;  //fails when you have 10 poses moved backwards
     bool approaching_first_pose = start_pose_in_front(cur_pose, first_pose, logger);
     bool close_to_start = norm2(Point2(cur_pose.x(), cur_pose.y())) < DIST_FROM_START_LC_TH;
-    bool heading_like_start = abs(first_pose.theta() - cur_pose.theta()) < (degrees_to_radians(90));
+    bool heading_like_start = abs(first_pose.theta() - cur_pose.theta()) < (degrees_to_radians(120));
 
-    /*if (logger.has_value()) {
+    if (logger.has_value()) {
         RCLCPP_INFO(logger.value(), "\nLoop closure detection results: ");
 
         if (close_to_start) {
@@ -74,7 +74,7 @@ bool detect_loop_closure(Pose2 &cur_pose, Pose2 &first_pose, int pose_num, optio
             RCLCPP_INFO(logger.value(), "heading_like_start: false | cur_heading: %f, start_heading %f",
                                         cur_pose.theta(), first_pose.theta());
         }
-    }*/
+    }
 
     return (moved_away_from_start && approaching_first_pose && close_to_start && heading_like_start);
 }

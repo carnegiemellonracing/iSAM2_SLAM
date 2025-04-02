@@ -10,5 +10,14 @@
         "/home/chip/Documents/driverless-packages/PlanningLibrary22a",
         "/home/chip/Documents/driverless-packages/PerceptionsLibrary22a",
         "/opt/ros/foxy/lib/python3.8/site-packages"
-    ]
+    ],
+    "files.associations": {
+        "*.ipp": "cpp",
+        "array": "cpp",
+        "bitset": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "utility": "cpp",
+        "valarray": "cpp"
+    }
 }
