@@ -10,6 +10,7 @@ builtin_interfaces/Time orig_data_stamp
 # datatypes and the order the datatypes are listed.
 
 geometry_msgs/Point[] blue_cones
+std_msgs/Int32 number
 geometry_msgs/Point[] yellow_cones
 geometry_msgs/Point[] orange_cones
 geometry_msgs/Point[] big_orange_cones

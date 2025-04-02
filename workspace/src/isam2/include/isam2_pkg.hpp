@@ -32,13 +32,29 @@
 
 #include "data_association.hpp"
 #include "unary_factor.hpp"
-#include "ros_utils.hpp"
 #include "loop_closure.hpp"
 #include "racelineChunk.hpp"
 
-const string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
+struct NoiseInputs {
+    double yaml_bearing_std_dev;
+    double yaml_range_std_dev;
+    double yaml_imu_x_std_dev;
+    double yaml_imu_y_std_dev;
+    double yaml_imu_heading_std_dev;
+    double yaml_gps_x_std_dev;
+    double yaml_gps_y_std_dev;
+};
 
+enum class RunSettings {
+    Real,
+    EUFSSim,
+    ControlsSim
+};
 
+enum class ConeColor {
+    Blue,
+    Yellow
+};
 
 class slamISAM {
 
@@ -52,13 +68,11 @@ private:
     int pose_num = 0;
     bool first_pose_added = false;
 
-    gtsam::Symbol X(int robot_pose_id) {
-        return Symbol('x', robot_pose_id);
-    }
+    static gtsam::Symbol X(int robot_pose_id);
 
-    gtsam::Symbol BLUE_L(int cone_pose_id) {
-        return Symbol('b', cone_pose_id);
-    }
+    static gtsam::Symbol BLUE_L(int cone_pose_id);
+
+    static gtsam::Symbol YELLOW_L(int cone_pose_id);
 
     gtsam::Symbol YELLOW_L(int cone_pose_id) {
         return Symbol('y', cone_pose_id);
@@ -76,9 +90,6 @@ private:
     Eigen::MatrixXd blue_bearing;
     Eigen::MatrixXd yellow_bearing;
 
-    std::vector<gtsam::Point2> blue_cone_est;
-    std::vector<gtsam::Point2> yellow_cone_est;
-
     Pose2 global_odom;
 
     std::vector<double> m_dist;
@@ -90,8 +101,11 @@ private:
     Pose2 first_pose;
     bool completed_chunking;
 
+    std::vector<gtsam::Point2> blue_slam_est;
+    std::vector<Eigen::MatrixXd> blue_slam_mcov;
 
-
+    std::vector<gtsam::Point2> yellow_slam_est;
+    std::vector<Eigen::MatrixXd> yellow_slam_mcov;
 
 public:
     high_resolution_clock::time_point start;
@@ -115,19 +129,34 @@ public:
     noiseModel::Diagonal::shared_ptr unary_model;
     optional<rclcpp::Logger> logger;
 
-    slamISAM(optional<rclcpp::Logger> input_logger);
+    slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs>& yaml_noise_inputs);
+    slamISAM(){}; /* Empty constructor */
 
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
-            Pose2 &velocity,double dt, optional<rclcpp::Logger> logger);
+            Pose2 &velocity,double dt, std::optional<rclcpp::Logger> logger);
 
     void update_landmarks(std::vector<Old_cone_info> &old_cones,
-                        std::vector<New_cone_info> &new_cones, int &n_landmarks,
-                        char color, gtsam::Pose2 &cur_pose);
+                                std::vector<New_cone_info> &new_cones,
+                                int &n_landmarks, ConeColor color,
+                                Pose2 &cur_pose);
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
                 std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
                 double dt);
+    
+    void update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_landmarks, 
+                                                                std::vector<gtsam::Point2>& color_slam_est, 
+                                                                std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                                                gtsam::Symbol(*cone_key)(int));
+
+    std::pair<int, int> update_slam_est_and_mcov_with_old(std::vector<Old_cone_info>& old_cones,
+                                    std::vector<gtsam::Point2>& color_slam_est, 
+                                    std::vector<Eigen::MatrixXd>& color_slam_mcov, gtsam::Symbol(*cone_key)(int));
+
+    void cone_proximity_updates(int lowest_id, int highest_id, int n_landmarks,
+                                    std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                    gtsam::Symbol (*cone_key)(int));
 
     void print_estimates();
 

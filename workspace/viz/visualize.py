@@ -18,7 +18,7 @@ plt.ion()
 plt.show()
 run = True
 while run:
-    # with open('src/isam2/data/estimate2.txt') as f:
+    # with open('../src/isam2/saved_data/controls_sim_colored_cones_track.txt') as f:
     with open("../src/isam2/data/current_estimates.txt") as f:
         lines = f.readlines() # list containing lines of file
         # Don't do anything if the file is empty
@@ -50,7 +50,6 @@ while run:
             line = lines[idx]
             line = line.strip()
             indic = line[0:7]
-            print(indic)
             if indic == BLUE_LANDMARK_INDIC:
                 x_line = lines[idx + 2].strip()
                 x = (float) (x_line[0:len(x_line) - 1])
@@ -73,7 +72,7 @@ while run:
 
                 idx += NEXT_INDIC_FROM_YELLOW
 
-            elif indic == POSE_INDIC: 
+            elif indic == POSE_INDIC:
                 data_line = lines[idx + 1].strip()
                 first_comma_index = data_line.find(',')
                 second_comma_index = data_line.find(',', first_comma_index + 1)
@@ -85,7 +84,6 @@ while run:
 
                 idx += NEXT_INDIC_FROM_POSE
 
-            print(idx, len(lines))
 
 
         if (len(pose_x) > 0 ):
@@ -98,64 +96,10 @@ while run:
             scatter.remove()
             scatter2.remove()
             scatter3.remove()
-        
 
 
 
 
-    # for line in lines:
-    #     line = line.strip() # remove leading/trailing white spaces
-    #     if line:
-    #         if i == 1 or i==2:
-    #             i = i + 1
-    #         else:
-    #             if(line[0:7]== "Value x"):
-    #                 pose = 1
-    #                 #next line is pose
-    #             elif(line[0:7]== "Value b"):
-    #                 # pass
-    #                 landmark = 'b'
-    #                 #next line is landmark
-    #             elif(line[0:7]== "Value y"):
-    #                 # pass
-    #                 landmark = 'y'
-    #                 #next line is landmark
-    #             elif pose == 1:
-    #                 # Create array for poses and update it incrementally
-    #                 #single line in pose
-    #                 #strip parentheses
-    #                 temp = line[1:len(line)-1]
-    #                 temp = np.array(temp.split(','))
-    #                 temp = temp.astype(float)
-    #                 if(poses.size == 0):
-    #                     poses = np.array([temp])
-    #                 else:
-    #                     poses = np.vstack((poses,temp))
-    #                 pose = 0
-    #             elif landmark == 1:
-    #                 # pass
-    #                 # temp = line[1:len(line)-1]
-    #                 # temp = np.array(temp.split(','))
-    #                 # temp = temp.astype(float)
 
-    #                 # Case on the line:
-    #                 if line == "]":
-    #                     if(landmarks.size == 0):
-    #                         landmarks = np.array([cur_landmark])
-    #                         cur_landmark = np.array([])
-    #                     else:
-    #                         landmarks = np.vstack((landmarks, cur_landmark))
-    #                         cur_landmark = np.array([])
 
-    #                     landmark = 'n'
-    #                 elif line == "[":
-    #                     continue
-    #                 elif cur_landmark.size == 0:
-    #                     x_coord = float(line[0:len(line) - 1])
-    #                     cur_landmark = np.append(cur_landmark, [x_coord])
-    #                 elif cur_landmark.size == 1:
-    #                     y_coord = float(line[0:len(line)])
-    #                     cur_landmark = np.append(cur_landmark, [y_coord])
 
-    # if ((poses.shape[0]) != 0) and ((poses.shape[0]) != 0) and (poses.ndim==2):
-    

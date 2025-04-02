@@ -1,3 +1,13 @@
+/**
+ * @file isam2Node.cpp
+ * @brief Note that if you are running with controls, you must source the 
+ * interfaces from iSAM2 because we have the right messages.
+ * @version 0.1
+ * @date 2025-03-30
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "isam2_pkg.hpp"
 
 using namespace std;
@@ -6,20 +16,23 @@ using namespace std::chrono;
 using std::size_t;
 using namespace rclcpp;
 
-/* Defining namespace aliases for ros msgs */
 typedef interfaces::msg::ConeArray cone_msg_t; 
-typedef geometry_msgs::msg::Vector3Stamped position_msg_t; 
+typedef geometry_msgs::msg::PoseStamped position_msg_t; 
 typedef geometry_msgs::msg::TwistStamped velocity_msg_t; 
 typedef geometry_msgs::msg::QuaternionStamped orientation_msg_t;
+
+typedef interfaces::msg::ConeArray cone_msg_t; 
+typedef geometry_msgs::msg::PoseStamped position_msg_t; 
+typedef geometry_msgs::msg::TwistStamped velocity_msg_t; 
+typedef geometry_msgs::msg::QuaternionStamped orientation_msg_t;
+
 class SLAMValidation : public rclcpp::Node {
-
-
 private:
-    
 
-    slamISAM slam_instance = slamISAM(this->get_logger());
+    slamISAM slam_instance = slamISAM(); /* We need to initialize this because it is used in the constructor of SLAMValidation*/
     high_resolution_clock::time_point cur_sync_callback_time;
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
+
     message_filters::Subscriber<cone_msg_t> cone_sub;
     message_filters::Subscriber<position_msg_t> vehicle_pos_sub;
     message_filters::Subscriber<velocity_msg_t> vehicle_vel_sub;
@@ -29,9 +42,8 @@ private:
                             message_filters::sync_policies::ApproximateTime<
                                             cone_msg_t,
                                             position_msg_t,
-                                            velocity_msg_t,
-                                            orientation_msg_t>>> sync;
-
+                                            velocity_msg_t>>> sync;
+    
     gtsam::Pose2 velocity;
 
     optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
@@ -49,17 +61,17 @@ private:
     rclcpp::TimerBase::SharedPtr timer;
     double dt;
 
-    optional<std_msgs::msg::Header> prev_filter_time;
+    std::optional<std_msgs::msg::Header> prev_filter_time;
 
     //print files
     std::ofstream outfile;
     std::ofstream pose_cones;
 
+
     void sync_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
-                    const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
-                    const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
-                    const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
-        RCLCPP_INFO(this->get_logger(), "\nSync Callback");
+                    const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
+                    const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data) {
+        RCLCPP_INFO(this->get_logger(), "--------Start of Sync Callback--------");
         
         /* Getting the time between sync callbacks */
         cur_sync_callback_time = high_resolution_clock::now();
@@ -90,8 +102,12 @@ private:
         vehicle_vel_callback(vehicle_vel_data);
 
         /* Vehicle angle callback */
-        vehicle_angle_callback(vehicle_angle_data);
+        //vehicle_angle_callback(vehicle_angle_data);
         
+
+        if (init_lon_lat.has_value()) {
+            RCLCPP_INFO(this->get_logger(), "init_lon_lat: x:%f | y:%f\n", init_lon_lat.value().x(), init_lon_lat.value().y());
+        }
 
         auto sync_data_end = high_resolution_clock::now();
         auto sync_data_duration = duration_cast<milliseconds>(sync_data_end - sync_data_start);
@@ -100,6 +116,7 @@ private:
 
         run_slam();
 
+        RCLCPP_INFO(this->get_logger(), "--------End of Sync Callback--------\n\n");
         prev_sync_callback_time.emplace(high_resolution_clock::now());
     }
 
@@ -128,14 +145,14 @@ private:
 
     }
 
-    void vehicle_pos_callback(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data)
+    void vehicle_pos_callback(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data)
     {
         // RCLCPP_INFO(this->get_logger(), "\t vehicle position callback! | time: %d\n",
         //                                         vehicle_pos_data->header.stamp.sec);
         auto vehicle_pos_callback_start = high_resolution_clock::now();
         
-        vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
-
+        //vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
+        posestamped_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
         /* Timers*/
         auto vehicle_pos_callback_end = high_resolution_clock::now();
         auto vehicle_pos_callback_duration = duration_cast<milliseconds>(vehicle_pos_callback_end - vehicle_pos_callback_start);
@@ -189,10 +206,21 @@ private:
 
 
     }
+    
 
 public:
     SLAMValidation(): Node("slam_validation")
     {
+        this->declare_parameter<bool>("use_yaml", false);
+        this->declare_parameter<double>("yaml_bearing_std_dev", BEARING_STD_DEV);
+        this->declare_parameter<double>("yaml_range_std_dev", RANGE_STD_DEV);
+        this->declare_parameter<double>("yaml_imu_x_std_dev", IMU_X_STD_DEV);
+        this->declare_parameter<double>("yaml_imu_y_std_dev", IMU_Y_STD_DEV);
+        this->declare_parameter<double>("yaml_imu_heading_std_dev", IMU_HEADING_STD_DEV);
+        this->declare_parameter<double>("yaml_gps_x_std_dev", GPS_X_STD_DEV);
+        this->declare_parameter<double>("yaml_gps_y_std_dev", GPS_Y_STD_DEV);
+
+
         const rmw_qos_profile_t best_effort_profile = {
             RMW_QOS_POLICY_HISTORY_KEEP_LAST,
             30,
@@ -220,18 +248,28 @@ public:
                                     message_filters::sync_policies::ApproximateTime<
                                     cone_msg_t,
                                     position_msg_t,
-                                    velocity_msg_t,
-                                    orientation_msg_t>>>(
+                                    velocity_msg_t>>>(
                             message_filters::sync_policies::ApproximateTime<
                                     cone_msg_t,
                                     position_msg_t,
-                                    velocity_msg_t,
-                                    orientation_msg_t>(30),
-                                    cone_sub, vehicle_pos_sub, vehicle_vel_sub,vehicle_angle_sub);
-        sync->setAgePenalty(0.09);
-        sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3, _4));
+                                    velocity_msg_t>(100),
+                                    cone_sub, vehicle_pos_sub, vehicle_vel_sub);
+        sync->setAgePenalty(0.1);
+        sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
 
         dt = .1;
+        std::optional<struct NoiseInputs> noise_inputs = std::nullopt;
+        if (this->has_parameter("use_yaml") && this->get_parameter("use_yaml").as_bool()) {
+            noise_inputs = {this->get_parameter("yaml_bearing_std_dev").as_double(),
+                            this->get_parameter("yaml_range_std_dev").as_double(),
+                            this->get_parameter("yaml_imu_x_std_dev").as_double(),
+                            this->get_parameter("yaml_imu_y_std_dev").as_double(),
+                            this->get_parameter("yaml_imu_heading_std_dev").as_double(),
+                            this->get_parameter("yaml_gps_x_std_dev").as_double(),
+                            this->get_parameter("yaml_gps_y_std_dev").as_double(),
+                            };
+        } 
+        slam_instance = slamISAM(this->get_logger(), noise_inputs);
 
         //TODO: std::optional where init is set to None
         init_lon_lat = std::nullopt;
@@ -241,7 +279,6 @@ public:
 
         prev_sync_callback_time = std::nullopt;
     }
-    
 };
 
 int main(int argc, char * argv[]){

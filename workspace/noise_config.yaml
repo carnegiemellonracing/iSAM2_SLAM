@@ -1,0 +1,10 @@
+slam_validation:
+  ros__parameters:
+    use_yaml: true
+    yaml_bearing_std_dev: 0.00045
+    yaml_range_std_dev: 0.03
+    yaml_imu_x_std_dev: 0.22
+    yaml_imu_y_std_dev: 0.22
+    yaml_imu_heading_std_dev: 0.00872665
+    yaml_gps_x_std_dev: 0.01
+    yaml_gps_y_std_dev: 0.01

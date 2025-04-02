@@ -4,8 +4,7 @@ using namespace gtsam;
 using namespace std::chrono;
 using std::size_t;
 
-slamISAM::slamISAM(optional<rclcpp::Logger> input_logger)
-{
+slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs> &yaml_noise_inputs) {
 
     // Chunking
     all_chunks = {};
@@ -14,7 +13,6 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger)
 
     parameters = ISAM2Params(ISAM2DoglegParams(), 0.1, 10, true);
     parameters.setFactorization("QR");
-    // parameters.enablePartialRelinearizationCheck = true;
     logger = input_logger;
     isam2 = gtsam::ISAM2(parameters);
     graph = gtsam::NonlinearFactorGraph();
@@ -24,67 +22,82 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger)
     first_pose_added = false;
     blue_n_landmarks = 0;
     yellow_n_landmarks = 0;
+
+
     
-    /* Bearing and range error
-     * Corresponds to the usage of the BearingRangeFactor we are using
-     *
-     * Source: https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/
-     *         Supplemental_Modules_(Analytical_Chemistry)/Quantifying_Nature/
-     *         Significant_Digits/Propagation_of_Error
-     * Source: User manual for the AT128 Hesai LiDAR
-     *
-     * bearing error in radians
-     * Calculation for error per radian:
-     * We use atan2(y, x) and we know that z = atan(u) has derivative 1/(1+u^2)
-     * std.dev_{u} = sqrt(0.03^2 + 0.03^2) = 0.0424
-     * std.dev_{z} = (1/(1+1^2))^2 * std.dev_{u}^2 = 1/4 * 0.0424^2 = 0.00045
-     *
-     * Source: User manual for the AT128 Hesai LiDAR
-     * range error in meters
-     *
-     */
     LandmarkNoiseModel = gtsam::Vector(2);
-    LandmarkNoiseModel(0) = 0.00045;
-    LandmarkNoiseModel(1) = 0.03;
-    landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
-
-    // used to be all 0s for EUFS_SIM
-    PriorNoiseModel = gtsam::Vector(3);
-    PriorNoiseModel(0) = 0.22;
-    PriorNoiseModel(1) = 0.22;
-    PriorNoiseModel(2) = degrees_to_radians(0.009);
-
-    prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
-
-    /* Go from 1 pose to another pose
-     * Source: https://www.movella.com/products/sensor-modules/xsens-mti-680g-rtk-gnss-ins
-     *
-     * x error in meters (must be based on velocity error)
-     * y error in meters (must be based on velocity error)
-     * velocity error = 0.05 m/s RMS
-     * Calculation for the error per meter: 1m = (1 +- 0.05 m/s) * (1 +- 1e-9 s)
-     * std. dev = 1 * sqrt((0.05/1)^2 + (1e-9/1)^2) = 0.05
-     * yaw error in radians
-     */
     OdomNoiseModel = gtsam::Vector(3);
-    OdomNoiseModel(0) = 0.22;
-    OdomNoiseModel(1) = 0.22;
-    OdomNoiseModel(2) = degrees_to_radians(0.009);
-    odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
-
-    /* GPS noise model
-     * Use the covariances from positionlla
-     *
-     * Covariance matrix diagonal elements represent variances
-     * Variance = (std.dev)^2 meaning:
-     * Variance = 0.2 => std.dev = sqrt(0.2) = 0.45
-     *
-     * However positionlla already accounts for the covariance
-     *
-     */
+    PriorNoiseModel = gtsam::Vector(3);
     UnaryNoiseModel = gtsam::Vector(2);
-    UnaryNoiseModel(0) = 0.01;
-    UnaryNoiseModel(1) = 0.01;
+    if (!yaml_noise_inputs.has_value()) {
+        switch (RunSettings::Real) {
+            case RunSettings::Real:
+                LandmarkNoiseModel(0) = BEARING_STD_DEV; 
+                LandmarkNoiseModel(1) = RANGE_STD_DEV; 
+
+                OdomNoiseModel(0) = IMU_X_STD_DEV;
+                OdomNoiseModel(1) = IMU_Y_STD_DEV; 
+                OdomNoiseModel(2) = IMU_HEADING_STD_DEV; 
+                // used to be all 0s for EUFS_SIM
+                PriorNoiseModel(0) = IMU_X_STD_DEV;
+                PriorNoiseModel(1) = IMU_Y_STD_DEV;
+                PriorNoiseModel(2) = IMU_HEADING_STD_DEV;
+
+                UnaryNoiseModel(0) = GPS_X_STD_DEV;
+                UnaryNoiseModel(1) = GPS_Y_STD_DEV;
+                break;
+            case RunSettings::EUFSSim:
+                LandmarkNoiseModel(0) = EUFS_SIM_BEARING_STD_DEV; 
+                LandmarkNoiseModel(1) = EUFS_SIM_RANGE_STD_DEV; 
+
+                OdomNoiseModel(0) = EUFS_SIM_IMU_X_STD_DEV;
+                OdomNoiseModel(1) = EUFS_SIM_IMU_Y_STD_DEV; 
+                OdomNoiseModel(2) = EUFS_SIM_IMU_HEADING_STD_DEV; 
+                // used to be all 0s for EUFS_SIM
+                PriorNoiseModel(0) = EUFS_SIM_IMU_X_STD_DEV;
+                PriorNoiseModel(1) = EUFS_SIM_IMU_Y_STD_DEV;
+                PriorNoiseModel(2) = EUFS_SIM_IMU_HEADING_STD_DEV;
+
+                UnaryNoiseModel(0) = EUFS_SIM_GPS_X_STD_DEV;
+                UnaryNoiseModel(1) = EUFS_SIM_GPS_Y_STD_DEV;
+                break;
+            case RunSettings::ControlsSim:
+                LandmarkNoiseModel(0) = CONTROLS_BEARING_STD_DEV; 
+                LandmarkNoiseModel(1) = CONTROLS_RANGE_STD_DEV; 
+
+                OdomNoiseModel(0) = CONTROLS_IMU_X_STD_DEV;
+                OdomNoiseModel(1) = CONTROLS_IMU_Y_STD_DEV; 
+                OdomNoiseModel(2) = CONTROLS_IMU_HEADING_STD_DEV; 
+                // used to be all 0s for EUFS_SIM
+                PriorNoiseModel(0) = CONTROLS_IMU_X_STD_DEV;
+                PriorNoiseModel(1) = CONTROLS_IMU_Y_STD_DEV;
+                PriorNoiseModel(2) = CONTROLS_IMU_HEADING_STD_DEV;
+
+                UnaryNoiseModel(0) = CONTROLS_GPS_X_STD_DEV;
+                UnaryNoiseModel(1) = CONTROLS_GPS_Y_STD_DEV;
+                break;
+        }
+    } else {
+        LandmarkNoiseModel(0) = yaml_noise_inputs.value().yaml_bearing_std_dev; 
+        LandmarkNoiseModel(1) = yaml_noise_inputs.value().yaml_range_std_dev; 
+
+        OdomNoiseModel(0) = yaml_noise_inputs.value().yaml_imu_x_std_dev;
+        OdomNoiseModel(1) = yaml_noise_inputs.value().yaml_imu_y_std_dev; 
+        OdomNoiseModel(2) = yaml_noise_inputs.value().yaml_imu_heading_std_dev; 
+        // used to be all 0s for EUFS_SIM
+        PriorNoiseModel(0) = yaml_noise_inputs.value().yaml_imu_x_std_dev;
+        PriorNoiseModel(1) = yaml_noise_inputs.value().yaml_imu_y_std_dev;
+        PriorNoiseModel(2) = yaml_noise_inputs.value().yaml_imu_heading_std_dev;
+
+        UnaryNoiseModel(0) = yaml_noise_inputs.value().yaml_gps_x_std_dev;          
+        UnaryNoiseModel(1) = yaml_noise_inputs.value().yaml_gps_y_std_dev;
+    }
+
+
+
+    landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
+    odom_model = noiseModel::Diagonal::Sigmas(OdomNoiseModel);
+    prior_model = noiseModel::Diagonal::Sigmas(PriorNoiseModel);
     unary_model = noiseModel::Diagonal::Sigmas(UnaryNoiseModel);
 
     // Resetting the log file for gtsam
@@ -104,6 +117,29 @@ slamISAM::slamISAM(optional<rclcpp::Logger> input_logger)
     completed_chunking = false;
 }
 
+gtsam::Symbol slamISAM::X(int robot_pose_id) {
+    return Symbol('x', robot_pose_id);
+}
+
+gtsam::Symbol slamISAM::BLUE_L(int cone_pose_id) {
+    return Symbol('b', cone_pose_id);
+}
+
+gtsam::Symbol slamISAM::YELLOW_L(int cone_pose_id) {
+    return Symbol('y', cone_pose_id);
+}
+/**
+ * @brief Updates the poses in the SLAM model. 
+ * 
+ * @param cur_pose: the current pose of the car
+ * @param prev_pose: the previous pose of the car
+ * @param global_odom: the global odometry measurement
+ * @param velocity: the velocity of the car
+ * @param dt: the change in time
+ * @param logger: the logger
+ * 
+ * @return: void
+ */
 void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
                             Pose2 &velocity, double dt, optional<rclcpp::Logger> logger)
 {
@@ -152,23 +188,8 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         // global_odom holds our GPS measurements
         velocity_motion_model(new_pose, odometry, velocity, dt, prev_pose, global_odom);
 
-        // Do not continue updating if the car is not moving. Only update during the 0th pose.
-        // TODO: consider when the car slows to a stop?
-
-        if (logger.has_value())
-        {
-            RCLCPP_INFO(logger.value(), "||velocity|| = %f", norm2(Point2(velocity.x(), velocity.y())));
-            if (norm2(Point2(velocity.x(), velocity.y())) > VELOCITY_MOVING_TH)
-            {
-                RCLCPP_INFO(logger.value(), "Car is moving");
-            }
-            else
-            {
-                RCLCPP_INFO(logger.value(), "Car stopped");
-            }
-
-            RCLCPP_INFO(logger.value(), "|angular velocity| = %f", abs(velocity.theta()));
-        }
+        /* Do not continue updating if the car is not moving. Only update during the 0th pose. */
+        
 
         BetweenFactor<Pose2> odom_factor = BetweenFactor<gtsam::Pose2>(X(pose_num - 1),
                                                                        X(pose_num),
@@ -180,25 +201,34 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         Pose2 imu_offset_global_odom = Pose2(global_odom.x() - offset_x, global_odom.y() - offset_y, global_odom.theta());
         graph.emplace_shared<UnaryFactor>(X(pose_num), imu_offset_global_odom, unary_model);
         values.insert(X(pose_num), new_pose);
-
-        print_update_poses(prev_pose, new_pose, odometry, imu_offset_global_odom, logger);
     }
 
     isam2.update(graph, values);
     graph.resize(0);
     values.clear();
 
-    // Pose2 est_pose = isam2.calculateEstimate(X(pose_num)).cast<Pose2>(); // Safe for pose_num == 0
-    // RCLCPP_INFO(logger, "Diff: x: %.10f | y: %.10f", est_pose.x() - cur_pose.x(), est_pose.y() - cur_pose.y());
 }
 
-/* Cones represented by a tuple: the 1st element is the relative position
- * to the car
- * 2nd Point2 for new_cones represents the global position
+
+
+
+/**
+ * @brief Updates the landmarks in the SLAM model. This function
+ * is used to update the landmarks for a given cone color at a time.
+ * This function will update the SLAM model accordingly using the 
+ * cone information stored in old_cones and new_cones.
+ * 
+ * @param old_cones: the old cones
+ * @param new_cones: the new cones
+ * @param n_landmarks: the number of landmarks
+ * @param color: the color of the cones
+ * @param cur_pose: the current pose of the car
+ * 
+ * @return: void
  */
 void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
                                 std::vector<New_cone_info> &new_cones,
-                                int &n_landmarks, char color,
+                                int &n_landmarks, ConeColor color,
                                 Pose2 &cur_pose)
 {
 
@@ -221,14 +251,16 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
 
 
         gtsam::Symbol landmark_symbol;
-        if (color == 'b')
-        {
-            landmark_symbol = BLUE_L(min_id);
+
+        switch (color) {
+            case ConeColor::Blue:
+                landmark_symbol = BLUE_L(min_id);
+                break;
+            case ConeColor::Yellow:
+                landmark_symbol = YELLOW_L(min_id);
+                break;
         }
-        else
-        {
-            landmark_symbol = YELLOW_L(min_id);
-        }
+
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), landmark_symbol,
                                                     b,
                                                     r,
@@ -247,15 +279,14 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
         Point2 cone_global_frame = (new_cones.at(n).global_cone_pos);
 
         gtsam::Symbol landmark_symbol;
-        if (color == 'b')
-        {
-            landmark_symbol = BLUE_L(n_landmarks);
+        switch (color) {
+            case ConeColor::Blue:
+                landmark_symbol = BLUE_L(n_landmarks);
+                break;
+            case ConeColor::Yellow:
+                landmark_symbol = YELLOW_L(n_landmarks);
+                break;
         }
-        else
-        {
-            landmark_symbol = YELLOW_L(n_landmarks);
-        }
-
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), landmark_symbol,
                                                     b,
                                                     r,
@@ -276,9 +307,87 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
     values.clear();
 }
 
+void slamISAM::cone_proximity_updates(int lowest_id, int highest_id, int n_landmarks,
+                                    std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                    gtsam::Symbol (*cone_key)(int)) {
+
+    for (int i = std::max(lowest_id - LOOK_RADIUS, 0); i < std::min(lowest_id + LOOK_RADIUS, n_landmarks); i++) {
+        gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
+        color_slam_est.at(i) = updated_est;
+    }
+
+    for (int i = std::max(highest_id - LOOK_RADIUS, 0); i < std::min(highest_id + LOOK_RADIUS, n_landmarks); i++) {
+        gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
+        color_slam_est.at(i) = updated_est;
+    }
+
+    for (int i = std::max(lowest_id - LOOK_RADIUS, 0); i < std::min(lowest_id + LOOK_RADIUS, n_landmarks); i++) {
+        Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
+        color_slam_mcov.at(i) = updated_mcov;
+    }
+
+    for (int i = std::max(highest_id - LOOK_RADIUS, 0); i < std::min(highest_id + LOOK_RADIUS, n_landmarks); i++) {
+        Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
+        color_slam_mcov.at(i) = updated_mcov;
+    }
+}
+
+std::pair<int, int> slamISAM::update_slam_est_and_mcov_with_old(std::vector<Old_cone_info>& old_cones,
+                                    std::vector<gtsam::Point2>& color_slam_est, 
+                                    std::vector<Eigen::MatrixXd>& color_slam_mcov, gtsam::Symbol(*cone_key)(int)) {
+
+    int lowest_id = INT_MAX;
+    int highest_id = -1;
+    for (int i=0; i < old_cones.size(); i++) {
+        Old_cone_info curr = old_cones.at(i);
+        gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(curr.min_id)).cast<Point2>();
+        color_slam_est.at(curr.min_id) = updated_est;
+
+        if (curr.min_id < lowest_id) {
+            lowest_id = curr.min_id;
+        }
+        if (curr.min_id > highest_id) {
+            highest_id = curr.min_id;
+        }
+    }
+
+    for (int i=0; i < old_cones.size(); i++) {
+        Old_cone_info curr = old_cones.at(i);
+        Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(curr.min_id));
+        color_slam_mcov.at(curr.min_id) = updated_mcov;
+    }                                     
+    std::pair<int, int> lo_and_hi(lowest_id, highest_id);
+    return lo_and_hi;
+}
+
+void slamISAM::update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_landmarks, 
+                                                                std::vector<gtsam::Point2>& color_slam_est, 
+                                                                std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                                                gtsam::Symbol(*cone_key)(int)) {
+    for (int i = old_n_landmarks; i < new_n_landmarks; i++) {
+        gtsam::Point2 new_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
+        color_slam_est.push_back(new_est);
+    }
+
+    for (int i = old_n_landmarks; i < new_n_landmarks; i++) {
+        Eigen::MatrixXd new_mcov = isam2.marginalCovariance(cone_key(i));
+        color_slam_mcov.push_back(new_mcov);
+    }
+}
+
 /**
- * @brief step takes in info about the observed cones and the odometry info
- *        and performs an update step to our iSAM2 model.
+ * @brief Processes odometry information and cone information 
+ * to perform an update step on the SLAM model. 
+ * 
+ * @param global_odom: the global odometry measurement
+ * @param cone_obs: the observed cones
+ * @param cone_obs_blue: the observed blue cones
+ * @param cone_obs_yellow: the observed yellow cones
+ * @param orange_ref_cones: the orange reference cones
+ * @param velocity: the velocity of the car
+ * @param dt: the change in time
+ * 
+ * @return: void
  */
 // TODO: change void to option type
 void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
@@ -287,20 +396,19 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
                     double dt)
 {
 
-    // print_step_input(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
-    log_step_inputs(logger, global_odom, cone_obs, cone_obs_blue, cone_obs_yellow, orange_ref_cones, velocity, dt);
-
-    if (blue_n_landmarks+yellow_n_landmarks > 0) 
+    if (blue_n_landmarks + yellow_n_landmarks > 0)
     {
-        auto start_step = high_resolution_clock::now();
-        auto dur_betw_step = duration_cast<milliseconds>(start_step - end);
-        if (logger.has_value())
-        {
-            RCLCPP_INFO(logger.value(), "End of prev step to cur step: %ld", dur_betw_step.count());
+        auto start_step  = high_resolution_clock::now();
+        auto dur_betw_step = duration_cast<milliseconds>(start_step - start);
+        if (logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "--------End of prev step. Time between step calls: %ld--------\n\n", dur_betw_step.count());
         }
     }
 
     start = high_resolution_clock::now();
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "--------Start of SLAM Step--------");
+    }
 
     Pose2 cur_pose = Pose2(0, 0, 0);
     Pose2 prev_pose = Pose2(0, 0, 0);
@@ -315,14 +423,14 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         return;
     }
 
+    /**** Update the car pose ****/
     auto start_update_poses = high_resolution_clock::now();
     update_poses(cur_pose, prev_pose, global_odom, velocity, dt, logger);
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
 
-    if (logger.has_value())
-    {
-        RCLCPP_INFO(logger.value(), "update_poses time: %ld", dur_update_poses.count());
+    if(logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "\tUpdate_poses time: %ld", dur_update_poses.count());
     }
 
     /**** Perform loop closure ****/
@@ -343,87 +451,74 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     auto end_loop_closure = high_resolution_clock::now();
     auto dur_loop_closure = duration_cast<milliseconds>(end_loop_closure - start_loop_closure);
-    if (logger.has_value())
-    {
-        RCLCPP_INFO(logger.value(), "loop closure time: %ld", dur_loop_closure.count());
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "\tLoop closure time: %ld", dur_loop_closure.count());
     }
 
-    if (loop_closure)
-    {
-        if (logger.has_value())
-        {
-            RCLCPP_INFO(logger.value(), "Loop closure detected. No longer updating");
+    if (loop_closure) {
+        if (logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "\tLoop closure detected. No longer updating");
         }
     }
 
-    auto start_est_retrieval = high_resolution_clock::now();
-    std::vector<gtsam::Point2> blue_cone_est = {};
-    std::vector<gtsam::Point2> yellow_cone_est = {};
-    for (int i = 0; i < blue_n_landmarks; i++)
-    {
-        blue_cone_est.push_back(isam2.calculateEstimate(BLUE_L(i)).cast<gtsam::Point2>());
-    }
+    /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
+    if (!loop_closure) {
 
-    for (int i = 0; i < yellow_n_landmarks; i++)
-    {
-        yellow_cone_est.push_back(isam2.calculateEstimate(YELLOW_L(i)).cast<gtsam::Point2>());
-    }
+        /**** Data association ****/
+        std::vector<Old_cone_info> blue_old_cones = {};
+        std::vector<New_cone_info> blue_new_cones = {};
+        std::vector<Old_cone_info> yellow_old_cones = {};
+        std::vector<New_cone_info> yellow_new_cones = {};
 
-    std::vector<MatrixXd> blue_cone_mcov = {};
-    std::vector<MatrixXd> yellow_cone_mcov = {};
-    for (int i = 0; i < blue_n_landmarks; i++)
-    {
-        blue_cone_mcov.push_back(isam2.marginalCovariance(BLUE_L(i)));
-    }
-    for (int i = 0; i < yellow_n_landmarks; i++)
-    {
-        yellow_cone_mcov.push_back(isam2.marginalCovariance(YELLOW_L(i)));
-    }
-
-    auto end_est_retrieval = high_resolution_clock::now();
-    auto dur_est_retrieval = duration_cast<milliseconds>(end_est_retrieval - start_est_retrieval);
-    if (logger.has_value())
-    {
-        RCLCPP_INFO(logger.value(), "est_retrieval time: %ld", dur_est_retrieval.count());
-    }
-    /**** Data association ***/
-    // std::vector<tuple<Point2, double, int>> old_cones = {};
-    // std::vector<tuple<Point2, double, Point2>> new_cones = {};
-
-    std::vector<Old_cone_info> blue_old_cones;
-    std::vector<Old_cone_info> yellow_old_cones;
-
-    std::vector<New_cone_info> blue_new_cones;
-    std::vector<New_cone_info> yellow_new_cones;
-
-    auto start_DA = high_resolution_clock::now();
-    assert(blue_cone_est.size() == blue_cone_mcov.size());
-    assert(yellow_cone_est.size() == yellow_cone_mcov.size());
-    data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
-                     cone_obs_blue, logger, blue_cone_est, blue_cone_mcov);
-
-    data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
-                     cone_obs_yellow, logger, yellow_cone_est, yellow_cone_mcov);
-
-    auto end_DA = high_resolution_clock::now();
-    auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
-    if (logger.has_value())
-    {
-        RCLCPP_INFO(logger.value(), "Data association time: %ld", dur_DA.count());
-    }
+        auto start_DA = high_resolution_clock::now();
+        data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
+                            cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
+        data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
+                            cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov);
+        
+        auto end_DA = high_resolution_clock::now();
+        auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
+        if(logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "\tData association time: %ld", dur_DA.count());
+        }
 
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     if (!loop_closure)
     {
         auto start_update_landmarks = high_resolution_clock::now();
-        update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, 'b', cur_pose);
-        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, 'y', cur_pose);
+
+        int old_blue_n_landmarks = blue_n_landmarks;
+        int old_yellow_n_landmarks = yellow_n_landmarks;
+
+        update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, ConeColor::Blue, cur_pose);
+        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, ConeColor::Yellow, cur_pose);
+
+
+
+        /* Updating slam_est and slam_mcov vectors with the old cone information */         
+        std::pair<int, int> blue_lo_and_hi = update_slam_est_and_mcov_with_old(blue_old_cones, 
+                                                                        blue_slam_est, blue_slam_mcov, BLUE_L);
+        std::pair<int, int> yellow_lo_and_hi = update_slam_est_and_mcov_with_old(yellow_old_cones, 
+                                                                        yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+        int lowest_blue_id = blue_lo_and_hi.first;
+        int highest_blue_id = blue_lo_and_hi.second;
+        int lowest_yellow_id =  yellow_lo_and_hi.first;
+        int highest_yellow_id = yellow_lo_and_hi.second;       
+
+        /* Updating slam_est and slam_mcov with the new cone information */
+        update_slam_est_and_mcov_with_new(old_blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+        update_slam_est_and_mcov_with_new(old_yellow_n_landmarks, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+
+
+        /* Extra updates */
+        cone_proximity_updates(lowest_blue_id, highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+        cone_proximity_updates(lowest_yellow_id, highest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
 
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
-        if (logger.has_value())
-        {
-            RCLCPP_INFO(logger.value(), "update_landmarks time: %ld", dur_update_landmarks.count());
+
+        if(logger.has_value()) {
+            RCLCPP_INFO(logger.value(), "\tUpdate_landmarks time: %ld", dur_update_landmarks.count());
         }
     }
     else
@@ -519,23 +614,20 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     auto end_vis_setup = high_resolution_clock::now();
     auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
 
-    if (logger.has_value())
-    {
-        RCLCPP_INFO(logger.value(), "vis_setup time: %ld", dur_vis_setup.count());
-    }
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "\tVis_setup time: %ld", dur_vis_setup.count());
+    } 
 
     end = high_resolution_clock::now();
 
     auto dur_step_call = duration_cast<milliseconds>(end - start);
-    if (logger.has_value())
-    {
-        RCLCPP_INFO(logger.value(), "SLAM run step | Step call time: %ld\n", dur_step_call.count());
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "\tSLAM run step | Step call time: %ld\n", dur_step_call.count());
     }
 
-    if (logger.has_value())
-    {
-        RCLCPP_INFO(logger.value(), "pose_num: %d | blue_n_landmarks: %d | yellow_n_landmarks: %d\n\n",
-                    pose_num - 1, blue_n_landmarks, yellow_n_landmarks);
+    if (logger.has_value()) {
+        RCLCPP_INFO(logger.value(), "\tpose_num: %d | blue_n_landmarks: %d | yellow_n_landmarks : %d", 
+                        pose_num - 1, blue_n_landmarks, yellow_n_landmarks);
     }
 }
 

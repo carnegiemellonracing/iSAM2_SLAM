@@ -11,6 +11,7 @@
 #include "interfaces/msg/cone_array.hpp"
 #include "interfaces/msg/cone_array_with_odom.hpp"
 
+#include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/vector3_stamped.hpp"
 #include "geometry_msgs/msg/quaternion_stamped.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
@@ -24,9 +25,11 @@
 #include <deque>
 #include <cmath>
 #include <chrono>
+#include <climits>
 
 #include <gtsam/geometry/Point2.h>
 #include <gtsam/geometry/Pose2.h>
+#include "constants.hpp"
 
 using namespace std;
 using namespace gtsam;
@@ -38,25 +41,6 @@ using std::placeholders::_2;
 using std::placeholders::_3;
 using std::placeholders::_4;
 
-const long SEC_TO_NANOSEC = 1e9;
-const double IMU_OFFSET = 0.3; //meters; offset from the center of the car
-const double LIDAR_OFFSET = 0.3; //meters; offset from the center of the car
-const double MAX_CONE_RANGE = 15;
-const double TURNING_MAX_CONE_RANGE = 15;
-const double VELOCITY_MOVING_TH = 0.1; //meters per second
-const double TURNING_TH = 0.2;
-
-/* This will create the file starting at the workspace directory
- * 
- * This is is because the ros node, which is running the step function,
- * is run at that level.
- */
-const string STEP_INPUT_FILE = "src/isam2/data/step_input.txt";
-
-#define CONE_DATA_TOPIC "/perc_cones"
-#define VEHICLE_POS_TOPIC "/filter/positionlla"
-#define VEHICLE_ANGLE_TOPIC "/filter/quaternion"
-#define VEHICLE_VEL_TOPIC "/filter/twist"
 
 
 void imu_axes_to_DV_axes(double &x, double &y);
@@ -69,6 +53,10 @@ void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_
                                             vector<Point2> &orange_cones);
 void velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
                             Pose2 &velocity);
+
+void posestamped_msg_to_gps(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
+                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger);
+
 void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
                         double &yaw, Pose2 &global_odom, rclcpp::Logger logger);
 void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
