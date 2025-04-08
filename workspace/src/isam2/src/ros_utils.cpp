@@ -64,7 +64,7 @@ void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr
 }
 
 void posestamped_msg_to_gps(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
-                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
+                        Pose2 &global_odom, optional<Point2> &init_x_y, rclcpp::Logger logger) {
     /** 
      * PoseStamped message has:
      * 1.) Header header
@@ -78,6 +78,12 @@ void posestamped_msg_to_gps(const geometry_msgs::msg::PoseStamped::ConstSharedPt
     /* Process the pose */
     double x = vehicle_pos_data->pose.position.x;
     double y = vehicle_pos_data->pose.position.y;
+
+    if (!init_x_y.has_value()) {
+        init_x_y = gtsam::Point2(x, y);
+    }
+    // x -= init_x_y.value().x();
+    // y -= init_x_y.value().y();
 
     /* Process the orientation */
     double yaw = vehicle_pos_data->pose.position.z;

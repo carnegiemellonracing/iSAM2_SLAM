@@ -41,7 +41,8 @@ private:
     
     gtsam::Pose2 velocity;
 
-    optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
+    std::optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance
+    std::optional<gtsam::Point2> init_x_y; // local variable to load odom into SLAM instance
     gtsam::Pose2 global_odom; // local variable to load odom into SLAM instance
     gtsam::Pose2 prev_odom;
     std::vector<Point2> cones; // local variable to load cone observations into SLAM instance
@@ -147,7 +148,7 @@ private:
         auto vehicle_pos_callback_start = high_resolution_clock::now();
         
         //vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
-        posestamped_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
+        posestamped_msg_to_gps(vehicle_pos_data, global_odom, init_x_y, this->get_logger());
         /* Timers*/
         auto vehicle_pos_callback_end = high_resolution_clock::now();
         auto vehicle_pos_callback_duration = duration_cast<milliseconds>(vehicle_pos_callback_end - vehicle_pos_callback_start);
@@ -186,7 +187,7 @@ private:
 
     void run_slam()
     {
-        RCLCPP_INFO(this->get_logger(), "Running SLAM");
+        RCLCPP_INFO(this->get_logger(), "\tRunning SLAM");
 
        /* We should be passing in odometry info so that SLAM can do motion modeling.
 	    * At each time stamp, we either:
@@ -268,6 +269,7 @@ public:
 
         //TODO: std::optional where init is set to None
         init_lon_lat = std::nullopt;
+        init_x_y = std::nullopt;
         file_opened = true;
 
         prev_filter_time = std::nullopt;
