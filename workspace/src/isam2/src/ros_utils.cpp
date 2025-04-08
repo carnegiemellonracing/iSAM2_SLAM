@@ -82,8 +82,8 @@ void posestamped_msg_to_gps(const geometry_msgs::msg::PoseStamped::ConstSharedPt
     if (!init_x_y.has_value()) {
         init_x_y = gtsam::Point2(x, y);
     }
-    // x -= init_x_y.value().x();
-    // y -= init_x_y.value().y();
+    x -= init_x_y.value().x();
+    y -= init_x_y.value().y();
 
     /* Process the orientation */
     double yaw = vehicle_pos_data->pose.position.z;

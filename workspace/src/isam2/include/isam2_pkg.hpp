@@ -102,6 +102,8 @@ private:
     std::vector<gtsam::Point2> yellow_slam_est;
     std::vector<Eigen::MatrixXd> yellow_slam_mcov;
 
+    int checkpoint_to_update_beginning;
+
 public:
     high_resolution_clock::time_point start;
     high_resolution_clock::time_point end;
@@ -149,9 +151,20 @@ public:
                                     std::vector<gtsam::Point2>& color_slam_est, 
                                     std::vector<Eigen::MatrixXd>& color_slam_mcov, gtsam::Symbol(*cone_key)(int));
 
+    std::pair<int, int> update_all_est_mcov(int old_n_landmarks, std::vector<Old_cone_info>& old_cones,
+                                    std::vector<gtsam::Point2>& color_slam_est, 
+                                    std::vector<Eigen::MatrixXd>& color_slam_mcov, gtsam::Symbol(*cone_key)(int));
+
     void cone_proximity_updates(int lowest_id, int highest_id, int n_landmarks,
                                     std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                                     gtsam::Symbol (*cone_key)(int));
 
+    void update_all_est_mcov(int n_landmarks, std::vector<gtsam::Point2>& color_slam_est, 
+                                                    std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                                    gtsam::Symbol(*cone_key)(int));
+
+    void update_beginning(std::vector<gtsam::Point2>& color_slam_est, 
+                          std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                          gtsam::Symbol(*cone_key)(int));
     void print_estimates();
 };
