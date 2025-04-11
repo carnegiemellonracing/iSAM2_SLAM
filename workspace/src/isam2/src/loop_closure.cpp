@@ -47,7 +47,7 @@ bool start_pose_in_front(Pose2 &cur_pose, Pose2 &first_pose, optional<rclcpp::Lo
     Eigen::Vector2d error = first_cur_diff - proj_diff_on_heading;
     double dy =  error.norm();
 
-    return abs(atan2(dy, dx)) < degrees_to_radians(90);
+    return abs(atan2(dy, dx)) < degrees_to_radians(160);
 
 }
 

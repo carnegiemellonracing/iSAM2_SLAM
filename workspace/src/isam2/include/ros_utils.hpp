@@ -55,7 +55,7 @@ void velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPt
                             Pose2 &velocity);
 
 void posestamped_msg_to_gps(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
-                        Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger);
+                        Pose2 &global_odom, optional<Point2> &init_x_y, rclcpp::Logger logger);
 
 void quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data,
                         double &yaw, Pose2 &global_odom, rclcpp::Logger logger);

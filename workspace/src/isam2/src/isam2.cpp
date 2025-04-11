@@ -432,7 +432,34 @@ std::vector<New_cone_info> slamISAM::sort_cone_ids(const std::vector<gtsam::Poin
         --remaining;
     }
 
+    assert(ordered.size() == new_cones.size());
+
     return ordered;
+}
+
+void slamISAM::update_all_est_mcov(int n_landmarks, std::vector<gtsam::Point2>& color_slam_est, 
+                                                    std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                                    gtsam::Symbol(*cone_key)(int)) {
+    color_slam_est.clear();
+    color_slam_mcov.clear();
+    for (int i= 0; i < n_landmarks; i++) {
+        color_slam_est.push_back(isam2.calculateEstimate(cone_key(i)).cast<Point2>());
+    }
+    for (int i= 0; i < n_landmarks; i++) {
+        color_slam_mcov.push_back(isam2.marginalCovariance(cone_key(i)));
+    }
+}
+
+void slamISAM::update_beginning(std::vector<gtsam::Point2>& color_slam_est, 
+                                                    std::vector<Eigen::MatrixXd>& color_slam_mcov, 
+                                                    gtsam::Symbol(*cone_key)(int)) {
+    for (int i = 0; i < UPDATE_START_N; i++) {
+        color_slam_est.at(i) = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
+    }
+
+    for (int i = 0; i < UPDATE_START_N; i++) {
+        color_slam_mcov.at(i) = isam2.marginalCovariance(cone_key(i));
+    }
 }
 
 /**
@@ -529,6 +556,16 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     std::vector<New_cone_info> yellow_new_cones = {};
 
     auto start_DA = high_resolution_clock::now();
+    /* For numerical stability */
+    if (!(blue_n_landmarks >= MIN_CONES_UPDATE_ALL && yellow_n_landmarks >= MIN_CONES_UPDATE_ALL)) {
+        update_all_est_mcov(blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+        update_all_est_mcov(yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+    } else if (blue_n_landmarks > checkpoint_to_update_beginning && yellow_n_landmarks > checkpoint_to_update_beginning) {
+        update_beginning(blue_slam_est, blue_slam_mcov, BLUE_L);
+        update_beginning(yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+        checkpoint_to_update_beginning += UPDATE_START_N;
+    }
+    
     data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
                         cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
     data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
@@ -549,33 +586,34 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
         int old_blue_n_landmarks = blue_n_landmarks;
         int old_yellow_n_landmarks = yellow_n_landmarks;
-
+        
         /* Order the cones by relative distance */
         std::vector<New_cone_info> ordered_blue_new = sort_cone_ids(blue_slam_est, blue_new_cones);
         std::vector<New_cone_info> ordered_yellow_new = sort_cone_ids(yellow_slam_est, yellow_new_cones);
-
+        
         update_landmarks(blue_old_cones, ordered_blue_new, blue_n_landmarks, ConeColor::Blue, cur_pose);
         update_landmarks(yellow_old_cones, ordered_yellow_new, yellow_n_landmarks, ConeColor::Yellow, cur_pose);
 
         /* Updating slam_est and slam_mcov vectors with the old cone information */         
-        std::pair<int, int> blue_lo_and_hi = update_slam_est_and_mcov_with_old(blue_old_cones, 
-                                                                        blue_slam_est, blue_slam_mcov, BLUE_L);
-        std::pair<int, int> yellow_lo_and_hi = update_slam_est_and_mcov_with_old(yellow_old_cones, 
-                                                                        yellow_slam_est, yellow_slam_mcov, YELLOW_L);
-        int lowest_blue_id = blue_lo_and_hi.first;
-        int highest_blue_id = blue_lo_and_hi.second;
-        int lowest_yellow_id =  yellow_lo_and_hi.first;
-        int highest_yellow_id = yellow_lo_and_hi.second;       
+        if (blue_n_landmarks >= MIN_CONES_UPDATE_ALL && yellow_n_landmarks >= MIN_CONES_UPDATE_ALL) {
+            std::pair<int, int> blue_lo_and_hi = update_slam_est_and_mcov_with_old(blue_old_cones, 
+                                                                            blue_slam_est, blue_slam_mcov, BLUE_L);
+            std::pair<int, int> yellow_lo_and_hi = update_slam_est_and_mcov_with_old(yellow_old_cones, 
+                                                                            yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+            int lowest_blue_id = blue_lo_and_hi.first;
+            int highest_blue_id = blue_lo_and_hi.second;
+            int lowest_yellow_id =  yellow_lo_and_hi.first;
+            int highest_yellow_id = yellow_lo_and_hi.second;       
 
-        /* Sort new cones */
-        /* Updating slam_est and slam_mcov with the new cone information */
-        update_slam_est_and_mcov_with_new(old_blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-        update_slam_est_and_mcov_with_new(old_yellow_n_landmarks, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+            /* Updating slam_est and slam_mcov with the new cone information */
+            update_slam_est_and_mcov_with_new(old_blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+            update_slam_est_and_mcov_with_new(old_yellow_n_landmarks, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
 
 
-        /* Extra updates */
-        cone_proximity_updates(lowest_blue_id, highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-        cone_proximity_updates(lowest_yellow_id, highest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+            /* Extra updates */
+            cone_proximity_updates(lowest_blue_id, highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+            cone_proximity_updates(lowest_yellow_id, highest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+        }
 
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
