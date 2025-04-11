@@ -137,7 +137,7 @@ public:
                                 int &n_landmarks, ConeColor color,
                                 Pose2 &cur_pose);
 
-    std::vector<New_cone_info> sort_cone_ids(const std::vector<Old_cone_info>& old_cones, std::vector<New_cone_info>& new_cones);
+    std::vector<New_cone_info> sort_cone_ids(const std::vector<gtsam::Point2>& color_slam_est, std::vector<New_cone_info>& new_cones);
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
