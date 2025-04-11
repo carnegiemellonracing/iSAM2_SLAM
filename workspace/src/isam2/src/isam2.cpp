@@ -382,7 +382,7 @@ void slamISAM::update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_
  * @param new_cones: vector of new cones
  * @param n_landmarks: number of cones we have seen
  */
-std::vector<New_cone_info> sort_cone_ids(const std::vector<Old_cone_info>& old_cones, std::vector<New_cone_info>& new_cones) {
+std::vector<New_cone_info> sort_cone_ids(const std::vector<Old_cone_info>& old_cones, const rstd::vector<New_cone_info>& new_cones) {
     std::vector<New_cone_info> ordered;
 
     if (old_cones.empty() || new_cones.empty()) {
@@ -390,7 +390,7 @@ std::vector<New_cone_info> sort_cone_ids(const std::vector<Old_cone_info>& old_c
     }
 
     // Start from the last old cone observed
-    gstam::Point2 current = old_cones.back().local_cone_pos;
+    Point2 current = old_cones.back().local_cone_pos;
 
     std::vector<bool> used(new_cones.size(), false);
     int remaining = new_cones.size();
