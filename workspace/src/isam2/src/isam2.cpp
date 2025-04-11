@@ -376,6 +376,56 @@ void slamISAM::update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_
 }
 
 /**
+ * @brief Sort the cone ids by order in which the car sees the cones
+ * 
+ * @param old_cones: vector of old cones
+ * @param new_cones: vector of new cones
+ * @param n_landmarks: number of cones we have seen
+ */
+std::vector<New_cone_info> sort_cone_ids(const std::vector<Old_cone_info>& old_cones, std::vector<New_cone_info>& new_cones) {
+    std::vector<New_cone_info> ordered;
+
+    if (old_cones.empty() || new_cones.empty()) {
+        return ordered;
+    }
+
+    // Start from the last old cone observed
+    gstam::Point2 current = old_cones.back().local_cone_pos;
+
+    std::vector<bool> used(new_cones.size(), false);
+    int remaining = new_cones.size();
+
+    while (remaining > 0) {
+        double best_dist = DBL_MAX;
+        int best_idx = -1;
+        
+        for (int i=0; i<new_cones.size(); ++i) {
+            if (used[i]) {
+                continue;
+            }
+            double dist = (new_cones[i].local_cone_pos - current).norm();
+
+            if (dist < best_dist) {
+                best_dist = dist;
+                best_idx = i;
+            }
+        }
+
+        if (best_idx == -1) {
+            break;
+        }
+
+        // Add the closest unassigned cone to the ordered list
+        ordered.push_back(new_cones[best_idx]);
+        current = new_cones[best_idx].local_cone_pos;
+        used[best_idx] = true;
+        --remaining;
+    }
+
+    return ordered;
+}
+
+/**
  * @brief Processes odometry information and cone information 
  * to perform an update step on the SLAM model. 
  * 
@@ -480,6 +530,10 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         RCLCPP_INFO(logger.value(), "\tData association time: %ld", dur_DA.count());
     }
 
+    // Order the cones by relative distance
+    std::vector<New_cone_info> ordered_blue_new = sort_cone_ids(blue_old_cones, blue_new_cones);
+    std::vector<New_cone_info> ordered_yellow_new = sort_cone_ids(yellow_old_cones, yellow_new_cones);
+
     /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
     if (!loop_closure)
     {
@@ -488,10 +542,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         int old_blue_n_landmarks = blue_n_landmarks;
         int old_yellow_n_landmarks = yellow_n_landmarks;
 
-        update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, ConeColor::Blue, cur_pose);
-        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, ConeColor::Yellow, cur_pose);
-
-
+        update_landmarks(blue_old_cones, ordered_blue_new, blue_n_landmarks, ConeColor::Blue, cur_pose);
+        update_landmarks(yellow_old_cones, ordered_yellow_new, yellow_n_landmarks, ConeColor::Yellow, cur_pose);
 
         /* Updating slam_est and slam_mcov vectors with the old cone information */         
         std::pair<int, int> blue_lo_and_hi = update_slam_est_and_mcov_with_old(blue_old_cones, 
