@@ -73,20 +73,7 @@ private:
 
     static gtsam::Symbol YELLOW_L(int cone_pose_id);
 
-    /* Assoc_Args common arguments */
-    std::vector<Point2> cone_obs_blue;
-    std::vector<Point2> cone_obs_yellow;
-
-    Eigen::MatrixXd blue_global_cone_x;
-    Eigen::MatrixXd blue_global_cone_y;
-
-    Eigen::MatrixXd yellow_global_cone_x;
-    Eigen::MatrixXd yellow_global_cone_y;
-
-    Eigen::MatrixXd blue_bearing;
-    Eigen::MatrixXd yellow_bearing;
-
-    Pose2 global_odom;
+    gtsam::Pose2 global_odom;
 
     std::vector<double> m_dist;
 
@@ -102,7 +89,9 @@ private:
     std::vector<gtsam::Point2> yellow_slam_est;
     std::vector<Eigen::MatrixXd> yellow_slam_mcov;
 
-    int checkpoint_to_update_beginning;
+    std::size_t checkpoint_to_update_beginning;
+    std::size_t blue_checkpoint_id;
+    std::size_t yellow_checkpoint_id;
 
 public:
     high_resolution_clock::time_point start;
@@ -155,7 +144,7 @@ public:
                                     std::vector<gtsam::Point2>& color_slam_est, 
                                     std::vector<Eigen::MatrixXd>& color_slam_mcov, gtsam::Symbol(*cone_key)(int));
 
-    void cone_proximity_updates(int lowest_id, int highest_id, int n_landmarks,
+    void cone_proximity_updates(std::size_t pivot, std::size_t n_landmarks,
                                     std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                                     gtsam::Symbol (*cone_key)(int));
 
@@ -167,4 +156,6 @@ public:
                           std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                           gtsam::Symbol(*cone_key)(int));
     void print_estimates();
+
+    void stability_update(bool sliding_window);
 };

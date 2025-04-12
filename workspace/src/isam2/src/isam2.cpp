@@ -279,26 +279,16 @@ int slamISAM::update_landmarks(const std::vector<Old_cone_info> &old_cones,
     return n_landmarks;
 }
 
-void slamISAM::cone_proximity_updates(int lowest_id, int highest_id, int n_landmarks,
+void slamISAM::cone_proximity_updates(std::size_t pivot, std::size_t n_landmarks,
                                     std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                                     gtsam::Symbol (*cone_key)(int)) {
 
-    for (int i = std::max(lowest_id - LOOK_RADIUS, 0); i < std::min(lowest_id + LOOK_RADIUS, n_landmarks); i++) {
+    for (std::size_t i = std::max(pivot - LOOK_RADIUS, 0uz); i < std::min(pivot + LOOK_RADIUS, n_landmarks); i++) {
         gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
         color_slam_est.at(i) = updated_est;
     }
 
-    for (int i = std::max(highest_id - LOOK_RADIUS, 0); i < std::min(highest_id + LOOK_RADIUS, n_landmarks); i++) {
-        gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
-        color_slam_est.at(i) = updated_est;
-    }
-
-    for (int i = std::max(lowest_id - LOOK_RADIUS, 0); i < std::min(lowest_id + LOOK_RADIUS, n_landmarks); i++) {
-        Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
-        color_slam_mcov.at(i) = updated_mcov;
-    }
-
-    for (int i = std::max(highest_id - LOOK_RADIUS, 0); i < std::min(highest_id + LOOK_RADIUS, n_landmarks); i++) {
+    for (std::size_t i = std::max(pivot- LOOK_RADIUS, 0uz); i < std::min(pivot + LOOK_RADIUS, n_landmarks); i++) {
         Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
         color_slam_mcov.at(i) = updated_mcov;
     }
@@ -328,6 +318,7 @@ std::pair<int, int> slamISAM::update_slam_est_and_mcov_with_old(std::vector<Old_
         Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(curr.min_id));
         color_slam_mcov.at(curr.min_id) = updated_mcov;
     }                                     
+    assert(highest_id >= 0 && lowest_id < std::max(blue_n_landmarks, yellow_n_landmarks));
     std::pair<int, int> lo_and_hi(lowest_id, highest_id);
     return lo_and_hi;
 }
@@ -364,11 +355,38 @@ void slamISAM::update_beginning(std::vector<gtsam::Point2>& color_slam_est,
                                                     std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                                                     gtsam::Symbol(*cone_key)(int)) {
     for (int i = 0; i < UPDATE_START_N; i++) {
-        color_slam_est.at(i) = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
+        color_slam_est.at(i) = isam2.calculateEstimate(cone_key(i)).cast<gtsam::Point2>();
     }
 
     for (int i = 0; i < UPDATE_START_N; i++) {
         color_slam_mcov.at(i) = isam2.marginalCovariance(cone_key(i));
+    }
+}
+
+/** 
+ * @brief Performs a series of updates, either over the entire map,  
+ * over the cones at the beginning, or in a sliding window approach. 
+ * 
+ * @param sliding_window A flag to decide whether to update the 
+ * landmarks in a sliding window approach, or to only update the 
+ * landmarks at the beginning
+ */
+void slamISAM::stability_update(bool sliding_window) {
+    /* For numerical stability */
+    if (!(blue_n_landmarks >= MIN_CONES_UPDATE_ALL && yellow_n_landmarks >= MIN_CONES_UPDATE_ALL)) {
+        update_all_est_mcov(blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+        update_all_est_mcov(yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+    } else {
+        if (sliding_window) {
+            cone_proximity_updates(blue_checkpoint_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L); 
+            cone_proximity_updates(yellow_checkpoint_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L); 
+            blue_checkpoint_id = (blue_checkpoint_id + WINDOW_UPDATE) % (blue_n_landmarks - WINDOW_UPDATE);
+            yellow_checkpoint_id = (yellow_checkpoint_id + WINDOW_UPDATE) % (yellow_n_landmarks - WINDOW_UPDATE);
+        } else if (blue_n_landmarks > checkpoint_to_update_beginning && yellow_n_landmarks > checkpoint_to_update_beginning) {
+            update_beginning(blue_slam_est, blue_slam_mcov, BLUE_L);
+            update_beginning(yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+            checkpoint_to_update_beginning += UPDATE_START_N;
+        }
     }
 }
 
@@ -461,14 +479,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
         auto start_DA = high_resolution_clock::now();
         /* For numerical stability */
-        if (!(blue_n_landmarks >= MIN_CONES_UPDATE_ALL && yellow_n_landmarks >= MIN_CONES_UPDATE_ALL)) {
-            update_all_est_mcov(blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-            update_all_est_mcov(yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
-        } else if (blue_n_landmarks > checkpoint_to_update_beginning && yellow_n_landmarks > checkpoint_to_update_beginning) {
-            update_beginning(blue_slam_est, blue_slam_mcov, BLUE_L);
-            update_beginning(yellow_slam_est, yellow_slam_mcov, YELLOW_L);
-            checkpoint_to_update_beginning += UPDATE_START_N;
-        }
+        stability_update(false); 
         
         data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
                             cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
@@ -507,8 +518,10 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
             /* Extra updates */
-            cone_proximity_updates(lowest_blue_id, highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-            cone_proximity_updates(lowest_yellow_id, highest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+            cone_proximity_updates(lowest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+            cone_proximity_updates(highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+            cone_proximity_updates(lowest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+            cone_proximity_updates(highest_yellow_id,yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
         }
 
         auto end_update_landmarks = high_resolution_clock::now();

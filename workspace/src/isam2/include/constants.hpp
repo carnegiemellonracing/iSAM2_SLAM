@@ -114,3 +114,4 @@ const int LOOK_RADIUS = 20;
 const int MIN_CONES_UPDATE_ALL = 100;
 const int UPDATE_START_AFTER_N = 50;
 const int UPDATE_START_N = 30;
+constexpr int WINDOW_UPDATE = 30;
