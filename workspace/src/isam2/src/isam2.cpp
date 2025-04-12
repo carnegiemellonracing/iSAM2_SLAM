@@ -438,8 +438,6 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
 
-    // std::ostringstream ss;
-    // ss << "\tUpdate_poses time: {}" << dur_update_poses.count();
     log_string(logger, fmt::format("\tUpdate_poses time: {}", dur_update_poses.count()) , true);
     
 
@@ -479,7 +477,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
         auto start_DA = high_resolution_clock::now();
         /* For numerical stability */
-        stability_update(false); 
+        if (blue_n_landmarks + yellow_n_landmarks > 0) {
+            stability_update(true); 
+        }
         
         data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
                             cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
@@ -523,7 +523,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             cone_proximity_updates(lowest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
             cone_proximity_updates(highest_yellow_id,yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
         }
-
+        stability_update(true);
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
 
@@ -536,17 +536,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     /* Logging estimates for visualization */
     auto start_vis_setup = high_resolution_clock::now();
-    ofstream ofs;
-    
-    ofs.open(ESTIMATES_FILE, std::ofstream::out | std::ofstream::trunc);
-    streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    cout.rdbuf(ofs.rdbuf());
-
-    auto estimate = isam2.calculateEstimate();
-    estimate.print("Estimate:");
-
-    ofs.close();
-    cout.rdbuf(coutbuf); //reset to standard output again
+    print_estimates();
     auto end_vis_setup = high_resolution_clock::now();
     auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
 
@@ -563,9 +553,31 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
                         pose_num - 1, blue_n_landmarks, yellow_n_landmarks), DEBUG_STEP);
 }
 
+
+
 void slamISAM::print_estimates() {
-    auto estimate = isam2.calculateEstimate();
-    estimate.print("Estimate:");
+    ofstream ofs;
+    
+    ofs.open(ESTIMATES_FILE, std::ofstream::out | std::ofstream::trunc);
+    streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+    cout.rdbuf(ofs.rdbuf());
+
+    for (std::size_t i = 0; i < blue_n_landmarks; i++) {
+        gtsam::Point2 blue_cone = blue_slam_est.at(i);
+        std::cout << "Value b:" << blue_cone.x() << ":" << blue_cone.y() << std::endl;
+    }
+    
+    for (std::size_t i = 0; i < yellow_n_landmarks; i++) {
+        gtsam::Point2 yellow_cone = yellow_slam_est.at(i);
+        std::cout << "Value y:" << yellow_cone.x() << ":" << yellow_cone.y() << std::endl;
+    }
+
+    for (std::size_t i = 0; i < pose_num; i++) {
+        gtsam::Pose2 cur_pose = isam2.calculateEstimate(X(i)).cast<gtsam::Pose2>();
+        std::cout << "Value x:" << cur_pose.x() << ":" << cur_pose.y() << std::endl;
+    }
+    ofs.close();
+    cout.rdbuf(coutbuf); //reset to standard output again
 }
 
 

@@ -110,8 +110,8 @@ const std::string VEHICLE_POS_TOPIC = "/filter/pose";
 const std::string VEHICLE_ANGLE_TOPIC = "/filter/quaternion";
 const std::string VEHICLE_VEL_TOPIC = "/filter/twist";
 
-const int LOOK_RADIUS = 20;
-const int MIN_CONES_UPDATE_ALL = 100;
+const int LOOK_RADIUS = 10;
+const int MIN_CONES_UPDATE_ALL = 120;
 const int UPDATE_START_AFTER_N = 50;
 const int UPDATE_START_N = 30;
-constexpr int WINDOW_UPDATE = 30;
+constexpr int WINDOW_UPDATE = 20;

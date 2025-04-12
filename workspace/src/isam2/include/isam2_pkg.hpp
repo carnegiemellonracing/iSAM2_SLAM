@@ -96,8 +96,8 @@ private:
 public:
     high_resolution_clock::time_point start;
     high_resolution_clock::time_point end;
-    int blue_n_landmarks;
-    int yellow_n_landmarks;
+    std::size_t blue_n_landmarks;
+    std::size_t yellow_n_landmarks;
 
     bool heuristic_run;
 

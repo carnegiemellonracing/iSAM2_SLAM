@@ -6,11 +6,8 @@ import pdb
 
 # Constants
 BLUE_LANDMARK_INDIC = "Value b"
-NEXT_INDIC_FROM_BLUE = 6
 YELLOW_LANDMARK_INDIC = "Value y"
-NEXT_INDIC_FROM_YELLOW = 6
 POSE_INDIC = "Value x"
-NEXT_INDIC_FROM_POSE = 3
 
 fig = plt.figure()
 plt.ion()
@@ -51,38 +48,35 @@ while run:
             line = line.strip()
             indic = line[0:7]
             if indic == BLUE_LANDMARK_INDIC:
-                x_line = lines[idx + 2].strip()
-                x = (float) (x_line[0:len(x_line) - 1])
-                y_line = lines[idx+3].strip()
-                y = (float) (y_line[0:])
+                first_colon_idx = line.find(':')
+                second_colon_idx = line.find(':', first_colon_idx + 1)
+                x = (float) (line[first_colon_idx + 1:second_colon_idx])
+                y = (float) (line[second_colon_idx + 1:])
 
                 blue_landmarks_x = np.append(blue_landmarks_x, x)
                 blue_landmarks_y = np.append(blue_landmarks_y, y)
 
-                idx += NEXT_INDIC_FROM_BLUE
 
             elif indic == YELLOW_LANDMARK_INDIC:
-                x_line = lines[idx + 2].strip()
-                x = (float) (x_line[0:len(x_line) - 1])
-                y_line = lines[idx+3].strip()
-                y = (float) (y_line[0:])
+                first_colon_idx = line.find(':')
+                second_colon_idx = line.find(':', first_colon_idx + 1)
+                x = (float) (line[first_colon_idx + 1:second_colon_idx])
+                y = (float) (line[second_colon_idx + 1:])
 
                 yellow_landmarks_x = np.append(yellow_landmarks_x, x)
                 yellow_landmarks_y = np.append(yellow_landmarks_y, y)
 
-                idx += NEXT_INDIC_FROM_YELLOW
 
             elif indic == POSE_INDIC:
-                data_line = lines[idx + 1].strip()
-                first_comma_index = data_line.find(',')
-                second_comma_index = data_line.find(',', first_comma_index + 1)
-                x = (float)(data_line[1: first_comma_index])
-                y = (float)(data_line[first_comma_index + 2:second_comma_index])
+                first_colon_idx = line.find(':')
+                second_colon_idx = line.find(':', first_colon_idx + 1)
+                x = (float) (line[first_colon_idx + 1:second_colon_idx])
+                y = (float) (line[second_colon_idx + 1:])
 
                 pose_x = np.append(pose_x, x)
                 pose_y = np.append(pose_y, y)
 
-                idx += NEXT_INDIC_FROM_POSE
+            idx += 1
 
 
 
