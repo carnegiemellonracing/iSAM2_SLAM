@@ -14,10 +14,10 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
     graph = gtsam::NonlinearFactorGraph();
     values = gtsam::Values();
 
-    pose_num = 0;
+    pose_num = 0uz;
     first_pose_added = false;
-    blue_n_landmarks = 0;
-    yellow_n_landmarks = 0;
+    blue_n_landmarks = 0uz;
+    yellow_n_landmarks = 0uz;
 
 
     
@@ -522,6 +522,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             cone_proximity_updates(highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
             cone_proximity_updates(lowest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
             cone_proximity_updates(highest_yellow_id,yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+
+            cone_proximity_updates(blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+            cone_proximity_updates(yellow_n_landmarks,yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
         }
         stability_update(true);
         auto end_update_landmarks = high_resolution_clock::now();

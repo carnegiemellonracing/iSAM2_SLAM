@@ -6,14 +6,8 @@ constexpr bool DEBUG_POSES = true;
 constexpr bool DEBUG_STEP = true;
 constexpr bool DEBUG_VIZ = true;
 
-
-
-
-
-
-
 const std::string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
-const bool EUFS_SIM_SETTINGS = false;
+constexpr bool EUFS_SIM_SETTINGS = false;
 /* Bearing and range error
 * Corresponds to the usage of the BearingRangeFactor we are using
 *
@@ -33,8 +27,8 @@ const bool EUFS_SIM_SETTINGS = false;
 * std.dev_{u} = 0.0424 -> changed to 0.03
 * 
 */
-const double BEARING_STD_DEV = 0.00045;
-const double RANGE_STD_DEV = 0.03;
+constexpr double BEARING_STD_DEV = 0.00045;
+constexpr double RANGE_STD_DEV = 0.03;
 
 
 /* Go from 1 pose to another pose
@@ -50,9 +44,9 @@ const double RANGE_STD_DEV = 0.03;
 * changed to 0.009 degrees (Must convert to radians)
 */
 
-const double IMU_X_STD_DEV = 0.22;
-const double IMU_Y_STD_DEV = 0.22;
-const double IMU_HEADING_STD_DEV = 0.00015707963;
+constexpr double IMU_X_STD_DEV = 0.22;
+constexpr double IMU_Y_STD_DEV = 0.22;
+constexpr double IMU_HEADING_STD_DEV = 0.00015707963;
 
 
 
@@ -67,40 +61,40 @@ const double IMU_HEADING_STD_DEV = 0.00015707963;
 * so we are using std.dev = 0.01
 * 
 */
-const double GPS_X_STD_DEV = 0.01;
-const double GPS_Y_STD_DEV = 0.01;
+constexpr double GPS_X_STD_DEV = 0.01;
+constexpr double GPS_Y_STD_DEV = 0.01;
 
 
 /***** EUFS_SIM ******/
-const double EUFS_SIM_RANGE_STD_DEV = 0.0;
-const double EUFS_SIM_BEARING_STD_DEV = 0.0;
-const double EUFS_SIM_IMU_X_STD_DEV = 0.0;
-const double EUFS_SIM_IMU_Y_STD_DEV = 0.0;
-const double EUFS_SIM_IMU_HEADING_STD_DEV = 0.0;
-const double EUFS_SIM_GPS_X_STD_DEV = 0.0;
-const double EUFS_SIM_GPS_Y_STD_DEV = 0.0;
+constexpr double EUFS_SIM_RANGE_STD_DEV = 0.0;
+constexpr double EUFS_SIM_BEARING_STD_DEV = 0.0;
+constexpr double EUFS_SIM_IMU_X_STD_DEV = 0.0;
+constexpr double EUFS_SIM_IMU_Y_STD_DEV = 0.0;
+constexpr double EUFS_SIM_IMU_HEADING_STD_DEV = 0.0;
+constexpr double EUFS_SIM_GPS_X_STD_DEV = 0.0;
+constexpr double EUFS_SIM_GPS_Y_STD_DEV = 0.0;
 
 /***** CONTROLS SIM ******/
-const double CONTROLS_BEARING_STD_DEV = 0.00045;
-const double CONTROLS_RANGE_STD_DEV = 0.03;
-const double CONTROLS_IMU_X_STD_DEV = 0.22;
-const double CONTROLS_IMU_Y_STD_DEV = 0.22;
-const double CONTROLS_IMU_HEADING_STD_DEV = 0.00872665;
-const double CONTROLS_GPS_X_STD_DEV = 0.01;
-const double CONTROLS_GPS_Y_STD_DEV = 0.01;
+constexpr double CONTROLS_BEARING_STD_DEV = 0.00045;
+constexpr double CONTROLS_RANGE_STD_DEV = 0.03;
+constexpr double CONTROLS_IMU_X_STD_DEV = 0.22;
+constexpr double CONTROLS_IMU_Y_STD_DEV = 0.22;
+constexpr double CONTROLS_IMU_HEADING_STD_DEV = 0.00872665;
+constexpr double CONTROLS_GPS_X_STD_DEV = 0.01;
+constexpr double CONTROLS_GPS_Y_STD_DEV = 0.01;
 
-const long SEC_TO_NANOSEC = 1e9;
-const double IMU_OFFSET = 0.3; //meters; offset from the center of the car
-const double LIDAR_OFFSET = 0.3; //meters; offset from the center of the car
-const double MAX_CONE_RANGE = 15;
-const double TURNING_MAX_CONE_RANGE = 15;
-const double VELOCITY_MOVING_TH = 0.1; //meters per second
-const double TURNING_TH = 0.2;
+constexpr long SEC_TO_NANOSEC = 1e9;
+constexpr double IMU_OFFSET = 0.3; //meters; offset from the center of the car
+constexpr double LIDAR_OFFSET = 0.3; //meters; offset from the center of the car
+constexpr double MAX_CONE_RANGE = 15;
+constexpr double TURNING_MAX_CONE_RANGE = 15;
+constexpr double VELOCITY_MOVING_TH = 0.1; //meters per second
+constexpr double TURNING_TH = 0.2;
 
-const double DIST_FROM_START_LC_TH = 5; //meters; distance from the start for loop closure detection
+constexpr double DIST_FROM_START_LC_TH = 5; //meters; distance from the start for loop closure detection
 
-const double M_DIST_TH = 0.0009;
-const double TURNING_M_DIST_TH = 0.0009;
+constexpr double M_DIST_TH = 0.0009;
+constexpr double TURNING_M_DIST_TH = 0.0009;
 
 
 const std::string STEP_INPUT_FILE = "src/isam2/data/step_input.txt";
@@ -110,8 +104,8 @@ const std::string VEHICLE_POS_TOPIC = "/filter/pose";
 const std::string VEHICLE_ANGLE_TOPIC = "/filter/quaternion";
 const std::string VEHICLE_VEL_TOPIC = "/filter/twist";
 
-const int LOOK_RADIUS = 10;
-const int MIN_CONES_UPDATE_ALL = 120;
-const int UPDATE_START_AFTER_N = 50;
-const int UPDATE_START_N = 30;
-constexpr int WINDOW_UPDATE = 20;
+constexpr int LOOK_RADIUS = 15;
+constexpr int MIN_CONES_UPDATE_ALL = 90;
+constexpr int UPDATE_START_AFTER_N = 50;
+constexpr int UPDATE_START_N = 30;
+constexpr int WINDOW_UPDATE = 5;

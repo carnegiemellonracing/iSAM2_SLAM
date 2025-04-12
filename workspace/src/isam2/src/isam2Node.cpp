@@ -216,6 +216,20 @@ public:
         this->declare_parameter<double>("yaml_gps_x_std_dev", GPS_X_STD_DEV);
         this->declare_parameter<double>("yaml_gps_y_std_dev", GPS_Y_STD_DEV);
 
+        this->declare_parameter<int>("yaml_look_radius", LOOK_RADIUS);
+        this->declare_parameter<int>("yaml_min_cones_update_all", MIN_CONES_UPDATE_ALL);
+        this->declare_parameter<int>("yaml_window_update", WINDOW_UPDATE);
+        this->declare_parameter<double>("yaml_imu_offset", IMU_OFFSET); //meters; offset from the center of the car
+        this->declare_parameter<double>("yaml_lidar_offset", LIDAR_OFFSET); //meters; offset from the center of the car
+        this->declare_parameter<double>("yaml_max_cone_range", MAX_CONE_RANGE);
+        this->declare_parameter<double>("yaml_turning_max_cone_range", TURNING_MAX_CONE_RANGE);
+        this->declare_parameter<double>("yaml_velocity_moving_th", VELOCITY_MOVING_TH); //meters per second
+        this->declare_parameter<double>("yaml_turning_th", TURNING_TH);
+        this->declare_parameter<double>("yaml_dist_from_start_lc_th", DIST_FROM_START_LC_TH); //meters; distance from the start for loop closure detection
+        this->declare_parameter<double>("yaml_m_dist_th", M_DIST_TH);
+        this->declare_parameter<double>("yaml_turning_m_dist_th", TURNING_M_DIST_TH);
+
+
 
         const rmw_qos_profile_t best_effort_profile = {
             RMW_QOS_POLICY_HISTORY_KEEP_LAST,
@@ -263,6 +277,18 @@ public:
                             this->get_parameter("yaml_imu_heading_std_dev").as_double(),
                             this->get_parameter("yaml_gps_x_std_dev").as_double(),
                             this->get_parameter("yaml_gps_y_std_dev").as_double(),
+                            this->get_parameter("yaml_look_radius").as_int(),
+                            this->get_parameter("yaml_min_cones_update_all").as_int(),
+                            this->get_parameter("yaml_window_update").as_int(),
+                            this->get_parameter("yaml_imu_offset").as_double(), //meters; offset from the center of the car
+                            this->get_parameter("yaml_lidar_offset").as_double(), //meters; offset from the center of the car
+                            this->get_parameter("yaml_max_cone_range").as_double(),
+                            this->get_parameter("yaml_turning_max_cone_range").as_double(),
+                            this->get_parameter("yaml_velocity_moving_th").as_double(), //meters per second
+                            this->get_parameter("yaml_turning_th").as_double(),
+                            this->get_parameter("yaml_dist_from_start_lc_th").as_double(), //meters; distance from the start for loop closure detection
+                            this->get_parameter("yaml_m_dist_th").as_double(),
+                            this->get_parameter("yaml_turning_m_dist_th").as_double()
                             };
         } 
         slam_instance = slamISAM(this->get_logger(), noise_inputs);

@@ -42,6 +42,18 @@ struct NoiseInputs {
     double yaml_imu_heading_std_dev;
     double yaml_gps_x_std_dev;
     double yaml_gps_y_std_dev;
+    int yaml_look_radius;
+    int yaml_min_cones_update_all;
+    int yaml_window_update;
+    double yaml_imu_offset;
+    double yaml_lidar_offset;
+    double yaml_max_cone_range;
+    double yaml_turning_max_cone_range;
+    double yaml_velocity_moving_th;
+    double yaml_turning_th;
+    double yaml_dist_from_start_lc_th;
+    double yaml_m_dist_th;
+    double yaml_turning_m_dist_th;
 };
 
 enum class RunSettings {
@@ -64,7 +76,7 @@ private:
     NonlinearFactorGraph graph;
     Values values;
 
-    int pose_num = 0;
+    std::size_t pose_num;
     bool first_pose_added = false;
 
     static gtsam::Symbol X(int robot_pose_id);
