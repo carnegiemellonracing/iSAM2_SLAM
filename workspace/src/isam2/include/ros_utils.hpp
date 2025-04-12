@@ -26,7 +26,7 @@
 #include <cmath>
 #include <chrono>
 #include <climits>
-
+#include <fmt/format.h>
 #include <gtsam/geometry/Point2.h>
 #include <gtsam/geometry/Pose2.h>
 #include "constants.hpp"
@@ -42,6 +42,8 @@ using std::placeholders::_3;
 using std::placeholders::_4;
 
 
+
+void log_string (std::optional<rclcpp::Logger> logger, std::string input_string, bool flag);
 
 void imu_axes_to_DV_axes(double &x, double &y);
 

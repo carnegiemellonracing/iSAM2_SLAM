@@ -9,6 +9,21 @@
  */
 #include "ros_utils.hpp"
 
+
+/**
+ * @brief This function cases on whether the logger exists and 
+ * uses it to print out the following string
+ * 
+ * @param logger An optional logger 
+ * @param input_string The input string to log
+ * @param flag A flag to determine whether to actually print the outputs
+ */
+void log_string (std::optional<rclcpp::Logger> logger, std::string input_string, bool flag) {
+    if (logger.has_value() && flag) {
+        RCLCPP_INFO(logger.value(), input_string.c_str());
+    }
+}
+
 /**
  * @brief Movella Xsens IMU uses y-left, x-forward axes. CMR DV uses y-forward
  * x-right axes. This function performs the conversion.

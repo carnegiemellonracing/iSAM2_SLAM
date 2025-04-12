@@ -144,9 +144,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
 
     if (pose_num == 0)
     {
-        if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "Processing first pose");
-        }
+        log_string(logger, "Processing first pose", DEBUG_POSES);
 
         PriorFactor<Pose2> prior_factor = PriorFactor<Pose2>(X(0),
                                                             global_odom, prior_model);
@@ -164,9 +162,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
         //Add orange cone left and right
         //hopefully it's only 2 cones
-        if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "Finished processing first pose");
-        }
+        log_string(logger, "Finished processing first pose", DEBUG_POSES);
     }
     else
     {
@@ -219,10 +215,10 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
  * 
  * @return: void
  */
-void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
-                                std::vector<New_cone_info> &new_cones,
-                                int &n_landmarks, ConeColor color,
-                                Pose2 &cur_pose)
+int slamISAM::update_landmarks(const std::vector<Old_cone_info> &old_cones,
+                                const std::vector<New_cone_info> &new_cones,
+                                int n_landmarks,
+                                gtsam::Pose2 &cur_pose, gtsam::Symbol (*cone_key)(int))
 {
 
     /* Bearing range factor will need
@@ -243,17 +239,7 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
         double r = norm2(cone_pos_car_frame);
 
 
-        gtsam::Symbol landmark_symbol;
-
-        switch (color) {
-            case ConeColor::Blue:
-                landmark_symbol = BLUE_L(min_id);
-                break;
-            case ConeColor::Yellow:
-                landmark_symbol = YELLOW_L(min_id);
-                break;
-        }
-
+        gtsam::Symbol landmark_symbol = cone_key(min_id);
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), landmark_symbol,
                                                     b,
                                                     r,
@@ -271,15 +257,7 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
 
         Point2 cone_global_frame = (new_cones.at(n).global_cone_pos);
 
-        gtsam::Symbol landmark_symbol;
-        switch (color) {
-            case ConeColor::Blue:
-                landmark_symbol = BLUE_L(n_landmarks);
-                break;
-            case ConeColor::Yellow:
-                landmark_symbol = YELLOW_L(n_landmarks);
-                break;
-        }
+        gtsam::Symbol landmark_symbol = cone_key(n_landmarks);
         graph.add(BearingRangeFactor<Pose2, Point2>(X(pose_num), landmark_symbol,
                                                     b,
                                                     r,
@@ -298,6 +276,7 @@ void slamISAM::update_landmarks(std::vector<Old_cone_info> &old_cones,
 
     graph.resize(0); // Not resizing your graph will result in long update times
     values.clear();
+    return n_landmarks;
 }
 
 void slamISAM::cone_proximity_updates(int lowest_id, int highest_id, int n_landmarks,
@@ -416,15 +395,12 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     {
         auto start_step  = high_resolution_clock::now();
         auto dur_betw_step = duration_cast<milliseconds>(start_step - start);
-        if (logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "--------End of prev step. Time between step calls: %ld--------\n\n", dur_betw_step.count());
-        }
+        log_string(logger, fmt::format("--------End of prev step. Time between step calls: {}--------\n\n", dur_betw_step.count()), DEBUG_STEP);
     }
 
     start = high_resolution_clock::now();
-    if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "--------Start of SLAM Step--------");
-    }
+    
+    log_string(logger, "--------Start of SLAM Step--------", DEBUG_STEP);
 
     Pose2 cur_pose = Pose2(0, 0, 0);
     Pose2 prev_pose = Pose2(0, 0, 0);
@@ -444,9 +420,10 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     auto end_update_poses = high_resolution_clock::now();
     auto dur_update_poses = duration_cast<milliseconds>(end_update_poses - start_update_poses);
 
-    if(logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "\tUpdate_poses time: %ld", dur_update_poses.count());
-    }
+    // std::ostringstream ss;
+    // ss << "\tUpdate_poses time: {}" << dur_update_poses.count();
+    log_string(logger, fmt::format("\tUpdate_poses time: {}", dur_update_poses.count()) , true);
+    
 
 
     /**** Perform loop closure ****/
@@ -465,9 +442,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     auto end_loop_closure = high_resolution_clock::now();
     auto dur_loop_closure = duration_cast<milliseconds>(end_loop_closure - start_loop_closure);
-    if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "\tLoop closure time: %ld", dur_loop_closure.count());
-    }
+    log_string(logger, fmt::format("\tLoop closure time: {}", dur_loop_closure.count()), DEBUG_STEP);
 
     if (loop_closure) {
         if (logger.has_value()) {
@@ -502,22 +477,17 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "\tData association time: %ld", dur_DA.count());
-        }
+        log_string(logger, fmt::format("\tData association time: {}", dur_DA.count()), DEBUG_STEP);
 
         auto start_update_landmarks = high_resolution_clock::now();
 
         int old_blue_n_landmarks = blue_n_landmarks;
         int old_yellow_n_landmarks = yellow_n_landmarks;
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "\t\tStarted updating isam2 model with new and old cones");
-        }
-        update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, ConeColor::Blue, cur_pose);
-        update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, ConeColor::Yellow, cur_pose);
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "\t\tFinished updating isam2 model with new and old cones");
-        }
+        log_string(logger, fmt::format("\t\tStarted updating isam2 model with new and old cones"), DEBUG_STEP);
+
+        blue_n_landmarks = update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, cur_pose, BLUE_L);
+        yellow_n_landmarks = update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, cur_pose, YELLOW_L);
+        log_string(logger, fmt::format("\t\tFinished updating isam2 model with new and old cones"), DEBUG_STEP);
 
 
         /* Updating slam_est and slam_mcov vectors with the old cone information */         
@@ -544,9 +514,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
 
-        if(logger.has_value()) {
-            RCLCPP_INFO(logger.value(), "\tUpdate_landmarks time: %ld", dur_update_landmarks.count());
-        }
+        log_string(logger, fmt::format("\tUpdate_landmarks time: {}", dur_update_landmarks.count()), DEBUG_STEP);
     }
 
     pose_num++;
@@ -569,23 +537,17 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
     auto end_vis_setup = high_resolution_clock::now();
     auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
 
-    if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "\tVis_setup time: %ld", dur_vis_setup.count());
-    } 
+    log_string(logger, fmt::format("\tVis_setup time: {}", dur_vis_setup.count()), DEBUG_VIZ);
 
     end = high_resolution_clock::now();
     
 
 
     auto dur_step_call = duration_cast<milliseconds>(end - start);
-    if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "\tSLAM run step | Step call time: %ld\n", dur_step_call.count());
-    }
+    log_string(logger, fmt::format("\tSLAM run step | Step call time: {}\n", dur_step_call.count()), DEBUG_STEP);
 
-    if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "\tpose_num: %d | blue_n_landmarks: %d | yellow_n_landmarks : %d", 
-                        pose_num - 1, blue_n_landmarks, yellow_n_landmarks);
-    }
+    log_string(logger, fmt::format("\tpose_num: {} | blue_n_landmarks: {} | yellow_n_landmarks : {}", 
+                        pose_num - 1, blue_n_landmarks, yellow_n_landmarks), DEBUG_STEP);
 }
 
 void slamISAM::print_estimates() {
