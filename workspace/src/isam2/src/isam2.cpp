@@ -6,6 +6,11 @@ using std::size_t;
 
 slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs> &yaml_noise_inputs) {
 
+    // Chunking 
+    all_chunks = {};
+    blue_cone_to_chunk = {};
+    yellow_cone_to_chunk = {};
+
     // Initializing SLAM Parameters
     parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
     parameters.setFactorization("QR");
@@ -518,6 +523,67 @@ std::vector<New_cone_info> slamISAM::sort_cone_ids(const std::vector<gtsam::Poin
     return ordered;
 }
 
+void slamISAM::write_chunk_data(const std::string& filename) {
+    std::ofstream file(filename);
+    // Write chunk boundaries
+    for (const auto& chunk : all_chunks) {
+        file << "CHUNK:" << chunk->bounds.first << "," 
+             << chunk->bounds.second << "\n";
+    }
+    // Write cone mappings
+    for (size_t i = 0; i < blue_cone_to_chunk.size(); ++i) {
+        file << "BLUE:" << i << ":" << blue_cone_to_chunk[i] << "\n";
+    }
+    for (size_t i = 0; i < yellow_cone_to_chunk.size(); ++i) {
+        file << "YELLOW:" << i << ":" << yellow_cone_to_chunk[i] << "\n";
+    }
+    file.close();
+}
+
+int slamISAM::identify_chunk(std::vector<Old_cone_info> &blue_old_cones,
+    std::vector<Old_cone_info> &yellow_old_cones) {
+    unordered_map<int, int> chunkID_to_vote = {};
+
+    // vote on behalf of blue cones! 
+    for (size_t i = 0; i < blue_old_cones.size(); i++) {
+        int cone_id = blue_old_cones.at(i).min_id;
+        int chunk_id = blue_cone_to_chunk[cone_id];
+
+        /* Check if the chunkID is already in the voting map */ 
+        if (chunkID_to_vote.find(chunk_id) != chunkID_to_vote.end()) {
+            chunkID_to_vote[chunk_id]++;
+        }
+        else {
+            chunkID_to_vote[chunk_id] = 1;
+        }
+    }
+
+    // vote on behalf of yellow cones! 
+    for (size_t i = 0; i < yellow_old_cones.size(); i++) {
+        int cone_id = yellow_old_cones.at(i).min_id;
+        int chunk_id = yellow_cone_to_chunk[cone_id];
+
+        /* Check if the chunkID is already in the voting map */ 
+        if (chunkID_to_vote.find(chunk_id) != chunkID_to_vote.end()) {
+            chunkID_to_vote[chunk_id]++;
+        }
+        else {
+            chunkID_to_vote[chunk_id] = 1;
+        }
+    }
+
+    // find max vote
+    int max_chunk_id = -1;
+    int max_votes = -1;
+    for (const std::pair<int, int>& chunkID_and_vote : chunkID_to_vote) {
+        if (chunkID_and_vote.second > max_votes) {
+            max_votes = chunkID_and_vote.second;
+            max_chunk_id = chunkID_and_vote.first;
+        }
+    }
+    return max_chunk_id;
+}
+
 /**
  * @brief Processes odometry information and cone information 
  * to perform an update step on the SLAM model. 
@@ -669,10 +735,79 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
         log_string(logger, fmt::format("\tUpdate_landmarks time: {}", dur_update_landmarks.count()), DEBUG_STEP);
     }
+    else {
+        /* Chunking section */
+        if (!completed_chunking) {
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "performing chunking");
+            }
+            /* This is a map from cone ID (the index) to chunk ID, the element*/
+            blue_cone_to_chunk.resize(blue_n_landmarks, 0);
+            yellow_cone_to_chunk.resize(yellow_n_landmarks, 0);
+
+            std::vector<std::tuple<double, double, int>> blue_cones;
+            std::vector<std::tuple<double, double, int>> yellow_cones;
+
+            for (int i = 0; i < blue_n_landmarks; i++) {
+                int id = i;
+                Point2 curr_cone = isam2.calculateEstimate(BLUE_L(id)).cast<Point2>();
+                blue_cones.emplace_back(curr_cone.x(),
+                                        curr_cone.y(),
+                                        id);
+            }
+
+            for (int i = 0; i < yellow_n_landmarks; i++) {
+                int id = i;
+                Point2 curr_cone = isam2.calculateEstimate(YELLOW_L(id)).cast<Point2>();
+                yellow_cones.emplace_back(curr_cone.x(),
+                                          curr_cone.y(),
+                                          id);
+            }
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "obtained estimates for chunking");
+            }
+            all_chunks = *generateChunks(blue_cones, yellow_cones);
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "finish chunking");
+            }
+            /* Process the chunks to create the map from cone_ids to chunk_ids*/
+            // make cone to chunk tables (for blue and yellow cones separately)
+            for (int chunk_id = 0; chunk_id < all_chunks.size(); chunk_id++)
+            {
+                Chunk *curr_chunk = all_chunks.at(chunk_id);
+
+                // blue cones
+                for (int j = 0; j < curr_chunk->blueConeIds.size(); j++)
+                {
+                    int cone_id = curr_chunk->blueConeIds.at(j);
+                    blue_cone_to_chunk.at(cone_id) = chunk_id;
+                }
+
+                // yellow cones
+                for (int j = 0; j < curr_chunk->yellowConeIds.size(); j++)
+                {
+                    int cone_id = curr_chunk->yellowConeIds.at(j);
+                    yellow_cone_to_chunk.at(cone_id) = chunk_id;
+                }
+            }
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "created cone to chunk map");
+            }
+
+            completed_chunking = true;
+            // Write chunk data for visualization
+            write_chunk_data("chunk_data.txt");
+        }
+        else {
+            assert(completed_chunking);
+            int cur_chunk_id = identify_chunk(blue_old_cones, yellow_old_cones);
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "Current chunk ID: %d",  cur_chunk_id);
+            }
+        }
+    }
 
     pose_num++;
-
-
 
     /* Logging estimates for visualization */
     auto start_vis_setup = high_resolution_clock::now();
@@ -684,16 +819,12 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     end = high_resolution_clock::now();
     
-
-
     auto dur_step_call = duration_cast<milliseconds>(end - start);
     log_string(logger, fmt::format("\tSLAM run step | Step call time: {}\n", dur_step_call.count()), DEBUG_STEP);
 
     log_string(logger, fmt::format("\tpose_num: {} | blue_n_landmarks: {} | yellow_n_landmarks : {}", 
                         pose_num - 1, blue_n_landmarks, yellow_n_landmarks), DEBUG_STEP);
 }
-
-
 
 void slamISAM::print_estimates() {
     ofstream ofs;

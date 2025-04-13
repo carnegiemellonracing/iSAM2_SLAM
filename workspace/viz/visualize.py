@@ -3,18 +3,43 @@ import matplotlib.pyplot as plt
 import time
 import copy
 import pdb
+import os
 
 # Constants
 BLUE_LANDMARK_INDIC = "Value b"
 YELLOW_LANDMARK_INDIC = "Value y"
 POSE_INDIC = "Value x"
+CHUNK_FILE = "../src/isam2/data/chunk_data.txt"
 
 fig = plt.figure()
 plt.ion()
 #plt.legend(loc='upper left')
 plt.show()
 run = True
+
+def load_chunks():
+    chunks=[]
+    cone_map = {'blue': {}, 'yellow': {}}
+    try:
+        if os.path.exists(CHUNK_FILE):
+            with open(CHUNK_FILE) as f:
+                for line in f:
+                    if line.startswith("CHUNK:"):
+                        parts = line.strip().split(':')[1].split(',')
+                        chunks.append((float(parts[0]), float(parts[1])))
+                    elif line.startswith("BLUE:"):
+                        _, cone_id, chunk_id = line.strip().split(':')
+                        cone_map['blue'][int(cone_id)] = int(chunk_id)
+                    elif line.startswith("YELLOW:"):
+                        _, cone_id, chunk_id = line.strip().split(':')
+                        cone_map['yellow'][int(cone_id)] = int(chunk_id)
+    except Exception as e:
+        pass
+    return chunks, cone_map
+
 while run:
+    chunks, cone_map = load_chunks()
+
     # with open('../src/isam2/saved_data/controls_sim_colored_cones_track.txt') as f:
     with open("../src/isam2/data/current_estimates.txt") as f:
         lines = f.readlines() # list containing lines of file
@@ -78,13 +103,32 @@ while run:
 
             idx += 1
 
-
-
         if (len(pose_x) > 0 ):
             print("finished reading")
+        
             scatter = plt.scatter(pose_x, pose_y, s=10, c='r', marker="x", label='pose')
-            scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=50, c='b', marker="o", label='landmark')
-            scatter3 = plt.scatter(yellow_landmarks_x, yellow_landmarks_y, s=50, c='y', marker="o", label='landmark')
+
+            if chunks:
+                for min_x, max_x in chunks:
+                    plt.axvspan(min_x, max_x, color='gray', alpha=0.1)
+
+            if chunks and blue_landmarks_x.size > 0:
+                cmap = plt.cm.get_cmap('tab10')
+                blue_colors = [cmap(cone_map['blue'].get(i, 0)%10) 
+                              for i in range(len(blue_landmarks_x))]
+            else:
+                blue_colors = 'b'
+                
+            scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=50, c=blue_colors, marker="o", label='landmark') 
+
+            if chunks and yellow_landmarks_x.size > 0:
+                cmap = plt.cm.get_cmap('tab10')
+                yellow_colors = [cmap(cone_map['yellow'].get(i, 0)%10)
+                                for i in range(len(yellow_landmarks_x))]
+            else:
+                yellow_colors = 'y'
+                
+            scatter3 = plt.scatter(yellow_landmarks_x, yellow_landmarks_y, s=50, c=yellow_colors, marker="o", label='landmark')
             
             # Display ID labels
             for i, (x, y) in enumerate(zip(blue_landmarks_x, blue_landmarks_y)):

@@ -94,6 +94,7 @@ private:
     std::size_t lap_count;
 
     Pose2 first_pose;
+    bool completed_chunking;
 
     std::vector<gtsam::Point2> blue_slam_est;
     std::vector<Eigen::MatrixXd> blue_slam_mcov;
@@ -110,6 +111,10 @@ public:
     high_resolution_clock::time_point end;
     std::size_t blue_n_landmarks;
     std::size_t yellow_n_landmarks;
+
+    std::vector<int> blue_cone_to_chunk;
+    std::vector<int> yellow_cone_to_chunk;
+    std::vector<Chunk*> all_chunks;
 
     bool heuristic_run;
 
@@ -139,6 +144,10 @@ public:
                                 Pose2 &cur_pose, gtsam::Symbol (*cone_key)(int));
 
     std::vector<New_cone_info> sort_cone_ids(const std::vector<gtsam::Point2> &color_slam_est, std::vector<New_cone_info> &new_cones);
+
+    void write_chunk_data(const std::string& filename);
+
+    int identify_chunk(std::vector<Old_cone_info> &blue_old_cones, std::vector<Old_cone_info> &yellow_old_cones);
 
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
@@ -171,5 +180,5 @@ public:
                           gtsam::Symbol(*cone_key)(int));
     void print_estimates();
 
-    void stability_update(bool sliding_window);
+    void stability_update(bool sliding_window); 
 };
