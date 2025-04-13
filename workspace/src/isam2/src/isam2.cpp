@@ -391,6 +391,134 @@ void slamISAM::stability_update(bool sliding_window) {
 }
 
 /**
+ * @brief Orders newly detected cones based on proximity and directional continuity with existing path
+ *
+ * Uses a greedy algorithm that prioritizes:
+ * - Closest cones first when starting
+ * - Combines distance (70% weight) and angular continuity (30% weight) for subsequent selections
+ *
+ * @param color_slam_est Existing ordered cones from SLAM estimation
+ * @param new_cones Newly detected cones to be sorted into path sequence
+ * @return Ordered cones for path continuity
+ */
+std::vector<New_cone_info> slamISAM::sort_cone_ids(const std::vector<gtsam::Point2> &color_slam_est, std::vector<New_cone_info> &new_cones) {
+    std::vector<New_cone_info> ordered;
+    gtsam::Point2 current;
+    double prev_angle;
+
+    // Starting position at origin if no previous position
+    if (color_slam_est.empty()) {
+        current = gtsam::Point2(0.0, 0.0);
+    }
+    else {
+        // Continue from last known cone position
+        current = color_slam_est.back();
+
+        // Calculate initial direction based on existing path
+        if (color_slam_est.size() >= 2) {
+            const auto &prev_point = color_slam_est[color_slam_est.size() - 2];
+            double dx = current.x() - prev_point.x();
+            double dy = current.y() - prev_point.y();
+            prev_angle = std::atan2(dy, dx);
+        }
+        else {
+            // Use direction from origin to single existing cone
+            prev_angle = std::atan2(current.y(), current.x());
+        }
+    }
+
+    // Handle empty case
+    if (new_cones.empty()) {
+        return ordered;
+    }
+
+    // Track used cones
+    std::vector<bool> used(new_cones.size(), false);
+    int remaining = new_cones.size();
+
+    while (remaining > 0) {
+        if (ordered.empty()) {
+            // First iteration: select closest to current
+            double best_dist = DBL_MAX;
+            int best_idx = -1;
+            for (int i = 0; i < new_cones.size(); ++i) {
+                if (used[i]) {
+                    continue;
+                }
+                double dist = (new_cones[i].local_cone_pos - current).norm();
+                if (dist < best_dist) {
+                    best_dist = dist;
+                    best_idx = i;
+                }
+            }
+            if (best_idx == -1) {
+                break;
+            }
+
+            ordered.push_back(new_cones[best_idx]);
+            used[best_idx] = true;
+            remaining--;
+
+            // Update current and prev_angle
+            current = new_cones[best_idx].local_cone_pos;
+            if (color_slam_est.empty()) {
+                // Starting from origin, prev_angle is from origin to first cone
+                prev_angle = std::atan2(current.y(), current.x());
+            }
+            else {
+                // prev_angle is from last old cone to first new cone
+                const auto &old_current = color_slam_est.back();
+                double dx = current.x() - old_current.x();
+                double dy = current.y() - old_current.y();
+                prev_angle = std::atan2(dy, dx);
+            }
+        }
+        else {
+            // Subsequent cones: select based on score
+            double min_score = DBL_MAX;
+            int best_idx = -1;
+            for (int i = 0; i < new_cones.size(); ++i) {
+                if (used[i]) {
+                    continue;
+                }
+                const auto &candidate = new_cones[i];
+                double dx = candidate.local_cone_pos.x() - current.x();
+                double dy = candidate.local_cone_pos.y() - current.y();
+                double distance = std::hypot(dx, dy);
+                double angle = std::atan2(dy, dx);
+                double angle_diff = std::abs(angle - prev_angle);
+                // Consider the smallest angle difference (acute angle)
+                angle_diff = std::min(angle_diff, 2 * M_PI - angle_diff);
+                double score = 0.7 * distance + 0.3 * angle_diff;
+
+                if (score < min_score){
+                    min_score = score;
+                    best_idx = i;
+                }
+            }
+            if (best_idx == -1) {
+                break;
+            }
+
+            ordered.push_back(new_cones[best_idx]);
+            used[best_idx] = true;
+            remaining--;
+
+            // Update current and prev_angle
+            const auto &new_cone_pos = new_cones[best_idx].local_cone_pos;
+            const auto &prev_cone_pos = ordered[ordered.size() - 2].local_cone_pos;
+            double new_dx = new_cone_pos.x() - prev_cone_pos.x();
+            double new_dy = new_cone_pos.y() - prev_cone_pos.y();
+            prev_angle = std::atan2(new_dy, new_dx);
+            current = new_cone_pos;
+        }
+    }
+
+    assert(ordered.size() == new_cones.size());
+    return ordered;
+}
+
+/**
  * @brief Processes odometry information and cone information 
  * to perform an update step on the SLAM model. 
  * 
@@ -490,14 +618,23 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
         log_string(logger, fmt::format("\tData association time: {}", dur_DA.count()), DEBUG_STEP);
 
+
+        /* Sort new cones with path-aware ordering */
+        auto start_sort = high_resolution_clock::now();
+        std::vector<New_cone_info> sorted_blue = sort_cone_ids(blue_slam_est, blue_new_cones);
+        std::vector<New_cone_info> sorted_yellow = sort_cone_ids(yellow_slam_est, yellow_new_cones);
+        auto end_sort = high_resolution_clock::now();
+        auto dur_sort = duration_cast<milliseconds>(end_sort - start_sort);
+        log_string(logger, fmt::format("\tSort time: {}", dur_sort.count()), DEBUG_STEP);
+
         auto start_update_landmarks = high_resolution_clock::now();
 
         int old_blue_n_landmarks = blue_n_landmarks;
         int old_yellow_n_landmarks = yellow_n_landmarks;
         log_string(logger, fmt::format("\t\tStarted updating isam2 model with new and old cones"), DEBUG_STEP);
 
-        blue_n_landmarks = update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, cur_pose, BLUE_L);
-        yellow_n_landmarks = update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, cur_pose, YELLOW_L);
+        blue_n_landmarks = update_landmarks(blue_old_cones, sorted_blue, blue_n_landmarks, cur_pose, BLUE_L);
+        yellow_n_landmarks = update_landmarks(yellow_old_cones, sorted_yellow, yellow_n_landmarks, cur_pose, YELLOW_L);
         log_string(logger, fmt::format("\t\tFinished updating isam2 model with new and old cones"), DEBUG_STEP);
 
 

@@ -138,6 +138,8 @@ public:
                                 int n_landmarks, 
                                 Pose2 &cur_pose, gtsam::Symbol (*cone_key)(int));
 
+    std::vector<New_cone_info> sort_cone_ids(const std::vector<gtsam::Point2> &color_slam_est, std::vector<New_cone_info> &new_cones);
+
     void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
                 std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
