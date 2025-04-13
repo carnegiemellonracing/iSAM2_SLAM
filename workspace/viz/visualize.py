@@ -83,8 +83,15 @@ while run:
         if (len(pose_x) > 0 ):
             print("finished reading")
             scatter = plt.scatter(pose_x, pose_y, s=10, c='r', marker="x", label='pose')
-            scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=10, c='b', marker="o", label='landmark')
-            scatter3 = plt.scatter(yellow_landmarks_x, yellow_landmarks_y, s=10, c='y', marker="o", label='landmark')
+            scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=50, c='b', marker="o", label='landmark')
+            scatter3 = plt.scatter(yellow_landmarks_x, yellow_landmarks_y, s=50, c='y', marker="o", label='landmark')
+            
+            # Display ID labels
+            for i, (x, y) in enumerate(zip(blue_landmarks_x, blue_landmarks_y)):
+                plt.text(x+0.2, y+0.2, str(i), color='orange', fontsize=8)
+            for i, (x, y) in enumerate(zip(yellow_landmarks_x, yellow_landmarks_y)):
+                plt.text(x+0.2, y+0.2, str(i), color='orange', fontsize=8)
+            
             print("plotting")
             plt.pause(1)
             scatter.remove()
