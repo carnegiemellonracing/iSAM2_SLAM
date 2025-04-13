@@ -10,8 +10,10 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <!-- <depend>interfaces</depend> -->
   <!-- <depend>std_msgs</depend> -->
+  <depend>imported_raceline_lib</depend>
   <depend>geometry_msgs</depend>
   <depend>interfaces</depend>
+  <depend>raceline</depend>
   <depend>sensor_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>

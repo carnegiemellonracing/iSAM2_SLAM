@@ -33,6 +33,7 @@
 #include "data_association.hpp"
 #include "unary_factor.hpp"
 #include "loop_closure.hpp"
+#include "racelineChunk.hpp"
 
 struct NoiseInputs {
     double yaml_bearing_std_dev;
