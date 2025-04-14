@@ -781,22 +781,41 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             }
             /* Process the chunks to create the map from cone_ids to chunk_ids*/
             // make cone to chunk tables (for blue and yellow cones separately)
+            if (logger.has_value()) {
+                RCLCPP_INFO(logger.value(), "Number of chunks: %d", all_chunks.size());
+            }
             for (int chunk_id = 0; chunk_id < all_chunks.size(); chunk_id++)
             {
                 Chunk *curr_chunk = all_chunks.at(chunk_id);
 
+                if (logger.has_value()) {
+                    RCLCPP_INFO(logger.value(), "processing chunk: %d", chunk_id);
+                }
                 // blue cones
                 for (int j = 0; j < curr_chunk->blueConeIds.size(); j++)
                 {
                     int cone_id = curr_chunk->blueConeIds.at(j);
+                    if (cone_id >= blue_cone_to_chunk.size()) {
+                        continue;
+                    }
                     blue_cone_to_chunk.at(cone_id) = chunk_id;
                 }
-
+                if (logger.has_value())
+                {
+                    RCLCPP_INFO(logger.value(), "\tsanity check 1");
+                }
                 // yellow cones
                 for (int j = 0; j < curr_chunk->yellowConeIds.size(); j++)
                 {
                     int cone_id = curr_chunk->yellowConeIds.at(j);
+                    if (cone_id >= yellow_cone_to_chunk.size()) {
+                        continue;
+                    }
                     yellow_cone_to_chunk.at(cone_id) = chunk_id;
+                }
+                if (logger.has_value())
+                {
+                    RCLCPP_INFO(logger.value(), "\tsanity check 2");
                 }
             }
             if (logger.has_value()) {

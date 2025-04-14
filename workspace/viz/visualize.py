@@ -111,52 +111,29 @@ while run:
         if (len(pose_x) > 0 ):
             print("finished reading")
 
+            # Create color arrays based on chunk membership
+            blue_colors = []
+            for i in range(len(blue_landmarks_x)):
+                chunk_id = cone_map['blue'].get(i, -1)
+                if chunk_id != -1:
+                    # Alternate colors based on chunk ID
+                    blue_colors.append('red' if chunk_id % 2 == 0 else 'orange')
+                else:
+                    blue_colors.append('b')  # Default blue for unchunked
+
+            yellow_colors = []
+            for i in range(len(yellow_landmarks_x)):
+                chunk_id = cone_map['yellow'].get(i, -1)
+                if chunk_id != -1:
+                    yellow_colors.append('red' if chunk_id % 2 == 0 else 'orange')
+                else:
+                    yellow_colors.append('y')  # Default yellow for unchunked
+
+            # Plot with chunk colors
             scatter = plt.scatter(pose_x, pose_y, s=10, c='r', marker="x", label='pose')
-
-            # Color blue cones according to their chunk's parity
-            if blue_landmarks_x.size > 0:
-                # Build a sorted list of unique chunk IDs from the blue cones
-                unique_blue_chunks = sorted(set(cone_map['blue'].values()))
-                blue_color_map = {}
-                for idx_chunk, chunk_id in enumerate(unique_blue_chunks):
-                    # Compute a fraction that spreads the colors across the colormap range
-                    frac = idx_chunk / (len(unique_blue_chunks) - 1) if len(unique_blue_chunks) > 1 else 0.5
-                    # Even chunk IDs: use Blues; odd chunk IDs: use YlOrBr
-                    if chunk_id % 2 == 0:
-                        base_color = plt.cm.Blues(frac)
-                    else:
-                        base_color = plt.cm.YlOrBr(frac)
-                    blue_color_map[chunk_id] = darken_color(base_color, factor=0.7)
-                # Assign colors for each blue cone using its corresponding chunk color
-                blue_colors = []
-                for i in range(len(blue_landmarks_x)):
-                    chunk_id = cone_map['blue'].get(i, 0)  # default to 0 if not found
-                    blue_colors.append(blue_color_map.get(chunk_id, 'b'))
-            else:
-                blue_colors = 'b'
-
-            scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=10, c=blue_colors, marker="o", label='landmark') 
-
-            # Color yellow cones according to their chunk's parity
-            if yellow_landmarks_x.size > 0:
-                unique_yellow_chunks = sorted(set(cone_map['yellow'].values()))
-                yellow_color_map = {}
-                for idx_chunk, chunk_id in enumerate(unique_yellow_chunks):
-                    frac = idx_chunk / (len(unique_yellow_chunks) - 1) if len(unique_yellow_chunks) > 1 else 0.5
-                    if chunk_id % 2 == 0:
-                        base_color = plt.cm.Blues(frac)
-                    else:
-                        base_color = plt.cm.YlOrBr(frac)
-                    yellow_color_map[chunk_id] = darken_color(base_color, factor=0.7)
-                yellow_colors = []
-                for i in range(len(yellow_landmarks_x)):
-                    chunk_id = cone_map['yellow'].get(i, 0)
-                    yellow_colors.append(yellow_color_map.get(chunk_id, 'y'))
-            else:
-                yellow_colors = 'y'
-
-            scatter3 = plt.scatter(yellow_landmarks_x, yellow_landmarks_y, s=10, c=yellow_colors, marker="o", label='landmark')
-
+            scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=10, c=blue_colors, marker="o", label='blue landmarks')
+            scatter3 = plt.scatter(yellow_landmarks_x, yellow_landmarks_y, s=11, c=yellow_colors, marker="o", label='yellow landmarks')
+            
             # Display ID labels
             # for i, (x, y) in enumerate(zip(blue_landmarks_x, blue_landmarks_y)):
             #     plt.text(x + 0.2, y + 0.2, str(i), color='black', fontsize=8)
@@ -168,6 +145,8 @@ while run:
             scatter.remove()
             scatter2.remove()
             scatter3.remove()
+
+
 
 
 
