@@ -37,6 +37,11 @@ def load_chunks():
         pass
     return chunks, cone_map
 
+def darken_color(color, factor=0.7):
+    r, g, b, a = color
+    return (r * factor, g * factor, b * factor, a)
+
+
 while run:
     chunks, cone_map = load_chunks()
 
@@ -108,24 +113,45 @@ while run:
 
             scatter = plt.scatter(pose_x, pose_y, s=10, c='r', marker="x", label='pose')
 
-            if chunks:
-                cmap_chunks = plt.cm.get_cmap('Set3', len(chunks))  # use Set3 for distinct pastel colors
-                for idx, (min_x, max_x) in enumerate(chunks):
-                    plt.axvspan(min_x, max_x, color=cmap_chunks(idx), alpha=0.3, edgecolor='black', linewidth=0.8)
-
-            if chunks and blue_landmarks_x.size > 0:
-                cmap = plt.cm.get_cmap('tab10')
-                blue_colors = [cmap(cone_map['blue'].get(i, 0) % 10) 
-                            for i in range(len(blue_landmarks_x))]
+            # Color blue cones according to their chunk's parity
+            if blue_landmarks_x.size > 0:
+                # Build a sorted list of unique chunk IDs from the blue cones
+                unique_blue_chunks = sorted(set(cone_map['blue'].values()))
+                blue_color_map = {}
+                for idx_chunk, chunk_id in enumerate(unique_blue_chunks):
+                    # Compute a fraction that spreads the colors across the colormap range
+                    frac = idx_chunk / (len(unique_blue_chunks) - 1) if len(unique_blue_chunks) > 1 else 0.5
+                    # Even chunk IDs: use Blues; odd chunk IDs: use YlOrBr
+                    if chunk_id % 2 == 0:
+                        base_color = plt.cm.Blues(frac)
+                    else:
+                        base_color = plt.cm.YlOrBr(frac)
+                    blue_color_map[chunk_id] = darken_color(base_color, factor=0.7)
+                # Assign colors for each blue cone using its corresponding chunk color
+                blue_colors = []
+                for i in range(len(blue_landmarks_x)):
+                    chunk_id = cone_map['blue'].get(i, 0)  # default to 0 if not found
+                    blue_colors.append(blue_color_map.get(chunk_id, 'b'))
             else:
                 blue_colors = 'b'
 
             scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=10, c=blue_colors, marker="o", label='landmark') 
 
-            if chunks and yellow_landmarks_x.size > 0:
-                cmap = plt.cm.get_cmap('tab10')
-                yellow_colors = [cmap(cone_map['yellow'].get(i, 0) % 10)
-                                for i in range(len(yellow_landmarks_x))]
+            # Color yellow cones according to their chunk's parity
+            if yellow_landmarks_x.size > 0:
+                unique_yellow_chunks = sorted(set(cone_map['yellow'].values()))
+                yellow_color_map = {}
+                for idx_chunk, chunk_id in enumerate(unique_yellow_chunks):
+                    frac = idx_chunk / (len(unique_yellow_chunks) - 1) if len(unique_yellow_chunks) > 1 else 0.5
+                    if chunk_id % 2 == 0:
+                        base_color = plt.cm.Blues(frac)
+                    else:
+                        base_color = plt.cm.YlOrBr(frac)
+                    yellow_color_map[chunk_id] = darken_color(base_color, factor=0.7)
+                yellow_colors = []
+                for i in range(len(yellow_landmarks_x)):
+                    chunk_id = cone_map['yellow'].get(i, 0)
+                    yellow_colors.append(yellow_color_map.get(chunk_id, 'y'))
             else:
                 yellow_colors = 'y'
 
