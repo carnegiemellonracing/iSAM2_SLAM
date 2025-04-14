@@ -523,19 +523,28 @@ std::vector<New_cone_info> slamISAM::sort_cone_ids(const std::vector<gtsam::Poin
     return ordered;
 }
 
-void slamISAM::write_chunk_data(const std::string& filename) {
-    std::ofstream file(filename);
-    // Write chunk boundaries
-    for (const auto& chunk : all_chunks) {
-        file << "CHUNK:" << chunk->bounds.first << "," 
-             << chunk->bounds.second << "\n";
-    }
-    // Write cone mappings
-    for (size_t i = 0; i < blue_cone_to_chunk.size(); ++i) {
-        file << "BLUE:" << i << ":" << blue_cone_to_chunk[i] << "\n";
-    }
-    for (size_t i = 0; i < yellow_cone_to_chunk.size(); ++i) {
-        file << "YELLOW:" << i << ":" << yellow_cone_to_chunk[i] << "\n";
+void slamISAM::write_chunk_data(const std::vector<Chunk *> &chunks)
+{
+    std::ofstream file(CHUNKS_FILE);
+    int chunk_id = 0;
+
+    for (const Chunk *chunk : chunks)
+    {
+        file << "CHUNK:" << chunk->tStart << "," << chunk->tEnd << "\n";
+
+        // Blue cones with chunk_id
+        for (int id : chunk->blueConeIds)
+        {
+            file << "BLUE:" << id << ":" << chunk_id << "\n";
+        }
+
+        // Yellow cones with chunk_id
+        for (int id : chunk->yellowConeIds)
+        {
+            file << "YELLOW:" << id << ":" << chunk_id << "\n";
+        }
+
+        chunk_id++;\
     }
     file.close();
 }
@@ -796,15 +805,14 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
             completed_chunking = true;
             // Write chunk data for visualization
-            write_chunk_data("chunk_data.txt");
+            write_chunk_data(all_chunks);
+            log_string(logger, "Chunk data written", DEBUG_STEP);
         }
-        else {
-            assert(completed_chunking);
-            int cur_chunk_id = identify_chunk(blue_old_cones, yellow_old_cones);
-            if (logger.has_value()) {
-                RCLCPP_INFO(logger.value(), "Current chunk ID: %d",  cur_chunk_id);
-            }
-        }
+        // else {
+        //     assert(completed_chunking);
+        //     int cur_chunk_id = identify_chunk(blue_old_cones, yellow_old_cones);
+        //     log_string(logger, fmt::format("Current chunk ID: %d",  cur_chunk_id), DEBUG_STEP);
+        // }
     }
 
     pose_num++;

@@ -9,7 +9,7 @@ import os
 BLUE_LANDMARK_INDIC = "Value b"
 YELLOW_LANDMARK_INDIC = "Value y"
 POSE_INDIC = "Value x"
-CHUNK_FILE = "../src/isam2/data/chunk_data.txt"
+CHUNK_FILE = "../src/isam2/data/chunks.txt"
 
 fig = plt.figure()
 plt.ion()
@@ -18,7 +18,7 @@ plt.show()
 run = True
 
 def load_chunks():
-    chunks=[]
+    chunks = []
     cone_map = {'blue': {}, 'yellow': {}}
     try:
         if os.path.exists(CHUNK_FILE):
@@ -105,37 +105,38 @@ while run:
 
         if (len(pose_x) > 0 ):
             print("finished reading")
-        
+
             scatter = plt.scatter(pose_x, pose_y, s=10, c='r', marker="x", label='pose')
 
             if chunks:
-                for min_x, max_x in chunks:
-                    plt.axvspan(min_x, max_x, color='gray', alpha=0.1)
+                cmap_chunks = plt.cm.get_cmap('Set3', len(chunks))  # use Set3 for distinct pastel colors
+                for idx, (min_x, max_x) in enumerate(chunks):
+                    plt.axvspan(min_x, max_x, color=cmap_chunks(idx), alpha=0.3, edgecolor='black', linewidth=0.8)
 
             if chunks and blue_landmarks_x.size > 0:
                 cmap = plt.cm.get_cmap('tab10')
-                blue_colors = [cmap(cone_map['blue'].get(i, 0)%10) 
-                              for i in range(len(blue_landmarks_x))]
+                blue_colors = [cmap(cone_map['blue'].get(i, 0) % 10) 
+                            for i in range(len(blue_landmarks_x))]
             else:
                 blue_colors = 'b'
-                
-            scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=50, c=blue_colors, marker="o", label='landmark') 
+
+            scatter2 = plt.scatter(blue_landmarks_x, blue_landmarks_y, s=10, c=blue_colors, marker="o", label='landmark') 
 
             if chunks and yellow_landmarks_x.size > 0:
                 cmap = plt.cm.get_cmap('tab10')
-                yellow_colors = [cmap(cone_map['yellow'].get(i, 0)%10)
+                yellow_colors = [cmap(cone_map['yellow'].get(i, 0) % 10)
                                 for i in range(len(yellow_landmarks_x))]
             else:
                 yellow_colors = 'y'
-                
-            scatter3 = plt.scatter(yellow_landmarks_x, yellow_landmarks_y, s=50, c=yellow_colors, marker="o", label='landmark')
-            
+
+            scatter3 = plt.scatter(yellow_landmarks_x, yellow_landmarks_y, s=10, c=yellow_colors, marker="o", label='landmark')
+
             # Display ID labels
-            for i, (x, y) in enumerate(zip(blue_landmarks_x, blue_landmarks_y)):
-                plt.text(x+0.2, y+0.2, str(i), color='orange', fontsize=8)
-            for i, (x, y) in enumerate(zip(yellow_landmarks_x, yellow_landmarks_y)):
-                plt.text(x+0.2, y+0.2, str(i), color='orange', fontsize=8)
-            
+            # for i, (x, y) in enumerate(zip(blue_landmarks_x, blue_landmarks_y)):
+            #     plt.text(x + 0.2, y + 0.2, str(i), color='black', fontsize=8)
+            # for i, (x, y) in enumerate(zip(yellow_landmarks_x, yellow_landmarks_y)):
+            #     plt.text(x + 0.2, y + 0.2, str(i), color='black', fontsize=8)
+
             print("plotting")
             plt.pause(1)
             scatter.remove()

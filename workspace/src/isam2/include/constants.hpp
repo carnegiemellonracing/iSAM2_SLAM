@@ -7,6 +7,7 @@ constexpr bool DEBUG_STEP = true;
 constexpr bool DEBUG_VIZ = true;
 
 const std::string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
+const std::string CHUNKS_FILE = "src/isam2/data/chunks.txt";
 constexpr bool EUFS_SIM_SETTINGS = false;
 /* Bearing and range error
 * Corresponds to the usage of the BearingRangeFactor we are using

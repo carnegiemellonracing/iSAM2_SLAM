@@ -34,6 +34,7 @@
 #include "unary_factor.hpp"
 #include "loop_closure.hpp"
 #include "racelineChunk.hpp"
+#include "raceline.hpp"
 
 struct NoiseInputs {
     double yaml_bearing_std_dev;
@@ -146,7 +147,7 @@ public:
 
     std::vector<New_cone_info> sort_cone_ids(const std::vector<gtsam::Point2> &color_slam_est, std::vector<New_cone_info> &new_cones);
 
-    void write_chunk_data(const std::string& filename);
+    void write_chunk_data(const std::vector<Chunk *> &chunks);
 
     int identify_chunk(std::vector<Old_cone_info> &blue_old_cones, std::vector<Old_cone_info> &yellow_old_cones);
 

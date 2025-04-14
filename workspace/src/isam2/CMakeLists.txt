@@ -32,12 +32,12 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(GTSAM REQUIRED)
-find_package(raceline REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(raceline REQUIRED)
 find_package(TBB REQUIRED)
 # import the raceline library
 add_library(imported_raceline_lib SHARED IMPORTED)
-set_property(TARGET imported_raceline_lib PROPERTY IMPORTED_LOCATION "${PROJECT_BINARY_DIR}/../raceline/lib/libraceline_lib.so")
+set_property(TARGET imported_raceline_lib PROPERTY IMPORTED_LOCATION "${PROJECT_BINARY_DIR}/../raceline/libraceline_lib.so")
 
 # <----  executable ---->
 file(GLOB SOURCES src/*.cpp)
