@@ -660,7 +660,7 @@ std::vector<New_cone_info> slamISAM::sort_cone_ids(const std::vector<gtsam::Poin
 
 void slamISAM::write_chunk_data(const std::vector<Chunk *> &chunks)
 {
-    std::ofstream file(CHUNKS_FILE);
+    std::ofstream file(CHUNKS_FILE, std::ios::trunc);
     int chunk_id = 0;
 
     for (const Chunk *chunk : chunks)
@@ -679,7 +679,7 @@ void slamISAM::write_chunk_data(const std::vector<Chunk *> &chunks)
             file << "YELLOW:" << id << ":" << chunk_id << "\n";
         }
 
-        chunk_id++;\
+        chunk_id++;
     }
     file.close();
 }
