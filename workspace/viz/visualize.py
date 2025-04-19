@@ -117,7 +117,7 @@ while run:
                 chunk_id = cone_map['blue'].get(i, -1)
                 if chunk_id != -1:
                     # Alternate colors based on chunk ID
-                    blue_colors.append('green' if chunk_id % 2 == 0 else 'lime')
+                    blue_colors.append('red' if chunk_id % 2 == 0 else 'orange')
                 else:
                     blue_colors.append('b')  # Default blue for unchunked
 
@@ -125,7 +125,7 @@ while run:
             for i in range(len(yellow_landmarks_x)):
                 chunk_id = cone_map['yellow'].get(i, -1)
                 if chunk_id != -1:
-                    yellow_colors.append('green' if chunk_id % 2 == 0 else 'lime')
+                    yellow_colors.append('red' if chunk_id % 2 == 0 else 'orange')
                 else:
                     yellow_colors.append('y')  # Default yellow for unchunked
 
