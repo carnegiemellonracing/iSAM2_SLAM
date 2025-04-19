@@ -42,15 +42,15 @@ struct NoiseInputs {
     double yaml_imu_heading_std_dev;
     double yaml_gps_x_std_dev;
     double yaml_gps_y_std_dev;
+
     int yaml_look_radius;
     int yaml_min_cones_update_all;
     int yaml_window_update;
+
     double yaml_imu_offset;
     double yaml_lidar_offset;
     double yaml_max_cone_range;
     double yaml_turning_max_cone_range;
-    double yaml_velocity_moving_th;
-    double yaml_turning_th;
     double yaml_dist_from_start_lc_th;
     double yaml_m_dist_th;
     double yaml_turning_m_dist_th;
@@ -70,53 +70,49 @@ enum class ConeColor {
 class slamISAM {
 
 private:
+    /* Variables related to ISAM2 factor graph*/
     ISAM2Params parameters;
     ISAM2 isam2;
-    //Create a factor graph and values for new data
     NonlinearFactorGraph graph;
     Values values;
 
-    std::size_t pose_num;
-    bool first_pose_added = false;
-
+    /* Functions for adding symbols to the ISAM2 factor graph */
     static gtsam::Symbol X(int robot_pose_id);
-
     static gtsam::Symbol BLUE_L(int cone_pose_id);
-
     static gtsam::Symbol YELLOW_L(int cone_pose_id);
 
+    /* Pose and odometry information */
+    gtsam::Pose2 first_pose;
+    std::size_t pose_num;
+    bool first_pose_added = false;
     gtsam::Pose2 global_odom;
 
+    /* Current vector of mahalanobis distance calculations */
     std::vector<double> m_dist;
 
+    /* Lap and loop closure related variables */
     bool loop_closure;
     bool new_lap;
     std::size_t lap_count;
 
-    Pose2 first_pose;
 
+    /* SLAM history of estimates and marginal covariance matrices */
     std::vector<gtsam::Point2> blue_slam_est;
     std::vector<Eigen::MatrixXd> blue_slam_mcov;
-
     std::vector<gtsam::Point2> yellow_slam_est;
     std::vector<Eigen::MatrixXd> yellow_slam_mcov;
+
 
     std::size_t checkpoint_to_update_beginning;
     std::size_t blue_checkpoint_id;
     std::size_t yellow_checkpoint_id;
 
-public:
     high_resolution_clock::time_point start;
     high_resolution_clock::time_point end;
     std::size_t blue_n_landmarks;
     std::size_t yellow_n_landmarks;
 
-    bool heuristic_run;
-
-    /* how the landmark estimates are organized */
-    std::vector<int> blue_cone_IDs;
-    std::vector<int> yellow_cone_IDs;
-
+    /* Noise models */
     gtsam::Vector LandmarkNoiseModel;
     noiseModel::Diagonal::shared_ptr landmark_model;
     gtsam::Vector PriorNoiseModel;
@@ -127,22 +123,9 @@ public:
     noiseModel::Diagonal::shared_ptr unary_model;
     optional<rclcpp::Logger> logger;
 
-    slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs>& yaml_noise_inputs);
-    slamISAM(){}; /* Empty constructor */
 
-    void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
-            Pose2 &velocity,double dt, std::optional<rclcpp::Logger> logger);
+    /* Tunable and adjustable parameters */
 
-    int update_landmarks(const std::vector<Old_cone_info> &old_cones,
-                          const std::vector<New_cone_info> &new_cones,
-                                int n_landmarks, 
-                                Pose2 &cur_pose, gtsam::Symbol (*cone_key)(int));
-
-    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
-                std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
-                std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
-                double dt);
-    
     void update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_landmarks, 
                                                                 std::vector<gtsam::Point2>& color_slam_est, 
                                                                 std::vector<Eigen::MatrixXd>& color_slam_mcov, 
@@ -170,4 +153,25 @@ public:
     void print_estimates();
 
     void stability_update(bool sliding_window);
+
+
+
+public:
+    slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs>& yaml_noise_inputs);
+    slamISAM(){}; /* Empty constructor */
+
+    void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
+            Pose2 &velocity,double dt, std::optional<rclcpp::Logger> logger);
+
+    int update_landmarks(const std::vector<Old_cone_info> &old_cones,
+                          const std::vector<New_cone_info> &new_cones,
+                                int n_landmarks, 
+                                Pose2 &cur_pose, gtsam::Symbol (*cone_key)(int));
+
+    void step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
+                std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
+                std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
+                double dt);
+    
+
 };

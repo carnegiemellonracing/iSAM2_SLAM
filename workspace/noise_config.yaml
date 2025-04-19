@@ -15,8 +15,6 @@ slam_validation:
     yaml_lidar_offset: 0.3
     yaml_max_cone_range: 15
     yaml_turning_max_cone_range: 15
-    yaml_velocity_moving_th: 0.1
-    yaml_turning_th: 0.2
     yaml_dist_from_start_lc_th: 5
     yaml_m_dist_th: 100.0009
     yaml_turning_m_dist_th: 0.0009
