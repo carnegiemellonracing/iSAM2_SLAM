@@ -4,7 +4,7 @@ slam_validation:
     # Prior noise model (based on the IMU)
     yaml_prior_imu_x_std_dev: 0.22
     yaml_prior_imu_y_std_dev: 0.22
-    yaml_prior_imu_heading_std_dev: 0.00872665
+    yaml_prior_imu_heading_std_dev: 0.00872665 # radians
 
     # Bearing range noise model
     yaml_bearing_std_dev: 0.00045
@@ -13,7 +13,7 @@ slam_validation:
     # IMU noise model
     yaml_imu_x_std_dev: 0.22
     yaml_imu_y_std_dev: 0.22
-    yaml_imu_heading_std_dev: 0.00872665
+    yaml_imu_heading_std_dev: 0.00872665 # 0.5 degrees
 
     # GPS noise model
     yaml_gps_x_std_dev: 0.01
@@ -36,4 +36,4 @@ slam_validation:
     # Mahalanobis distance thresholds for cone updates
     yaml_m_dist_th: 0.0009
     yaml_turning_m_dist_th: 0.0009
-    yaml_update_iterations_n: 10
+    yaml_update_iterations_n: 5

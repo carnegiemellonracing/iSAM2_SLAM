@@ -109,11 +109,14 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
         look_radius = LOOK_RADIUS; // tell us how many cones back and forth to update in slam_est
         min_cones_update_all = MIN_CONES_UPDATE_ALL;
         window_update = WINDOW_UPDATE;
+
         imu_offset = IMU_OFFSET; //meters; offset from the center of the car
         lidar_offset = LIDAR_OFFSET; //meters; offset from the center of the car
+
         max_cone_range = MAX_CONE_RANGE;
         turning_max_cone_range = TURNING_MAX_CONE_RANGE;
         dist_from_start_loop_closure_th = DIST_FROM_START_LOOP_CLOSURE_TH; //meters; distance from the start for loop closure detection
+
         m_dist_th = M_DIST_TH;
         turning_m_dist_th = TURNING_M_DIST_TH;
         update_iterations_n = UPDATE_ITERATIONS_N;
@@ -158,25 +161,20 @@ gtsam::Symbol slamISAM::YELLOW_L(int cone_pose_id) {
 void slamISAM::log_params_in_use(bool has_value) {
     if (has_value) {
         log_string(logger, "--------Using yaml file --------\n", DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("look_radius: {}\n", look_radius), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("min_cones_update_all: {}\n", min_cones_update_all), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("window_update: {}\n", window_update), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("imu_offset: {}\n", imu_offset), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("max_cone_range: {}\n", max_cone_range), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("m_dist_th: {}\n", m_dist_th), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("turning_m_dist_th: {}\n", turning_m_dist_th), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("update_iterations_n: {}\n", update_iterations_n), DEBUG_PARAMS_IN_USE);
+
     } else {
-        log_string(logger, "--------Using default values --------\n", DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("look_radius: {}\n", LOOK_RADIUS), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("min_cones_update_all: {}\n", MIN_CONES_UPDATE_ALL), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("window_update: {}\n", WINDOW_UPDATE), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("imu_offset: {}\n", IMU_OFFSET), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("max_cone_range: {}\n", MAX_CONE_RANGE), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("m_dist_th: {}\n", M_DIST_TH), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("turning_m_dist_th: {}\n", TURNING_M_DIST_TH), DEBUG_PARAMS_IN_USE);
-        log_string(logger, fmt::format("update_iterations_n: {}\n", UPDATE_ITERATIONS_N), DEBUG_PARAMS_IN_USE);
+        log_string(logger, "--------using default params --------\n", DEBUG_PARAMS_IN_USE);
     }
+    log_string(logger, fmt::format("look_radius: {}\n", look_radius), DEBUG_PARAMS_IN_USE);
+    log_string(logger, fmt::format("min_cones_update_all: {}\n", min_cones_update_all), DEBUG_PARAMS_IN_USE);
+    log_string(logger, fmt::format("window_update: {}\n", window_update), DEBUG_PARAMS_IN_USE);
+
+    log_string(logger, fmt::format("imu_offset: {}\n", imu_offset), DEBUG_PARAMS_IN_USE);
+    log_string(logger, fmt::format("max_cone_range: {}\n", max_cone_range), DEBUG_PARAMS_IN_USE);
+
+    log_string(logger, fmt::format("m_dist_th: {}\n", m_dist_th), DEBUG_PARAMS_IN_USE);
+    log_string(logger, fmt::format("turning_m_dist_th: {}\n", turning_m_dist_th), DEBUG_PARAMS_IN_USE);
+    log_string(logger, fmt::format("update_iterations_n: {}\n", update_iterations_n), DEBUG_PARAMS_IN_USE);
 }
 
 
