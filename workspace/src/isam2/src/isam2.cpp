@@ -421,55 +421,89 @@ std::vector<New_cone_info> slamISAM::sort_cone_ids(const std::vector<gtsam::Poin
 
         // Calculate direction from last movement
         if (color_slam_est.size() >= 2) {
-            gtsam::Point2 prev_pos = color_slam_est[color_slam_est.size()-2];
-            direction_vec = current_pos - prev_pos;
+        gtsam::Point2 prev_pos = color_slam_est[color_slam_est.size()-2];
+        direction_vec = current_pos - prev_pos;
         } else {
-            // If only one point, use direction from origin
-            direction_vec = current_pos - gtsam::Point2(0,0);
+        direction_vec = current_pos - gtsam::Point2(0,0);
         }
     } else {
-        // Start at origin with default direction
         current_pos = gtsam::Point2(0,0);
         direction_vec = gtsam::Point2(1,0); // Default east direction
     }
 
-    // Filter out cones behind current direction
-    std::vector<bool> is_front(new_cones.size(), false);
-    int valid_cones = 0;
+    // Normalize direction vector
+    const double dir_mag = direction_vec.norm();
+    if (dir_mag > 0) direction_vec = direction_vec / dir_mag;
+
+    // Filter out cones in 30° rear cone
+    const double cos_150 = std::cos(150.0 * M_PI / 180.0); // ~-0.866
+    std::vector<bool> valid_cone(new_cones.size(), false);
+    int valid_count = 0;
 
     for (size_t i = 0; i < new_cones.size(); ++i) {
-        gtsam::Point2 to_cone = new_cones[i].local_cone_pos - current_pos;
-        double dot_product = direction_vec.x() * to_cone.x() + direction_vec.y() * to_cone.y();
-        is_front[i] = (dot_product > 0);
-        valid_cones += is_front[i] ? 1 : 0;
+        const gtsam::Point2 to_cone = new_cones[i].local_cone_pos - current_pos;
+        const double to_cone_mag = to_cone.norm();
+
+        if (to_cone_mag == 0) continue;
+
+        const gtsam::Point2 to_cone_dir = to_cone / to_cone_mag;
+        const double dot = direction_vec.x() * to_cone_dir.x() + 
+        direction_vec.y() * to_cone_dir.y();
+
+        // Only exclude cones in 30° rear cone (θ > 150°)
+        if (dot > cos_150) {
+            valid_cone[i] = true;
+            valid_count++;
+        }
     }
 
-    // If no valid cones, return empty
-    if (valid_cones == 0) return ordered;
+    if (valid_count == 0) return ordered;
 
-    // Process remaining cones using simple distance-based ordering
+    // Process valid cones by distance and angle
     std::vector<bool> used(new_cones.size(), false);
     gtsam::Point2 current = current_pos;
+    double prev_angle = has_history ? 
+    std::atan2(direction_vec.y(), direction_vec.x()) : 0;
 
-    while (ordered.size() < valid_cones) {
-        double min_dist = DBL_MAX;
+    while (ordered.size() < valid_count) {
+        double min_score = DBL_MAX;
         int best_idx = -1;
 
         for (size_t i = 0; i < new_cones.size(); ++i) {
-            if (used[i] || !is_front[i]) continue;
+            if (!valid_cone[i] || used[i]) continue;
 
-            double dist = (new_cones[i].local_cone_pos - current).norm();
-            if (dist < min_dist) {
-                min_dist = dist;
+            const auto& candidate = new_cones[i];
+            const gtsam::Point2 delta = candidate.local_cone_pos - current;
+            const double distance = delta.norm();
+            const double angle = std::atan2(delta.y(), delta.x());
+
+            // Calculate angular difference
+            double angle_diff = std::abs(angle - prev_angle);
+            angle_diff = std::min(angle_diff, 2*M_PI - angle_diff);
+
+            // Combined score (70% distance, 30% angle)
+            const double score = 0.7*distance + 0.3*angle_diff;
+
+            if (score < min_score) {
+                min_score = score;
                 best_idx = i;
             }
         }
 
         if (best_idx == -1) break;
 
+        // Update tracking state
         ordered.push_back(new_cones[best_idx]);
         used[best_idx] = true;
         current = new_cones[best_idx].local_cone_pos;
+
+        if (ordered.size() >= 2) {
+            const auto& prev_pos = ordered[ordered.size()-2].local_cone_pos;
+            prev_angle = std::atan2(current.y() - prev_pos.y(),
+            current.x() - prev_pos.x());
+        } else {
+            prev_angle = std::atan2(current.y(), current.x());
+        }
     }
 
     return ordered;
