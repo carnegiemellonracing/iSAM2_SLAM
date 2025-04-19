@@ -578,6 +578,9 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         yellow_n_landmarks = update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, cur_pose, YELLOW_L);
         log_string(logger, fmt::format("\t\tFinished updating isam2 model with new and old cones"), DEBUG_STEP);
 
+        /* Updating slam_est and slam_mcov with the new cone information */
+        update_slam_est_and_mcov_with_new(old_blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+        update_slam_est_and_mcov_with_new(old_yellow_n_landmarks, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
 
         /* Updating slam_est and slam_mcov vectors with the old cone information */         
         if (blue_n_landmarks >= min_cones_update_all && yellow_n_landmarks >= min_cones_update_all) {
@@ -590,9 +593,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             int lowest_yellow_id =  yellow_lo_and_hi.first;
             int highest_yellow_id = yellow_lo_and_hi.second;       
 
-            /* Updating slam_est and slam_mcov with the new cone information */
-            update_slam_est_and_mcov_with_new(old_blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-            update_slam_est_and_mcov_with_new(old_yellow_n_landmarks, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+            
 
 
             /* Extra updates */
