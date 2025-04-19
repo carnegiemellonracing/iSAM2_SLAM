@@ -414,7 +414,7 @@ std::vector<New_cone_info> slamISAM::sort_cone_ids(const std::vector<gtsam::Poin
     gtsam::Point2 current;
     double prev_angle;
     bool initial_path = color_slam_est.empty();
-    const int OPTIMIZATION_WINDOW = 20;
+    const int OPTIMIZATION_WINDOW = 30;
     bool optimized = false;
 
     // Initialize position and direction
@@ -464,149 +464,149 @@ std::vector<New_cone_info> slamISAM::sort_cone_ids(const std::vector<gtsam::Poin
         // Update tracking
         const auto &new_pos = new_cones[best_idx].local_cone_pos;
         if (ordered.size() >= 2) {
-        const auto &prev_pos = ordered[ordered.size()-2].local_cone_pos;
-        prev_angle = std::atan2(new_pos.y() - prev_pos.y(),
-        new_pos.x() - prev_pos.x());
+            const auto &prev_pos = ordered[ordered.size()-2].local_cone_pos;
+            prev_angle = std::atan2(new_pos.y() - prev_pos.y(),
+            new_pos.x() - prev_pos.x());
         } else {
-        prev_angle = std::atan2(new_pos.y(), new_pos.x());
+            prev_angle = std::atan2(new_pos.y(), new_pos.x());
         }
         current = new_pos;
 
         // Trigger optimization after collecting initial window
         if (ordered.size() == OPTIMIZATION_WINDOW && initial_path) {
-        optimized = true;
-        break;
+            optimized = true;
+            break;
         }
     }
 
     // Optimization phase: Trace back through first 20 cones
     if (optimized) {
-    // 1. Find theoretical first cone by reverse tracing
-    std::vector<New_cone_info> window(ordered.begin(), ordered.begin() + OPTIMIZATION_WINDOW);
-    std::vector<bool> window_used(OPTIMIZATION_WINDOW, false);
-    std::vector<New_cone_info> reversed;
+        // 1. Find theoretical first cone by reverse tracing
+        std::vector<New_cone_info> window(ordered.begin(), ordered.begin() + OPTIMIZATION_WINDOW);
+        std::vector<bool> window_used(OPTIMIZATION_WINDOW, false);
+        std::vector<New_cone_info> reversed;
 
-    gtsam::Point2 opt_current = window.back().local_cone_pos;
-    double opt_angle = std::atan2(
-    window.back().local_cone_pos.y() - window[window.size()-2].local_cone_pos.y(),
-    window.back().local_cone_pos.x() - window[window.size()-2].local_cone_pos.x()
-    );
+        gtsam::Point2 opt_current = window.back().local_cone_pos;
+        double opt_angle = std::atan2(
+        window.back().local_cone_pos.y() - window[window.size()-2].local_cone_pos.y(),
+        window.back().local_cone_pos.x() - window[window.size()-2].local_cone_pos.x()
+        );
 
-    // Reverse process to find optimal first cone
-    for (int i = 0; i < OPTIMIZATION_WINDOW; i++) {
-    double min_score = DBL_MAX;
-    int best_idx = -1;
+        // Reverse process to find optimal first cone
+        for (int i = 0; i < OPTIMIZATION_WINDOW; i++) {
+            double min_score = DBL_MAX;
+            int best_idx = -1;
 
-    for (int j = 0; j < window.size(); j++) {
-    if (window_used[j]) continue;
+            for (int j = 0; j < window.size(); j++) {
+                if (window_used[j]) continue;
 
-    const auto &candidate = window[j];
-    double dx = opt_current.x() - candidate.local_cone_pos.x();
-    double dy = opt_current.y() - candidate.local_cone_pos.y();
-    double distance = std::hypot(dx, dy);
-    double angle = std::atan2(dy, dx);
-    double angle_diff = std::abs(angle - opt_angle);
-    angle_diff = std::min(angle_diff, 2 * M_PI - angle_diff);
-    double score = 0.7 * distance + 0.3 * angle_diff;
+                const auto &candidate = window[j];
+                double dx = opt_current.x() - candidate.local_cone_pos.x();
+                double dy = opt_current.y() - candidate.local_cone_pos.y();
+                double distance = std::hypot(dx, dy);
+                double angle = std::atan2(dy, dx);
+                double angle_diff = std::abs(angle - opt_angle);
+                angle_diff = std::min(angle_diff, 2 * M_PI - angle_diff);
+                double score = 0.7 * distance + 0.3 * angle_diff;
 
-    if (score < min_score) {
-    min_score = score;
-    best_idx = j;
-    }
-    }
+                if (score < min_score) {
+                    min_score = score;
+                    best_idx = j;
+                }
+            }
 
-    if (best_idx == -1) break;
+            if (best_idx == -1) break;
 
-    reversed.insert(reversed.begin(), window[best_idx]);
-    window_used[best_idx] = true;
-    opt_current = window[best_idx].local_cone_pos;
+            reversed.insert(reversed.begin(), window[best_idx]);
+            window_used[best_idx] = true;
+            opt_current = window[best_idx].local_cone_pos;
 
-    if (reversed.size() >= 2) {
-    opt_angle = std::atan2(
-    reversed[1].local_cone_pos.y() - reversed[0].local_cone_pos.y(),
-    reversed[1].local_cone_pos.x() - reversed[0].local_cone_pos.x()
-    );
-    }
-    }
+            if (reversed.size() >= 2) {
+                opt_angle = std::atan2(
+                reversed[1].local_cone_pos.y() - reversed[0].local_cone_pos.y(),
+                reversed[1].local_cone_pos.x() - reversed[0].local_cone_pos.x()
+                );
+            }
+        }
 
-    // 2. Rebuild ordered list from optimized first cone
-    std::fill(used.begin(), used.end(), false);
-    ordered.clear();
-    remaining = new_cones.size();
+        // 2. Rebuild ordered list from optimized first cone
+        std::fill(used.begin(), used.end(), false);
+        ordered.clear();
+        remaining = new_cones.size();
 
-    // Start from optimized first cone
-    current = reversed[0].local_cone_pos;
-    prev_angle = std::atan2(current.y(), current.x());
+        // Start from optimized first cone
+        current = reversed[0].local_cone_pos;
+        prev_angle = std::atan2(current.y(), current.x());
 
-    // Add optimized first cone
-    for (int i = 0; i < new_cones.size(); i++) {
-    if (new_cones[i].local_cone_pos == current) {
-    ordered.push_back(new_cones[i]);
-    used[i] = true;
-    remaining--;
-    break;
-    }
-    }
+        // Add optimized first cone
+        for (int i = 0; i < new_cones.size(); i++) {
+            if (new_cones[i].local_cone_pos == current) {
+                ordered.push_back(new_cones[i]);
+                used[i] = true;
+                remaining--;
+                break;
+            }
+        }
 
-    // Forward trace through optimization window
-    for (int i = 1; i < reversed.size(); i++) {
-    const auto &target_pos = reversed[i].local_cone_pos;
+        // Forward trace through optimization window
+        for (int i = 1; i < reversed.size(); i++) {
+            const auto &target_pos = reversed[i].local_cone_pos;
 
-    // Find closest match in original cones
-    for (int j = 0; j < new_cones.size(); j++) {
-    if (!used[j] && new_cones[j].local_cone_pos == target_pos) {
-    ordered.push_back(new_cones[j]);
-    used[j] = true;
-    remaining--;
+            // Find closest match in original cones
+            for (int j = 0; j < new_cones.size(); j++) {
+                if (!used[j] && new_cones[j].local_cone_pos == target_pos) {
+                    ordered.push_back(new_cones[j]);
+                    used[j] = true;
+                    remaining--;
 
-    // Update tracking
-    const auto &new_pos = new_cones[j].local_cone_pos;
-    prev_angle = std::atan2(new_pos.y() - current.y(),
-    new_pos.x() - current.x());
-    current = new_pos;
-    break;
-    }
-    }
-    }
+                    // Update tracking
+                    const auto &new_pos = new_cones[j].local_cone_pos;
+                    prev_angle = std::atan2(new_pos.y() - current.y(),
+                    new_pos.x() - current.x());
+                    current = new_pos;
+                    break;
+                }
+            }
+        }
     }
 
     // Final processing for remaining cones
     while (remaining > 0) {
-    double min_score = DBL_MAX;
-    int best_idx = -1;
+        double min_score = DBL_MAX;
+        int best_idx = -1;
 
-    for (int i = 0; i < new_cones.size(); ++i) {
-    if (used[i]) continue;
+        for (int i = 0; i < new_cones.size(); ++i) {
+            if (used[i]) continue;
 
-    const auto &candidate = new_cones[i];
-    double dx = candidate.local_cone_pos.x() - current.x();
-    double dy = candidate.local_cone_pos.y() - current.y();
-    double distance = std::hypot(dx, dy);
-    double angle = std::atan2(dy, dx);
-    double angle_diff = std::abs(angle - prev_angle);
-    angle_diff = std::min(angle_diff, 2 * M_PI - angle_diff);
-    double score = 0.7 * distance + 0.3 * angle_diff;
+            const auto &candidate = new_cones[i];
+            double dx = candidate.local_cone_pos.x() - current.x();
+            double dy = candidate.local_cone_pos.y() - current.y();
+            double distance = std::hypot(dx, dy);
+            double angle = std::atan2(dy, dx);
+            double angle_diff = std::abs(angle - prev_angle);
+            angle_diff = std::min(angle_diff, 2 * M_PI - angle_diff);
+            double score = 0.7 * distance + 0.3 * angle_diff;
 
-    if (score < min_score) {
-    min_score = score;
-    best_idx = i;
-    }
-    }
+            if (score < min_score) {
+                min_score = score;
+                best_idx = i;
+            }
+        }
 
-    if (best_idx == -1) break;
+        if (best_idx == -1) break;
 
-    ordered.push_back(new_cones[best_idx]);
-    used[best_idx] = true;
-    remaining--;
+        ordered.push_back(new_cones[best_idx]);
+        used[best_idx] = true;
+        remaining--;
 
-    // Update tracking
-    const auto &new_cone_pos = new_cones[best_idx].local_cone_pos;
-    if (ordered.size() >= 2) {
-    const auto &prev_cone_pos = ordered[ordered.size()-2].local_cone_pos;
-    prev_angle = std::atan2(new_cone_pos.y() - prev_cone_pos.y(),
-    new_cone_pos.x() - prev_cone_pos.x());
-    }
-    current = new_cone_pos;
+        // Update tracking
+        const auto &new_cone_pos = new_cones[best_idx].local_cone_pos;
+        if (ordered.size() >= 2) {
+            const auto &prev_cone_pos = ordered[ordered.size()-2].local_cone_pos;
+            prev_angle = std::atan2(new_cone_pos.y() - prev_cone_pos.y(),
+            new_cone_pos.x() - prev_cone_pos.x());
+        }
+        current = new_cone_pos;
     }
 
     assert(ordered.size() == new_cones.size());
