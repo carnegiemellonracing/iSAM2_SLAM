@@ -14,10 +14,10 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
     graph = gtsam::NonlinearFactorGraph();
     values = gtsam::Values();
 
-    pose_num = 0uz;
+    pose_num = static_cast<std::size_t>(0);
     first_pose_added = false;
-    blue_n_landmarks = 0uz;
-    yellow_n_landmarks = 0uz;
+    blue_n_landmarks = static_cast<std::size_t>(0);
+    yellow_n_landmarks = static_cast<std::size_t>(0);
 
 
     
@@ -243,8 +243,8 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
         cur_pose = gtsam::Pose2(new_pose.x(), new_pose.y(), new_pose.theta());
         graph.add(odom_factor);
 
-        Pose2 imu_offset_global_odom = Pose2(global_odom.x() - offset_x, global_odom.y() - offset_y, global_odom.theta());
-        graph.emplace_shared<UnaryFactor>(X(pose_num), imu_offset_global_odom, unary_model);
+        // Pose2 imu_offset_global_odom = Pose2(global_odom.x() - offset_x, global_odom.y() - offset_y, global_odom.theta());
+        // graph.emplace_shared<UnaryFactor>(X(pose_num), imu_offset_global_odom, unary_model);
         values.insert(X(pose_num), new_pose);
     }
 
@@ -345,12 +345,12 @@ void slamISAM::cone_proximity_updates(std::size_t pivot, std::size_t n_landmarks
                                     std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                                     gtsam::Symbol (*cone_key)(int)) {
 
-    for (std::size_t i = std::max(pivot - look_radius, 0uz); i < std::min(pivot + look_radius, n_landmarks); i++) {
+    for (std::size_t i = std::max(pivot - look_radius, static_cast<std::size_t>(0)); i < std::min(pivot + look_radius, n_landmarks); i++) {
         gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
         color_slam_est.at(i) = updated_est;
     }
 
-    for (std::size_t i = std::max(pivot- look_radius, 0uz); i < std::min(pivot + look_radius, n_landmarks); i++) {
+    for (std::size_t i = std::max(pivot- look_radius, static_cast<std::size_t>(0)); i < std::min(pivot + look_radius, n_landmarks); i++) {
         Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
         color_slam_mcov.at(i) = updated_mcov;
     }

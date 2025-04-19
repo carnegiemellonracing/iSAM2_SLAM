@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/chip/Documents/driverless-packages/iSAM2_SLAM/workspace/install/interfaces/include/**",
+        "/opt/ros/foxy/include/**",
+        "/home/chip/Documents/driverless-packages/iSAM2_SLAM/workspace/src/isam2/include/**",
+        "/home/chip/Documents/driverless-packages/iSAM2_SLAM/workspace/src/test_ws/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

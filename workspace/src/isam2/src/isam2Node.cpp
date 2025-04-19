@@ -29,15 +29,15 @@ private:
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
 
     message_filters::Subscriber<cone_msg_t> cone_sub;
-    message_filters::Subscriber<position_msg_t> vehicle_pos_sub;
+    // message_filters::Subscriber<position_msg_t> vehicle_pos_sub;
     message_filters::Subscriber<velocity_msg_t> vehicle_vel_sub;
     message_filters::Subscriber<orientation_msg_t> vehicle_angle_sub;
 
     std::shared_ptr<message_filters::Synchronizer<
                             message_filters::sync_policies::ApproximateTime<
                                             cone_msg_t,
-                                            position_msg_t,
-                                            velocity_msg_t>>> sync;
+                                            velocity_msg_t, 
+                                            orientation_msg_t>>> sync;
     
     gtsam::Pose2 velocity;
 
@@ -65,8 +65,8 @@ private:
 
 
     void sync_callback(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
-                    const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data,
-                    const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data) {
+                    const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data,
+                    const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
         RCLCPP_INFO(this->get_logger(), "--------Start of Sync Callback--------");
         
         /* Getting the time between sync callbacks */
@@ -79,7 +79,7 @@ private:
 
 
         auto sync_data_start = high_resolution_clock::now();
-        optional<std_msgs::msg::Header> cur_filter_time(vehicle_pos_data->header);
+        optional<std_msgs::msg::Header> cur_filter_time(vehicle_vel_data->header);
         if (!prev_filter_time.has_value()) {
             prev_filter_time.swap(cur_filter_time);
             return;
@@ -92,13 +92,13 @@ private:
         cone_callback(cone_data);
         
         /* Vehicle position callback */
-        vehicle_pos_callback(vehicle_pos_data);
+        // vehicle_pos_callback(vehicle_pos_data);
 
         /* Vehicle velocity callback */
         vehicle_vel_callback(vehicle_vel_data);
 
         /* Vehicle angle callback */
-        //vehicle_angle_callback(vehicle_angle_data);
+        vehicle_angle_callback(vehicle_angle_data);
         
 
         if (init_lon_lat.has_value()) {
@@ -141,13 +141,27 @@ private:
 
     }
 
-    void vehicle_pos_callback(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data)
+    void vehicle_pos_callback(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data)
     {
         // RCLCPP_INFO(this->get_logger(), "\t vehicle position callback! | time: %d\n",
         //                                         vehicle_pos_data->header.stamp.sec);
         auto vehicle_pos_callback_start = high_resolution_clock::now();
         
-        //vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
+        vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
+        
+        /* Timers*/
+        auto vehicle_pos_callback_end = high_resolution_clock::now();
+        auto vehicle_pos_callback_duration = duration_cast<milliseconds>(vehicle_pos_callback_end - vehicle_pos_callback_start);
+        RCLCPP_INFO(this->get_logger(), "\tPosition callback time: %ld", vehicle_pos_callback_duration.count());
+    }
+
+    void controls_vehicle_pos_callback(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data)
+    {
+        // RCLCPP_INFO(this->get_logger(), "\t vehicle position callback! | time: %d\n",
+        //                                         vehicle_pos_data->header.stamp.sec);
+        auto vehicle_pos_callback_start = high_resolution_clock::now();
+        
+        // vector3_msg_to_gps(vehicle_pos_data, global_odom, init_lon_lat, this->get_logger());
         posestamped_msg_to_gps(vehicle_pos_data, global_odom, init_x_y, this->get_logger());
         /* Timers*/
         auto vehicle_pos_callback_end = high_resolution_clock::now();
@@ -170,8 +184,7 @@ private:
         RCLCPP_INFO(this->get_logger(), "\tVelocity callback time: %ld", vehicle_vel_callback_duration.count());
     }
 
-    void vehicle_angle_callback(
-        const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data)
+    void vehicle_angle_callback(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data)
     {
         // RCLCPP_INFO(this->get_logger(), "\t vehicle angle callback! | time: %d\n",
         //                                       vehicle_angle_data->header.stamp.sec);
@@ -254,20 +267,22 @@ public:
            best_effort_profile);
 
         cone_sub.subscribe(this, CONE_DATA_TOPIC, best_effort_profile);
-        vehicle_pos_sub.subscribe(this, VEHICLE_POS_TOPIC, best_effort_profile);
+        // vehicle_pos_sub.subscribe(this, VEHICLE_POS_TOPIC, best_effort_profile);
         vehicle_angle_sub.subscribe(this, VEHICLE_ANGLE_TOPIC, best_effort_profile);
         vehicle_vel_sub.subscribe(this, VEHICLE_VEL_TOPIC, best_effort_profile);
 
         sync = std::make_shared<message_filters::Synchronizer<
                                     message_filters::sync_policies::ApproximateTime<
                                     cone_msg_t,
-                                    position_msg_t,
-                                    velocity_msg_t>>>(
+                                    velocity_msg_t, 
+                                    orientation_msg_t>>>(
                             message_filters::sync_policies::ApproximateTime<
                                     cone_msg_t,
-                                    position_msg_t,
-                                    velocity_msg_t>(100),
-                                    cone_sub, vehicle_pos_sub, vehicle_vel_sub);
+                                    velocity_msg_t, 
+                                    orientation_msg_t>(100),
+                                    cone_sub, 
+                                    vehicle_vel_sub, 
+                                    vehicle_angle_sub);
         sync->setAgePenalty(0.1);
         sync->registerCallback(std::bind(&SLAMValidation::sync_callback, this, _1, _2, _3));
 
