@@ -19,6 +19,9 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
     blue_n_landmarks = 0uz;
     yellow_n_landmarks = 0uz;
 
+    blue_checkpoint_id = 0uz;
+    yellow_checkpoint_id = 0uz;
+
 
     
     LandmarkNoiseModel = gtsam::Vector(2);
