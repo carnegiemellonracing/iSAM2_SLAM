@@ -81,16 +81,45 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
         OdomNoiseModel(1) = yaml_noise_inputs.value().yaml_imu_y_std_dev; 
         OdomNoiseModel(2) = yaml_noise_inputs.value().yaml_imu_heading_std_dev; 
         // used to be all 0s for EUFS_SIM
-        PriorNoiseModel(0) = yaml_noise_inputs.value().yaml_imu_x_std_dev;
-        PriorNoiseModel(1) = yaml_noise_inputs.value().yaml_imu_y_std_dev;
-        PriorNoiseModel(2) = yaml_noise_inputs.value().yaml_imu_heading_std_dev;
+        PriorNoiseModel(0) = yaml_noise_inputs.value().yaml_prior_imu_x_std_dev;
+        PriorNoiseModel(1) = yaml_noise_inputs.value().yaml_prior_imu_y_std_dev;
+        PriorNoiseModel(2) = yaml_noise_inputs.value().yaml_prior_imu_heading_std_dev;
 
         UnaryNoiseModel(0) = yaml_noise_inputs.value().yaml_gps_x_std_dev;          
         UnaryNoiseModel(1) = yaml_noise_inputs.value().yaml_gps_y_std_dev;
     }
 
+    /* initializing tunable and adjustable parameters using yaml_noise_inputs */
+    if  (yaml_noise_inputs.has_value() ) {
+        look_radius = yaml_noise_inputs.value().yaml_look_radius;
+        min_cones_update_all = yaml_noise_inputs.value().yaml_min_cones_update_all;
+        window_update = yaml_noise_inputs.value().yaml_window_update;
 
+        imu_offset = yaml_noise_inputs.value().yaml_imu_offset;
+        lidar_offset = yaml_noise_inputs.value().yaml_lidar_offset;
 
+        max_cone_range = yaml_noise_inputs.value().yaml_max_cone_range;
+        turning_max_cone_range = yaml_noise_inputs.value().yaml_turning_max_cone_range;
+        dist_from_start_loop_closure_th = yaml_noise_inputs.value().yaml_dist_from_start_loop_closure_th;
+
+        m_dist_th = yaml_noise_inputs.value().yaml_m_dist_th;
+        turning_m_dist_th = yaml_noise_inputs.value().yaml_turning_m_dist_th;
+        update_iterations_n = yaml_noise_inputs.value().yaml_update_iterations_n;
+    } else {
+        look_radius = LOOK_RADIUS; // tell us how many cones back and forth to update in slam_est
+        min_cones_update_all = MIN_CONES_UPDATE_ALL;
+        window_update = WINDOW_UPDATE;
+        imu_offset = IMU_OFFSET; //meters; offset from the center of the car
+        lidar_offset = LIDAR_OFFSET; //meters; offset from the center of the car
+        max_cone_range = MAX_CONE_RANGE;
+        turning_max_cone_range = TURNING_MAX_CONE_RANGE;
+        dist_from_start_loop_closure_th = DIST_FROM_START_LOOP_CLOSURE_TH; //meters; distance from the start for loop closure detection
+        m_dist_th = M_DIST_TH;
+        turning_m_dist_th = TURNING_M_DIST_TH;
+        update_iterations_n = UPDATE_ITERATIONS_N;
+    }
+
+    log_params_in_use(yaml_noise_inputs.has_value());
 
 
     landmark_model = noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
@@ -125,6 +154,33 @@ gtsam::Symbol slamISAM::BLUE_L(int cone_pose_id) {
 gtsam::Symbol slamISAM::YELLOW_L(int cone_pose_id) {
     return Symbol('y', cone_pose_id);
 }
+
+void slamISAM::log_params_in_use(bool has_value) {
+    if (has_value) {
+        log_string(logger, "--------Using yaml file --------\n", DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("look_radius: {}\n", look_radius), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("min_cones_update_all: {}\n", min_cones_update_all), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("window_update: {}\n", window_update), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("imu_offset: {}\n", imu_offset), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("max_cone_range: {}\n", max_cone_range), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("m_dist_th: {}\n", m_dist_th), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("turning_m_dist_th: {}\n", turning_m_dist_th), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("update_iterations_n: {}\n", update_iterations_n), DEBUG_PARAMS_IN_USE);
+    } else {
+        log_string(logger, "--------Using default values --------\n", DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("look_radius: {}\n", LOOK_RADIUS), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("min_cones_update_all: {}\n", MIN_CONES_UPDATE_ALL), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("window_update: {}\n", WINDOW_UPDATE), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("imu_offset: {}\n", IMU_OFFSET), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("max_cone_range: {}\n", MAX_CONE_RANGE), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("m_dist_th: {}\n", M_DIST_TH), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("turning_m_dist_th: {}\n", TURNING_M_DIST_TH), DEBUG_PARAMS_IN_USE);
+        log_string(logger, fmt::format("update_iterations_n: {}\n", UPDATE_ITERATIONS_N), DEBUG_PARAMS_IN_USE);
+    }
+}
+
+
+
 /**
  * @brief Updates the poses in the SLAM model. 
  * 
@@ -148,7 +204,7 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
     {
         log_string(logger, "Processing first pose", DEBUG_POSES);
 
-        PriorFactor<Pose2> prior_factor = PriorFactor<Pose2>(X(0),
+        gtsam::PriorFactor<gtsam::Pose2> prior_factor = gtsam::PriorFactor<gtsam::Pose2>(X(0),
                                                             global_odom, prior_model);
         //add prior
         //TODO: need to record the initial bearing because it could be erroneous
@@ -197,6 +253,12 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
     isam2.update(graph, values);
     graph.resize(0);
     values.clear();
+
+    for (int i = 0; i < update_iterations_n; i++) {
+        //update the graph
+        isam2.update();
+    }
+    
 
 }
 
@@ -285,12 +347,12 @@ void slamISAM::cone_proximity_updates(std::size_t pivot, std::size_t n_landmarks
                                     std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                                     gtsam::Symbol (*cone_key)(int)) {
 
-    for (std::size_t i = std::max(pivot - LOOK_RADIUS, 0uz); i < std::min(pivot + LOOK_RADIUS, n_landmarks); i++) {
+    for (std::size_t i = std::max(pivot - look_radius, 0uz); i < std::min(pivot + look_radius, n_landmarks); i++) {
         gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
         color_slam_est.at(i) = updated_est;
     }
 
-    for (std::size_t i = std::max(pivot- LOOK_RADIUS, 0uz); i < std::min(pivot + LOOK_RADIUS, n_landmarks); i++) {
+    for (std::size_t i = std::max(pivot- look_radius, 0uz); i < std::min(pivot + look_radius, n_landmarks); i++) {
         Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
         color_slam_mcov.at(i) = updated_mcov;
     }
@@ -375,22 +437,29 @@ void slamISAM::update_beginning(std::vector<gtsam::Point2>& color_slam_est,
  */
 void slamISAM::stability_update(bool sliding_window) {
     /* For numerical stability */
-    if (!(blue_n_landmarks >= MIN_CONES_UPDATE_ALL && yellow_n_landmarks >= MIN_CONES_UPDATE_ALL)) {
+    if (!(blue_n_landmarks >= min_cones_update_all && yellow_n_landmarks >= min_cones_update_all)) {
         update_all_est_mcov(blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
         update_all_est_mcov(yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
     } else {
         if (sliding_window) {
-            cone_proximity_updates(blue_checkpoint_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L); 
-            cone_proximity_updates(yellow_checkpoint_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L); 
-            blue_checkpoint_id = (blue_checkpoint_id + WINDOW_UPDATE) % (blue_n_landmarks - WINDOW_UPDATE);
-            yellow_checkpoint_id = (yellow_checkpoint_id + WINDOW_UPDATE) % (yellow_n_landmarks - WINDOW_UPDATE);
+            /* Perform iterative update */
+            for (int i = 0; i < update_iterations_n; i++) {
+                cone_proximity_updates(blue_checkpoint_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L); 
+                cone_proximity_updates(yellow_checkpoint_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L); 
+            }
+
+            blue_checkpoint_id = (blue_checkpoint_id + window_update) % (blue_n_landmarks - window_update);
+            yellow_checkpoint_id = (yellow_checkpoint_id + window_update) % (yellow_n_landmarks - window_update);
         } else if (blue_n_landmarks > checkpoint_to_update_beginning && yellow_n_landmarks > checkpoint_to_update_beginning) {
             update_beginning(blue_slam_est, blue_slam_mcov, BLUE_L);
             update_beginning(yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+
             checkpoint_to_update_beginning += UPDATE_START_N;
         }
     }
 }
+
+
 
 /**
  * @brief Processes odometry information and cone information 
@@ -410,7 +479,6 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
             std::vector<Point2> &orange_ref_cones, Pose2 velocity,
             double dt) {
-
     if (blue_n_landmarks + yellow_n_landmarks > 0)
     {
         auto start_step  = high_resolution_clock::now();
@@ -482,11 +550,18 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
         if (blue_n_landmarks + yellow_n_landmarks > 0) {
             stability_update(true); 
         }
+
+        double m_dist_th_to_use = m_dist_th;
+        double cone_dist_th_to_use = max_cone_range;
+        if (is_turning) {
+            m_dist_th_to_use = turning_m_dist_th; 
+            cone_dist_th_to_use = turning_max_cone_range;
+        }
         
-        data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, is_turning,
-                            cone_obs_blue, logger, blue_slam_est, blue_slam_mcov);
-        data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, is_turning,
-                            cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov);
+        data_association(blue_old_cones, blue_new_cones, cur_pose, prev_pose, 
+                            cone_obs_blue, logger, blue_slam_est, blue_slam_mcov, m_dist_th_to_use, cone_dist_th_to_use);
+        data_association(yellow_old_cones, yellow_new_cones, cur_pose, prev_pose, 
+                            cone_obs_yellow, logger, yellow_slam_est, yellow_slam_mcov, m_dist_th_to_use, cone_dist_th_to_use);
         
         auto end_DA = high_resolution_clock::now();
         auto dur_DA = duration_cast<milliseconds>(end_DA - start_DA);
@@ -504,7 +579,7 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
 
         /* Updating slam_est and slam_mcov vectors with the old cone information */         
-        if (blue_n_landmarks >= MIN_CONES_UPDATE_ALL && yellow_n_landmarks >= MIN_CONES_UPDATE_ALL) {
+        if (blue_n_landmarks >= min_cones_update_all && yellow_n_landmarks >= min_cones_update_all) {
             std::pair<int, int> blue_lo_and_hi = update_slam_est_and_mcov_with_old(blue_old_cones, 
                                                                             blue_slam_est, blue_slam_mcov, BLUE_L);
             std::pair<int, int> yellow_lo_and_hi = update_slam_est_and_mcov_with_old(yellow_old_cones, 

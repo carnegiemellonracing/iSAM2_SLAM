@@ -49,6 +49,6 @@ void get_old_new_cones(std::vector<Old_cone_info> &old_cones,
 
 void data_association(std::vector<Old_cone_info> &old_cones,
                 std::vector<New_cone_info> &new_cones,
-                gtsam::Pose2 &cur_pose, gtsam::Pose2 &prev_pose, bool is_turning,
+                gtsam::Pose2 &cur_pose, gtsam::Pose2 &prev_pose,
                 std::vector<gtsam::Point2> &cone_obs, std::optional<rclcpp::Logger> &logger,
-                std::vector<gtsam::Point2> &slam_est, std::vector<MatrixXd> &slam_mcov);
+                std::vector<gtsam::Point2> &slam_est, std::vector<MatrixXd> &slam_mcov, double m_dist_th, double cone_dist_th);

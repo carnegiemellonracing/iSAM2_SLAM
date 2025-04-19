@@ -5,6 +5,7 @@
 constexpr bool DEBUG_POSES = true;
 constexpr bool DEBUG_STEP = true;
 constexpr bool DEBUG_VIZ = true;
+constexpr bool DEBUG_PARAMS_IN_USE = true;
 
 const std::string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 constexpr bool EUFS_SIM_SETTINGS = false;
@@ -91,7 +92,7 @@ constexpr double TURNING_MAX_CONE_RANGE = 15;
 constexpr double VELOCITY_MOVING_TH = 0.1; //meters per second
 constexpr double TURNING_TH = 0.2;
 
-constexpr double DIST_FROM_START_LC_TH = 5; //meters; distance from the start for loop closure detection
+constexpr double DIST_FROM_START_LOOP_CLOSURE_TH = 5; //meters; distance from the start for loop closure detection
 
 constexpr double M_DIST_TH = 0.0009;
 constexpr double TURNING_M_DIST_TH = 0.0009;
@@ -109,3 +110,4 @@ constexpr int MIN_CONES_UPDATE_ALL = 90;
 constexpr int UPDATE_START_AFTER_N = 50;
 constexpr int UPDATE_START_N = 30;
 constexpr int WINDOW_UPDATE = 5;
+constexpr int UPDATE_ITERATIONS_N = 5;

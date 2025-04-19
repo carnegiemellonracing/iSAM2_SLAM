@@ -63,19 +63,14 @@ void get_old_new_cones(vector<Old_cone_info> &old_cones,
 
 void data_association(vector<Old_cone_info> &old_cones,
                 vector<New_cone_info> &new_cones,
-                Pose2 &cur_pose, Pose2 &prev_pose, bool is_turning,
+                Pose2 &cur_pose, Pose2 &prev_pose, 
                 vector<Point2> &cone_obs, optional<rclcpp::Logger> &logger,
-                vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov) {
+                vector<Point2> &slam_est, vector<MatrixXd> &slam_mcov, 
+                double m_dist_th, double cone_dist_th) {
 
     vector<double> m_dist = {};
     int n_landmarks = slam_est.size();
 
-    double m_dist_th = M_DIST_TH;
-    double cone_dist_th = MAX_CONE_RANGE;
-    if (is_turning) {
-        m_dist_th = TURNING_M_DIST_TH;
-        cone_dist_th = TURNING_MAX_CONE_RANGE;
-    }
 
     remove_far_cones(cone_obs, cone_dist_th);
 

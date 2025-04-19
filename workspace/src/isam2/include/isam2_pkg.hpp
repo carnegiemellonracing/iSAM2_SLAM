@@ -35,8 +35,13 @@
 #include "loop_closure.hpp"
 
 struct NoiseInputs {
+    double yaml_prior_imu_x_std_dev;
+    double yaml_prior_imu_y_std_dev;
+    double yaml_prior_imu_heading_std_dev;
+
     double yaml_bearing_std_dev;
     double yaml_range_std_dev;
+
     double yaml_imu_x_std_dev;
     double yaml_imu_y_std_dev;
     double yaml_imu_heading_std_dev;
@@ -51,9 +56,10 @@ struct NoiseInputs {
     double yaml_lidar_offset;
     double yaml_max_cone_range;
     double yaml_turning_max_cone_range;
-    double yaml_dist_from_start_lc_th;
+    double yaml_dist_from_start_loop_closure_th;
     double yaml_m_dist_th;
     double yaml_turning_m_dist_th;
+    int yaml_update_iterations_n;
 };
 
 enum class RunSettings {
@@ -125,6 +131,18 @@ private:
 
 
     /* Tunable and adjustable parameters */
+    int look_radius;
+    int min_cones_update_all;
+    int window_update;
+
+    double imu_offset; // meters; offset from the center of the car
+    double lidar_offset; // meters; offset from the center of the car
+    double max_cone_range; // meters; how far from the car will we accept a cone to process
+    double turning_max_cone_range; //meters; how far from the car will we accept a cone to process
+    double dist_from_start_loop_closure_th;
+    double m_dist_th;
+    double turning_m_dist_th;
+    int update_iterations_n;
 
     void update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_landmarks, 
                                                                 std::vector<gtsam::Point2>& color_slam_est, 
@@ -153,6 +171,8 @@ private:
     void print_estimates();
 
     void stability_update(bool sliding_window);
+
+    void log_params_in_use(bool has_value);
 
 
 

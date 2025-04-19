@@ -1,20 +1,31 @@
 slam_validation:
   ros__parameters:
     use_yaml: true
+    yaml_prior_imu_x_std_dev: 0.22
+    yaml_prior_imu_y_std_dev: 0.22
+    yaml_prior_imu_heading_std_dev: 0.00872665
+
     yaml_bearing_std_dev: 0.00045
     yaml_range_std_dev: 0.03
+    
     yaml_imu_x_std_dev: 0.22
     yaml_imu_y_std_dev: 0.22
     yaml_imu_heading_std_dev: 0.00872665
+
     yaml_gps_x_std_dev: 0.01
     yaml_gps_y_std_dev: 0.01
-    yaml_look_radius: 10
-    yaml_min_cones_update_all: 120
-    yaml_window_update: 20
+
+    yaml_look_radius: 20 
+    yaml_min_cones_update_all: 50
+    yaml_window_update: 0
+
     yaml_imu_offset : 0.3
     yaml_lidar_offset: 0.3
-    yaml_max_cone_range: 15
-    yaml_turning_max_cone_range: 15
-    yaml_dist_from_start_lc_th: 5
-    yaml_m_dist_th: 100.0009
+
+    yaml_max_cone_range: 15.0
+    yaml_turning_max_cone_range: 15.0
+    yaml_dist_from_start_loop_closure_th: 5.0
+
+    yaml_m_dist_th: 0.0009
     yaml_turning_m_dist_th: 0.0009
+    yaml_update_iterations_n: 10
