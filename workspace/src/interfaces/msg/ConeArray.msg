@@ -2,12 +2,7 @@
 
 std_msgs/Header header
 
-builtin_interfaces/Time orig_data_stamp
-
-# White space and comments won't affect message files.
-# Just make sure that the message files match 
-# between publisher and subscriber in terms of 
-# datatypes and the order the datatypes are listed.
+builtin_interfaces/Time controller_receive_time
 
 geometry_msgs/Point[] blue_cones
 std_msgs/Int32 number

@@ -88,7 +88,11 @@
         "span": "cpp",
         "stop_token": "cpp",
         "syncstream": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "*.ipp": "cpp",
+        "hash_set": "cpp",
+        "rope": "cpp",
+        "slist": "cpp"
     },
     "python.autoComplete.extraPaths": [
         "/home/danielnguyen/cmr/iSAM2_SLAM/workspace/install/interfaces/lib/python3.8/site-packages",

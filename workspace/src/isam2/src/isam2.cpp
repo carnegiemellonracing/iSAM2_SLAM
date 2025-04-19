@@ -19,6 +19,9 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
     blue_n_landmarks = static_cast<std::size_t>(0);
     yellow_n_landmarks = static_cast<std::size_t>(0);
 
+    blue_checkpoint_id = static_cast<std::size_t>(0);
+    yellow_checkpoint_id = static_cast<std::size_t>(0);
+
 
     
     LandmarkNoiseModel = gtsam::Vector(2);
@@ -260,7 +263,12 @@ void slamISAM::update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odo
 
 }
 
-
+void fake_assert(bool condition) {
+    if (!condition) {
+        throw("Assertion failed");
+    }
+    return;
+}
 
 
 /**
@@ -344,13 +352,16 @@ int slamISAM::update_landmarks(const std::vector<Old_cone_info> &old_cones,
 void slamISAM::cone_proximity_updates(std::size_t pivot, std::size_t n_landmarks,
                                     std::vector<gtsam::Point2> &color_slam_est, std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                                     gtsam::Symbol (*cone_key)(int)) {
-
     for (std::size_t i = std::max(pivot - look_radius, static_cast<std::size_t>(0)); i < std::min(pivot + look_radius, n_landmarks); i++) {
+        fake_assert(n_landmarks == color_slam_est.size());
+        fake_assert(i < color_slam_est.size() && i >= 0);
         gtsam::Point2 updated_est = isam2.calculateEstimate(cone_key(i)).cast<Point2>();
         color_slam_est.at(i) = updated_est;
     }
 
     for (std::size_t i = std::max(pivot- look_radius, static_cast<std::size_t>(0)); i < std::min(pivot + look_radius, n_landmarks); i++) {
+        fake_assert(i < color_slam_mcov.size() && i >= 0);
+        fake_assert(n_landmarks == color_slam_mcov.size());
         Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(i));
         color_slam_mcov.at(i) = updated_mcov;
     }
@@ -380,7 +391,7 @@ std::pair<int, int> slamISAM::update_slam_est_and_mcov_with_old(std::vector<Old_
         Eigen::MatrixXd updated_mcov = isam2.marginalCovariance(cone_key(curr.min_id));
         color_slam_mcov.at(curr.min_id) = updated_mcov;
     }                                     
-    assert(highest_id >= 0 && lowest_id < std::max(blue_n_landmarks, yellow_n_landmarks));
+    fake_assert(highest_id >= 0 && lowest_id < std::max(blue_n_landmarks, yellow_n_landmarks));
     std::pair<int, int> lo_and_hi(lowest_id, highest_id);
     return lo_and_hi;
 }
@@ -398,11 +409,14 @@ void slamISAM::update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_
         Eigen::MatrixXd new_mcov = isam2.marginalCovariance(cone_key(i));
         color_slam_mcov.push_back(new_mcov);
     }
+    assert(color_slam_mcov.size() == new_n_landmarks);
+    log_string(logger, "\t\tLeaving update_slam_est_and_mcov_with_new\n", DEBUG_UPDATE);
 }
 
 void slamISAM::update_all_est_mcov(int n_landmarks, std::vector<gtsam::Point2>& color_slam_est, 
                                                     std::vector<Eigen::MatrixXd>& color_slam_mcov, 
                                                     gtsam::Symbol(*cone_key)(int)) {
+    log_string(logger, "\t\tEntering update_all_est_mcov\n", DEBUG_UPDATE);
     color_slam_est.clear();
     color_slam_mcov.clear();
     for (int i= 0; i < n_landmarks; i++) {
@@ -411,6 +425,7 @@ void slamISAM::update_all_est_mcov(int n_landmarks, std::vector<gtsam::Point2>& 
     for (int i= 0; i < n_landmarks; i++) {
         color_slam_mcov.push_back(isam2.marginalCovariance(cone_key(i)));
     }
+    log_string(logger, "\t\tLeaving update_all_est_mcov\n", DEBUG_UPDATE);
 }
 
 void slamISAM::update_beginning(std::vector<gtsam::Point2>& color_slam_est, 
@@ -435,26 +450,34 @@ void slamISAM::update_beginning(std::vector<gtsam::Point2>& color_slam_est,
  */
 void slamISAM::stability_update(bool sliding_window) {
     /* For numerical stability */
+    log_string(logger, "\t\tEntering stability_update\n", DEBUG_UPDATE);
     if (!(blue_n_landmarks >= min_cones_update_all && yellow_n_landmarks >= min_cones_update_all)) {
         update_all_est_mcov(blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
         update_all_est_mcov(yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
     } else {
         if (sliding_window) {
+            log_string(logger, "\t\tSliding window update\n", DEBUG_UPDATE);
             /* Perform iterative update */
+            
             for (int i = 0; i < update_iterations_n; i++) {
+                log_string(logger, fmt::format("\t\tblue_checkpoint_id: {}", blue_checkpoint_id), DEBUG_UPDATE);
                 cone_proximity_updates(blue_checkpoint_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L); 
+                log_string(logger, fmt::format("\t\tyellow_checkpoint_id: {}", yellow_checkpoint_id), DEBUG_UPDATE);
                 cone_proximity_updates(yellow_checkpoint_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L); 
             }
 
             blue_checkpoint_id = (blue_checkpoint_id + window_update) % (blue_n_landmarks - window_update);
             yellow_checkpoint_id = (yellow_checkpoint_id + window_update) % (yellow_n_landmarks - window_update);
         } else if (blue_n_landmarks > checkpoint_to_update_beginning && yellow_n_landmarks > checkpoint_to_update_beginning) {
+            log_string(logger, "\t\tUpdate beginning\n", DEBUG_UPDATE);
             update_beginning(blue_slam_est, blue_slam_mcov, BLUE_L);
             update_beginning(yellow_slam_est, yellow_slam_mcov, YELLOW_L);
 
             checkpoint_to_update_beginning += UPDATE_START_N;
         }
     }
+
+    log_string(logger, "\t\tLeaving stability_update\n", DEBUG_UPDATE);
 }
 
 
@@ -573,47 +596,64 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
         blue_n_landmarks = update_landmarks(blue_old_cones, blue_new_cones, blue_n_landmarks, cur_pose, BLUE_L);
         yellow_n_landmarks = update_landmarks(yellow_old_cones, yellow_new_cones, yellow_n_landmarks, cur_pose, YELLOW_L);
+        
         log_string(logger, fmt::format("\t\tFinished updating isam2 model with new and old cones"), DEBUG_STEP);
-
-
-        /* Updating slam_est and slam_mcov vectors with the old cone information */         
+        update_slam_est_and_mcov_with_new(old_blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+        update_slam_est_and_mcov_with_new(old_yellow_n_landmarks, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+        
+        /* Updating slam_est and slam_mcov vectors with the old cone information */       
+        log_string(logger, "\t\tUpdating slam_est and slam_mcov", DEBUG_STEP);  
         if (blue_n_landmarks >= min_cones_update_all && yellow_n_landmarks >= min_cones_update_all) {
-            std::pair<int, int> blue_lo_and_hi = update_slam_est_and_mcov_with_old(blue_old_cones, 
-                                                                            blue_slam_est, blue_slam_mcov, BLUE_L);
-            std::pair<int, int> yellow_lo_and_hi = update_slam_est_and_mcov_with_old(yellow_old_cones, 
-                                                                            yellow_slam_est, yellow_slam_mcov, YELLOW_L);
-            int lowest_blue_id = blue_lo_and_hi.first;
-            int highest_blue_id = blue_lo_and_hi.second;
-            int lowest_yellow_id =  yellow_lo_and_hi.first;
-            int highest_yellow_id = yellow_lo_and_hi.second;       
+            log_string(logger, fmt::format("\t\tNum blue old cones: {} | Num yellow old cones: {}", blue_old_cones.size(), yellow_old_cones.size()), DEBUG_UPDATE);
+            if (blue_old_cones.size() > 0) {
+                std::pair<int, int> blue_lo_and_hi = update_slam_est_and_mcov_with_old(blue_old_cones, 
+                                                                                blue_slam_est, blue_slam_mcov, BLUE_L);
 
-            /* Updating slam_est and slam_mcov with the new cone information */
-            update_slam_est_and_mcov_with_new(old_blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-            update_slam_est_and_mcov_with_new(old_yellow_n_landmarks, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+                int lowest_blue_id = blue_lo_and_hi.first;
+                int highest_blue_id = blue_lo_and_hi.second;
+                log_string(logger, "\t\tUpdating blue cone est after update_landmarks", DEBUG_UPDATE);
+                
+                cone_proximity_updates(lowest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+                cone_proximity_updates(highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+                cone_proximity_updates(blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
+            }
+
+            if (yellow_old_cones.size() > 0) {
+                std::pair<int, int> yellow_lo_and_hi = update_slam_est_and_mcov_with_old(yellow_old_cones, 
+                                                                                yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+                int lowest_yellow_id =  yellow_lo_and_hi.first;
+                int highest_yellow_id = yellow_lo_and_hi.second;       
+                log_string(logger, "\t\tUpdating yellow cone est after update_landmarks", DEBUG_UPDATE);
+                /* Updating slam_est and slam_mcov with the new cone information */
+        
+                
+                cone_proximity_updates(lowest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+                cone_proximity_updates(highest_yellow_id,yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+                cone_proximity_updates(yellow_n_landmarks,yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
+            }
+            
 
 
             /* Extra updates */
-            cone_proximity_updates(lowest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-            cone_proximity_updates(highest_blue_id, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-            cone_proximity_updates(lowest_yellow_id, yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
-            cone_proximity_updates(highest_yellow_id,yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
 
-            cone_proximity_updates(blue_n_landmarks, blue_n_landmarks, blue_slam_est, blue_slam_mcov, BLUE_L);
-            cone_proximity_updates(yellow_n_landmarks,yellow_n_landmarks, yellow_slam_est, yellow_slam_mcov, YELLOW_L);
         }
-        stability_update(true);
+        if (blue_n_landmarks > 0 && yellow_n_landmarks > 0) {
+            stability_update(true);
+        }
         auto end_update_landmarks = high_resolution_clock::now();
         auto dur_update_landmarks = duration_cast<milliseconds>(end_update_landmarks - start_update_landmarks);
 
         log_string(logger, fmt::format("\tUpdate_landmarks time: {}", dur_update_landmarks.count()), DEBUG_STEP);
     }
 
-    pose_num++;
+    
 
 
 
     /* Logging estimates for visualization */
     auto start_vis_setup = high_resolution_clock::now();
+    log_string(logger, fmt::format("\t\tblue_n_landmarks: {} | blue_slam_est: {}", blue_n_landmarks, blue_slam_est.size()), DEBUG_VIZ);
+    log_string(logger, fmt::format("\t\tyellow_n_landmarks: {} | yellow_slam_est: {}", yellow_n_landmarks, yellow_slam_est.size()), DEBUG_VIZ);
     print_estimates();
     auto end_vis_setup = high_resolution_clock::now();
     auto dur_vis_setup = duration_cast<milliseconds>(end_vis_setup - start_vis_setup);
@@ -629,6 +669,8 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
 
     log_string(logger, fmt::format("\tpose_num: {} | blue_n_landmarks: {} | yellow_n_landmarks : {}", 
                         pose_num - 1, blue_n_landmarks, yellow_n_landmarks), DEBUG_STEP);
+
+    pose_num++;
 }
 
 
@@ -639,7 +681,8 @@ void slamISAM::print_estimates() {
     ofs.open(ESTIMATES_FILE, std::ofstream::out | std::ofstream::trunc);
     streambuf *coutbuf = std::cout.rdbuf(); //save old buf
     cout.rdbuf(ofs.rdbuf());
-
+    assert (blue_n_landmarks == blue_slam_est.size());
+    assert (yellow_n_landmarks == yellow_slam_est.size());
     for (std::size_t i = 0; i < blue_n_landmarks; i++) {
         gtsam::Point2 blue_cone = blue_slam_est.at(i);
         std::cout << "Value b:" << blue_cone.x() << ":" << blue_cone.y() << std::endl;

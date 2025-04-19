@@ -6,6 +6,7 @@ constexpr bool DEBUG_POSES = true;
 constexpr bool DEBUG_STEP = true;
 constexpr bool DEBUG_VIZ = true;
 constexpr bool DEBUG_PARAMS_IN_USE = true;
+constexpr bool DEBUG_UPDATE = true;
 
 const std::string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 constexpr bool EUFS_SIM_SETTINGS = false;

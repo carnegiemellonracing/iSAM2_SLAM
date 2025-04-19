@@ -25,8 +25,8 @@ slam_validation:
     yaml_window_update: 0 # sliding window cone update 
 
     # Hardware offsets for IMU and LIDAR
-    yaml_imu_offset : 0.3 
-    yaml_lidar_offset: 0.3
+    yaml_imu_offset : 0.0 
+    yaml_lidar_offset: 1.0
 
     # Parameters for limiting what cones we consider for update 
     yaml_max_cone_range: 15.0
