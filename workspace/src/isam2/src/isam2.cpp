@@ -108,6 +108,8 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
         m_dist_th = yaml_noise_inputs.value().yaml_m_dist_th;
         turning_m_dist_th = yaml_noise_inputs.value().yaml_turning_m_dist_th;
         update_iterations_n = yaml_noise_inputs.value().yaml_update_iterations_n;
+
+        return_n_cones = yaml_noise_inputs.value().yaml_return_n_cones;
     } else {
         look_radius = LOOK_RADIUS; // tell us how many cones back and forth to update in slam_est
         min_cones_update_all = MIN_CONES_UPDATE_ALL;
@@ -123,6 +125,8 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
         m_dist_th = M_DIST_TH;
         turning_m_dist_th = TURNING_M_DIST_TH;
         update_iterations_n = UPDATE_ITERATIONS_N;
+
+        return_n_cones = RETURN_N_CONES;
     }
 
     log_params_in_use(yaml_noise_inputs.has_value());
@@ -480,23 +484,18 @@ std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::ms
 
     // If there is less than 20 cones, take the entire vector
     // Otherwise, take 20 most recent (from back)
-    if (blue_slam_est.size() < 20)
-    {
+    if (blue_slam_est.size() < return_n_cones) {
         geometry_points_blue = point2_to_geometrymsg(blue_slam_est);
+    } else {
+        std::vector<gtsam::Point2> last_n_blue(blue_slam_est.end() - return_n_cones, blue_slam_est.end());
+        geometry_points_blue = point2_to_geometrymsg(last_n_blue);
     }
-    else
-    {
-        std::vector<gtsam::Point2> last_20_blue(blue_slam_est.end() - 20, blue_slam_est.end());
-        geometry_points_blue = point2_to_geometrymsg(last_20_blue);
-    }
-    if (yellow_slam_est.size() < 20)
-    {
+
+    if (yellow_slam_est.size() < return_n_cones){
         geometry_points_yellow = point2_to_geometrymsg(yellow_slam_est);
-    }
-    else
-    {
-        std::vector<gtsam::Point2> last_20_yellow(yellow_slam_est.end() - 20, yellow_slam_est.end());
-        geometry_points_yellow = point2_to_geometrymsg(last_20_yellow);
+    } else   {
+        std::vector<gtsam::Point2> last_n_yellow(yellow_slam_est.end() - return_n_cones, yellow_slam_est.end());
+        geometry_points_yellow = point2_to_geometrymsg(last_n_yellow);
     }
 
     geometry_msgs::msg::Vector3 final_pose = geometry_msgs::msg::Vector3();

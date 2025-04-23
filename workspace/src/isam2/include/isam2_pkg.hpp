@@ -61,6 +61,8 @@ struct NoiseInputs {
     double yaml_m_dist_th;
     double yaml_turning_m_dist_th;
     int yaml_update_iterations_n;
+
+    int yaml_return_n_cones;
 };
 
 enum class RunSettings {
@@ -144,6 +146,7 @@ private:
     double m_dist_th;
     double turning_m_dist_th;
     int update_iterations_n;
+    int return_n_cones;
 
     void update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_landmarks, 
                                                                 std::vector<gtsam::Point2>& color_slam_est, 

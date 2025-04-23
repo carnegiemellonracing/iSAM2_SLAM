@@ -113,3 +113,5 @@ constexpr int UPDATE_START_AFTER_N = 50;
 constexpr int UPDATE_START_N = 30;
 constexpr int WINDOW_UPDATE = 0;
 constexpr int UPDATE_ITERATIONS_N = 5;
+
+constexpr int RETURN_N_CONES = 20;
