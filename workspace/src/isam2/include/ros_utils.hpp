@@ -47,7 +47,7 @@ void log_string (std::optional<rclcpp::Logger> logger, std::string input_string,
 
 void imu_axes_to_DV_axes(double &x, double &y);
 
-std::vector<geometry_msgs::msg::Point> point2_to_geometrymsg (std::vector<geometry_msgs::msg::Point> geometry_points, std::vector<gtsam::Point2> gtsam_points);
+std::vector<geometry_msgs::msg::Point> point2_to_geometrymsg (std::vector<gtsam::Point2> gtsam_points);
 
 /* Functions for converting ros messages to relevant data types */
 void cone_msg_to_vectors(const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,

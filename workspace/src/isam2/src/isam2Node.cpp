@@ -35,6 +35,8 @@ private:
     high_resolution_clock::time_point cur_sync_callback_time;
     optional<high_resolution_clock::time_point> prev_sync_callback_time;
 
+    rclcpp::Publisher<interfaces::msg::SLAMData>::SharedPtr slam_publisher_;
+
     message_filters::Subscriber<cone_msg_t> cone_sub;
     // message_filters::Subscriber<position_msg_t> vehicle_pos_sub;
     message_filters::Subscriber<velocity_msg_t> vehicle_vel_sub;
@@ -117,16 +119,15 @@ private:
         RCLCPP_INFO(this->get_logger(), "\tSync callback time: %ld \n", sync_data_duration.count());
 
 
-        std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, Pose2> SLAMData = run_slam();
+        std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, geometry_msgs::msg::Vector3> SLAMData = run_slam();
 
         interfaces::msg::SLAMData message = interfaces::msg::SLAMData();
         
-        message.header = msg->header;
         message.blue_cones = std::get<0>(SLAMData);
         message.yellow_cones = std::get<1>(SLAMData);
         message.curr_pose = std::get<2>(SLAMData);
 
-        slam_publisher_->publish();
+        slam_publisher_->publish(message);
 
         RCLCPP_INFO(this->get_logger(), "--------End of Sync Callback--------\n\n");
         prev_sync_callback_time.emplace(high_resolution_clock::now());
@@ -214,7 +215,8 @@ private:
         RCLCPP_INFO(this->get_logger(), "\tAngle callback time: %ld", vehicle_angle_callback_duration.count());
     }
 
-    std::tuple<std::vector<Point2>, std::vector<Point2>, gtsam::Pose2> run_slam()
+    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>,
+                                        geometry_msgs::msg::Vector3> run_slam()
     {
         RCLCPP_INFO(this->get_logger(), "\tRunning SLAM");
 
@@ -235,10 +237,6 @@ public:
     SLAMValidation(): Node("slam_validation")
     {
         slam_publisher_ = this->create_publisher<interfaces::msg::SLAMData>(SLAM_TOPIC, 10);
-        timer_ = this->create_wall_timer(
-            std::chrono::milliseconds(500),
-            std::bind(&SLAMValidation::publish_message, this)
-        );
 
         this->declare_parameter<bool>("use_yaml", false);
         this->declare_parameter<double>("yaml_prior_imu_x_std_dev", IMU_X_STD_DEV);

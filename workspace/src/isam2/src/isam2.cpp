@@ -489,7 +489,7 @@ void slamISAM::stability_update(bool sliding_window) {
  * 
  * @return: std::tuple<std::vector<Point2>, std::vector<Point2>, Pose2>
  */
-std::tuple<std::vector<Point2>, std::vector<Point2>, gtsam::Pose2> slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
+std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, geometry_msgs::msg::Vector3> slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
             std::vector<Point2> &orange_ref_cones, Pose2 velocity,
             double dt) {
@@ -513,7 +513,8 @@ std::tuple<std::vector<Point2>, std::vector<Point2>, gtsam::Pose2> slamISAM::ste
     
     /*Quit the update step if the car is not moving*/ 
     if (!is_moving && pose_num > 0) {
-        return;
+        // Return empty tuple to represent "Null"
+        return std::make_tuple(std::vector<geometry_msgs::msg::Point>(), std::vector<geometry_msgs::msg::Point>(), geometry_msgs::msg::Vector3());
     }
 
     /**** Update the car pose ****/
@@ -682,12 +683,17 @@ std::tuple<std::vector<Point2>, std::vector<Point2>, gtsam::Pose2> slamISAM::ste
         geometry_points_yellow = point2_to_geometrymsg(yellow_slam_est);
     }
     else {
-        std::vector<Point2> last_20_yellow(yellow_slam_est.end() - 20, yellow_slam_est.end());
+        std::vector<gtsam::Point2> last_20_yellow(yellow_slam_est.end() - 20, yellow_slam_est.end());
         geometry_points_yellow = point2_to_geometrymsg(last_20_yellow);
     }
 
-    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, Pose2> SLAMData = 
-                        make_tuple(geometry_points_blue, geometry_points_yellow, cur_pose);
+    geometry_msgs::msg::Vector3 final_pose = geometry_msgs::msg::Vector3();
+    final_pose.x = cur_pose.x();
+    final_pose.y = cur_pose.y();
+
+    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, 
+                                                        geometry_msgs::msg::Vector3> 
+                SLAMData = make_tuple(geometry_points_blue, geometry_points_yellow, final_pose);
     return SLAMData;
 }
 

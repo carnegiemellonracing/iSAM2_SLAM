@@ -1,3 +1,4 @@
+#include "ros_utils.hpp"
 // #include "isam2.hpp"
 #include <bits/stdc++.h>
 // Camera observations of landmarks will be stored as Point2 (x, y).
@@ -188,10 +189,9 @@ public:
                                 int n_landmarks, 
                                 Pose2 &cur_pose, gtsam::Symbol (*cone_key)(int));
 
-    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, Pose2> step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
-                std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
-                std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
-                double dt);
-    
-
+    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, 
+        geometry_msgs::msg::Vector3> step(gtsam::Pose2 global_odom, std::vector<Point2> &cone_obs,
+                                                                                                                                 std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
+                                                                                                                                 std::vector<Point2> &orange_ref_cones, gtsam::Pose2 velocity,
+                                                                                                                                 double dt);
 };

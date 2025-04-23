@@ -37,8 +37,11 @@ void imu_axes_to_DV_axes(double &x, double &y) {
 
 std::vector<geometry_msgs::msg::Point> point2_to_geometrymsg (std::vector<gtsam::Point2> gtsam_points) {
     std::vector<geometry_msgs::msg::Point> geometry_points = {};
-    for (int i=0; i<points.size(); i++) {
-        geometry_points.emplace_back(gtsam_points[i].x(), gtsam_points[i].y());
+    for (int i=0; i<gtsam_points.size(); i++) {
+        geometry_msgs::msg::Point point = geometry_msgs::msg::Point();
+        point.x = gtsam_points[i].x();
+        point.y = gtsam_points[i].y();
+        geometry_points.emplace_back(point);
     }  
     return geometry_points;
 }
