@@ -108,6 +108,8 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
         m_dist_th = yaml_noise_inputs.value().yaml_m_dist_th;
         turning_m_dist_th = yaml_noise_inputs.value().yaml_turning_m_dist_th;
         update_iterations_n = yaml_noise_inputs.value().yaml_update_iterations_n;
+
+        return_n_cones = yaml_noise_inputs.value().yaml_return_n_cones;
     } else {
         look_radius = LOOK_RADIUS; // tell us how many cones back and forth to update in slam_est
         min_cones_update_all = MIN_CONES_UPDATE_ALL;
@@ -123,6 +125,8 @@ slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<Noi
         m_dist_th = M_DIST_TH;
         turning_m_dist_th = TURNING_M_DIST_TH;
         update_iterations_n = UPDATE_ITERATIONS_N;
+
+        return_n_cones = RETURN_N_CONES;
     }
 
     log_params_in_use(yaml_noise_inputs.has_value());
@@ -473,7 +477,33 @@ void slamISAM::stability_update(bool sliding_window) {
     log_string(logger, "\t\tLeaving stability_update\n", DEBUG_UPDATE);
 }
 
+std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, geometry_msgs::msg::Vector3>
+ slamISAM::get_recent_SLAM_estimates (std::vector<gtsam::Point2>& blue_est, std::vector<gtsam::Point2>& yellow_est, gtsam::Pose2& pose) {
+    std::vector<geometry_msgs::msg::Point> geometry_points_blue = {};
+    std::vector<geometry_msgs::msg::Point> geometry_points_yellow = {};
 
+    // If there is less than 20 cones, take the entire vector
+    // Otherwise, take 20 most recent (from back)
+    if (blue_slam_est.size() < return_n_cones) {
+        geometry_points_blue = point2_to_geometrymsg(blue_slam_est);
+    } else {
+        std::vector<gtsam::Point2> last_n_blue(blue_slam_est.end() - return_n_cones, blue_slam_est.end());
+        geometry_points_blue = point2_to_geometrymsg(last_n_blue);
+    }
+
+    if (yellow_slam_est.size() < return_n_cones){
+        geometry_points_yellow = point2_to_geometrymsg(yellow_slam_est);
+    } else   {
+        std::vector<gtsam::Point2> last_n_yellow(yellow_slam_est.end() - return_n_cones, yellow_slam_est.end());
+        geometry_points_yellow = point2_to_geometrymsg(last_n_yellow);
+    }
+
+    geometry_msgs::msg::Vector3 final_pose = geometry_msgs::msg::Vector3();
+    final_pose.x = pose.x();
+    final_pose.y = pose.y();
+
+    return std::make_tuple(geometry_points_blue, geometry_points_yellow, final_pose);
+}
 
 /**
  * @brief Processes odometry information and cone information 
@@ -513,8 +543,7 @@ std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::ms
     
     /*Quit the update step if the car is not moving*/ 
     if (!is_moving && pose_num > 0) {
-        // Return empty tuple to represent "Null"
-        return std::make_tuple(std::vector<geometry_msgs::msg::Point>(), std::vector<geometry_msgs::msg::Point>(), geometry_msgs::msg::Vector3());
+        return get_recent_SLAM_estimates(blue_slam_est, yellow_slam_est, cur_pose);
     }
 
     /**** Update the car pose ****/
@@ -666,35 +695,7 @@ std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::ms
 
     pose_num++;
 
-
-    std::vector<geometry_msgs::msg::Point> geometry_points_blue = {}; 
-    std::vector<geometry_msgs::msg::Point> geometry_points_yellow = {}; 
-
-    // If there is less than 20 cones, take the entire vector
-    // Otherwise, take 20 most recent (from back)
-    if (blue_slam_est.size() < 20) {
-        geometry_points_blue = point2_to_geometrymsg(blue_slam_est);
-    }
-    else {
-        std::vector<gtsam::Point2> last_20_blue(blue_slam_est.end() - 20, blue_slam_est.end());
-        geometry_points_blue = point2_to_geometrymsg(last_20_blue);
-    }
-    if (yellow_slam_est.size() < 20) {
-        geometry_points_yellow = point2_to_geometrymsg(yellow_slam_est);
-    }
-    else {
-        std::vector<gtsam::Point2> last_20_yellow(yellow_slam_est.end() - 20, yellow_slam_est.end());
-        geometry_points_yellow = point2_to_geometrymsg(last_20_yellow);
-    }
-
-    geometry_msgs::msg::Vector3 final_pose = geometry_msgs::msg::Vector3();
-    final_pose.x = cur_pose.x();
-    final_pose.y = cur_pose.y();
-
-    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, 
-                                                        geometry_msgs::msg::Vector3> 
-                SLAMData = make_tuple(geometry_points_blue, geometry_points_yellow, final_pose);
-    return SLAMData;
+    return get_recent_SLAM_estimates(blue_slam_est, yellow_slam_est, cur_pose);
 }
 
 

@@ -61,6 +61,8 @@ struct NoiseInputs {
     double yaml_m_dist_th;
     double yaml_turning_m_dist_th;
     int yaml_update_iterations_n;
+
+    int yaml_return_n_cones;
 };
 
 enum class RunSettings {
@@ -144,6 +146,7 @@ private:
     double m_dist_th;
     double turning_m_dist_th;
     int update_iterations_n;
+    int return_n_cones;
 
     void update_slam_est_and_mcov_with_new(int old_n_landmarks, int new_n_landmarks, 
                                                                 std::vector<gtsam::Point2>& color_slam_est, 
@@ -175,10 +178,10 @@ private:
 
     void log_params_in_use(bool has_value);
 
+    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, geometry_msgs::msg::Vector3>
+    get_recent_SLAM_estimates(std::vector<gtsam::Point2> &blue_est, std::vector<gtsam::Point2> &yellow_est, gtsam::Pose2 &pose);
 
-
-public:
-    slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs>& yaml_noise_inputs);
+    public : slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs> &yaml_noise_inputs);
     slamISAM(){}; /* Empty constructor */
 
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,

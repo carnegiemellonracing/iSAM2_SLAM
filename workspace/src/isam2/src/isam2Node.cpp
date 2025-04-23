@@ -263,6 +263,7 @@ public:
         this->declare_parameter<double>("yaml_m_dist_th", M_DIST_TH);
         this->declare_parameter<double>("yaml_turning_m_dist_th", TURNING_M_DIST_TH);
         this->declare_parameter<int>("yaml_update_iterations_n", UPDATE_ITERATIONS_N);
+        this->declare_parameter<int>("yaml_return_n_cones", RETURN_N_CONES);
 
 
 
@@ -335,8 +336,9 @@ public:
 
                 .yaml_m_dist_th = this->get_parameter("yaml_m_dist_th").as_double(),
                 .yaml_turning_m_dist_th = this->get_parameter("yaml_turning_m_dist_th").as_double(),
-                .yaml_update_iterations_n = this->get_parameter("yaml_update_iterations_n").as_int()
+                .yaml_update_iterations_n = this->get_parameter("yaml_update_iterations_n").as_int(),
                 
+                .yaml_return_n_cones = this->get_parameter("yaml_return_n_cones").as_int()
                 };
         } 
         slam_instance = slamISAM(this->get_logger(), noise_inputs);
