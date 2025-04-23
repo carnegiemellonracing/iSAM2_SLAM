@@ -17,30 +17,8 @@ from rosbags.interfaces import ConnectionExtRosbag2
 import os
 import shutil
 from typing import TYPE_CHECKING, cast
+import sys
 
-input_bag = 'second-run/'
-output_bag = 'minion-cranberry-juice/'
-
-# How were these calculated: ros2 topic echo /lidar_points and
-# /filter/velocity and then end the rosbag and analyze the timestamps
-# This is for fourth-run-mock-demo
-# delta_sec = 120587229
-# delta_nanosec = 285524633
-#
-# This is for third-run-demo-practice-five-laps
-delta_sec = 120583537
-delta_nanosec = 611264776
-
-# Used for trimming the rosbag
-# Times for fourth run stamped
-# start_trim = 1714592825
-# Personal notes 1714592862 is the start of the second lap
-# end_trim = 1714592899
-#
-# Times for third run stamped
-# start_trim = 1714503088 # The car hasn't started moving yet
-start_trim = 1714587692
-end_trim = 1714587992
 
 typestore = get_typestore(Stores.LATEST)
 custom_msg_paths = [
@@ -63,9 +41,43 @@ def bag_info():
     typestore.register(add_types)
 
 
+def parse_arguments():
+    assert(len(sys.argv) == 6)
+    # How were these calculated: ros2 topic echo /lidar_points and
+    # /filter/velocity and then end the rosbag and analyze the timestamps
+    # This is for fourth-run-mock-demo
+    # delta_sec = 120587229
+    # delta_nanosec = 285524633
+    #
+    # This is for third-run-demo-practice-five-laps
+    delta_sec = sys.argv[1]
+    delta_nanosec = sys.argv[2]
+
+    # Used for trimming the rosbag
+    # Times for fourth run stamped
+    # start_trim = 1714592825
+    # Personal notes 1714592862 is the start of the second lap
+    # end_trim = 1714592899
+    #
+    # Times for third run stamped
+    # start_trim = 1714503088 # The car hasn't started moving yet
+    start_trim = sys.argv[3]
+    end_trim = sys.argv[4]
+
+
+    prefix = "./"
+    input_bag = sys.argv[5]
+    output_bag = sys.argv[6]
+
+    return (delta_sec, delta_nanosec), (start_trim, end_trim), (input_bag, output_bag)
+
+
 
 
 def modify_timestamps():
+    (delta_sec, delta_nanosec), (start_trim, end_trim), (input_bag, output_bag) = parse_arguments()
+
+
     if os.path.exists(output_bag):
         print("\n\nIssue: the output directory", output_bag, "already exists\n")
         shutil.rmtree(output_bag)
@@ -97,6 +109,8 @@ def modify_timestamps():
             else:
                 orig_sec = timestamp / 1e9
                 print("Timestamp seconds of non /lidar_points message", orig_sec)
+
+                # This is the trimming logic
                 if orig_sec >= start_trim and orig_sec <= end_trim:
                     writer.write(connection_map[connection.id], timestamp,
                             typestore.serialize_cdr(msg, connection.msgtype))
