@@ -175,10 +175,10 @@ private:
 
     void log_params_in_use(bool has_value);
 
+    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, geometry_msgs::msg::Vector3>
+    get_recent_SLAM_estimates(std::vector<gtsam::Point2> &blue_est, std::vector<gtsam::Point2> &yellow_est, gtsam::Pose2 &pose);
 
-
-public:
-    slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs>& yaml_noise_inputs);
+    public : slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<NoiseInputs> &yaml_noise_inputs);
     slamISAM(){}; /* Empty constructor */
 
     void update_poses(Pose2 &cur_pose, Pose2 &prev_pose, Pose2 &global_odom,
