@@ -487,9 +487,9 @@ void slamISAM::stability_update(bool sliding_window) {
  * @param velocity: the velocity of the car
  * @param dt: the change in time
  * 
- * @return: void
+ * @return: std::tuple<std::vector<Point2>, std::vector<Point2>, Pose2>
  */
-void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
+std::tuple<std::vector<Point2>, std::vector<Point2>, gtsam::Pose2> slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
             std::vector<Point2> &cone_obs_blue, std::vector<Point2> &cone_obs_yellow,
             std::vector<Point2> &orange_ref_cones, Pose2 velocity,
             double dt) {
@@ -664,6 +664,31 @@ void slamISAM::step(Pose2 global_odom, std::vector<Point2> &cone_obs,
                         pose_num - 1, blue_n_landmarks, yellow_n_landmarks), DEBUG_STEP);
 
     pose_num++;
+
+
+    std::vector<geometry_msgs::msg::Point> geometry_points_blue = {}; 
+    std::vector<geometry_msgs::msg::Point> geometry_points_yellow = {}; 
+
+    // If there is less than 20 cones, take the entire vector
+    // Otherwise, take 20 most recent (from back)
+    if (blue_slam_est.size() < 20) {
+        geometry_points_blue = point2_to_geometrymsg(blue_slam_est);
+    }
+    else {
+        std::vector<gtsam::Point2> last_20_blue(blue_slam_est.end() - 20, blue_slam_est.end());
+        geometry_points_blue = point2_to_geometrymsg(last_20_blue);
+    }
+    if (yellow_slam_est.size() < 20) {
+        geometry_points_yellow = point2_to_geometrymsg(yellow_slam_est);
+    }
+    else {
+        std::vector<Point2> last_20_yellow(yellow_slam_est.end() - 20, yellow_slam_est.end());
+        geometry_points_yellow = point2_to_geometrymsg(last_20_yellow);
+    }
+
+    std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, Pose2> SLAMData = 
+                        make_tuple(geometry_points_blue, geometry_points_yellow, cur_pose);
+    return SLAMData;
 }
 
 

@@ -8,6 +8,13 @@
  * @copyright Copyright (c) 2025
  * 
  */
+#include "rclcpp/rclcpp.hpp"
+
+#include "std_msgs/msg/string.hpp"
+#include "geometry_msgs/msg/point.hpp"
+#include "geometry_msgs/msg/vector3_stamped.hpp"
+#include "interfaces/msg/slam_data.hpp"
+
 #include "isam2_pkg.hpp"
 
 using namespace std;
@@ -110,7 +117,16 @@ private:
         RCLCPP_INFO(this->get_logger(), "\tSync callback time: %ld \n", sync_data_duration.count());
 
 
-        run_slam();
+        std::tuple<std::vector<geometry_msgs::msg::Point>, std::vector<geometry_msgs::msg::Point>, Pose2> SLAMData = run_slam();
+
+        interfaces::msg::SLAMData message = interfaces::msg::SLAMData();
+        
+        message.header = msg->header;
+        message.blue_cones = std::get<0>(SLAMData);
+        message.yellow_cones = std::get<1>(SLAMData);
+        message.curr_pose = std::get<2>(SLAMData);
+
+        slam_publisher_->publish();
 
         RCLCPP_INFO(this->get_logger(), "--------End of Sync Callback--------\n\n");
         prev_sync_callback_time.emplace(high_resolution_clock::now());
@@ -198,7 +214,7 @@ private:
         RCLCPP_INFO(this->get_logger(), "\tAngle callback time: %ld", vehicle_angle_callback_duration.count());
     }
 
-    void run_slam()
+    std::tuple<std::vector<Point2>, std::vector<Point2>, gtsam::Pose2> run_slam()
     {
         RCLCPP_INFO(this->get_logger(), "\tRunning SLAM");
 
@@ -210,16 +226,20 @@ private:
 	    * b.) Don't receive GPS message:
 	    * When we don't we want to use velocity and our SLAM estimate
 	    * to model our new pose */
-        slam_instance.step(global_odom, cones, blue_cones,
-                  yellow_cones, orange_cones, velocity, dt);
-
-
+        return slam_instance.step(global_odom, cones, blue_cones,
+                                    yellow_cones, orange_cones, velocity, dt);
     }
     
 
 public:
     SLAMValidation(): Node("slam_validation")
     {
+        slam_publisher_ = this->create_publisher<interfaces::msg::SLAMData>(SLAM_TOPIC, 10);
+        timer_ = this->create_wall_timer(
+            std::chrono::milliseconds(500),
+            std::bind(&SLAMValidation::publish_message, this)
+        );
+
         this->declare_parameter<bool>("use_yaml", false);
         this->declare_parameter<double>("yaml_prior_imu_x_std_dev", IMU_X_STD_DEV);
         this->declare_parameter<double>("yaml_prior_imu_y_std_dev", IMU_Y_STD_DEV);

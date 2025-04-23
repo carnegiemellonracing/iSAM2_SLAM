@@ -34,6 +34,15 @@ void imu_axes_to_DV_axes(double &x, double &y) {
     y = temp_x;
 }
 
+
+std::vector<geometry_msgs::msg::Point> point2_to_geometrymsg (std::vector<gtsam::Point2> gtsam_points) {
+    std::vector<geometry_msgs::msg::Point> geometry_points = {};
+    for (int i=0; i<points.size(); i++) {
+        geometry_points.emplace_back(gtsam_points[i].x(), gtsam_points[i].y());
+    }  
+    return geometry_points;
+}
+
 void vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data,
                         Pose2 &global_odom, optional<Point2> &init_lon_lat, rclcpp::Logger logger) {
     /* Doesn't depend on imu axes. These are global coordinates */ double latitude = vehicle_pos_data->vector.x;
