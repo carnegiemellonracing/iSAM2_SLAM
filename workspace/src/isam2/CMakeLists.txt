@@ -35,28 +35,49 @@ find_package(GTSAM REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(TBB REQUIRED)
 
-# <----  executable ---->
-file(GLOB SOURCES src/*.cpp)
-add_executable(isam2_run ${SOURCES})
+# <----  Executables ---->
+set(UTILS_SOURCES 
+    src/utils/ros_utils.cpp
+    src/utils/data_association.cpp
+    src/utils/loop_closure.cpp
+    )
 
-# linking
+set(ISAM2_SOURCES 
+    src/isam2/isam2.cpp
+    src/isam2/unary_factor.cpp
+    )
+add_executable(real_data_slam_node_gps src/nodes/real_data_slam_node_gps.cpp ${UTILS_SOURCES} ${ISAM2_SOURCES})
+add_executable(real_data_slam_node_no_gps src/nodes/real_data_slam_node_no_gps.cpp ${UTILS_SOURCES} ${ISAM2_SOURCES})
+add_executable(controls_sim_slam_node src/nodes/controls_sim_slam_node.cpp ${UTILS_SOURCES} ${ISAM2_SOURCES})
+
+# Linking
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
-  target_link_libraries(isam2_run PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen libfmt.so)
+  target_link_libraries(real_data_slam_node_gps PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen libfmt.so)
+  target_link_libraries(real_data_slam_node_no_gps PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen libfmt.so)
+  target_link_libraries(controls_sim_slam_node PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen libfmt.so)
 endif()
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
-  target_link_libraries(isam2_run PUBLIC libtbb.so libgtsam.so Eigen3::Eigen libfmt.so)
+  target_link_libraries(real_data_slam_node_gps PUBLIC libtbb.so libgtsam.so Eigen3::Eigen libfmt.so)
+  target_link_libraries(real_data_slam_node_no_gps PUBLIC libtbb.so libgtsam.so Eigen3::Eigen libfmt.so)
+  target_link_libraries(controls_sim_slam_node PUBLIC libtbb.so libgtsam.so Eigen3::Eigen libfmt.so)
 endif()
-ament_target_dependencies(isam2_run PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
+
+# Linking with ROS dependencies
+ament_target_dependencies(real_data_slam_node_gps PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
+ament_target_dependencies(real_data_slam_node_no_gps PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
+ament_target_dependencies(controls_sim_slam_node PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
 
 # including dependencies
-target_include_directories(isam2_run PUBLIC include ${GTSAM_INCLUDE_DIR} )
+target_include_directories(real_data_slam_node_gps PUBLIC include ${GTSAM_INCLUDE_DIR} )
+target_include_directories(real_data_slam_node_no_gps PUBLIC include ${GTSAM_INCLUDE_DIR} )
+target_include_directories(controls_sim_slam_node PUBLIC include ${GTSAM_INCLUDE_DIR} )
 
-install(TARGETS isam2_run
-  DESTINATION lib/${PROJECT_NAME})
+install(TARGETS real_data_slam_node_gps real_data_slam_node_no_gps controls_sim_slam_node
+        DESTINATION lib/${PROJECT_NAME})
 
 
 # <---- isam2_lib ---->
-add_library(isam2_lib SHARED ${SOURCES})
+add_library(isam2_lib SHARED src/nodes/real_data_slam_node_gps.cpp)
 # target_link_libraries(isam2_lib PUBLIC gtsam)
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
   target_link_libraries(isam2_lib PUBLIC libtbb.so libgtsamDebug.so Eigen3::Eigen libfmt.so)

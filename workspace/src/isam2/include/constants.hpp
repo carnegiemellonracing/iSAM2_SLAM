@@ -111,6 +111,7 @@ constexpr int LOOK_RADIUS = 20;
 constexpr int MIN_CONES_UPDATE_ALL = 50;
 constexpr int UPDATE_START_AFTER_N = 50;
 constexpr int UPDATE_START_N = 30;
+constexpr int UPDATE_RECENT_N = 20;
 constexpr int WINDOW_UPDATE = 0;
 constexpr int UPDATE_ITERATIONS_N = 5;
 

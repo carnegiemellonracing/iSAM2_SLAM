@@ -1,0 +1,8 @@
+Starting >>> interfaces
+Finished <<< interfaces [0.68s]
+Starting >>> isam2
+Aborted  <<< isam2 [1.25s]
+
+Summary: 1 package finished [2.10s]
+  1 package aborted: isam2
+  1 package had stderr output: isam2

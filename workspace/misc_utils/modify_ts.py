@@ -43,6 +43,8 @@ def bag_info():
 
 def parse_arguments():
     assert(len(sys.argv) == 6)
+
+
     # How were these calculated: ros2 topic echo /lidar_points and
     # /filter/velocity and then end the rosbag and analyze the timestamps
     # This is for fourth-run-mock-demo
@@ -81,6 +83,8 @@ def modify_timestamps():
     if os.path.exists(output_bag):
         print("\n\nIssue: the output directory", output_bag, "already exists\n")
         shutil.rmtree(output_bag)
+
+    
     with Reader(input_bag) as reader, Writer(output_bag) as writer:
 
         connection_map = {}
@@ -114,6 +118,10 @@ def modify_timestamps():
                 if orig_sec >= start_trim and orig_sec <= end_trim:
                     writer.write(connection_map[connection.id], timestamp,
                             typestore.serialize_cdr(msg, connection.msgtype))
+
+            
+
+
         print("Finished creating rosbag")
 
 
