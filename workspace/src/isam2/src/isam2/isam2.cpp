@@ -314,7 +314,7 @@ namespace slam {
         graph.resize(0);
         values.clear();
 
-        for (int i = 0; i < update_iterations_n; i++) {
+        for (std::size_t i = 0; i < update_iterations_n; i++) {
             //update the graph
             isam2.update();
         }
@@ -482,8 +482,8 @@ namespace slam {
         const std::vector<gtsam::Point2> &cone_obs_yellow,
         const std::vector<gtsam::Point2> &orange_ref_cones, 
         gtsam::Pose2 velocity,
-        double dt) 
-    {
+        double dt
+    ) {
         std::size_t old_blue_n_landmarks = blue_slam_est_and_mcov.get_n_landmarks();
         std::size_t old_yellow_n_landmarks = yellow_slam_est_and_mcov.get_n_landmarks();
 

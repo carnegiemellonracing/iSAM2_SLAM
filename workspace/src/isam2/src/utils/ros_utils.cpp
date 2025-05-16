@@ -418,30 +418,37 @@ namespace logging_utils {
     }
 
 
-    void print_cone_obs(std::vector<gtsam::Point2> &cone_obs, std::optional<rclcpp::Logger> logger) {
+    void print_cone_obs(const std::vector<gtsam::Point2> &cone_obs, const std::string& cone_color, std::optional<rclcpp::Logger> logger) {
         for (std::size_t i = 0; i < cone_obs.size(); i++) {
             if (logger.has_value()) {
-                RCLCPP_INFO(logger.value(), "cone_obs.at(%ld): %f %f", i, 
+                RCLCPP_INFO(logger.value(), "%s.at(%ld): %f %f", cone_color.c_str(), i, 
                                                         cone_obs.at(i).x(),
                                                         cone_obs.at(i).y());
             }
         }
     }
 
-    void print_step_input(
+    void log_step_input(
         std::optional<rclcpp::Logger> logger, 
-        gtsam::Pose2 global_odom, 
-        std::vector<gtsam::Point2> &cone_obs,
-        std::vector<gtsam::Point2> &cone_obs_blue, 
-        std::vector<gtsam::Point2> &cone_obs_yellow,
-        std::vector<gtsam::Point2> &orange_ref_cones, 
+        std::optional<gtsam::Point2> gps_opt,
+        double yaw,
+        const std::vector<gtsam::Point2> &cone_obs_blue, 
+        const std::vector<gtsam::Point2> &cone_obs_yellow,
+        const std::vector<gtsam::Point2> &orange_ref_cones, 
         gtsam::Pose2 velocity, 
         double dt
     ) {
         if (logger.has_value()) {
             RCLCPP_INFO(logger.value(), "PRINTING STEP INPUTS");
-            RCLCPP_INFO(logger.value(), "global_odom: %f %f %f", global_odom.x(), global_odom.y(), global_odom.theta());
-            print_cone_obs(cone_obs, logger);
+            if (gps_opt.has_value()) {
+                RCLCPP_INFO(logger.value(), "gps_opt: %f %f", gps_opt.value().x(), gps_opt.value().y());
+            } else {
+                RCLCPP_INFO(logger.value(), "gps_opt: None");
+            }
+            RCLCPP_INFO(logger.value(), "yaw: %f", yaw);
+            print_cone_obs(cone_obs_blue, "cone_obs_blue", logger);
+            print_cone_obs(cone_obs_yellow, "cone_obs_yellow", logger);
+            print_cone_obs(orange_ref_cones, "orange_ref_cones", logger);
 
         // At the moment, cone_obs_blue and cone_obs_yellow are empty because we don't have coloring
         // Similarly for the orange_ref_cones
@@ -464,16 +471,34 @@ namespace logging_utils {
         }
     }
 
-    void log_step_inputs(std::optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, std::vector<gtsam::Point2> &cone_obs,
-                    std::vector<gtsam::Point2> &cone_obs_blue, std::vector<gtsam::Point2> &cone_obs_yellow,
-                    std::vector<gtsam::Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt) {
+    void record_step_inputs(
+        std::optional<rclcpp::Logger> logger, 
+        std::optional<gtsam::Point2> gps_opt,
+        double yaw,
+        const std::vector<gtsam::Point2> &cone_obs_blue, 
+        const std::vector<gtsam::Point2> &cone_obs_yellow,
+        const std::vector<gtsam::Point2> &orange_ref_cones, 
+        gtsam::Pose2 velocity, 
+        double dt
+    ) {
 
         std::ofstream outfile;
         outfile.open(STEP_INPUT_FILE, std::ofstream::out | std::ios_base::app); 
+        if (gps_opt.has_value()) {
+            outfile << "gps_opt: " << gps_opt.value().x() << " " << gps_opt.value().y() << std::endl;
+        } else {
+            outfile << "gps_opt: No value" << std::endl;
+        }
 
-        outfile << "global_odom: " << global_odom.x() << " " << global_odom.y() << " " << global_odom.theta() << std::endl;
-        for (size_t i = 0; i < cone_obs.size(); i++) {
-            outfile << "cone_obs: " << cone_obs.at(i).x() << " " << cone_obs.at(i).y() << std::endl;
+        outfile << "yaw: " << yaw << std::endl;
+        for (std::size_t i = 0; i < cone_obs_blue.size(); i++) {
+            outfile << "cone_obs_blue: " << cone_obs_blue.at(i).x() << " " << cone_obs_blue.at(i).y() << std::endl;
+        }
+        for (std::size_t i = 0; i < cone_obs_yellow.size(); i++) {
+            outfile << "cone_obs_yellow: " << cone_obs_yellow.at(i).x() << " " << cone_obs_yellow.at(i).y() << std::endl;
+        }
+        for (std::size_t i = 0; i < orange_ref_cones.size(); i++) {
+            outfile << "orange_ref_cones: " << orange_ref_cones.at(i).x() << " " << orange_ref_cones.at(i).y() << std::endl;
         }
         outfile << "velocity: " << velocity.x() << " " << velocity.y() << " " << velocity.theta() << std::endl;
         outfile << "dt: " << dt << "\n" << std::endl;

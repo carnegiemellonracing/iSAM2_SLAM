@@ -38,6 +38,7 @@ namespace data_association_utils {
         {}
     };
 
+    
     /**
      * @brief Distinguishes obsered cones into old and new cones.
      * 
@@ -45,8 +46,7 @@ namespace data_association_utils {
      * @param cone_obs The observed cones in the local frame
      * @param distances A vector where the ith vector represents 
      *                  mahalanobis distances wrt the ith observed cone
-     * 
-     * @param n_landmarks The number of landmarks in the SLAM model 
+     * @param m_dist_th The mahalanobis distance threshold
      * @param logger 
      * @return std::pair<std::vector<OldConeInfo>, std::vector<NewConeInfo>>
      */
@@ -54,9 +54,11 @@ namespace data_association_utils {
         std::vector<gtsam::Point2> global_cone_obs, 
         std::vector<gtsam::Point2> cone_obs, 
         std::vector<std::vector<double>> distances, 
-        std::size_t n_landmarks,
+        double m_dist_th,
         std::optional<rclcpp::Logger> logger
     );
+
+
 
     /**
      * @brief Performs data association between the observed cones and the SLAM estimates.

@@ -102,11 +102,11 @@ namespace slam {
 
 
             /* Tunable and adjustable parameters */
-            int look_radius;
-            int min_cones_update_all;
-            int window_update;
-            int update_start_n;
-            int update_recent_n;
+            std::size_t look_radius;
+            std::size_t min_cones_update_all;
+            std::size_t window_update;
+            std::size_t update_start_n;
+            std::size_t update_recent_n;
 
             double imu_offset; // meters; offset from the center of the car
             double lidar_offset; // meters; offset from the center of the car
@@ -115,8 +115,8 @@ namespace slam {
             double dist_from_start_loop_closure_th;
             double m_dist_th;
             double turning_m_dist_th;
-            int update_iterations_n;
-            int return_n_cones;
+            std::size_t update_iterations_n;
+            std::size_t return_n_cones;
 
 
             /**

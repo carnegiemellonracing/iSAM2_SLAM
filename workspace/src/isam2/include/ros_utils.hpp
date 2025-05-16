@@ -141,24 +141,35 @@ namespace cone_utils {
      * @param threshold The threshold distance from the car
      */
     std::vector<gtsam::Point2> remove_far_cones(std::vector<gtsam::Point2> cone_obs, double threshold);
-    
+
     std::vector<gtsam::Point2> local_to_global_frame( std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose);
     std::vector<gtsam::Point2> global_to_local_frame(std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose);
 
 }
 
 namespace logging_utils {
-    void print_cone_obs(std::vector<gtsam::Point2> &cone_obs, std::optional<rclcpp::Logger> logger);
+    void print_cone_obs(const std::vector<gtsam::Point2> &cone_obs, const std::string& cone_color, std::optional<rclcpp::Logger> logger);
 
-    void print_step_input(std::optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, std::vector<gtsam::Point2> &cone_obs,
-                    std::vector<gtsam::Point2> &cone_obs_blue, std::vector<gtsam::Point2> &cone_obs_yellow,
-                    std::vector<gtsam::Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);
+    void print_step_input(std::optional<rclcpp::Logger> logger, 
+        std::optional<gtsam::Point2> gps_opt, 
+        double yaw,
+        const std::vector<gtsam::Point2> &cone_obs_blue, 
+        const std::vector<gtsam::Point2> &cone_obs_yellow,
+        const std::vector<gtsam::Point2> &orange_ref_cones, 
+        gtsam::Pose2 velocity, 
+        double dt);
 
     void print_update_poses(gtsam::Pose2 &prev_pose, gtsam::Pose2 &new_pose, gtsam::Pose2 &odometry, gtsam::Pose2 &imu_offset_global_odom, std::optional<rclcpp::Logger> logger);
 
-    void log_step_inputs(std::optional<rclcpp::Logger> logger, gtsam::Pose2 global_odom, std::vector<gtsam::Point2> &cone_obs,
-                    std::vector<gtsam::Point2> &cone_obs_blue, std::vector<gtsam::Point2> &cone_obs_yellow,
-                    std::vector<gtsam::Point2> &orange_ref_cones, gtsam::Pose2 velocity, double dt);
+
+    void record_step_inputs(std::optional<rclcpp::Logger> logger, 
+        std::optional<gtsam::Point2> gps_opt,
+        double yaw,
+        const std::vector<gtsam::Point2> &cone_obs_blue, 
+        const std::vector<gtsam::Point2> &cone_obs_yellow,
+        const std::vector<gtsam::Point2> &orange_ref_cones, 
+        gtsam::Pose2 velocity, 
+        double dt);
 
     void log_string (std::optional<rclcpp::Logger> logger, std::string input_string, bool flag);
 

@@ -113,6 +113,6 @@ constexpr std::size_t UPDATE_START_AFTER_N = 50;
 constexpr std::size_t UPDATE_START_N = 30;
 constexpr std::size_t UPDATE_RECENT_N = 20;
 constexpr std::size_t WINDOW_UPDATE = 0;
-constexpr std::size_t UPDATE_ITERATIONS_N = 10;
+constexpr std::size_t UPDATE_ITERATIONS_N = 8;
 
 constexpr std::size_t RETURN_N_CONES = 20;

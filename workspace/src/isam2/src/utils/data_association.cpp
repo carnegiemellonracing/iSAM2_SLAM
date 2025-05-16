@@ -12,7 +12,6 @@ namespace data_association_utils {
      * @param distances A vector where the ith vector represents 
      *                  mahalanobis distances wrt the ith observed cone
      * 
-     * @param n_landmarks The number of landmarks in the SLAM model 
      * @param logger 
      * @return std::pair<std::vector<OldConeInfo>, std::vector<NewConeInfo>>
      */
@@ -20,7 +19,7 @@ namespace data_association_utils {
         std::vector<gtsam::Point2> global_cone_obs, 
         std::vector<gtsam::Point2> cone_obs, 
         std::vector<std::vector<double>> distances, 
-        std::size_t n_landmarks,
+        double m_dist_th,
         std::optional<rclcpp::Logger> logger
     ) {
         std::vector<OldConeInfo> old_cones = {};
@@ -33,10 +32,10 @@ namespace data_association_utils {
             std::vector<double> cur_m_dist = distances.at(i);
 
             /* Get the minimum distance and the index of the minimum distance */
-            std::vector<double>::iterator min_dist = min_element(cur_m_dist.begin(), cur_m_dist.end());
-            int min_id = distance(cur_m_dist.begin(), min_dist);
+            std::vector<double>::iterator min_dist = std::min_element(cur_m_dist.begin(), cur_m_dist.end());
+            std::size_t min_id = static_cast<std::size_t>(std::distance(cur_m_dist.begin(), min_dist));
 
-            if (static_cast<std::size_t>(min_id) == n_landmarks) {
+            if (cur_m_dist.at(min_id) <= m_dist_th) {
                 new_cones.emplace_back(cone_obs.at(i),
                                         bearing(i, 0),
                                         global_cone_obs.at(i));
@@ -61,7 +60,6 @@ namespace data_association_utils {
     ) {
 
         std::vector<double> m_dist = {};
-        std::size_t n_landmarks = slam_est_and_mcov.get_n_landmarks();
 
 
         std::vector< gtsam::Point2> relevant_cone_obs = cone_utils::remove_far_cones(cone_obs, cone_dist_th);
@@ -74,7 +72,7 @@ namespace data_association_utils {
             distances.push_back(slam_est_and_mcov.calculate_mdist(cone));
         }
 
-        return get_old_new_cones(global_cone_obs, cone_obs, distances, slam_est_and_mcov.get_n_landmarks(), logger);
+        return get_old_new_cones(global_cone_obs, cone_obs, distances, m_dist_th, logger);
     }
 
 
