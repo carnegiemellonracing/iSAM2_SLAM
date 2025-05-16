@@ -1,4 +1,11 @@
 #pragma once
+#include <gtsam/inference/Symbol.h>
+#include <gtsam/nonlinear/ISAM2.h>
+#include <gtsam/geometry/Point2.h>
+#include <gtsam/geometry/Pose2.h>
+
+#include <eigen3/Eigen/Dense>
+
 #include "ros_utils.hpp"
 namespace slam {
     class SLAMEstAndMCov {
@@ -13,17 +20,17 @@ namespace slam {
             std::shared_ptr<gtsam::ISAM2> isam2;
 
             /* Tunable and adjustable parameters */
-            int look_radius;
+            std::size_t look_radius;
             int update_iterations_n;
 
             /**
              * @brief Calculates the Mahalanobis distance between the observed cone and the
              * old cone estimates. This is the slower version, used for correctness verification.
              * 
-             * @param obs_cone 
+             * @param global_obs_cone 
              * @return bool
              */
-            bool check_mdist_correctness(gtsam::Point2 obs_cone, std::vector<double> mdist_to_check);
+            bool check_mdist_correctness(gtsam::Point2 global_obs_cone, std::vector<double> mdist_to_check);
 
         public:
             /* Constructor */
@@ -45,7 +52,7 @@ namespace slam {
             SLAMEstAndMCov(
                 std::shared_ptr<gtsam::ISAM2> isam2, 
                 gtsam::Symbol(*cone_key_fn)(int), 
-                int look_radius,
+                std::size_t look_radius,
                 int update_iterations_n
             );
 
@@ -85,10 +92,8 @@ namespace slam {
              * [pivot - look_radius, pivot + look_radius] and [pivot, pivot + look_radius].
              * 
              * @param pivot The ID of the pivot cone
-             * @param look_radius The number of cones to recalculate estimates and marginal
-             * covariances for.
              */
-            void update_and_recalculate_cone_proximity(std::size_t pivot, std::size_t look_radius);
+            void update_and_recalculate_cone_proximity(std::size_t pivot);
 
             /**
              * @brief Recalulates the estiamtes and the marginal covariance matrices 
@@ -114,10 +119,10 @@ namespace slam {
              * old cone estimates. The distances are calculated using a SIMD method through 
              * the Eigen library. 
              * 
-             * @param obs_cone The observed cone that we are data associating
+             * @param global_obs_cone The observed cone that we are data associating in global frame
              * @return std::vector<double> A vector where the ith element represents the mahalanobis distances
              */
-            std::vector<double> calculate_mdist (gtsam::Point2 obs_cone); //Vectorize this 
+            std::vector<double> calculate_mdist (gtsam::Point2 global_obs_cone); //Vectorize this 
 
             std::size_t get_n_landmarks();
 

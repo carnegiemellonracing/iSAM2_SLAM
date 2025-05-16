@@ -107,12 +107,12 @@ const std::string VEHICLE_ANGLE_TOPIC = "/filter/quaternion";
 const std::string VEHICLE_VEL_TOPIC = "/filter/twist";
 const std::string SLAM_TOPIC = "/slam_data";
 
-constexpr int LOOK_RADIUS = 20;
-constexpr int MIN_CONES_UPDATE_ALL = 50;
-constexpr int UPDATE_START_AFTER_N = 50;
-constexpr int UPDATE_START_N = 30;
-constexpr int UPDATE_RECENT_N = 20;
-constexpr int WINDOW_UPDATE = 0;
-constexpr int UPDATE_ITERATIONS_N = 5;
+constexpr std::size_t LOOK_RADIUS = 20;
+constexpr std::size_t MIN_CONES_UPDATE_ALL = 50;
+constexpr std::size_t UPDATE_START_AFTER_N = 50;
+constexpr std::size_t UPDATE_START_N = 30;
+constexpr std::size_t UPDATE_RECENT_N = 20;
+constexpr std::size_t WINDOW_UPDATE = 0;
+constexpr std::size_t UPDATE_ITERATIONS_N = 10;
 
-constexpr int RETURN_N_CONES = 20;
+constexpr std::size_t RETURN_N_CONES = 20;

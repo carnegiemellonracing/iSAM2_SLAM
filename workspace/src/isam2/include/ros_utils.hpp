@@ -133,8 +133,15 @@ namespace yaml_params {
 namespace cone_utils {
     Eigen::MatrixXd calc_cone_range_from_car(const std::vector<gtsam::Point2> &cone_obs);
     Eigen::MatrixXd calc_cone_bearing_from_car(const std::vector<gtsam::Point2> &cone_obs);
-    std::vector<gtsam::Point2> remove_far_cones(const std::vector<gtsam::Point2> &cone_obs, double threshold);
 
+    /**
+     * @brief Removes far away observed cones. Observed cones that are far away are more erroneous
+     * 
+     * @param cone_obs The observed cones
+     * @param threshold The threshold distance from the car
+     */
+    std::vector<gtsam::Point2> remove_far_cones(std::vector<gtsam::Point2> cone_obs, double threshold);
+    
     std::vector<gtsam::Point2> local_to_global_frame( std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose);
     std::vector<gtsam::Point2> global_to_local_frame(std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose);
 

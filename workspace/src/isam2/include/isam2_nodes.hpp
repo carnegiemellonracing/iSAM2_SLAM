@@ -15,7 +15,7 @@
  * @copyright Copyright (c) 2025
  * 
  */
-
+#pragma once
 #include "ros_utils.hpp"
 #include "isam2.hpp"
 
@@ -80,6 +80,9 @@ namespace nodes {
         message_filters::Subscriber<orientation_msg_t> vehicle_angle_sub;   
         message_filters::Subscriber<position_msg_t> vehicle_pos_sub;
 
+        void declare_yaml_params();
+        std::optional<yaml_params::NoiseInputs> get_noise_inputs();
+
         virtual void perform_subscribes() = 0;
     };
 
@@ -103,7 +106,7 @@ namespace nodes {
         using sync_policy = message_filters::sync_policies::ApproximateTime<cone_msg_t, velocity_msg_t, orientation_msg_t, position_msg_t>;
 
 
-        private:
+        protected:
         /* Subscribers*/
         void perform_subscribes() override;
 
@@ -139,7 +142,7 @@ namespace nodes {
         using sync_policy = message_filters::sync_policies::ApproximateTime<cone_msg_t, velocity_msg_t, orientation_msg_t>;
 
 
-        private:
+        protected:
 
         /* Subscribers*/
         void perform_subscribes() override;
@@ -175,7 +178,7 @@ namespace nodes {
 
         using sync_policy = message_filters::sync_policies::ApproximateTime<cone_msg_t, velocity_msg_t, pose_msg_t>;
 
-        private:
+        protected:
 
         /* Subscribers */
         void perform_subscribes() override;

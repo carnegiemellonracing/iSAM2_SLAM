@@ -18,21 +18,22 @@ namespace slam {
     SLAMEstAndMCov::SLAMEstAndMCov(
         std::shared_ptr<gtsam::ISAM2> isam2, 
         gtsam::Symbol(*cone_key_fn)(int), 
-        int look_radius,
+        std::size_t look_radius,
         int update_iterations_n
-    ) : isam2(isam2), cone_key_fn(cone_key_fn), look_radius(look_radius) update_iterations_n(update_iterations_n) {
-
+    ) : isam2(isam2), cone_key_fn(cone_key_fn), look_radius(look_radius), update_iterations_n(update_iterations_n) 
+    {
         slam_est = {};
         slam_mcov = {};
         n_landmarks = static_cast<std::size_t>(0);
     }
+
     SLAMEstAndMCov::SLAMEstAndMCov() {
         slam_est = {};
         slam_mcov = {};
         isam2 = nullptr;
         cone_key_fn = nullptr;
         n_landmarks = static_cast<std::size_t>(0);
-        look_radius = 0;
+        look_radius = static_cast<std::size_t>(0);
         update_iterations_n = 0;
     }
 
@@ -92,7 +93,7 @@ namespace slam {
             slam_est.at(id) = estimate; 
         }
 
-        for (const std::size_t id: old_cone_ids) {
+        for (std::size_t id: old_cone_ids) {
             gtsam::Symbol cone_key = cone_key_fn(id);
             Eigen::MatrixXd mcov = isam2->marginalCovariance(cone_key);
             slam_mcov.at(id) = mcov;
@@ -132,21 +133,19 @@ namespace slam {
      * Still checks if you are in bounds of the IDs.
      * 
      * @param pivot The ID of the pivot cone
-     * @param look_radius The number of cones to recalculate estimates and marginal
-     * covariances for.
      */
-    void SLAMEstAndMCov::update_and_recalculate_cone_promixity(std::size_t pivot, std::size_t look_radius) {
+    void SLAMEstAndMCov::update_and_recalculate_cone_proximity(std::size_t pivot) {
         for (int i = 0; i < update_iterations_n; i++) {
             isam2->update();
         }
 
-        for (std::size_t i = std::max(pivot - look_radius, static_cast<std::size_t>(0)); i < std::max(pivot + look_radius, n_landmarks); i++) {
+        for (std::size_t i = std::max(pivot - look_radius, static_cast<std::size_t>(0)); i < std::min(pivot + look_radius, n_landmarks); i++) {
             gtsam::Symbol cone_key = cone_key_fn(i);
             gtsam::Point2 estimate = isam2->calculateEstimate(cone_key).cast<gtsam::Point2>();
             slam_est.at(i) = estimate; 
         }
 
-        for (std::size_t i = std::max(pivot - look_radius, static_cast<std::size_t>(0)); i < std::max(pivot + look_radius, n_landmarks); i++) {
+        for (std::size_t i = std::max(pivot - look_radius, static_cast<std::size_t>(0)); i < std::min(pivot + look_radius, n_landmarks); i++) {
             gtsam::Symbol cone_key = cone_key_fn(i);
             gtsam::Point2 mcov = isam2->marginalCovariance(cone_key);
             slam_mcov.at(i) = mcov; 
@@ -156,13 +155,13 @@ namespace slam {
 
     void SLAMEstAndMCov::update_with_old_cones(const std::vector<std::size_t>& old_cone_ids) {
 
-        if (old_cones.size() == 0) {
+        if (old_cone_ids.size() == 0) {
             return;
         }
 
-        int lowest_id = std::numeric_limits<int>::max();
-        int highest_id = std::numeric_limits<int>::min();
-        for (int id: old_cone_ids) {
+        std::size_t lowest_id = std::numeric_limits<std::size_t>::max();
+        std::size_t highest_id = std::numeric_limits<std::size_t>::min();
+        for (std::size_t id: old_cone_ids) {
             if (id < lowest_id) {
                 lowest_id = id;
             }
@@ -174,9 +173,9 @@ namespace slam {
 
         update_and_recalculate_by_ID(old_cone_ids);
 
-        update_and_recalculate_cone_proximity(lowest_id, look_radius);
-        update_and_recalculate_cone_proximity(n_landmarks, look_radius);
-        update_and_recalculate_cone_proximity(highest_id, look_radius);
+        update_and_recalculate_cone_proximity(lowest_id);
+        update_and_recalculate_cone_proximity(n_landmarks);
+        update_and_recalculate_cone_proximity(highest_id);
 
         assert(check_lengths());
     }
@@ -204,18 +203,18 @@ namespace slam {
      * @brief Calculates the Mahalanobis distance between the observed cone and the
      * old cone estimates. This is the slower version, used for correctness verification.
      * 
-     * @param obs_cone 
+     * @param global_obs_cone 
      * @return bool
      */
-    bool SLAMEstAndMCov::check_mdist_correctness(gtsam::Point2 obs_cone, std::vector<double> mdist_to_check) {
+    bool SLAMEstAndMCov::check_mdist_correctness(gtsam::Point2 global_obs_cone, std::vector<double> mdist_to_check) {
         assert(check_lengths());
 
         std::vector<double> mdist(n_landmarks);
         for (int j = 0; j < n_landmarks; j++) {
 
             Eigen::MatrixXd diff(1, 2);
-            diff << global_cone_x(i,0) - slam_est.at(j).x(),
-                    global_cone_y(i,0) - slam_est.at(j).y();
+            diff << global_obs_cone.x() - slam_est.at(j).x(),
+                    global_obs_cone.y() - slam_est.at(j).y();
 
             mdist.at(j) = (diff * slam_mcov.at(j) * diff.transpose())(0, 0);
 
@@ -238,16 +237,16 @@ namespace slam {
      * old cone estimates. The distances are calculated using a SIMD method through 
      * the Eigen library. 
      * 
-     * @param obs_cone The observed cone that we are data associating
+     * @param global_obs_cone The observed cone that we are data associating in global frame
      * @return Eigen::MatrixXd 
      */
-    std::vector<double> SLAMEstAndMCov::calculate_mdist (gtsam::Point2 obs_cone) {
+    std::vector<double> SLAMEstAndMCov::calculate_mdist (gtsam::Point2 global_obs_cone) {
         assert(check_lengths()); 
 
-        /* 1.) (2*i) and (2*i +1) column be (x,y) difference vector between slam_est.at(i) and obs_cone */
+        /* 1.) (2*i) and (2*i +1) column be (x,y) difference vector between slam_est.at(i) and global_obs_cone */
         Eigen::MatrixXd diff_dupe = Eigen::MatrixXd::Zero(2, 2 * n_landmarks);
         for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-            Eigen::MatrixXd cur_diff = slam_est.at(i) - obs_cone;
+            Eigen::MatrixXd cur_diff = slam_est.at(i) - global_obs_cone;
             diff_dupe.block(2*i, 0, 2, 1) = cur_diff;
             diff_dupe.block(2*i + 1, 0, 2, 1) = cur_diff;
         }
@@ -278,7 +277,7 @@ namespace slam {
         /* 5.) ith column represents the diff between slam_est.at(i) and cone_obs*/
         Eigen::MatrixXd diff = Eigen::MatrixXd::Zero(2, n_landmarks);
         for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-            diff.block(i, 0, 2, 1) = slam_est.at(i) - obs_cone; 
+            diff.block(i, 0, 2, 1) = slam_est.at(i) - global_obs_cone; 
         }
 
         /* 6.) Complete the mahalanobis distance calculation */
@@ -290,7 +289,7 @@ namespace slam {
             mdist.at(i) = mdist_eigen(0, i);
         }
 
-        assert(check_mdist_correctness(obs_cone, mdist));
+        assert(check_mdist_correctness(global_obs_cone, mdist));
 
         return mdist;
     }

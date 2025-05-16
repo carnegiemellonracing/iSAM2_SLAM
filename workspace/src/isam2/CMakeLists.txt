@@ -45,10 +45,23 @@ set(UTILS_SOURCES
 set(ISAM2_SOURCES 
     src/isam2/isam2.cpp
     src/isam2/unary_factor.cpp
+    src/isam2/slam_est_and_mcov.cpp
     )
-add_executable(real_data_slam_node_gps src/nodes/real_data_slam_node_gps.cpp ${UTILS_SOURCES} ${ISAM2_SOURCES})
-add_executable(real_data_slam_node_no_gps src/nodes/real_data_slam_node_no_gps.cpp ${UTILS_SOURCES} ${ISAM2_SOURCES})
-add_executable(controls_sim_slam_node src/nodes/controls_sim_slam_node.cpp ${UTILS_SOURCES} ${ISAM2_SOURCES})
+
+set(GENERIC_SLAM_NODE_SOURCES
+    src/nodes/generic_slam_node.cpp
+    src/nodes/generic_slam_node_impl.cpp
+    )
+
+set(GENERAL_SOURCES 
+    ${UTILS_SOURCES}
+    ${ISAM2_SOURCES}
+    ${GENERIC_SLAM_NODE_SOURCES}
+    )
+    
+add_executable(real_data_slam_node_gps src/nodes/real_data_slam_node_gps.cpp ${GENERAL_SOURCES})
+add_executable(real_data_slam_node_no_gps src/nodes/real_data_slam_node_no_gps.cpp ${GENERAL_SOURCES})
+add_executable(controls_sim_slam_node src/nodes/controls_sim_slam_node.cpp ${GENERAL_SOURCES})
 
 # Linking
 if(CMAKE_BUILD_TYPE STREQUAL Debug)

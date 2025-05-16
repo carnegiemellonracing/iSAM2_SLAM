@@ -36,7 +36,7 @@ namespace data_association_utils {
             std::vector<double>::iterator min_dist = min_element(cur_m_dist.begin(), cur_m_dist.end());
             int min_id = distance(cur_m_dist.begin(), min_dist);
 
-            if (min_id == n_landmarks) {
+            if (static_cast<std::size_t>(min_id) == n_landmarks) {
                 new_cones.emplace_back(cone_obs.at(i),
                                         bearing(i, 0),
                                         global_cone_obs.at(i));
