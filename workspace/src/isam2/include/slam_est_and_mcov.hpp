@@ -16,12 +16,12 @@ namespace slam {
             std::size_t n_landmarks;
 
             /* The function for getting the symbol of the variable that we want to retrieve */
-            gtsam::Symbol (*cone_key_fn)(int);
             std::shared_ptr<gtsam::ISAM2> isam2;
+            gtsam::Symbol (*cone_key_fn)(int);
 
             /* Tunable and adjustable parameters */
             std::size_t look_radius;
-            int update_iterations_n;
+            std::size_t update_iterations_n;
 
             /**
              * @brief Calculates the Mahalanobis distance between the observed cone and the
@@ -53,7 +53,7 @@ namespace slam {
                 std::shared_ptr<gtsam::ISAM2> isam2, 
                 gtsam::Symbol(*cone_key_fn)(int), 
                 std::size_t look_radius,
-                int update_iterations_n
+                std::size_t update_iterations_n
             );
 
             SLAMEstAndMCov();

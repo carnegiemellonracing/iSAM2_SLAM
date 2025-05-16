@@ -19,7 +19,7 @@ namespace slam {
         std::shared_ptr<gtsam::ISAM2> isam2, 
         gtsam::Symbol(*cone_key_fn)(int), 
         std::size_t look_radius,
-        int update_iterations_n
+        std::size_t update_iterations_n
     ) : isam2(isam2), cone_key_fn(cone_key_fn), look_radius(look_radius), update_iterations_n(update_iterations_n) 
     {
         slam_est = {};
@@ -34,7 +34,7 @@ namespace slam {
         cone_key_fn = nullptr;
         n_landmarks = static_cast<std::size_t>(0);
         look_radius = static_cast<std::size_t>(0);
-        update_iterations_n = 0;
+        update_iterations_n = static_cast<std::size_t>(0);
     }
 
     /**
@@ -57,7 +57,7 @@ namespace slam {
      * 
      */       
     void SLAMEstAndMCov::update_and_recalculate_all() {
-        for (int i = 0; i < update_iterations_n; i++) {
+        for (std::size_t i = 0; i < update_iterations_n; i++) {
             isam2->update();
         }
 
@@ -83,7 +83,7 @@ namespace slam {
      * marginal covariances for
      */
     void SLAMEstAndMCov::update_and_recalculate_by_ID(const std::vector<std::size_t>& old_cone_ids) {
-        for (int i = 0; i < update_iterations_n; i++) {
+        for (std::size_t i = 0; i < update_iterations_n; i++) {
             isam2->update();
         }
 
@@ -108,7 +108,7 @@ namespace slam {
      * estimates and marginal covariances for.
      */
     void SLAMEstAndMCov::update_and_recalculate_beginning(std::size_t num_start_cones) {
-        for (int i = 0; i < update_iterations_n; i++) {
+        for (std::size_t i = 0; i < update_iterations_n; i++) {
             isam2->update();
         }
 
@@ -135,7 +135,7 @@ namespace slam {
      * @param pivot The ID of the pivot cone
      */
     void SLAMEstAndMCov::update_and_recalculate_cone_proximity(std::size_t pivot) {
-        for (int i = 0; i < update_iterations_n; i++) {
+        for (std::size_t i = 0; i < update_iterations_n; i++) {
             isam2->update();
         }
 
@@ -210,19 +210,19 @@ namespace slam {
         assert(check_lengths());
 
         std::vector<double> mdist(n_landmarks);
-        for (int j = 0; j < n_landmarks; j++) {
+        for (std::size_t i = 0; i < n_landmarks; i++) {
 
             Eigen::MatrixXd diff(1, 2);
-            diff << global_obs_cone.x() - slam_est.at(j).x(),
-                    global_obs_cone.y() - slam_est.at(j).y();
+            diff << global_obs_cone.x() - slam_est.at(i).x(),
+                    global_obs_cone.y() - slam_est.at(i).y();
 
-            mdist.at(j) = (diff * slam_mcov.at(j) * diff.transpose())(0, 0);
+            mdist.at(i) = (diff * slam_mcov.at(i) * diff.transpose())(0, 0);
 
         }
 
 
         bool correct = true;
-        for (int i = 0; i < n_landmarks; i++) {
+        for (std::size_t i = 0; i < n_landmarks; i++) {
             if (!correct || (mdist.at(i) != mdist_to_check.at(i))) {
                 correct = false;
                 break;

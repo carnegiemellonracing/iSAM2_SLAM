@@ -549,7 +549,7 @@ namespace slam {
             /* For numerical stability, update all estimates and marginal covariances when few cones seen */
             bool has_seen_cones = old_blue_n_landmarks > 0 || old_yellow_n_landmarks > 0; 
             if (has_seen_cones && !(old_blue_n_landmarks > static_cast<std::size_t>(min_cones_update_all) && old_yellow_n_landmarks > static_cast<std::size_t>(min_cones_update_all))) {
-                for (int i = 0; i < update_iterations_n; i++) {
+                for (std::size_t i = 0; i < update_iterations_n; i++) {
                     isam2.update();
                 }
                 blue_slam_est_and_mcov.update_and_recalculate_all();

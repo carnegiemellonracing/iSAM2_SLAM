@@ -28,7 +28,7 @@
 // location using a Prior factor.
 #include <gtsam/slam/ProjectionFactor.h>
 #include <gtsam/slam/BetweenFactor.h>
-#include <gtsam/slam/BearingRangeFactor.h>
+#include <gtsam/sam/BearingRangeFactor.h>
 
 #include "ros_utils.hpp"
 #include "data_association.hpp"
