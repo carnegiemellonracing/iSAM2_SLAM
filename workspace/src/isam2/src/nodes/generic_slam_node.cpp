@@ -61,6 +61,12 @@ namespace nodes {
         std::optional<yaml_params::NoiseInputs> noise_inputs = std::nullopt;
         /* Note: get_parameter returns int64_t for ints. However, no parameter at the moment needs to be in64_t
          * so we static_cast to int32_t */
+
+        RCLCPP_INFO(this->get_logger(), "--------has_parameter 'use_yaml': %s --------", (this->has_parameter("use_yaml") ? "true" : "false"));
+        if (this->has_parameter("use_yaml")) {
+            RCLCPP_INFO(this->get_logger(), "--------use_yaml: %s --------", (this->get_parameter("use_yaml").as_bool() ? "true" : "false"));
+        }
+
         if (this->has_parameter("use_yaml") && this->get_parameter("use_yaml").as_bool()) {
             yaml_params::NoiseInputs noise_inputs_literal;
             noise_inputs_literal.yaml_prior_imu_x_std_dev = this->get_parameter("yaml_prior_imu_x_std_dev").as_double();
@@ -97,6 +103,8 @@ namespace nodes {
             noise_inputs_literal.yaml_return_n_cones = static_cast<std::size_t>(this->get_parameter("yaml_return_n_cones").as_int());
             noise_inputs = noise_inputs_literal;
                 
+        } else {
+            RCLCPP_INFO(this->get_logger(), "--------No yaml file found --------");
         }
         return noise_inputs;
     }

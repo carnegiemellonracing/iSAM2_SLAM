@@ -1,4 +1,4 @@
-slam_validation:
+slam_node:
   ros__parameters:
     use_yaml: true
     # Prior noise model (based on the IMU)

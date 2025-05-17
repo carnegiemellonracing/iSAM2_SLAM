@@ -226,7 +226,7 @@ namespace slam {
             logging_utils::log_string(logger, "--------Using yaml file --------\n", DEBUG_PARAMS_IN_USE);
 
         } else {
-            logging_utils::log_string(logger, "--------using default params --------\n", DEBUG_PARAMS_IN_USE);
+            logging_utils::log_string(logger, "--------Using default params --------\n", DEBUG_PARAMS_IN_USE);
         }
         logging_utils::log_string(logger, fmt::format("look_radius: {}\n", look_radius), DEBUG_PARAMS_IN_USE);
         logging_utils::log_string(logger, fmt::format("min_cones_update_all: {}\n", min_cones_update_all), DEBUG_PARAMS_IN_USE);
