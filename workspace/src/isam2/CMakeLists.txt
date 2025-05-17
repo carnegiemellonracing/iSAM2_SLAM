@@ -20,7 +20,7 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic -DDEBUG)
   # remember that you may need to do -O0 when using gdb to debug
 endif()
 

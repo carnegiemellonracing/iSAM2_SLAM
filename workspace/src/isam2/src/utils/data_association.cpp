@@ -22,6 +22,13 @@ namespace data_association_utils {
         double m_dist_th,
         std::optional<rclcpp::Logger> logger
     ) {
+        assert(distances.size() == cone_obs.size());
+        assert(global_cone_obs.size() == cone_obs.size());
+
+        if (cone_obs.size() == 0) {
+            return std::make_pair(std::vector<OldConeInfo>(), std::vector<NewConeInfo>());
+        }
+
         std::vector<OldConeInfo> old_cones = {};
         std::vector<NewConeInfo> new_cones = {};
 
@@ -32,10 +39,12 @@ namespace data_association_utils {
             std::vector<double> cur_m_dist = distances.at(i);
 
             /* Get the minimum distance and the index of the minimum distance */
-            std::vector<double>::iterator min_dist = std::min_element(cur_m_dist.begin(), cur_m_dist.end());
-            std::size_t min_id = static_cast<std::size_t>(std::distance(cur_m_dist.begin(), min_dist));
+            std::vector<double>::iterator min_id_ptr = std::min_element(cur_m_dist.begin(), cur_m_dist.end());
+            std::size_t min_id = std::distance(cur_m_dist.begin(), min_id_ptr);
 
-            if (cur_m_dist.at(min_id) <= m_dist_th) {
+            double min_dist = cur_m_dist.at(min_id);
+
+            if (min_dist <= m_dist_th) {
                 new_cones.emplace_back(cone_obs.at(i),
                                         bearing(i, 0),
                                         global_cone_obs.at(i));
@@ -61,8 +70,8 @@ namespace data_association_utils {
 
         std::vector<double> m_dist = {};
 
-
         std::vector< gtsam::Point2> relevant_cone_obs = cone_utils::remove_far_cones(cone_obs, cone_dist_th);
+        /* From this point onward, only use relevant_cone_obs in place of cone_obs */
 
         std::vector<gtsam::Point2> global_cone_obs = cone_utils::local_to_global_frame(relevant_cone_obs, cur_pose);
         
@@ -72,7 +81,7 @@ namespace data_association_utils {
             distances.push_back(slam_est_and_mcov.calculate_mdist(cone));
         }
 
-        return get_old_new_cones(global_cone_obs, cone_obs, distances, m_dist_th, logger);
+        return get_old_new_cones(global_cone_obs, relevant_cone_obs, distances, m_dist_th, logger);
     }
 
 

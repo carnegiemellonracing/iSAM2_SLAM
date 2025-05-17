@@ -10,8 +10,7 @@ namespace nodes {
                                                                     RealDataSLAMNodeNoGPS::orientation_msg_t,
                                                                     RealDataSLAMNodeNoGPS::dummy_position_msg_t>()
     {
-        declare_yaml_params();
-        /* Use the Generic constructor to avoid defining an extra sub */
+        perform_subscribes();
         sync = std::make_shared<message_filters::Synchronizer<RealDataSLAMNodeNoGPS::sync_policy>>(
                                     RealDataSLAMNodeNoGPS::sync_policy(100),
                                     cone_sub, 

@@ -10,7 +10,7 @@ namespace nodes {
                                                 RealDataSLAMNodeGPS::orientation_msg_t,
                                                 RealDataSLAMNodeGPS::position_msg_t>() 
     {
-
+        perform_subscribes();
         sync = std::make_shared<message_filters::Synchronizer<RealDataSLAMNodeGPS::sync_policy>>(
                                     RealDataSLAMNodeGPS::sync_policy(100),
                                     cone_sub, 
