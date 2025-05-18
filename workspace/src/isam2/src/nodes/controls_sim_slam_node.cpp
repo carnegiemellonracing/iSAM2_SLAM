@@ -17,6 +17,7 @@ namespace nodes {
                                     vehicle_pos_sub);
         sync->setAgePenalty(0.1);
         sync->registerCallback(std::bind(&ControlsSimSLAMNode::sync_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        
     }
 
     void ControlsSimSLAMNode::cone_callback(const ControlsSimSLAMNode::cone_msg_t::ConstSharedPtr &cone_data)  {

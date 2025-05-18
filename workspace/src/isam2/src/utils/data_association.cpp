@@ -38,20 +38,28 @@ namespace data_association_utils {
             /* Get the mahalanobis distances wrt cone_obs.at(i) */
             std::vector<double> cur_m_dist = distances.at(i);
 
-            /* Get the minimum distance and the index of the minimum distance */
-            std::vector<double>::iterator min_id_ptr = std::min_element(cur_m_dist.begin(), cur_m_dist.end());
-            std::size_t min_id = std::distance(cur_m_dist.begin(), min_id_ptr);
+            if (cur_m_dist.size() != static_cast<std::size_t>(0)) {
+                std::vector<double>::iterator min_id_ptr = std::min_element(cur_m_dist.begin(), cur_m_dist.end());
+                std::size_t min_id = std::distance(cur_m_dist.begin(), min_id_ptr);
 
-            double min_dist = cur_m_dist.at(min_id);
+                assert(min_id < cur_m_dist.size());
+                assert(min_id >= 0);
 
-            if (min_dist <= m_dist_th) {
+                double min_dist = cur_m_dist.at(min_id);
+
+                if (min_dist <= m_dist_th ) {
+                    new_cones.emplace_back(cone_obs.at(i),
+                                            bearing(i, 0),
+                                            global_cone_obs.at(i));
+                } else {
+                    old_cones.emplace_back(cone_obs.at(i), 
+                                            bearing(i, 0), 
+                                            min_id);
+                }
+            } else { /* no landmarks seen before means the current observed cones are all new cones */
                 new_cones.emplace_back(cone_obs.at(i),
                                         bearing(i, 0),
                                         global_cone_obs.at(i));
-            } else {
-                old_cones.emplace_back(cone_obs.at(i), 
-                                        bearing(i, 0), 
-                                        min_id);
             }
 
         }
@@ -80,7 +88,6 @@ namespace data_association_utils {
         for (gtsam::Point2 cone : global_cone_obs) {
             distances.push_back(slam_est_and_mcov.calculate_mdist(cone));
         }
-
         return get_old_new_cones(global_cone_obs, relevant_cone_obs, distances, m_dist_th, logger);
     }
 

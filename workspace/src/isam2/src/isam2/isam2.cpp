@@ -138,15 +138,13 @@ namespace slam {
         parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
         parameters.setFactorization("QR");
         logger = input_logger;
-        isam2 = gtsam::ISAM2(parameters);
+        isam2 = std::make_shared<gtsam::ISAM2>(gtsam::ISAM2(parameters));
         graph = gtsam::NonlinearFactorGraph();
         values = gtsam::Values();
 
-        /* Initializing history for cone estimates and marginal covariance */
-        std::shared_ptr<gtsam::ISAM2> shared_isam2_ptr = std::make_shared<gtsam::ISAM2>(isam2);
 
-        SLAMEstAndMCov blue_slam_est_and_mcov = SLAMEstAndMCov(shared_isam2_ptr, BLUE_L, look_radius, update_iterations_n);
-        SLAMEstAndMCov yellow_slam_est_and_mcov = SLAMEstAndMCov(shared_isam2_ptr, YELLOW_L, look_radius, update_iterations_n);
+        blue_slam_est_and_mcov = SLAMEstAndMCov(isam2, &BLUE_L, look_radius, update_iterations_n);
+        yellow_slam_est_and_mcov = SLAMEstAndMCov(isam2, &YELLOW_L, look_radius, update_iterations_n);
 
         pose_num = static_cast<std::size_t>(0);
         first_pose_added = false;
@@ -174,6 +172,7 @@ namespace slam {
         init_params(input_logger); 
 
         log_params_in_use(yaml_noise_inputs.has_value());
+        
 
 
         landmark_model = gtsam::noiseModel::Diagonal::Sigmas(LandmarkNoiseModel);
@@ -286,7 +285,7 @@ namespace slam {
         }
         else
         {
-            gtsam::Pose2 prev_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<gtsam::Pose2>();
+            gtsam::Pose2 prev_pose = isam2->calculateEstimate(X(pose_num - 1)).cast<gtsam::Pose2>();
 
             std::pair<gtsam::Pose2, gtsam::Pose2> new_pose_and_odom = motion_modeling::velocity_motion_model(velocity, dt, prev_pose, yaw);
 
@@ -310,20 +309,20 @@ namespace slam {
             values.insert(X(pose_num), new_pose);
         }
 
-        isam2.update(graph, values);
+        isam2->update(graph, values);
         graph.resize(0);
         values.clear();
 
         for (std::size_t i = 0; i < update_iterations_n; i++) {
             //update the graph
-            isam2.update();
+            isam2->update();
         }
 
         if (pose_num == 0)
         {
             return first_pose;
         }
-        return isam2.calculateEstimate(X(pose_num)).cast<gtsam::Pose2>();
+        return isam2->calculateEstimate(X(pose_num)).cast<gtsam::Pose2>();
         
 
     }
@@ -376,7 +375,7 @@ namespace slam {
                                                         landmark_model));
         }
 
-        isam2.update(graph, values);
+        isam2->update(graph, values);
         graph.resize(0);
         // values should be empty
         std::size_t cur_n_landmarks = slam_est_and_mcov.get_n_landmarks();
@@ -390,6 +389,7 @@ namespace slam {
             gtsam::Point2 cone_global_frame = (new_cones.at(n).global_cone_pos);
 
             gtsam::Symbol landmark_symbol = slam_est_and_mcov.get_landmark_symbol(cur_n_landmarks);
+            logging_utils::log_string(logger, fmt::format("\tAdding new cone with id {} to graph\n", cur_n_landmarks), DEBUG_UPDATE);
             graph.add(gtsam::BearingRangeFactor<gtsam::Pose2, gtsam::Point2>(X(pose_num), landmark_symbol,
                                                         b,
                                                         r,
@@ -403,7 +403,7 @@ namespace slam {
         values.insert(X(pose_num), cur_pose);
         Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
         optimized_val.erase(X(pose_num));
-        isam2.update(graph, optimized_val);
+        isam2->update(graph, optimized_val);
 
         graph.resize(0); // Not resizing your graph will result in long update times
         values.clear();
@@ -506,7 +506,7 @@ namespace slam {
 
         /*Quit the update step if the car is not moving*/ 
         if (!is_moving && pose_num > 0) {
-            gtsam::Pose2 cur_pose = isam2.calculateEstimate(X(pose_num - 1)).cast<gtsam::Pose2>();
+            gtsam::Pose2 cur_pose = isam2->calculateEstimate(X(pose_num - 1)).cast<gtsam::Pose2>();
             return get_recent_SLAM_estimates(cur_pose);
         }
 
@@ -550,7 +550,7 @@ namespace slam {
             bool has_seen_cones = old_blue_n_landmarks > 0 || old_yellow_n_landmarks > 0; 
             if (has_seen_cones && !(old_blue_n_landmarks > static_cast<std::size_t>(min_cones_update_all) && old_yellow_n_landmarks > static_cast<std::size_t>(min_cones_update_all))) {
                 for (std::size_t i = 0; i < update_iterations_n; i++) {
-                    isam2.update();
+                    isam2->update();
                 }
                 blue_slam_est_and_mcov.update_and_recalculate_all();
                 yellow_slam_est_and_mcov.update_and_recalculate_all();
@@ -607,7 +607,7 @@ namespace slam {
         logging_utils::log_string(logger, fmt::format("\tSLAM run step | Step call time: {}\n", dur_step_call.count()), DEBUG_STEP);
 
         logging_utils::log_string(logger, fmt::format("\tpose_num: {} | blue_n_landmarks: {} | yellow_n_landmarks : {}", 
-                            pose_num - 1, blue_slam_est_and_mcov.get_n_landmarks(), yellow_slam_est_and_mcov.get_n_landmarks()), DEBUG_STEP);
+                            pose_num, blue_slam_est_and_mcov.get_n_landmarks(), yellow_slam_est_and_mcov.get_n_landmarks()), DEBUG_STEP);
 
         pose_num++;
 
@@ -639,7 +639,7 @@ namespace slam {
         }
 
         for (std::size_t i = static_cast<std::size_t>(0); i < pose_num; i++) {
-            gtsam::Pose2 cur_pose = isam2.calculateEstimate(X(i)).cast<gtsam::Pose2>();
+            gtsam::Pose2 cur_pose = isam2->calculateEstimate(X(i)).cast<gtsam::Pose2>();
             std::cout << "Value x:" << cur_pose.x() << ":" << cur_pose.y() << std::endl;
         }
         ofs.close();

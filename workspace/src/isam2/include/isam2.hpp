@@ -52,7 +52,7 @@ namespace slam {
         private:    
             /* Variables related to ISAM2 factor graph*/
             gtsam::ISAM2Params parameters;
-            gtsam::ISAM2 isam2;
+            std::shared_ptr<gtsam::ISAM2> isam2;
             gtsam::NonlinearFactorGraph graph;
             gtsam::Values values;
 

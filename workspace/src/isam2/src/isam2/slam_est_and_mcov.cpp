@@ -22,6 +22,8 @@ namespace slam {
         std::size_t update_iterations_n
     ) : isam2(isam2), cone_key_fn(cone_key_fn), look_radius(look_radius), update_iterations_n(update_iterations_n) 
     {
+        assert(cone_key_fn != nullptr);
+        assert(isam2 != nullptr);
         slam_est = {};
         slam_mcov = {};
         n_landmarks = static_cast<std::size_t>(0);
@@ -187,11 +189,19 @@ namespace slam {
      * @param num_new_cones The number of new cones/estimates/marginal covariances to add
      */
     void SLAMEstAndMCov::update_with_new_cones(std::size_t num_new_cones) {
-        for (; n_landmarks < n_landmarks + num_new_cones; n_landmarks++) {
-            gtsam::Symbol cone_key = cone_key_fn(n_landmarks);
+        for (std::size_t i = n_landmarks; i < n_landmarks + num_new_cones; i++) {
+            gtsam::Symbol cone_key = cone_key_fn(i);
             gtsam::Point2 estimate = isam2->calculateEstimate(cone_key).cast<gtsam::Point2>();
             slam_est.push_back(estimate); 
         }
+
+        for (std::size_t i = n_landmarks; i < n_landmarks + num_new_cones; i++) {
+            gtsam::Symbol cone_key = cone_key_fn(i);
+            Eigen::MatrixXd mcov = isam2->marginalCovariance(cone_key);
+            slam_mcov.push_back(mcov);
+        }
+
+        n_landmarks += num_new_cones;
 
         assert(check_lengths());
 
@@ -244,21 +254,24 @@ namespace slam {
         assert(check_lengths()); 
 
         /* 1.) (2*i) and (2*i +1) column be (x,y) difference vector between slam_est.at(i) and global_obs_cone */
-        Eigen::MatrixXd diff_dupe = Eigen::MatrixXd::Zero(2, 2 * n_landmarks);
+        Eigen::MatrixXd diff_dupe(2, 2 * n_landmarks);
         for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-            Eigen::MatrixXd cur_diff = slam_est.at(i) - global_obs_cone;
-            diff_dupe.block(2*i, 0, 2, 1) = cur_diff;
-            diff_dupe.block(2*i + 1, 0, 2, 1) = cur_diff;
+            Eigen::MatrixXd cur_diff(2, 1);
+            cur_diff << slam_est.at(i).x() - global_obs_cone.x(),
+                        slam_est.at(i).y() - global_obs_cone.y();
+
+            diff_dupe.block(0, 2*i, 2, 1) = cur_diff;
+            diff_dupe.block(0, 2*i + 1, 2, 1) = cur_diff;
         }
 
         /* 2.) ith 2x2 block row-wise should be the marginal covariance matrix */
         // TODO: Should it really be the inverse of the covariance matrix?
         // Experiment with the inverse of the covariance matrix
-        Eigen::MatrixXd sigma = Eigen::MatrixXd::Zero(2, 2 * n_landmarks);
+        Eigen::MatrixXd sigma(2, 2 * n_landmarks);
         for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-            sigma.block(2 * i, 0, 2, 2) = slam_mcov.at(i);
+            sigma.block(0, 2 * i, 2, 2) = slam_mcov.at(i);
         }
-
+        
 
         /* 3.) Perform element-wise multiplication with covariance matrices. (Matmul but no adding)*/
         Eigen::MatrixXd diff_with_sigma_half_matmul = diff_dupe.array() * sigma.array();
@@ -269,15 +282,15 @@ namespace slam {
         /** 4.) Reorganize the matrix so that the ith column represents the product between 
          * the ith diff vector with the ith covariance matrix 
          */
-        Eigen::MatrixXd diff_matmul_sigma = Eigen::MatrixXd::Zero(2, n_landmarks);
+        Eigen::MatrixXd diff_matmul_sigma(2, n_landmarks);
         for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-            diff_matmul_sigma.block(i, 0, 2, 1) = pre_diff_matmul_sigma.block(2*i, 0, 1, 2);
+            diff_matmul_sigma.block(0, i, 2, 1) = (pre_diff_matmul_sigma.block(0, 2*i, 1, 2)).transpose();
         }
-
         /* 5.) ith column represents the diff between slam_est.at(i) and cone_obs*/
         Eigen::MatrixXd diff = Eigen::MatrixXd::Zero(2, n_landmarks);
         for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-            diff.block(i, 0, 2, 1) = slam_est.at(i) - global_obs_cone; 
+            diff.block(0, i, 2, 1) << slam_est.at(i).x() - global_obs_cone.x(),
+                                    slam_est.at(i).y() - global_obs_cone.y();
         }
 
         /* 6.) Complete the mahalanobis distance calculation */
@@ -319,6 +332,7 @@ namespace slam {
      * @return gtsam::Symbol 
      */
     gtsam::Symbol SLAMEstAndMCov::get_landmark_symbol (int id) {
+        assert(cone_key_fn != nullptr);
         return cone_key_fn(id);
     }
 }

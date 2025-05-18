@@ -13,6 +13,7 @@ namespace nodes {
         dt = 0.0;
         std::optional<yaml_params::NoiseInputs> noise_inputs = get_noise_inputs();
         slam_instance = slam::slamISAM(this->get_logger(), noise_inputs);
+        
 
         init_lon_lat = std::nullopt;
         init_x_y = std::nullopt;

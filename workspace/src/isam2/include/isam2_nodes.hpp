@@ -26,7 +26,7 @@ namespace nodes {
         GenericSLAMNode();
 
     protected:
-        slam::slamISAM slam_instance = slam::slamISAM(); /* We need to initialize this because it is used in the constructor */
+        slam::slamISAM slam_instance; /* We need to initialize this because it is used in the constructor */
         std::chrono::high_resolution_clock::time_point cur_sync_callback_time;
         std::optional<std::chrono::high_resolution_clock::time_point> prev_sync_callback_time;
 
