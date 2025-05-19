@@ -21,7 +21,7 @@ slam_node:
 
     # Parameters for performing SLAM cone updates
     yaml_look_radius: 20 # how many surrounding cones to update
-    yaml_min_cones_update_all: 100 # update all cone estimates until this number of cones for both blue and yellow
+    yaml_min_cones_update_all: 40 # update all cone estimates until this number of cones for both blue and yellow
     yaml_window_update: 0 # sliding window cone update 
 
     # Hardware offsets for IMU and LIDAR
@@ -36,4 +36,4 @@ slam_node:
     # Mahalanobis distance thresholds for cone updates
     yaml_m_dist_th: 0.0009
     yaml_turning_m_dist_th: 0.0009
-    yaml_update_iterations_n: 10
+    yaml_update_iterations_n: 15
