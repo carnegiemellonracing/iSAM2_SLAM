@@ -528,7 +528,7 @@ namespace slam {
         if (!loop_closure && new_lap) {
             loop_closure = true;
             for (std::size_t i = 0; i < update_iterations_n; i++) {
-                isam2.update();
+                isam2->update();
             }
         }
 
