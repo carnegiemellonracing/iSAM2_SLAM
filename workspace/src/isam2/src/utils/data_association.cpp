@@ -47,7 +47,7 @@ namespace data_association_utils {
 
                 double min_dist = cur_m_dist.at(min_id);
 
-                if (min_dist <= m_dist_th ) {
+                if (min_dist >= m_dist_th ) {
                     new_cones.emplace_back(cone_obs.at(i),
                                             bearing(i, 0),
                                             global_cone_obs.at(i));

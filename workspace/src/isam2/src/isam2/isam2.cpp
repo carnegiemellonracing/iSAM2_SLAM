@@ -14,7 +14,7 @@ namespace slam {
         PriorNoiseModel = gtsam::Vector(3);
         UnaryNoiseModel = gtsam::Vector(2);
         if (!yaml_noise_inputs.has_value()) {
-            switch (RunSettings::Real) {
+            switch (RunSettings::ControlsSim) {
                 case RunSettings::Real:
                     LandmarkNoiseModel(0) = BEARING_STD_DEV; 
                     LandmarkNoiseModel(1) = RANGE_STD_DEV; 
@@ -158,7 +158,6 @@ namespace slam {
         new_lap = false;
         lap_count = 0;
 
-        
     }
 
     
@@ -259,6 +258,7 @@ namespace slam {
         double dt, 
         std::optional<rclcpp::Logger> logger
     ) {
+        logging_utils::log_string(logger, "--------update_poses--------\n", DEBUG_POSES);
         /* Adding poses to the SLAM factor graph */
         gtsam::Point2 offset_xy = motion_modeling::calc_offset_imu_to_car_center(yaw);
         double offset_x = offset_xy.x();
@@ -267,14 +267,15 @@ namespace slam {
         if (pose_num == 0)
         {
             logging_utils::log_string(logger, "Processing first pose", DEBUG_POSES);
+            first_pose = gps_position.has_value() ? 
+                            gtsam::Pose2(gps_position.value().x() -offset_x, gps_position.value().y() -offset_y, yaw) :
+                            gtsam::Pose2(-offset_x, -offset_y, yaw);
 
-            gtsam::PriorFactor<gtsam::Pose2> prior_factor = gtsam::PriorFactor<gtsam::Pose2>(X(0),
-                                                                gtsam::Pose2(0.0, 0.0, yaw), prior_model);
+
+            gtsam::PriorFactor<gtsam::Pose2> prior_factor = gtsam::PriorFactor<gtsam::Pose2>(X(0), first_pose, prior_model);
             graph.add(prior_factor);
 
-
-            first_pose = gtsam::Pose2(-offset_x, -offset_y, yaw);
-            values.insert(X(0), gtsam::Pose2(first_pose.x(), first_pose.y(), yaw));
+            values.insert(X(0), first_pose);
 
             first_pose_added = true;
 
@@ -286,6 +287,7 @@ namespace slam {
         else
         {
             gtsam::Pose2 prev_pose = isam2->calculateEstimate(X(pose_num - 1)).cast<gtsam::Pose2>();
+            logging_utils::log_string(logger, fmt::format("\tprev_pose | x: {} | y: {} | yaw: {}\n", prev_pose.x(), prev_pose.y(), prev_pose.theta()), DEBUG_POSES);
 
             std::pair<gtsam::Pose2, gtsam::Pose2> new_pose_and_odom = motion_modeling::velocity_motion_model(velocity, dt, prev_pose, yaw);
 
@@ -389,7 +391,6 @@ namespace slam {
             gtsam::Point2 cone_global_frame = (new_cones.at(n).global_cone_pos);
 
             gtsam::Symbol landmark_symbol = slam_est_and_mcov.get_landmark_symbol(cur_n_landmarks);
-            logging_utils::log_string(logger, fmt::format("\tAdding new cone with id {} to graph\n", cur_n_landmarks), DEBUG_UPDATE);
             graph.add(gtsam::BearingRangeFactor<gtsam::Pose2, gtsam::Point2>(X(pose_num), landmark_symbol,
                                                         b,
                                                         r,

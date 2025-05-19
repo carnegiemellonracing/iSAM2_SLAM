@@ -376,8 +376,8 @@ namespace cone_utils {
 
     std::vector<gtsam::Point2> local_to_global_frame( std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose) {
 
-        Eigen::MatrixXd bearing = calc_cone_range_from_car(cone_obs);
-        Eigen::MatrixXd range = calc_cone_bearing_from_car(cone_obs);
+        Eigen::MatrixXd bearing = calc_cone_bearing_from_car(cone_obs);
+        Eigen::MatrixXd range = calc_cone_range_from_car(cone_obs);
         
         gtsam::Point2 lidar_offset = motion_modeling::calc_offset_lidar_to_car_center(cur_pose.theta());
         double lidar_offset_x = lidar_offset.x();       
