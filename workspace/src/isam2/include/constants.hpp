@@ -6,6 +6,7 @@ constexpr bool DEBUG_POSES = true;
 constexpr bool DEBUG_STEP = true;
 constexpr bool DEBUG_VIZ = true;
 constexpr bool DEBUG_PARAMS_IN_USE = true;
+constexpr bool DEBUG_UPDATE = true;
 
 const std::string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
 constexpr bool EUFS_SIM_SETTINGS = false;
@@ -101,13 +102,17 @@ constexpr double TURNING_M_DIST_TH = 0.0009;
 const std::string STEP_INPUT_FILE = "src/isam2/data/step_input.txt";
 
 const std::string CONE_DATA_TOPIC = "/perc_cones";
-const std::string VEHICLE_POS_TOPIC = "/filter/pose";
+const std::string VEHICLE_POS_TOPIC = "/filter/positionlla";
 const std::string VEHICLE_ANGLE_TOPIC = "/filter/quaternion";
 const std::string VEHICLE_VEL_TOPIC = "/filter/twist";
+const std::string SLAM_TOPIC = "/slam_data";
 
-constexpr int LOOK_RADIUS = 20;
-constexpr int MIN_CONES_UPDATE_ALL = 50;
-constexpr int UPDATE_START_AFTER_N = 50;
-constexpr int UPDATE_START_N = 30;
-constexpr int WINDOW_UPDATE = 0;
-constexpr int UPDATE_ITERATIONS_N = 5;
+constexpr std::size_t LOOK_RADIUS = 20;
+constexpr std::size_t MIN_CONES_UPDATE_ALL = 50;
+constexpr std::size_t UPDATE_START_AFTER_N = 50;
+constexpr std::size_t UPDATE_START_N = 30;
+constexpr std::size_t UPDATE_RECENT_N = 20;
+constexpr std::size_t WINDOW_UPDATE = 0;
+constexpr std::size_t UPDATE_ITERATIONS_N = 10;
+
+constexpr std::size_t RETURN_N_CONES = 22;
