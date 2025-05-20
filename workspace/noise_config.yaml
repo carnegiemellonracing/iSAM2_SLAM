@@ -4,7 +4,7 @@ slam_node:
     # Prior noise model (based on the IMU)
     yaml_prior_imu_x_std_dev: 0.22
     yaml_prior_imu_y_std_dev: 0.22
-    yaml_prior_imu_heading_std_dev: 0.00015707963 # radians
+    yaml_prior_imu_heading_std_dev: 0.0011 # radians
 
     # Bearing range noise model
     yaml_bearing_std_dev: 0.00045
@@ -13,14 +13,14 @@ slam_node:
     # IMU noise model
     yaml_imu_x_std_dev: 0.22
     yaml_imu_y_std_dev: 0.22
-    yaml_imu_heading_std_dev: 0.00015707963 # radians
+    yaml_imu_heading_std_dev: 0.0011 # radians
 
     # GPS noise model
     yaml_gps_x_std_dev: 0.01
     yaml_gps_y_std_dev: 0.01
 
     # Parameters for performing SLAM cone updates
-    yaml_look_radius: 60 # how many surrounding cones to update
+    yaml_look_radius: 20 # how many surrounding cones to update
     yaml_min_cones_update_all: 40 # update all cone estimates until this number of cones for both blue and yellow
     yaml_window_update: 0 # sliding window cone update 
 
@@ -34,6 +34,6 @@ slam_node:
     yaml_dist_from_start_loop_closure_th: 5.0
 
     # Mahalanobis distance thresholds for cone updates
-    yaml_m_dist_th: 0.0010
-    yaml_turning_m_dist_th: 0.0010
+    yaml_m_dist_th: 0.0015
+    yaml_turning_m_dist_th: 0.0015
     yaml_update_iterations_n: 10
