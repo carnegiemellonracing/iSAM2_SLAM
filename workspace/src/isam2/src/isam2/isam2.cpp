@@ -453,10 +453,10 @@ namespace slam {
             geometry_points_yellow = ros_msg_conversions::slam_est_to_points(last_n_yellow, cur_pose);
         }
 
-        geometry_msgs::msg::Vector3 final_pose = geometry_msgs::msg::Vector3();
+        geometry_msgs::msg::Point final_pose = geometry_msgs::msg::Point();
         final_pose.x = cur_pose.x();
         final_pose.y = cur_pose.y();
-        final_pose.z = cur_pose.theta();
+        final_pose.z = 0.0;
 
         return std::make_tuple(geometry_points_blue, geometry_points_yellow, final_pose);
     }

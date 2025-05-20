@@ -5,7 +5,9 @@ namespace nodes {
     template<typename cone_msg_t, typename velocity_msg_t, typename orientation_msg_t, typename position_msg_t> 
     GenericSLAMNode<cone_msg_t, velocity_msg_t, orientation_msg_t, position_msg_t>::GenericSLAMNode() : Node("slam_node")
     {
-        slam_publisher_ = this->create_publisher<interfaces::msg::SLAMData>(SLAM_TOPIC, 10);
+        // slam_publisher_ = this->create_publisher<interfaces::msg::SLAMData>(SLAM_TOPIC, 10);
+        slam_pose_publisher = this->create_publisher<interfaces::msg::SLAMPose>(SLAM_POSE_TOPIC, 10);
+        slam_chunk_publisher = this->create_publisher<interfaces::msg::SLAMChunk>(SLAM_CHUNK_TOPIC, 10);
 
         declare_yaml_params();
 
@@ -21,6 +23,23 @@ namespace nodes {
 
         prev_filter_time = std::nullopt;
         prev_sync_callback_time = std::nullopt;
+    }
+
+    template<typename cone_msg_t, typename velocity_msg_t, typename orientation_msg_t, typename position_msg_t> 
+    void GenericSLAMNode<cone_msg_t, velocity_msg_t, orientation_msg_t, position_msg_t>::publish_slam_data(const slam::slam_output_t& slam_data, std_msgs::msg::Header header) {
+        interfaces::msg::SLAMPose pose_msg = interfaces::msg::SLAMPose();
+        pose_msg.header = header;
+        pose_msg.current_chunk_id.data = 0;
+        pose_msg.pose = std::get<2>(slam_data);
+
+        interfaces::msg::SLAMChunk chunk_msg = interfaces::msg::SLAMChunk();
+        chunk_msg.header = header;
+        chunk_msg.blue_cones = std::get<0>(slam_data);
+        chunk_msg.chunk_id.data = 0;
+        chunk_msg.yellow_cones = std::get<1>(slam_data);
+
+        slam_pose_publisher->publish(pose_msg);
+        slam_chunk_publisher->publish(chunk_msg);
     }
 
     

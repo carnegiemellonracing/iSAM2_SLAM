@@ -30,7 +30,9 @@ namespace nodes {
         std::chrono::high_resolution_clock::time_point cur_sync_callback_time;
         std::optional<std::chrono::high_resolution_clock::time_point> prev_sync_callback_time;
 
-        rclcpp::Publisher<interfaces::msg::SLAMData>::SharedPtr slam_publisher_; 
+        // rclcpp::Publisher<interfaces::msg::SLAMData>::SharedPtr slam_publisher_; 
+        rclcpp::Publisher<interfaces::msg::SLAMPose>::SharedPtr slam_pose_publisher; 
+        rclcpp::Publisher<interfaces::msg::SLAMChunk>::SharedPtr slam_chunk_publisher; 
         gtsam::Pose2 velocity;
 
         std::optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance when msg in lon lat
@@ -82,6 +84,7 @@ namespace nodes {
 
         void declare_yaml_params();
         std::optional<yaml_params::NoiseInputs> get_noise_inputs();
+        void publish_slam_data(const slam::slam_output_t& slam_data, std_msgs::msg::Header header);
 
         virtual void perform_subscribes() = 0;
     };

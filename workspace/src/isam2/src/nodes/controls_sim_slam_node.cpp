@@ -105,18 +105,8 @@ namespace nodes {
         auto sync_data_duration = std::chrono::duration_cast<std::chrono::milliseconds>(sync_data_end - sync_data_start);
         RCLCPP_INFO(this->get_logger(), "\tSync callback time: %ld \n", sync_data_duration.count());
 
-        slam::slam_output_t SLAMData = slam_instance.step(gps_position, yaw, blue_cones, yellow_cones, orange_cones, velocity, dt);
-
-        interfaces::msg::SLAMData message = interfaces::msg::SLAMData();
-        message.header = cone_data->header;
-        message.blue_cones = std::get<0>(SLAMData);
-        message.yellow_cones = std::get<1>(SLAMData);
-        message.curr_pose = std::get<2>(SLAMData);
-        message.orange_cones = {};
-        message.unknown_color_cones = {};
-        message.big_orange_cones = {};
-
-        slam_publisher_->publish(message);
+        slam::slam_output_t slam_data = slam_instance.step(gps_position, yaw, blue_cones, yellow_cones, orange_cones, velocity, dt);
+        publish_slam_data(slam_data, cone_data->header);
 
         RCLCPP_INFO(this->get_logger(), "--------End of Sync Callback--------\n\n");
         prev_sync_callback_time.emplace(std::chrono::high_resolution_clock::now());

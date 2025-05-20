@@ -39,7 +39,7 @@
 namespace slam {
     using slam_output_t = std::tuple<std::vector<geometry_msgs::msg::Point>, 
                                 std::vector<geometry_msgs::msg::Point>, 
-                                geometry_msgs::msg::Vector3>;
+                                geometry_msgs::msg::Point>;
     
     enum class RunSettings {
         Real,

@@ -105,7 +105,9 @@ const std::string CONE_DATA_TOPIC = "/perc_cones";
 const std::string VEHICLE_POS_TOPIC = "/filter/positionlla";
 const std::string VEHICLE_ANGLE_TOPIC = "/filter/quaternion";
 const std::string VEHICLE_VEL_TOPIC = "/filter/twist";
-const std::string SLAM_TOPIC = "/slam_data";
+const std::string SLAM_POSE_TOPIC = "/slam_pose";
+const std::string SLAM_CHUNK_TOPIC = "/slam_chunk";
+// const std::string SLAM_TOPIC = "/slam_data";
 
 constexpr std::size_t LOOK_RADIUS = 20;
 constexpr std::size_t MIN_CONES_UPDATE_ALL = 50;

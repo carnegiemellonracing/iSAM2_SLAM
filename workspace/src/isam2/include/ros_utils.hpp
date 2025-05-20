@@ -10,7 +10,9 @@
 
 #include "interfaces/msg/cone_array.hpp"
 #include "interfaces/msg/cone_array_with_odom.hpp"
-#include "interfaces/msg/slam_data.hpp"
+// #include "interfaces/msg/slam_data.hpp"
+#include "interfaces/msg/slam_pose.hpp"
+#include "interfaces/msg/slam_chunk.hpp"
 
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/vector3_stamped.hpp"
