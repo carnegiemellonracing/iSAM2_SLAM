@@ -33,11 +33,11 @@
 /* @brief Evaluates the error between an unknown variable and the
  * GPS measurement we receive
  */
-gtsam::Vector UnaryFactor::evaluateError(const Pose2& q, OptionalMatrixType H) const {
-    const Rot2& R = q.rotation();
+gtsam::Vector UnaryFactor::evaluateError(const gtsam::Pose2& q, boost::optional<gtsam::Matrix&> H) const {
+    const gtsam::Rot2& R = q.rotation(); // TODO: Probably do not need & in the type annotation?
 
     // If H is not none
-    if (H) {
+    if (H.has_value()) {
         (*H) = (gtsam::Matrix(2, 3) << R.c(), -R.s(), 0.0,
                                         R.s(), R.c(), 0.0).finished();
     }

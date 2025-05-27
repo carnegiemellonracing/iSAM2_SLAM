@@ -3,16 +3,16 @@
 #include <bits/stdc++.h>
 #include <gtsam/nonlinear/NonlinearFactor.h>
 #include <gtsam/geometry/Pose2.h>
-using namespace gtsam;
 /*
  * @brief This is a factor used for localizing car poses.
  * Unary factors are added to car poses. Car poses
  * are calculated by the velocity motion model, unary
  * factors are contain the GPS measurments
  */
-class UnaryFactor : public NoiseModelFactor1<Pose2> {
+class UnaryFactor : public gtsam::NoiseModelFactor1<gtsam::Pose2> {
     // x y measurements from GPS
-    Pose2 z;
+    gtsam::Pose2 z;
+    gtsam::Key key;
 
 public:
     typedef std::shared_ptr<UnaryFactor> shared_ptr;
@@ -39,10 +39,8 @@ public:
      *
      * Below is the constructor
      */
-    UnaryFactor(Key k, const Pose2& input_GPS, const SharedNoiseModel& model):
-        NoiseModelFactorN<Pose2>(model, k), z(input_GPS.x(),
-                                                input_GPS.y(), 
-                                                input_GPS.theta()){}
+    UnaryFactor(gtsam::Key k, const gtsam::Pose2& input_GPS, const gtsam::SharedNoiseModel& model):
+        NoiseModelFactor1<gtsam::Pose2>(model, k), z(input_GPS.x(), input_GPS.y(), input_GPS.theta()), key(k) {}
 
 
     virtual ~UnaryFactor() {}
@@ -50,13 +48,13 @@ public:
     /* @brief Evaluates the error between an unknown variable and the
      * GPS measurement we receive
      */
-    gtsam::Vector evaluateError(const Pose2& q, OptionalMatrixType H) const;
+    gtsam::Vector evaluateError(const gtsam::Pose2& q, boost::optional<gtsam::Matrix&> H) const;
     /*
      * @brief Clones this factor
      */
     gtsam::NonlinearFactor::shared_ptr clone() const override {
-    return std::static_pointer_cast<gtsam::NonlinearFactor>(
-    gtsam::NonlinearFactor::shared_ptr(new UnaryFactor(*this)));
+    return boost::static_pointer_cast<gtsam::NonlinearFactor>(
+    gtsam::NonlinearFactor::shared_ptr(new UnaryFactor(this->key, z, this->noiseModel_)));
 }
 };
 

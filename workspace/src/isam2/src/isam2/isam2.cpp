@@ -135,7 +135,7 @@ namespace slam {
     void slamISAM::init_params(std::optional<rclcpp::Logger> input_logger) {
 
         /* Initializing iSAM2 model */
-        parameters = ISAM2Params(ISAM2DoglegParams(),0.1,10,true);
+        parameters = gtsam::ISAM2Params(gtsam::ISAM2DoglegParams(),0.1,10,true);
         parameters.setFactorization("QR");
         logger = input_logger;
         isam2 = std::make_shared<gtsam::ISAM2>(gtsam::ISAM2(parameters));
@@ -188,7 +188,7 @@ namespace slam {
      * @return gtsam::Symbol 
      */
     gtsam::Symbol slamISAM::X(int robot_pose_id) {
-        return Symbol('x', robot_pose_id);
+        return gtsam::Symbol('x', robot_pose_id);
     }
 
     /**
@@ -199,7 +199,7 @@ namespace slam {
      * @return gtsam::Symbol 
      */
     gtsam::Symbol slamISAM::BLUE_L(int cone_id) {
-        return Symbol('b', cone_id);
+        return gtsam::Symbol('b', cone_id);
     }
 
     /**
@@ -210,7 +210,7 @@ namespace slam {
      * @return gtsam::Symbol 
      */
     gtsam::Symbol slamISAM::YELLOW_L(int cone_id) {
-        return Symbol('y', cone_id);
+        return gtsam::Symbol('y', cone_id);
     }
 
     /**
@@ -402,7 +402,7 @@ namespace slam {
 
         /* NOTE: All values in graph must be in values parameter */
         values.insert(X(pose_num), cur_pose);
-        Values optimized_val = LevenbergMarquardtOptimizer(graph, values).optimize();
+        gtsam::Values optimized_val = gtsam::LevenbergMarquardtOptimizer(graph, values).optimize();
         optimized_val.erase(X(pose_num));
         isam2->update(graph, optimized_val);
 

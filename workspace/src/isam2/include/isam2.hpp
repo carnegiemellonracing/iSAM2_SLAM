@@ -91,13 +91,13 @@ namespace slam {
 
             /* Noise models */
             gtsam::Vector LandmarkNoiseModel;
-            noiseModel::Diagonal::shared_ptr landmark_model;
+            gtsam::noiseModel::Diagonal::shared_ptr landmark_model;
             gtsam::Vector PriorNoiseModel;
-            noiseModel::Diagonal::shared_ptr prior_model;
+            gtsam::noiseModel::Diagonal::shared_ptr prior_model;
             gtsam::Vector OdomNoiseModel;
-            noiseModel::Diagonal::shared_ptr odom_model;
+            gtsam::noiseModel::Diagonal::shared_ptr odom_model;
             gtsam::Vector UnaryNoiseModel;
-            noiseModel::Diagonal::shared_ptr unary_model;
+            gtsam::noiseModel::Diagonal::shared_ptr unary_model;
             std::optional<rclcpp::Logger> logger;
 
 
@@ -194,9 +194,9 @@ namespace slam {
             slam_output_t step(
                 std::optional<gtsam::Point2> gps_opt, 
                 double yaw,
-                const std::vector<Point2> &cone_obs_blue, 
-                const std::vector<Point2> &cone_obs_yellow,
-                const std::vector<Point2> &orange_ref_cones, 
+                const std::vector<gtsam::Point2> &cone_obs_blue, 
+                const std::vector<gtsam::Point2> &cone_obs_yellow,
+                const std::vector<gtsam::Point2> &orange_ref_cones, 
                 gtsam::Pose2 velocity,
                 double dt
             );
