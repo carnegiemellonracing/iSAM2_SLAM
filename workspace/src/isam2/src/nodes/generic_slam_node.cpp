@@ -23,6 +23,7 @@ namespace nodes {
 
         prev_filter_time = std::nullopt;
         prev_sync_callback_time = std::nullopt;
+        RCLCPP_INFO(this->get_logger(), "----- Reminder to subscribe to the right topics in constants.hpp -----");
     }
 
     template<typename cone_msg_t, typename velocity_msg_t, typename orientation_msg_t, typename position_msg_t> 

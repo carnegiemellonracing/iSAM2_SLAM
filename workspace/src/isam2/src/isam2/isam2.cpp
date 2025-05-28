@@ -492,7 +492,7 @@ namespace slam {
         {
             auto start_step  = std::chrono::high_resolution_clock::now();
             auto dur_betw_step = std::chrono::duration_cast<std::chrono::milliseconds>(start_step - start);
-            logging_utils::log_string(logger, fmt::format("--------End of prev step. Time between step calls: {}--------\n\n", dur_betw_step.count()), DEBUG_STEP);
+            // logging_utils::log_string(logger, fmt::format("--------End of prev step. Time between step calls: {}--------\n\n", dur_betw_step.count()), DEBUG_STEP);
         }
 
         start = std::chrono::high_resolution_clock::now();

@@ -59,6 +59,17 @@ namespace nodes {
         std::ofstream pose_cones;   
 
         /* QOS */
+        const rmw_qos_profile_t reliable_profile = {
+            RMW_QOS_POLICY_HISTORY_KEEP_LAST,
+            30,
+            RMW_QOS_POLICY_RELIABILITY_RELIABLE,
+            RMW_QOS_POLICY_DURABILITY_VOLATILE,
+            RMW_QOS_DEADLINE_DEFAULT,
+            RMW_QOS_LIFESPAN_DEFAULT,
+            RMW_QOS_POLICY_LIVELINESS_SYSTEM_DEFAULT,
+            RMW_QOS_LIVELINESS_LEASE_DURATION_DEFAULT,
+            false
+        };
         const rmw_qos_profile_t best_effort_profile = {
             RMW_QOS_POLICY_HISTORY_KEEP_LAST,
             30,

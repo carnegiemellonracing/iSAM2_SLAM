@@ -78,7 +78,7 @@ namespace nodes {
         const RealDataSLAMNodeGPS::orientation_msg_t::ConstSharedPtr &vehicle_angle_data,
         const RealDataSLAMNodeGPS::position_msg_t::ConstSharedPtr &vehicle_pos_data
     ) {
-        RCLCPP_INFO(this->get_logger(), "--------Start of Sync Callback--------");
+        // RCLCPP_INFO(this->get_logger(), "--------Start of Sync Callback--------");
         
         /* Getting the time between sync callbacks */
         cur_sync_callback_time = std::chrono::high_resolution_clock::now();
@@ -121,7 +121,7 @@ namespace nodes {
         slam::slam_output_t slam_data = slam_instance.step(gps_position, yaw, blue_cones, yellow_cones, orange_cones, velocity, dt);
         publish_slam_data(slam_data, cone_data->header);
 
-        RCLCPP_INFO(this->get_logger(), "--------End of Sync Callback--------\n\n");
+        // RCLCPP_INFO(this->get_logger(), "--------End of Sync Callback--------\n\n");
         prev_sync_callback_time.emplace(std::chrono::high_resolution_clock::now());
     }
 
