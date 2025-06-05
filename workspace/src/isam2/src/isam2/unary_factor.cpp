@@ -25,7 +25,7 @@
  *
  * What is q in the context of our problem: q is either a pose or a landmark
  * - (a variable node)
- *
+ * 
  */
 
 
@@ -33,11 +33,11 @@
 /* @brief Evaluates the error between an unknown variable and the
  * GPS measurement we receive
  */
-gtsam::Vector UnaryFactor::evaluateError(const gtsam::Pose2& q, boost::optional<gtsam::Matrix&> H) const {
+gtsam::Vector UnaryFactor::evaluateError(const gtsam::Pose2& q, gtsam::OptionalMatrixType H) const {
     const gtsam::Rot2& R = q.rotation(); // TODO: Probably do not need & in the type annotation?
 
     // If H is not none
-    if (H.has_value()) {
+    if (H) {
         (*H) = (gtsam::Matrix(2, 3) << R.c(), -R.s(), 0.0,
                                         R.s(), R.c(), 0.0).finished();
     }

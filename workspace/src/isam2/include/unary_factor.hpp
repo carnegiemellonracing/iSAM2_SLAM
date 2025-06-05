@@ -48,14 +48,13 @@ public:
     /* @brief Evaluates the error between an unknown variable and the
      * GPS measurement we receive
      */
-    gtsam::Vector evaluateError(const gtsam::Pose2& q, boost::optional<gtsam::Matrix&> H) const;
+    gtsam::Vector evaluateError(const gtsam::Pose2& q, gtsam::OptionalMatrixType H) const override;
     /*
      * @brief Clones this factor
      */
     gtsam::NonlinearFactor::shared_ptr clone() const override {
-    return boost::static_pointer_cast<gtsam::NonlinearFactor>(
-    gtsam::NonlinearFactor::shared_ptr(new UnaryFactor(this->key, z, this->noiseModel_)));
-}
+    	return std::make_shared<UnaryFactor>(this->key, z, this->noiseModel_);
+    }
 };
 
 
