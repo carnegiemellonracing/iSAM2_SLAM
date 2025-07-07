@@ -87,7 +87,8 @@ target_include_directories(controls_sim_slam_node PUBLIC include ${GTSAM_INCLUDE
 
 install(TARGETS real_data_slam_node_gps real_data_slam_node_no_gps controls_sim_slam_node
         DESTINATION lib/${PROJECT_NAME})
-
+install(DIRECTORY launch
+        DESTINATION share/${PROJECT_NAME})
 
 # <---- isam2_lib ---->
 add_library(isam2_lib SHARED src/nodes/real_data_slam_node_gps.cpp)
