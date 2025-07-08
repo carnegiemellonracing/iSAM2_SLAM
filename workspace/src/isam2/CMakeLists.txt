@@ -40,6 +40,7 @@ set(UTILS_SOURCES
     src/utils/ros_utils.cpp
     src/utils/data_association.cpp
     src/utils/loop_closure.cpp
+    src/utils/timer.cpp
     )
 
 set(ISAM2_SOURCES 

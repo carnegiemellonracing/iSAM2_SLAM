@@ -9,6 +9,10 @@ constexpr bool DEBUG_PARAMS_IN_USE = true;
 constexpr bool DEBUG_UPDATE = true;
 
 const std::string ESTIMATES_FILE = "src/isam2/data/current_estimates.txt";
+
+const size_t TIMER_BATCH_SIZE = 20;
+const std::string TIMER_FILE = "src/isam2/data/timer_output.txt";
+
 constexpr bool EUFS_SIM_SETTINGS = false;
 /* Bearing and range error
 * Corresponds to the usage of the BearingRangeFactor we are using

@@ -496,6 +496,7 @@ namespace slam {
         }
 
         start = std::chrono::high_resolution_clock::now();
+        timer_.start();
         
         logging_utils::log_string(logger, "--------Start of SLAM Step--------", DEBUG_STEP);
 
@@ -614,6 +615,8 @@ namespace slam {
                             pose_num, blue_slam_est_and_mcov.get_n_landmarks(), yellow_slam_est_and_mcov.get_n_landmarks()), DEBUG_STEP);
 
         pose_num++;
+        
+        timer_.stop_and_record();
 
         return get_recent_SLAM_estimates(cur_pose);
     }

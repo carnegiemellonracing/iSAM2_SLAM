@@ -35,6 +35,7 @@
 #include "unary_factor.hpp"
 #include "slam_est_and_mcov.hpp"
 #include "loop_closure.hpp"
+#include "timer.hpp"
 
 namespace slam {
     using slam_output_t = std::tuple<std::vector<geometry_msgs::msg::Point>, 
@@ -117,6 +118,9 @@ namespace slam {
             double turning_m_dist_th;
             std::size_t update_iterations_n;
             std::size_t return_n_cones;
+
+            /* Timer for timing */
+            Timer timer_{TIMER_BATCH_SIZE};
 
 
             /**
