@@ -8,6 +8,7 @@
 #include <chrono>
 #include <vector>
 #include <optional>
+#include <map>
 
 
 class Timer {
@@ -15,15 +16,17 @@ class Timer {
 		explicit Timer(size_t batch_size = TIMER_BATCH_SIZE);
 
 		void start();
-		void stop_and_record();
+		void stop_and_record(size_t total_cones, size_t pose_num);
 
-		double compute_batch_average() const;
-		const std::vector<double>& get_all_batch_averages() const;
+		double compute_bucket_average(size_t bucket_index) const;
 
+		const std::map<size_t, std::vector<double>>& get_all_bucket_times() const;
+		
+		void deactivate();
+		
 	private:
 		size_t batch_size_;
-		size_t step_count_;
 		std::optional<std::chrono::high_resolution_clock::time_point> start_time_;
-		std::vector<double> recorded_times_;
-		std::vector<double> batch_averages_;
+		std::map<size_t, std::vector<double>> bucket_times_;
+		bool active_ = true;
 };

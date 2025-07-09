@@ -543,6 +543,7 @@ namespace slam {
         logging_utils::log_string(logger, fmt::format("\tLoop closure time: {}", dur_loop_closure.count()), DEBUG_STEP);
 
         if (loop_closure) {
+            timer_.deactivate();
             logging_utils::log_string(logger, "\tLoop closure detected. No longer updating", DEBUG_STEP);
         }
 
@@ -616,7 +617,8 @@ namespace slam {
 
         pose_num++;
         
-        timer_.stop_and_record();
+        size_t total_cones = blue_slam_est_and_mcov.get_n_landmarks() + yellow_slam_est_and_mcov.get_n_landmarks();
+        timer_.stop_and_record(total_cones, pose_num);
 
         return get_recent_SLAM_estimates(cur_pose);
     }
