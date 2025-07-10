@@ -36,10 +36,25 @@ double Timer::compute_bucket_average(size_t bucket_index) const {
 	return sum / times.size();
 }
 
-const std::map<size_t, std::vector<double>>& Timer::get_all_bucket_times() const {
-	return bucket_times_;
-}
-
 void Timer::deactivate() {
 	active_ = false;
+	if (!summary_) {
+		print_summary();
+		summary_ = true;
+	}
+}
+
+void Timer::print_summary() {
+	std::ofstream ofs(TIMER_FILE, std::ios::app);
+	ofs << "\n--- Timer Summary ---\n";
+
+	for (const auto& [bucket_index, times] : bucket_times_) {
+		double avg = compute_bucket_average(bucket_index);
+		size_t lower = (bucket_index - 1) * batch_size_;
+		size_t upper = bucket_index * batch_size_;
+		ofs << "Bucket " << bucket_index << " (" << lower << "-" << upper << " cones): "
+			<< avg << " ms" << std::endl;
+	}
+
+	ofs << "--- End of Summary ---\n" << std::endl;
 }

@@ -20,13 +20,14 @@ class Timer {
 
 		double compute_bucket_average(size_t bucket_index) const;
 
-		const std::map<size_t, std::vector<double>>& get_all_bucket_times() const;
-		
 		void deactivate();
+
+		void print_summary();
 		
 	private:
 		size_t batch_size_;
 		std::optional<std::chrono::high_resolution_clock::time_point> start_time_;
 		std::map<size_t, std::vector<double>> bucket_times_;
 		bool active_ = true;
+		bool summary_ = false;
 };
