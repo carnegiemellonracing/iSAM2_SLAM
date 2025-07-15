@@ -1,1 +1,4 @@
 
+[submodule "workspace/src/isam2"]
+	path = workspace/src/isam2
+	url = https://github.com/carnegiemellonracing/iSAM2_SLAM.git
