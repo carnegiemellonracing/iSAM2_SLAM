@@ -1,27 +1,24 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carnegie Mellon Racing Path Planning Library &mdash; CMR Driverless Path Planning 1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>Overview &mdash; CMR Driverless Path Planning 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=359c27e9"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="What is Factor Graph SLAM?" href="isam2.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,18 +40,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is Factor Graph SLAM?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">How to run iSAM2 on the EUFS simulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="more.html">More CMR Driverless</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Overview</a><ul>
+<li><a class="reference internal" href="#what-is-path-planning-in-charge-of">What is Path Planning in charge of?</a></li>
+<li><a class="reference internal" href="#what-data-does-it-recieve">What data does it recieve?</a></li>
+<li><a class="reference internal" href="#what-does-it-output-and-to-what-system">What does it output, and to what system?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Source Files</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="isam2cpp.html">isam2.cpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="isam2Nodecpp.html">isam2Node.cpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a></li>
+</li>
 </ul>
-
+</div>
         </div>
       </div>
     </nav>
@@ -69,7 +64,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Carnegie Mellon Racing Path Planning Library</li>
+      <li class="breadcrumb-item active">Overview</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -79,41 +74,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="carnegie-mellon-racing-path-planning-library">
-<h1>Carnegie Mellon Racing Path Planning Library<a class="headerlink" href="#carnegie-mellon-racing-path-planning-library" title="Permalink to this heading"></a></h1>
-<section id="what-is-path-planning">
-<h2>What is Path Planning?<a class="headerlink" href="#what-is-path-planning" title="Permalink to this heading"></a></h2>
-<p>Path planning is responsible for determining a route for the car to take in order to navigate the track. This process involves two primary parts: determining the midline and employing SLAM (Simultaneous Localization and Mapping) to determine the structure of the racetrack and the location of the car. Determining the midline refers to the process of generating a route between the blue and yellow cones observed at the current time step. The midline is necessary when the car is competing its first lap around the track because without knowledge of the track’s layout, the car is forced to naively navigate the track. As the car completes its first lap, a SLAM algorithm is employed to refine its position in the track and the position of previously seen cones (localization) based on newly observed cones while also mapping out the racetrack (mapping).</p>
+  <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<section id="what-is-path-planning-in-charge-of">
+<h2>What is Path Planning in charge of?<a class="headerlink" href="#what-is-path-planning-in-charge-of" title="Link to this heading"></a></h2>
+<p>Path planning is responsible for determining the route the car should follow to navigate the track. It has two main responsibilities:</p>
+<ol class="arabic simple">
+<li><p><strong>Midline Calculation</strong></p></li>
+<li><p><strong>SLAM (Simultaneous Localization and Mapping)</strong></p></li>
+</ol>
 </section>
-<section id="our-implementation">
-<h2>Our Implementation<a class="headerlink" href="#our-implementation" title="Permalink to this heading"></a></h2>
-<p>Our midline calculation relies on Support Vector Machines (SVMs). Using the cones received from our lidar, the SVM generates a decision boundary using a cubic polynomial kernel. This decision boundary is converted into a series of points that represents the path the car should take. The SLAM algorithm used is iSAM2, a form of factor graph SLAM. We chose this algorithm after considering 1.) iSAM2 is capable of incrementally optimizing its estimates for previous cone position esimates and pose estimates, as opposed to optimizing only at loop closure, 2.) iSAM2’s performance made it a clear choice for SLAM, and 3.) we are able to work closely with the author of iSAM2, Professor Michael Kaess. Thus, we would like to take this opportunity to thank Profesor Michael Kaess for dedicating his time and efforts to assisting our implementation of SLAM. For more information on SVMs, see the Perceptions Pipeline documentation. For more information on iSAM2, <a class="reference internal" href="isam2.html#what-is-factor-graph-slam"><span class="std std-ref">See “What is Factor Graph SLAM?”</span></a></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Midline calculation is written in Python, and because perceptions is written in python, midline is written in the Perceptions pipeline and compiled in the Perceptions package. SLAM on the other hand is done in C++ and is compiled in the Path Planning package.</p>
-</div>
-<p>This is made possible by processing observed cone positions received from our Perceptions pipeline into a path the car can follow. The Planning pipelines is then responsible for a.) determining the midline, a series of points representing the path the car should take b.) SLAM. The path is published and received by the Controls Pipeline where control actions will be determined to instruct the car to follow the route indicated by the spline. The map of the racetrack generated by SLAM will be used in the laps following the first lap to navigate the track.</p>
+<section id="what-data-does-it-recieve">
+<h2>What data does it recieve?<a class="headerlink" href="#what-data-does-it-recieve" title="Link to this heading"></a></h2>
+<p>Path planning recieves cone detections (positions of blue and yellow cones) from the perceptions pipeline. These cone positions are observed using LiDAR and processed in real-time.</p>
 </section>
-<section id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h2>
+<section id="what-does-it-output-and-to-what-system">
+<h2>What does it output, and to what system?<a class="headerlink" href="#what-does-it-output-and-to-what-system" title="Link to this heading"></a></h2>
+<p>The output is a set of path waypoints (from midline calculation) and a SLAM-generated map. The path is sent to the controls pipeline, which uses it to generate control actions for the car. The map is used in later laps to improve navigation.</p>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="isam2.html">What is Factor Graph SLAM?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">How to run iSAM2 on the EUFS simulator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="setup.html#prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setup.html#setup">Setup</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="more.html">More CMR Driverless</a></li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Source Files</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="isam2cpp.html">isam2.cpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="isam2Nodecpp.html">isam2Node.cpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a></li>
-</ul>
 </div>
 </section>
 </section>
@@ -121,14 +99,12 @@
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="isam2.html" class="btn btn-neutral float-right" title="What is Factor Graph SLAM?" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Carnegie Mellon Racing.</p>
+    <p>&#169; Copyright 2025, Carnegie Mellon Racing.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

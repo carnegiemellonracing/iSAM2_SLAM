@@ -5,10 +5,9 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import sys
-sys.path.append("/home/me/docproj/ext/breathe/")
+
 project = 'CMR Driverless Path Planning'
-copyright = '2024, Carnegie Mellon Racing'
+copyright = '2025, Carnegie Mellon Racing'
 author = 'Carnegie Mellon Racing'
 release = '1.0'
 
