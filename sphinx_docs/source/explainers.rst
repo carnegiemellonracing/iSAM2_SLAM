@@ -1,10 +1,8 @@
 Explainers
 =============
 
-Abstract ideas, math used, or technologies utilized (Brief)
-
-What is Factor Graph SLAM?
------------------------------
+What is iSAM2 and Factor Graph SLAM?
+------------------------------------
 
 iSAM2 (Incremental Smoothing and Mapping) is a SLAM (Simultaneous Localization and Mapping) algorithm used to construct a map of the track from the car's position and the cones observed around the track. iSAM2 does this by constructing and optimizing a factor graph containing variables nodes (which represent either landmark poses or car poses) and factor nodes.
 
@@ -46,3 +44,5 @@ After determining the car pose, data association is performed on the cones obser
     :align: center
 
 This process is repeated for all observed cones. Each detected new cone must be added to the factor graph as a variable node with a factor node connected to :math:`x_{n}`, the variable node representing the current car pose.
+
+Abstract ideas, math used, or technologies utilized (Brief)
