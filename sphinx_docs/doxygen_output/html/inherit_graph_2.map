@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,144,108,171"/>
+<area shape="rect" id="node2" href="$classnodes_1_1GenericSLAMNode.html" title=" " alt="" coords="156,5,465,91"/>
+<area shape="rect" id="node4" href="$classnodes_1_1GenericSLAMNode.html" title=" " alt="" coords="156,115,465,200"/>
+<area shape="rect" id="node7" href="$classnodes_1_1GenericSLAMNode.html" title=" " alt="" coords="215,225,406,295"/>
+<area shape="rect" id="node3" href="$classnodes_1_1ControlsSimSLAMNode.html" title="In controls sim, the orientation information is incorporated into the PoseStamped message." alt="" coords="526,35,745,61"/>
+<area shape="rect" id="node5" href="$classnodes_1_1RealDataSLAMNodeGPS.html" title="Sometimes we run on rosbag data and have GPS." alt="" coords="522,119,749,145"/>
+<area shape="rect" id="node6" href="$classnodes_1_1RealDataSLAMNodeNoGPS.html" title="Sometimes we run on rosbag data and GPS." alt="" coords="513,169,757,196"/>
+</map>

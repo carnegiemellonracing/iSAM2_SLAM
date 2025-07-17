@@ -23,7 +23,7 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
-breathe_projects = {"iSAM2 SLAM": "../../doxy_docs/xml/"}
+breathe_projects = {"iSAM2 SLAM": "../doxygen_output/xml"}
 breathe_default_project = "iSAM2 SLAM"
 
 # -- Options for HTML output -------------------------------------------------

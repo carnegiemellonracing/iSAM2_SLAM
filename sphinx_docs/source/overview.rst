@@ -30,4 +30,6 @@ The output is a set of path waypoints (from midline calculation) and a SLAM-gene
    implementation
    explainers
    extraneous
+   isam2cpp
+   slam_est_and_mcovcpp
 
