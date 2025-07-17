@@ -2,18 +2,23 @@
  * @file data_association.cpp
  * @brief Perform data association in preparation for feeding data to SLAM
  */
+
 #include "data_association.hpp"
+
+/**
+ * @namespace data_association_utils
+ * @brief Utility functions for data association
+ */
 namespace data_association_utils {
     /**
-     * @brief Distinguishes obsered cones into old and new cones.
+     * @brief Distinguishes obsered cones into old and new cones by Mahalanobis distance
      * 
      * @param global_cone_obs The observed cones in the global frame
      * @param cone_obs The observed cones in the local frame
-     * @param distances A vector where the ith vector represents 
-     *                  mahalanobis distances wrt the ith observed cone
+     * @param distances A vector where the ith vector represents mahalanobis distances with respect to the ith observed cone
+     * @param logger Optional logger for debug output
      * 
-     * @param logger 
-     * @return std::pair<std::vector<OldConeInfo>, std::vector<NewConeInfo>>
+     * @return A pair of vectors: vector of OldConeInfo for cones matched to known landmarks, vector of NewConeInfo for cones considered new landmarks
      */
     std::pair<std::vector<OldConeInfo>, std::vector<NewConeInfo>> get_old_new_cones(
         std::vector<gtsam::Point2> global_cone_obs, 
@@ -67,6 +72,20 @@ namespace data_association_utils {
         return std::make_pair(old_cones, new_cones);
     }
 
+    /**
+     * @brief Performs full data association for the current frame of cone observations
+     *
+     * This function filters observed cones by distance threshold, transforms them into the global frame, calculates Mahalanobis distances to existing SLAM landmarks, and then classifies cones as old or new
+     * 
+     * @param cur_pose The current estimated pose of the car
+     * @param cone_obs The observed cones in the local frame
+     * @param logger Optional logger for debug output
+     * @param slam_est_and_mcov Reference to the SLAMEstAndMCov object for accessing current SLAM state
+     * @param m_dist_th Threshold for Mahalanobis distance to differentiate old and new cones
+     * @param cone_dist_th Maximum distance threshold to filter out cones too far from the vehicle
+     * 
+     * @return A pair of vectors classifying cones as old or new, same as get_old_new_cones return
+    */
     std::pair<std::vector<OldConeInfo>, std::vector<NewConeInfo>> perform_data_association(
         gtsam::Pose2 cur_pose, 
         const std::vector<gtsam::Point2> &cone_obs, 

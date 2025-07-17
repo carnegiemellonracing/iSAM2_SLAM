@@ -1,10 +1,8 @@
-#include "unary_factor.hpp"
-/*
- * @brief This is a factor used for localizing car poses.
- * Unary factors are added to car poses. Car poses
- * are calculated by the velocity motion model, unary
- * factors are contain the GPS measurments
+/** @file unary_factor.cpp
+ * @brief This is a factor used for localizing car poses. Unary factors are added to car poses. Car poses are calculated by the velocity motion model, unary factors are contain the GPS measurments
  */
+
+#include "unary_factor.hpp"
 
 /*
  * In the iSAM2 paper, each factor f(q) is proportional to
@@ -30,8 +28,14 @@
 
 
 
-/* @brief Evaluates the error between an unknown variable and the
- * GPS measurement we receive
+/**
+ * @brief Computes the error vector between the current pose estimate and the GPS measurement.
+ *
+ * Optionally computes the Jacobian of the error with respect to the pose.
+ *
+ * @param q The pose variable (gtsam::Pose2) for which the error is evaluated.
+ * @param H Optional output Jacobian matrix pointer; if provided, it is set to the derivative of the error w.r.t. \( q \).
+ * @return gtsam::Vector The 2D error vector between pose position and GPS measurement.
  */
 gtsam::Vector UnaryFactor::evaluateError(const gtsam::Pose2& q, gtsam::OptionalMatrixType H) const {
     const gtsam::Rot2& R = q.rotation(); // TODO: Probably do not need & in the type annotation?
