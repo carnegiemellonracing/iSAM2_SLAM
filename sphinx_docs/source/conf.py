@@ -23,13 +23,11 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
-breathe_projects = {"iSAM2 SLAM": "../doxygen_output/xml"}
-breathe_default_project = "iSAM2 SLAM"
+breathe_projects = {"iSAM2": "../doxygen_output/xml"}
+breathe_default_project = "iSAM2"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-
-master_doc = 'overview'

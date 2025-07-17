@@ -1,6 +1,14 @@
 Explainers
 =============
 
+How is Midline Generated?
+---------------------------
+Our midline calculation relies on Support Vector Machines (SVMs). Using the cones received from our lidar, the SVM generates a decision boundary using a cubic polynomial kernel. This decision boundary is converted into a series of points that represents the path the car should take.
+
+Why iSAM2?
+-----------
+We chose this algorithm after considering 1. iSAM2 is capable of incrementally optimizing its estimates for previous cone position esimates and pose estimates, as opposed to optimizing only at loop closure, 2. iSAM2's performance made it a clear choice for SLAM, and 3. we are able to work closely with the author of iSAM2, Professor Michael Kaess. Thus, we would like to take this opportunity to thank Profesor Michael Kaess for dedicating his time and efforts to assisting our implementation of SLAM. 
+
 What is iSAM2 and Factor Graph SLAM?
 ------------------------------------
 
@@ -26,12 +34,12 @@ The goal of iSAM2 is to maximize the joint probabilistic distribution function F
 .. image:: ./img/observation_step.png
     :align: center
 
-The iSAM2 node first parses the cones received by perceptions into separate vectors by color. This vector of observed cones and other odometry information is the used to update the iSAM2 model (:ref:`See isam2Node.cpp<isam2Node.cpp>`). Using the odometry information, the iSAM2 node predicts the car's current pose using the received odometry information. Variable node :math:`x_{n}`, representing the car pose at the current time stamp, is added alongside a factor node connecting :math:`x_{n}` to :math:`x_{n-1}`, the variable node representing the previous car pose.
+The iSAM2 node first parses the cones received by perceptions into separate vectors by color. This vector of observed cones and other odometry information is the used to update the iSAM2 model. Using the odometry information, the iSAM2 node predicts the car's current pose using the received odometry information. Variable node :math:`x_{n}`, representing the car pose at the current time stamp, is added alongside a factor node connecting :math:`x_{n}` to :math:`x_{n-1}`, the variable node representing the previous car pose.
 
 .. image:: ./img/data_association.png
     :align: center
 
-After determining the car pose, data association is performed on the cones observed at the current timestamp to determine which of the observed cones are new. To perform this data association, the Mahalanobis distance is calculated between 1 observed cone, and all iSAM2 estimates for the previously seen cones. Intuitively, the Mahalanobis distance represents how much the observed cone resembles a previously seen cone (the smaller the distance, the more the observed cone resembles the previously seen cone). If the smallest distance is greater than the Mahalanobis Distance Threshold, then the observed cone is a new cone (:ref:`See isam2.cpp<isam2.cpp>`).
+After determining the car pose, data association is performed on the cones observed at the current timestamp to determine which of the observed cones are new. To perform this data association, the Mahalanobis distance is calculated between 1 observed cone, and all iSAM2 estimates for the previously seen cones. Intuitively, the Mahalanobis distance represents how much the observed cone resembles a previously seen cone (the smaller the distance, the more the observed cone resembles the previously seen cone). If the smallest distance is greater than the Mahalanobis Distance Threshold, then the observed cone is a new cone.
 
 
 .. note:: The Mahalanobis distance threshold is generally found through tuning and trial and error.
@@ -44,5 +52,3 @@ After determining the car pose, data association is performed on the cones obser
     :align: center
 
 This process is repeated for all observed cones. Each detected new cone must be added to the factor graph as a variable node with a factor node connected to :math:`x_{n}`, the variable node representing the current car pose.
-
-Abstract ideas, math used, or technologies utilized (Brief)

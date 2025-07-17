@@ -1,5 +1,0 @@
-<map id="nodes::RealDataSLAMNodeGPS" name="nodes::RealDataSLAMNodeGPS">
-<area shape="rect" id="node1" title="Sometimes we run on rosbag data and have GPS." alt="" coords="513,35,740,61"/>
-<area shape="rect" id="node2" href="$classnodes_1_1GenericSLAMNode.html" title=" " alt="" coords="156,5,465,91"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,35,108,61"/>
-</map>
