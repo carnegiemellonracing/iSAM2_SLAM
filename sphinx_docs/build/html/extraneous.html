@@ -1,0 +1,127 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extraneous &mdash; CMR Driverless Path Planning 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="isam2.html" />
+    <link rel="prev" title="Explainers" href="explainers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CMR Driverless Path Planning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explainers.html">Explainers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extraneous</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#extra-thoughts">Extra Thoughts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="isam2.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CMR Driverless Path Planning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Extraneous</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/extraneous.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="extraneous">
+<h1>Extraneous<a class="headerlink" href="#extraneous" title="Link to this heading"></a></h1>
+<section id="extra-thoughts">
+<h2>Extra Thoughts<a class="headerlink" href="#extra-thoughts" title="Link to this heading"></a></h2>
+<p>While the current <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> and path planning system is designed to be efficient and robust, several challenges may arise in practice:</p>
+<blockquote>
+<div><p>Sensor Noise and Drift: <a class="reference internal" href="glossary.html#term-GPS"><span class="xref std std-term">GPS</span></a> and <a class="reference internal" href="glossary.html#term-IMU"><span class="xref std std-term">IMU</span></a> measurements can be noisy or suffer from drift. This can lead to inaccurate localization or erroneous map updates.</p>
+<p><a class="reference internal" href="glossary.html#term-Data-Association"><span class="xref std std-term">Data Association</span></a> Ambiguity: Identifying whether a newly observed cone corresponds to a previously seen cone (<a class="reference internal" href="glossary.html#term-Data-Association"><span class="xref std std-term">data association</span></a>) is challenging in cluttered environments. Misassociations can degrade map quality and cause localization accuracy.</p>
+<p>Tuning Sensitivity: <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> performance heavily depends on parameters such as the <a class="reference internal" href="glossary.html#term-Mahalanobis-Distance"><span class="xref std std-term">Mahalanobis distance</span></a> threshold and noise models. Poorly tuned parameters can result in either missed associations or false positives.</p>
+<p>Failure Recovery: If the system becomes mislocalized or the <a class="reference internal" href="glossary.html#term-Factor-Graph"><span class="xref std std-term">factor graph</span></a> diverges due to accumulated error, recovering gracefully is non-trivial and may require additional loop closure strategies or reinitialization.</p>
+<p>Real World Edge Cases: Lighting conditions, partial occlusions, or uneven terrain can cause discrepancies between perception and ground truth, which affect downstream <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> and planning modules.</p>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="explainers.html" class="btn btn-neutral float-left" title="Explainers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="isam2.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Carnegie Mellon Racing.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

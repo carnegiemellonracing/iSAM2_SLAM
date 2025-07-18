@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; CMR Driverless Path Planning 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Glossary" href="glossary.html" />
+    <link rel="prev" title="Extraneous" href="extraneous.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CMR Driverless Path Planning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explainers.html">Explainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extraneous.html">Extraneous</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#slamisam-class">slamISAM Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N4slam8slamISAME"><code class="docutils literal notranslate"><span class="pre">slam::slamISAM</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam8slamISAM8slamISAMENSt8optionalIN6rclcpp6LoggerEEERNSt8optionalIN11yaml_params11NoiseInputsEEE"><code class="docutils literal notranslate"><span class="pre">slamISAM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam8slamISAM8slamISAMEv"><code class="docutils literal notranslate"><span class="pre">slamISAM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam8slamISAM4stepENSt8optionalIN5gtsam6Point2EEEdRKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEEN5gtsam5Pose2Ed"><code class="docutils literal notranslate"><span class="pre">step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#slamestandmcov-class">SLAMEstAndMCov Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCovE"><code class="docutils literal notranslate"><span class="pre">slam::SLAMEstAndMCov</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov14SLAMEstAndMCovENSt10shared_ptrIN5gtsam5ISAM2EEEPFN5gtsam6SymbolEiENSt6size_tENSt6size_tE"><code class="docutils literal notranslate"><span class="pre">SLAMEstAndMCov()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov14SLAMEstAndMCovEv"><code class="docutils literal notranslate"><span class="pre">SLAMEstAndMCov()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov26update_and_recalculate_allEv"><code class="docutils literal notranslate"><span class="pre">update_and_recalculate_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov28update_and_recalculate_by_IDERKNSt6vectorINSt6size_tEEE"><code class="docutils literal notranslate"><span class="pre">update_and_recalculate_by_ID()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov32update_and_recalculate_beginningENSt6size_tE"><code class="docutils literal notranslate"><span class="pre">update_and_recalculate_beginning()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov37update_and_recalculate_cone_proximityENSt6size_tE"><code class="docutils literal notranslate"><span class="pre">update_and_recalculate_cone_proximity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov21update_with_old_conesERKNSt6vectorINSt6size_tEEE"><code class="docutils literal notranslate"><span class="pre">update_with_old_cones()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov21update_with_new_conesENSt6size_tE"><code class="docutils literal notranslate"><span class="pre">update_with_new_cones()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov15calculate_mdistEN5gtsam6Point2E"><code class="docutils literal notranslate"><span class="pre">calculate_mdist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov15get_n_landmarksEv"><code class="docutils literal notranslate"><span class="pre">get_n_landmarks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov11get_all_estEv"><code class="docutils literal notranslate"><span class="pre">get_all_est()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov13check_lengthsEv"><code class="docutils literal notranslate"><span class="pre">check_lengths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N4slam14SLAMEstAndMCov19get_landmark_symbolEi"><code class="docutils literal notranslate"><span class="pre">get_landmark_symbol()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CMR Driverless Path Planning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/isam2.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<section id="slamisam-class">
+<h2>slamISAM Class<a class="headerlink" href="#slamisam-class" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam8slamISAME">
+<span id="_CPPv3N4slam8slamISAME"></span><span id="_CPPv2N4slam8slamISAME"></span><span id="slam::slamISAM"></span><span class="target" id="classslam_1_1slamISAM"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">slamISAM</span></span></span><a class="headerlink" href="#_CPPv4N4slam8slamISAME" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam8slamISAM8slamISAMENSt8optionalIN6rclcpp6LoggerEEERNSt8optionalIN11yaml_params11NoiseInputsEEE">
+<span id="_CPPv3N4slam8slamISAM8slamISAMENSt8optionalIN6rclcpp6LoggerEEERNSt8optionalIN11yaml_params11NoiseInputsEEE"></span><span id="_CPPv2N4slam8slamISAM8slamISAMENSt8optionalIN6rclcpp6LoggerEEERNSt8optionalIN11yaml_params11NoiseInputsEEE"></span><span id="slam::slamISAM::slamISAM__std::optional:rclcpp::Logger:.std::optional:yaml_params::NoiseInputs:R"></span><span class="target" id="classslam_1_1slamISAM_1a0f15f59ec41b33eeca84b0399a6429dc"></span><span class="sig-name descname"><span class="n"><span class="pre">slamISAM</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Logger</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input_logger</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">yaml_params</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NoiseInputs</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">yaml_noise_inputs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam8slamISAM8slamISAMENSt8optionalIN6rclcpp6LoggerEEERNSt8optionalIN11yaml_params11NoiseInputsEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#classslam_1_1slamISAM"><span class="std std-ref">slamISAM</span></a> class. </p>
+<p>Initializes noise models, tunable constants, and internal parameters required for iSAM2 SLAM operation. It also sets up the noise models used for different factor types (landmark, odometry, prior, and unary).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_logger</strong> – Optional ROS 2 logger for debug output </p></li>
+<li><p><strong>yaml_noise_inputs</strong> – Optional struct containing SLAM tuning parameters </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam8slamISAM8slamISAMEv">
+<span id="_CPPv3N4slam8slamISAM8slamISAMEv"></span><span id="_CPPv2N4slam8slamISAM8slamISAMEv"></span><span id="slam::slamISAM::slamISAM"></span><span class="target" id="classslam_1_1slamISAM_1a339835603720c6ba0db771b8fd9a8828"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">slamISAM</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam8slamISAM8slamISAMEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam8slamISAM4stepENSt8optionalIN5gtsam6Point2EEEdRKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEEN5gtsam5Pose2Ed">
+<span id="_CPPv3N4slam8slamISAM4stepENSt8optionalIN5gtsam6Point2EEEdRKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEEN5gtsam5Pose2Ed"></span><span id="_CPPv2N4slam8slamISAM4stepENSt8optionalIN5gtsam6Point2EEEdRKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEEN5gtsam5Pose2Ed"></span><span id="slam::slamISAM::step__std::optional:gtsam::Point2:.double.std::vector:gtsam::Point2:CR.std::vector:gtsam::Point2:CR.std::vector:gtsam::Point2:CR.gtsam::Pose2.double"></span><span class="target" id="classslam_1_1slamISAM_1a59469d87c99142bec093ab4a13c9cff5"></span><span class="n"><span class="pre">slam_output_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">step</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Point2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gps_opt</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">yaw</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Point2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cone_obs_blue</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Point2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cone_obs_yellow</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Point2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">orange_ref_cones</span></span>, <span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Pose2</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">velocity</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam8slamISAM4stepENSt8optionalIN5gtsam6Point2EEEdRKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEERKNSt6vectorIN5gtsam6Point2EEEN5gtsam5Pose2Ed" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs a full SLAM update step using odometry and observed cone landmarks. </p>
+<p>This function updates the SLAM factor graph using new motion data and cone observations. It includes steps such as pose prediction, data association, graph updates with both existing and new landmarks, and optional loop closure detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gps_opt</strong> – Optional GPS position of the car </p></li>
+<li><p><strong>yaw</strong> – The heading of the car in radians </p></li>
+<li><p><strong>cone_obs_blue</strong> – The observed blue cones in the local frame </p></li>
+<li><p><strong>cone_obs_yellow</strong> – The observed yellow cones in the local frame </p></li>
+<li><p><strong>orange_ref_cones</strong> – The orange reference cones </p></li>
+<li><p><strong>velocity</strong> – The car’s motion since the last step as a relative Pose2 </p></li>
+<li><p><strong>dt</strong> – Time elapsed since the last SLAM step</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing:<ul class="simple">
+<li><p>A vector of the most recent estimated blue cone positions as Points</p></li>
+<li><p>A vector of the most recent estimated yellow cone positions as Points</p></li>
+<li><p>A Point representing the current pose of the car </p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="slamestandmcov-class">
+<h2>SLAMEstAndMCov Class<a class="headerlink" href="#slamestandmcov-class" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCovE">
+<span id="_CPPv3N4slam14SLAMEstAndMCovE"></span><span id="_CPPv2N4slam14SLAMEstAndMCovE"></span><span id="slam::SLAMEstAndMCov"></span><span class="target" id="classslam_1_1SLAMEstAndMCov"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SLAMEstAndMCov</span></span></span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCovE" title="Link to this definition"></a><br /></dt>
+<dd><p>Maintains and updates landmark estimates and marginal covariance matrices using iSAM2. </p>
+<p>This class provides a lgihtweight interface around GTSAM’s iSAM2 for managing SLAM estimates and covariance matrices for landmarks (cones), which are continuously updated during the first lap. It supports partial and full recalculation, cone-based proximity updates, and Mahalanobis distance computation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov14SLAMEstAndMCovENSt10shared_ptrIN5gtsam5ISAM2EEEPFN5gtsam6SymbolEiENSt6size_tENSt6size_tE">
+<span id="_CPPv3N4slam14SLAMEstAndMCov14SLAMEstAndMCovENSt10shared_ptrIN5gtsam5ISAM2EEEPFN5gtsam6SymbolEiENSt6size_tENSt6size_tE"></span><span id="_CPPv2N4slam14SLAMEstAndMCov14SLAMEstAndMCovENSt10shared_ptrIN5gtsam5ISAM2EEEPFN5gtsam6SymbolEiENSt6size_tENSt6size_tE"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a84beb5098e3d71eb9fbe802a16cbad23"></span><span class="sig-name descname"><span class="n"><span class="pre">SLAMEstAndMCov</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ISAM2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isam2</span></span>, <span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Symbol</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cone_key_fn</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">)</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">look_radius</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">update_iterations_n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov14SLAMEstAndMCovENSt10shared_ptrIN5gtsam5ISAM2EEEPFN5gtsam6SymbolEiENSt6size_tENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#classslam_1_1SLAMEstAndMCov_1a84beb5098e3d71eb9fbe802a16cbad23"><span class="std std-ref">SLAMEstAndMCov::SLAMEstAndMCov</span></a> object. </p>
+<p>Construct a new <a class="reference internal" href="#classslam_1_1SLAMEstAndMCov"><span class="std std-ref">SLAMEstAndMCov</span></a> object with configuration parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>isam2</strong> – A shared pointer to the iSAM2 model that will be used for obtaining cone estimates and marginal covariance matrices.</p></li>
+<li><p><strong>cone_key_fn</strong> – A function pointer used for getting the symbol of a cone/landmark of interest. This symbol is used for retrieving cone estimates and the marginal covariance matrix of any cone or landmark given its ID.</p></li>
+<li><p><strong>look_radius</strong> – The number of cones to recalculate estimates and marginal covariances for, surrounding some pivot cone ID.</p></li>
+<li><p><strong>update_iterations_n</strong> – The number of iterations to run the iSAM2 update for. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov14SLAMEstAndMCovEv">
+<span id="_CPPv3N4slam14SLAMEstAndMCov14SLAMEstAndMCovEv"></span><span id="_CPPv2N4slam14SLAMEstAndMCov14SLAMEstAndMCovEv"></span><span id="slam::SLAMEstAndMCov::SLAMEstAndMCov"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a26b44510e1e84abf576a5129eab2cf5b"></span><span class="sig-name descname"><span class="n"><span class="pre">SLAMEstAndMCov</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov14SLAMEstAndMCovEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Default constructor for <a class="reference internal" href="#classslam_1_1SLAMEstAndMCov"><span class="std std-ref">SLAMEstAndMCov</span></a>. </p>
+<p>Initializes internal members to deault values </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov26update_and_recalculate_allEv">
+<span id="_CPPv3N4slam14SLAMEstAndMCov26update_and_recalculate_allEv"></span><span id="_CPPv2N4slam14SLAMEstAndMCov26update_and_recalculate_allEv"></span><span id="slam::SLAMEstAndMCov::update_and_recalculate_all"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1ad23727c5f88a5096c84cd62c2248dd92"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_and_recalculate_all</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov26update_and_recalculate_allEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Recalculates all of the slam estimates and the marginal covariance matrices. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov28update_and_recalculate_by_IDERKNSt6vectorINSt6size_tEEE">
+<span id="_CPPv3N4slam14SLAMEstAndMCov28update_and_recalculate_by_IDERKNSt6vectorINSt6size_tEEE"></span><span id="_CPPv2N4slam14SLAMEstAndMCov28update_and_recalculate_by_IDERKNSt6vectorINSt6size_tEEE"></span><span id="slam::SLAMEstAndMCov::update_and_recalculate_by_ID__std::vector:std::s:CR"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a709a83c6627b62538b82211615c8bc92"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_and_recalculate_by_ID</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">old_cone_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov28update_and_recalculate_by_IDERKNSt6vectorINSt6size_tEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Recalulates the estiamtes and the marginal covariance matrices for the IDs provided in the vector. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>old_cone_ids</strong> – The IDs of the cones to recalculate estimates and marginal covariances for </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov32update_and_recalculate_beginningENSt6size_tE">
+<span id="_CPPv3N4slam14SLAMEstAndMCov32update_and_recalculate_beginningENSt6size_tE"></span><span id="_CPPv2N4slam14SLAMEstAndMCov32update_and_recalculate_beginningENSt6size_tE"></span><span id="slam::SLAMEstAndMCov::update_and_recalculate_beginning__std::s"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a9bc194216650da2a29195fa39433e574"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_and_recalculate_beginning</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_start_cones</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov32update_and_recalculate_beginningENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Recalculates the cone estimates and the marginal covariance matrices for the first num_start_cones IDs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num_start_cones</strong> – The number of cones at the beginning to recalculate estimates and marginal covariances for. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov37update_and_recalculate_cone_proximityENSt6size_tE">
+<span id="_CPPv3N4slam14SLAMEstAndMCov37update_and_recalculate_cone_proximityENSt6size_tE"></span><span id="_CPPv2N4slam14SLAMEstAndMCov37update_and_recalculate_cone_proximityENSt6size_tE"></span><span id="slam::SLAMEstAndMCov::update_and_recalculate_cone_proximity__std::s"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a70a19ef2eb1f9aa30b112d7993881fa1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_and_recalculate_cone_proximity</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pivot</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov37update_and_recalculate_cone_proximityENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Recalculates the cone estimates and the marginal covariance matrices for the cones in the look radius of the pivot cone. </p>
+<p>For some look_radius, calculate estimates and marginal covariances for the cones with IDs in [pivot - look_radius, pivot + look_radius] and [pivot, pivot + look_radius].</p>
+<p>
+For some look_radius, calculate estimates and marginal covariances for the cones with IDs in [pivot - look_radius, pivot + look_radius] and [pivot, pivot + look_radius]. Still checks if you are in bounds of the IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pivot</strong> – The ID of the pivot cone</p></li>
+<li><p><strong>pivot</strong> – The ID of the pivot cone </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov21update_with_old_conesERKNSt6vectorINSt6size_tEEE">
+<span id="_CPPv3N4slam14SLAMEstAndMCov21update_with_old_conesERKNSt6vectorINSt6size_tEEE"></span><span id="_CPPv2N4slam14SLAMEstAndMCov21update_with_old_conesERKNSt6vectorINSt6size_tEEE"></span><span id="slam::SLAMEstAndMCov::update_with_old_cones__std::vector:std::s:CR"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a594aabd0f7b9b06d7420fa937ac6113f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_with_old_cones</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">old_cone_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov21update_with_old_conesERKNSt6vectorINSt6size_tEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Recalulates the estiamtes and the marginal covariance matrices for the IDs provided in the vector. </p>
+<p>Updates SLAM state with the set of previously seen cones.</p>
+<p>
+Performs an update using their IDs and cones nearby the earliest, latest, and out-of-bounds IDs for local consistency</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>old_cone_ids</strong> – The IDs of the cones to recalculate estimates and marginal covariances for</p></li>
+<li><p><strong>old_cone_ids</strong> – Vector of landmark IDs that were matched to current observations </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov21update_with_new_conesENSt6size_tE">
+<span id="_CPPv3N4slam14SLAMEstAndMCov21update_with_new_conesENSt6size_tE"></span><span id="_CPPv2N4slam14SLAMEstAndMCov21update_with_new_conesENSt6size_tE"></span><span id="slam::SLAMEstAndMCov::update_with_new_cones__std::s"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a8263c13c84f96267df4d636293391745"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_with_new_cones</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_new_cones</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov21update_with_new_conesENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Adds information about the new cones to slam_est and slam_mcov. </p>
+<p>Appends new cone estimates and their marginal covariances.</p>
+<p>Also updates n_landmarks appropriately</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_new_cones</strong> – The number of new cones/estimates/marginal covariances to add</p></li>
+<li><p><strong>num_new_cones</strong> – The number of new cones/estimates/marginal covariances to add </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov15calculate_mdistEN5gtsam6Point2E">
+<span id="_CPPv3N4slam14SLAMEstAndMCov15calculate_mdistEN5gtsam6Point2E"></span><span id="_CPPv2N4slam14SLAMEstAndMCov15calculate_mdistEN5gtsam6Point2E"></span><span id="slam::SLAMEstAndMCov::calculate_mdist__gtsam::Point2"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1abf9bea4abd413e68825dbedc81590593"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">calculate_mdist</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Point2</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">global_obs_cone</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov15calculate_mdistEN5gtsam6Point2E" title="Link to this definition"></a><br /></dt>
+<dd><p>Calculates the Mahalanobis distance between the observed cone and the old cone estimates. </p>
+<p>The distances are calculated using a SIMD method through the Eigen library.</p>
+<p>
+The distances are calculated using a SIMD method through the Eigen library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>global_obs_cone</strong> – The observed cone that we are data associating in global frame </p></li>
+<li><p><strong>global_obs_cone</strong> – The observed cone that we are data associating in global frame </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>std::vector&lt;double&gt; A vector where the ith element represents the mahalanobis distances</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A vector of Mahalanobis distances to each tracked landmark </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov15get_n_landmarksEv">
+<span id="_CPPv3N4slam14SLAMEstAndMCov15get_n_landmarksEv"></span><span id="_CPPv2N4slam14SLAMEstAndMCov15get_n_landmarksEv"></span><span id="slam::SLAMEstAndMCov::get_n_landmarks"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1aff06a557d9b8544328e5baa2137f46a1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_n_landmarks</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov15get_n_landmarksEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Gets the number of landmarks in the SLAM estimates. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of landmarks </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov11get_all_estEv">
+<span id="_CPPv3N4slam14SLAMEstAndMCov11get_all_estEv"></span><span id="_CPPv2N4slam14SLAMEstAndMCov11get_all_estEv"></span><span id="slam::SLAMEstAndMCov::get_all_est"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1ad95f4185c4dd8c28640a8bade5f77436"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Point2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_all_est</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov11get_all_estEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Gets the SLAM cone estimates. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A vector of 2D points representing the estimated landmark positions </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov13check_lengthsEv">
+<span id="_CPPv3N4slam14SLAMEstAndMCov13check_lengthsEv"></span><span id="_CPPv2N4slam14SLAMEstAndMCov13check_lengthsEv"></span><span id="slam::SLAMEstAndMCov::check_lengths"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a88f032ececf587581276cb1e7022a689"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_lengths</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov13check_lengthsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>An invariant function to check that the lengths between the slam estimates and the marginal covariance matrices are the same. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>true if the lengths are the same </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>false if the lengths are not the same </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4slam14SLAMEstAndMCov19get_landmark_symbolEi">
+<span id="_CPPv3N4slam14SLAMEstAndMCov19get_landmark_symbolEi"></span><span id="_CPPv2N4slam14SLAMEstAndMCov19get_landmark_symbolEi"></span><span id="slam::SLAMEstAndMCov::get_landmark_symbol__i"></span><span class="target" id="classslam_1_1SLAMEstAndMCov_1a493e5cde8f32c6a4c38f4aadfd023a85"></span><span class="n"><span class="pre">gtsam</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Symbol</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_landmark_symbol</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4slam14SLAMEstAndMCov19get_landmark_symbolEi" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the landmark symbol object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – </p></li>
+<li><p><strong>id</strong> – Landmark ID </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gtsam::Symbol</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Corresponding GTSAM symbol </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="extraneous.html" class="btn btn-neutral float-left" title="Extraneous" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Carnegie Mellon Racing.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
