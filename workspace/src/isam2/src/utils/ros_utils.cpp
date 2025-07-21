@@ -1,16 +1,26 @@
 /**
  * @file ros_utils.cpp
- * @brief This file contains utility functions used for converting ROS messages
- * to appropriate data types and for any necessary calculations.
+ * @brief This file contains utility functions used for converting ROS messages to appropriate data types and for any necessary calculations.
  *
- * Most functions in this value pass in the result container by reference.
- * This reference is modified to store the results. The result reference
- * is always the first parameter that is passed in.
+ * Most functions in this value pass in the result container by reference. This reference is modified to store the results. The result reference is always the first parameter that is passed in.
  */
+
 #include "ros_utils.hpp"
 
-
+/** 
+ * @namespace ros_msg_conversions 
+ * @brief Contains utility functions for ROS message conversions and calculations
+ */
 namespace ros_msg_conversions {
+    /** 
+     * @brief Parses a ConeArray message and organizes cones by color
+     * 
+     * @param cone_data Input ROS message containing cone arrays
+     * @param cones Output vector to store all cones regardless of color
+     * @param blue_cones Vector to store detected blue cones
+     * @param yellow_cones Vector to store detected yellow cones
+     * @param orange_cones Vector to store detected orange cones
+     */
     void cone_msg_to_vectors(
         const interfaces::msg::ConeArray::ConstSharedPtr &cone_data,
         std::vector<gtsam::Point2> &cones,
@@ -41,6 +51,12 @@ namespace ros_msg_conversions {
         }
     }
 
+    /** 
+     * @brief Converts a TwistStamped message to a gtsam::Pose2 representing velocity
+     * 
+     * @param vehicle_vel_data Input velocity message
+     * @return gtsam::Pose2 Pose 2 with linear velocities in x, y and angular velocity as theta
+     */
     gtsam::Pose2 velocity_msg_to_pose2(const geometry_msgs::msg::TwistStamped::ConstSharedPtr &vehicle_vel_data) {
         double dx = vehicle_vel_data->twist.linear.x;
         double dy = vehicle_vel_data->twist.linear.y;
@@ -49,6 +65,14 @@ namespace ros_msg_conversions {
         return gtsam::Pose2(dx, dy, dw);
     }
 
+    /**
+     * @brief Converts a PoseStamped message to a gtsam::Pose2, applying an initial offset.
+     * 
+     * @param vehicle_pos_data Input pose message.
+     * @param init_x_y Initial offset point to subtract from position.
+     * @param logger ROS logger for debugging.
+     * @return gtsam::Pose2 Converted Pose2 with position offset and yaw.
+     */
     gtsam::Pose2 posestamped_msg_to_pose2(const geometry_msgs::msg::PoseStamped::ConstSharedPtr &vehicle_pos_data, gtsam::Point2 init_x_y, rclcpp::Logger logger) {
         /** 
          * PoseStamped message has:
@@ -74,7 +98,12 @@ namespace ros_msg_conversions {
 
     }
 
-
+    /**
+     * @brief Converts a QuaternionStamped message to yaw angle in radians.
+     * 
+     * @param vehicle_angle_data Input quaternion message.
+     * @return double Yaw angle extracted from quaternion.
+     */
     double quat_msg_to_yaw(const geometry_msgs::msg::QuaternionStamped::ConstSharedPtr &vehicle_angle_data) {
         double qw = vehicle_angle_data->quaternion.w;
         double qx = vehicle_angle_data->quaternion.x;
@@ -84,7 +113,14 @@ namespace ros_msg_conversions {
         return std::atan2(2 * (qz * qw + qx * qy), -1 + 2 * (qw * qw + qx * qx));
     }
 
-
+    /**
+     * @brief Converts a Vector3Stamped GPS message to a local gtsam::Point2 using an initial GPS offset.
+     * 
+     * @param vehicle_pos_data Input GPS vector message.
+     * @param init_lon_lat Initial GPS offset to subtract.
+     * @param logger ROS logger for debugging.
+     * @return gtsam::Point2 Local coordinates converted from GPS latitude/longitude.
+     */
     gtsam::Point2 vector3_msg_to_gps(const geometry_msgs::msg::Vector3Stamped::ConstSharedPtr &vehicle_pos_data, gtsam::Point2 init_lon_lat, rclcpp::Logger logger) {
         /* Doesn't depend on imu axes. These are global coordinates */ 
         double latitude =  vehicle_pos_data->vector.x;
@@ -122,6 +158,12 @@ namespace ros_msg_conversions {
         return gtsam::Point2(x, y);
     }
 
+    /**
+     * @brief Converts a gtsam::Point2 to a ROS geometry_msgs::Point message.
+     * 
+     * @param gtsam_point Input point.
+     * @return geometry_msgs::msg::Point Converted ROS point message.
+     */
     geometry_msgs::msg::Point point2_to_geometry_msg (gtsam::Point2 gtsam_point) {
         geometry_msgs::msg::Point point = geometry_msgs::msg::Point();
         point.x = gtsam_point.x();
@@ -130,6 +172,13 @@ namespace ros_msg_conversions {
         return point;
     }
 
+    /**
+     * @brief Converts a vector of gtsam::Point2 into ROS geometry_msgs::Point messages, transforming points into local frame.
+     * 
+     * @param gtsam_points Input global points.
+     * @param pose Current pose to transform points into local frame.
+     * @return std::vector<geometry_msgs::msg::Point> Vector of points in ROS message format.
+     */
     std::vector<geometry_msgs::msg::Point> slam_est_to_points (std::vector<gtsam::Point2> gtsam_points, gtsam::Pose2 pose) {
         std::vector<geometry_msgs::msg::Point> points = {};
         std::vector<gtsam::Point2> local_cones = cone_utils::global_to_local_frame(gtsam_points, pose);
@@ -146,12 +195,17 @@ namespace ros_msg_conversions {
     }
 }
 
-
-
-
+/** 
+ * @namespace motion_modeling 
+ * @brief Contains functions related to vehicle motion modeling including IMU and GPS motion models, coordinate conversions, and velocity processing.
+ */
 namespace motion_modeling {
-
-
+    /**
+     * @brief Converts IMU axes to DV axes by swapping and negating coordinates.
+     * 
+     * @param x Reference to x coordinate (will be modified).
+     * @param y Reference to y coordinate (will be modified).
+     */
     void imu_axes_to_DV_axes(double &x, double &y) {
         double temp_x = x;
         x = -1 * y;
@@ -180,6 +234,15 @@ namespace motion_modeling {
         return gtsam::Point2(dx_error, dy_error);
     }
 
+    /**
+     * @brief Applies velocity motion model to predict new pose and odometry over a time step.
+     * 
+     * @param velocity Velocity pose (linear x,y and angular theta).
+     * @param dt Time step duration.
+     * @param prev_pose Previous pose of the vehicle.
+     * @param yaw Current yaw angle.
+     * @return std::pair<gtsam::Pose2, gtsam::Pose2> Pair of new pose and odometry delta.
+     */
     std::pair<gtsam::Pose2, gtsam::Pose2> velocity_motion_model(gtsam::Pose2 velocity, double dt, gtsam::Pose2 prev_pose, double yaw) {
         
         gtsam::Point2 dx_dy_error = calc_lateral_velocity_error(velocity.theta(), yaw);
@@ -198,12 +261,24 @@ namespace motion_modeling {
         return std::make_pair(new_pose, odometry);
     } 
 
+    /**
+     * @brief Calculates the offset vector from IMU sensor to car center in global frame.
+     * 
+     * @param yaw Current yaw angle.
+     * @return gtsam::Point2 Offset vector from IMU to car center.
+     */
     gtsam::Point2 calc_offset_imu_to_car_center(double yaw) {
         double offset_x = IMU_OFFSET * std::cos(yaw);
         double offset_y = IMU_OFFSET * std::sin(yaw);
         return gtsam::Point2(offset_x, offset_y);
     }
 
+    /**
+     * @brief Calculates the offset vector from LIDAR sensor to car center in global frame.
+     * 
+     * @param yaw Current yaw angle.
+     * @return gtsam::Point2 Offset vector from LIDAR to car center.
+     */
     gtsam::Point2 calc_offset_lidar_to_car_center(double yaw) {
         double offset_x = LIDAR_OFFSET * std::cos(yaw);
         double offset_y = LIDAR_OFFSET * std::sin(yaw);
@@ -211,15 +286,11 @@ namespace motion_modeling {
     }
 
     /**
-     * @brief 
+     * @brief Applies GPS motion model to compute new pose and odometry with IMU offset correction.
      * 
-     * @param odometry 
-     * @param velocity 
-     * @param dt 
-     * @param prev_pose 
-     * @param global_odom 
-     * @return std::pair<gtsam::Pose2, gtsam::Pose2> Returns a pair where the first element is the new_pose and the 
-     * second element is the odometry. 
+     * @param prev_pose Previous pose of the vehicle.
+     * @param global_odom GPS odometry pose.
+     * @return std::pair<gtsam::Pose2, gtsam::Pose2> Pair of corrected new pose and odometry delta.
      */
     std::pair<gtsam::Pose2, gtsam::Pose2> gps_motion_model(gtsam::Pose2 prev_pose, gtsam::Pose2 global_odom) {
 
@@ -236,6 +307,12 @@ namespace motion_modeling {
         return std::make_pair(new_pose, odometry);
     }
 
+    /**
+     * @brief Determines whether the vehicle is moving and/or turning based on velocity thresholds.
+     * 
+     * @param velocity Current velocity pose.
+     * @return std::pair<bool, bool> First element: is moving, second element: is turning.
+     */
     std::pair<bool, bool> determine_movement(gtsam::Pose2 velocity) {
         bool is_moving = false;
         bool is_turning = false;
@@ -255,11 +332,23 @@ namespace motion_modeling {
         
     }
 
-
+    /**
+     * @brief Converts a ROS message header timestamp to nanoseconds.
+     * 
+     * @param header ROS std_msgs Header.
+     * @return double Timestamp in nanoseconds.
+     */
     double header_to_nanosec(const std_msgs::msg::Header &header) {
         return (header.stamp.sec * (double)1e9) + header.stamp.nanosec;
     }
 
+    /**
+     * @brief Calculates time difference (dt) between two ROS message headers.
+     * 
+     * @param prev Optional previous header.
+     * @param cur Optional current header.
+     * @return double Time difference in seconds.
+     */
     double header_to_dt(std::optional<std_msgs::msg::Header> prev, std::optional<std_msgs::msg::Header> cur) {
         if (!(prev.has_value() && cur.has_value())) {
             return header_to_nanosec(cur.value()) * 1e-9;
@@ -268,16 +357,29 @@ namespace motion_modeling {
         return (header_to_nanosec(cur.value()) - header_to_nanosec(prev.value())) * (double)1e-9;
     }
 
+    /**
+     * @brief Converts degrees to radians.
+     * 
+     * @param degrees Angle in degrees.
+     * @return double Angle in radians.
+     */
     double degrees_to_radians(double degrees) {
         return degrees * M_PI / 180.0;
     }
-
 }
 
-
-
+/** 
+ * @namespace cone_utils 
+ * @brief Functions for cone observations and coordinate frame transformations between local vehicle and global frames.
+ */
 namespace cone_utils {
     /* Vectorized functions */
+    /**
+     * @brief Calculates the Euclidean range from the car to each cone.
+     * 
+     * @param cone_obs Vector of cone positions relative to the car.
+     * @return Eigen::MatrixXd Vector of ranges for each cone.
+     */
     Eigen::MatrixXd calc_cone_range_from_car(const std::vector<gtsam::Point2> &cone_obs) {
         Eigen::MatrixXd range(cone_obs.size(), 1);
 
@@ -290,6 +392,12 @@ namespace cone_utils {
     }
 
     /* Bearing of cone from the car */
+    /**
+     * @brief Calculates the bearing angle from the car to each cone in radians.
+     * 
+     * @param cone_obs Vector of cone positions relative to the car.
+     * @return Eigen::MatrixXd Vector of bearings for each cone.
+     */
     Eigen::MatrixXd calc_cone_bearing_from_car(const std::vector<gtsam::Point2> &cone_obs) {
         Eigen::MatrixXd bearing(cone_obs.size(), 1);
 
@@ -348,7 +456,13 @@ namespace cone_utils {
     //     gtsam::Point2 local_point = gtsam::Point2(local_dx, local_dy);
     //     return local_point;
     // }
-
+    /**
+     * @brief Converts global cone coordinates to the local car frame.
+     * 
+     * @param cone_obs Vector of global cone points.
+     * @param cur_pose Current vehicle pose.
+     * @return std::vector<gtsam::Point2> Vector of cone points in local frame.
+     */
     std::vector<gtsam::Point2> global_to_local_frame(std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose) {
         Eigen::MatrixXd global_dx(cone_obs.size(), 1);
         Eigen::MatrixXd global_dy(cone_obs.size(), 1);
@@ -372,8 +486,13 @@ namespace cone_utils {
         return local_cone_obs;
     }
 
-
-
+    /**
+     * @brief Converts local cone coordinates to the global frame, accounting for LIDAR offset.
+     * 
+     * @param cone_obs Vector of local cone points.
+     * @param cur_pose Current vehicle pose.
+     * @return std::vector<gtsam::Point2> Vector of cone points in global frame.
+     */
     std::vector<gtsam::Point2> local_to_global_frame( std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose) {
 
         Eigen::MatrixXd bearing = calc_cone_bearing_from_car(cone_obs);
@@ -394,14 +513,13 @@ namespace cone_utils {
             global_cone_obs.emplace_back(global_cone_x(i, 0), global_cone_y(i,0));
         }
         return global_cone_obs;
-        
     }
-
-
-
-    
 }
 
+/** 
+ * @namespace logging_utils 
+ * @brief Utilities for logging cone observations, vehicle poses, and step inputs with optional ROS logging.
+ */
 namespace logging_utils {
     /**
      * @brief This function cases on whether the logger exists and 
@@ -417,7 +535,13 @@ namespace logging_utils {
         }
     }
 
-
+    /**
+     * @brief Logs positions of cones with color label using the provided logger.
+     * 
+     * @param cone_obs Vector of cone positions.
+     * @param cone_color Color label for cones.
+     * @param logger Optional ROS logger.
+     */
     void print_cone_obs(const std::vector<gtsam::Point2> &cone_obs, const std::string& cone_color, std::optional<rclcpp::Logger> logger) {
         for (std::size_t i = 0; i < cone_obs.size(); i++) {
             if (logger.has_value()) {
@@ -428,6 +552,18 @@ namespace logging_utils {
         }
     }
 
+    /**
+     * @brief Logs various step inputs including GPS, yaw, cone observations, velocity, and time delta.
+     * 
+     * @param logger Optional ROS logger.
+     * @param gps_opt Optional GPS position.
+     * @param yaw Current yaw angle.
+     * @param cone_obs_blue Vector of blue cones observed.
+     * @param cone_obs_yellow Vector of yellow cones observed.
+     * @param orange_ref_cones Vector of orange reference cones.
+     * @param velocity Vehicle velocity pose.
+     * @param dt Time delta.
+     */
     void log_step_input(
         std::optional<rclcpp::Logger> logger, 
         std::optional<gtsam::Point2> gps_opt,
@@ -457,7 +593,15 @@ namespace logging_utils {
         }
     }
         
-                            
+    /**
+     * @brief Logs previous and new poses, odometry, and IMU offset pose.
+     * 
+     * @param prev_pose Previous vehicle pose.
+     * @param new_pose New vehicle pose.
+     * @param odometry Odometry pose delta.
+     * @param imu_offset_global_odom IMU offset in global odometry.
+     * @param logger Optional ROS logger.
+     */       
     void print_update_poses(gtsam::Pose2 &prev_pose, gtsam::Pose2 &new_pose, gtsam::Pose2 &odometry, gtsam::Pose2 &imu_offset_global_odom, std::optional<rclcpp::Logger> logger) {
         if (logger.has_value()) {
             RCLCPP_INFO(logger.value(), "\tLOGGING UPDATE_POSES POSE2 VARIABLES:");
@@ -471,6 +615,18 @@ namespace logging_utils {
         }
     }
 
+    /**
+     * @brief Records step inputs to a file, including GPS, yaw, cones, velocity, and time delta.
+     * 
+     * @param logger Optional ROS logger.
+     * @param gps_opt Optional GPS position.
+     * @param yaw Current yaw angle.
+     * @param cone_obs_blue Vector of blue cones observed.
+     * @param cone_obs_yellow Vector of yellow cones observed.
+     * @param orange_ref_cones Vector of orange reference cones.
+     * @param velocity Vehicle velocity pose.
+     * @param dt Time delta.
+     */
     void record_step_inputs(
         std::optional<rclcpp::Logger> logger, 
         std::optional<gtsam::Point2> gps_opt,

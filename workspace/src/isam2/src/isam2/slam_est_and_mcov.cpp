@@ -1,18 +1,29 @@
+/** 
+ * @file slam_est_and_mcov.cpp
+ * @brief Implementation of the SLAMEstAndMCov class for managing SLAM landmark estimates and marginal covariance matricies using the iSAM2 framework
+ */             
+                                        
 #include "slam_est_and_mcov.hpp"
+
+/**
+ * @namespace slam
+ * @brief Namespace encapsulating SLAM logic for cone-based track mapping and localization
+ */
 namespace slam {
     /**
-     * @brief Construct a new SLAMEstAndMCov::SLAMEstAndMCov object
+     * @class SLAMEstAndMCov
+     * @brief Maintains and updates landmark estimates and marginal covariance matrices using iSAM2
+     *  
+     * This class provides a lgihtweight interface around GTSAM's iSAM2 for managing SLAM estimates and covariance matrices for landmarks (cones), which are continuously updated during the first lap. It supports partial and full recalculation, cone-based proximity updates, and Mahalanobis distance computation.
+    */
+
+    /**
+     * @brief Construct a new SLAMEstAndMCov object with configuration parameters
      * 
-     * @param isam2 A shared pointer to the iSAM2 model that will be used for obtaining
-     * cone estimates and marginal covariance matrices.
-     * 
-     * @param cone_key_fn A function pointer used for getting the symbol of a cone/landmark
-     * of interest. This symbol is used for retrieving cone estimates and the marginal 
-     * covariance matrix of any cone or landmark given its ID. 
-     * 
+     * @param isam2 A shared pointer to the iSAM2 model that will be used for obtaining cone estimates and marginal covariance matrices.
+     * @param cone_key_fn A function pointer used for getting the symbol of a cone/landmark of interest. This symbol is used for retrieving cone estimates and the marginal covariance matrix of any cone or landmark given its ID. 
      * @param look_radius The number of cones to recalculate estimates and marginal covariances
      * for, surrounding some pivot cone ID. 
-     * 
      * @param update_iterations_n The number of iterations to run the iSAM2 update for.
      */
     SLAMEstAndMCov::SLAMEstAndMCov(
@@ -29,6 +40,11 @@ namespace slam {
         n_landmarks = static_cast<std::size_t>(0);
     }
 
+    /**
+     * @brief Default constructor for SLAMEstAndMCov
+     *
+     * Initializes internal members to deault values
+     */
     SLAMEstAndMCov::SLAMEstAndMCov() {
         slam_est = {};
         slam_mcov = {};
@@ -56,7 +72,6 @@ namespace slam {
 
     /**
      * @brief Recalculates all of the slam estimates and the marginal covariance matrices
-     * 
      */       
     void SLAMEstAndMCov::update_and_recalculate_all() {
         for (std::size_t i = 0; i < update_iterations_n; i++) {
@@ -78,11 +93,9 @@ namespace slam {
 
 
     /**
-     * @brief Recalulates the estiamtes and the marginal covariance matrices 
-     * for the IDs provided in the vector
+     * @brief Recalulates the estiamtes and the marginal covariance matrices for the IDs provided in the vector
      * 
-     * @param old_cone_ids The IDs of the cones to recalculate estimates and 
-     * marginal covariances for
+     * @param old_cone_ids The IDs of the cones to recalculate estimates and marginal covariances for
      */
     void SLAMEstAndMCov::update_and_recalculate_by_ID(const std::vector<std::size_t>& old_cone_ids) {
         for (std::size_t i = 0; i < update_iterations_n; i++) {
@@ -103,11 +116,9 @@ namespace slam {
     }
 
     /**
-     * @brief Recalculates the cone estimates and the marginal covariance matrices
-     * for the first num_start_cones IDs. 
+     * @brief Recalculates the cone estimates and the marginal covariance matrices for the first num_start_cones IDs. 
      * 
-     * @param num_start_cones The number of cones at the beginning to recalculate
-     * estimates and marginal covariances for.
+     * @param num_start_cones The number of cones at the beginning to recalculate estimates and marginal covariances for.
      */
     void SLAMEstAndMCov::update_and_recalculate_beginning(std::size_t num_start_cones) {
         for (std::size_t i = 0; i < update_iterations_n; i++) {
@@ -129,10 +140,9 @@ namespace slam {
 
     /**
      * @brief Recalculates the cone estimates and the marginal covariance matrices
-     * for the cones in the look radius of the pivot cone. For some look_radius, 
-     * calculate estimates and marginal covariances for the cones with IDs in 
-     * [pivot - look_radius, pivot + look_radius] and [pivot, pivot + look_radius].
-     * Still checks if you are in bounds of the IDs.
+     * for the cones in the look radius of the pivot cone. 
+     *
+     * For some look_radius, calculate estimates and marginal covariances for the cones with IDs in [pivot - look_radius, pivot + look_radius] and [pivot, pivot + look_radius]. Still checks if you are in bounds of the IDs.
      * 
      * @param pivot The ID of the pivot cone
      */
@@ -155,6 +165,13 @@ namespace slam {
 
     }
 
+    /**
+     * @brief Updates SLAM state with the set of previously seen cones.
+     * 
+     * Performs an update using their IDs and cones nearby the earliest, latest, and out-of-bounds IDs for local consistency
+     * 
+     * @param old_cone_ids Vector of landmark IDs that were matched to current observations
+     */
     void SLAMEstAndMCov::update_with_old_cones(const std::vector<std::size_t>& old_cone_ids) {
 
         if (old_cone_ids.size() == 0) {
@@ -183,8 +200,7 @@ namespace slam {
     }
 
     /**
-     * @brief Adds information about the new cones to slam_est and slam_mcov. 
-     * Also updates n_landmarks appropriately
+     * @brief Appends new cone estimates and their marginal covariances
      * 
      * @param num_new_cones The number of new cones/estimates/marginal covariances to add
      */
@@ -210,11 +226,11 @@ namespace slam {
     /* Interface for data association */
 
     /**
-     * @brief Calculates the Mahalanobis distance between the observed cone and the
-     * old cone estimates. This is the slower version, used for correctness verification.
+     * @brief Calculates the Mahalanobis distance between the observed cone and the old cone estimates. This is the slower version, used for correctness verification.
      * 
-     * @param global_obs_cone 
-     * @return bool
+     * @param global_obs_cone Observed cone in the global frame
+     * @param mdist_to_check Expected Mahalanobis distances for each landmark
+     * @return true if computed distances match expected ones, false otherwise
      */
     bool SLAMEstAndMCov::check_mdist_correctness(gtsam::Point2 global_obs_cone, std::vector<double> mdist_to_check) {
         assert(check_lengths());
@@ -243,12 +259,10 @@ namespace slam {
     }
 
     /**
-     * @brief Calculates the Mahalanobis distance between the observed cone and the
-     * old cone estimates. The distances are calculated using a SIMD method through 
-     * the Eigen library. 
+     * @brief Calculates the Mahalanobis distance between the observed cone and the old cone estimates. The distances are calculated using a SIMD method through the Eigen library. 
      * 
      * @param global_obs_cone The observed cone that we are data associating in global frame
-     * @return Eigen::MatrixXd 
+     * @return A vector of Mahalanobis distances to each tracked landmark 
      */
     std::vector<double> SLAMEstAndMCov::calculate_mdist (gtsam::Point2 global_obs_cone) {
         assert(check_lengths()); 
@@ -310,7 +324,7 @@ namespace slam {
     /**
      * @brief Gets the number of landmarks in the SLAM estimates
      * 
-     * @return std::size_t 
+     * @return Number of landmarks
      */
     std::size_t SLAMEstAndMCov::get_n_landmarks() {
         return n_landmarks;
@@ -319,7 +333,7 @@ namespace slam {
     /**
      * @brief Gets the SLAM cone estimates
      * 
-     * @return std::vector<gtsam::Point2> 
+     * @return A vector of 2D points representing the estimated landmark positions 
      */
     std::vector<gtsam::Point2> SLAMEstAndMCov::get_all_est() {
         return slam_est;
@@ -328,8 +342,8 @@ namespace slam {
     /**
      * @brief Get the landmark symbol object
      * 
-     * @param id 
-     * @return gtsam::Symbol 
+     * @param id Landmark ID
+     * @return Corresponding GTSAM symbol
      */
     gtsam::Symbol SLAMEstAndMCov::get_landmark_symbol (int id) {
         assert(cone_key_fn != nullptr);

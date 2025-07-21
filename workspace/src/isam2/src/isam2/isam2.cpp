@@ -1,12 +1,19 @@
+/**
+ * @file isam2.cpp
+ * @brief Contains implementation of the slamISAM class, which handles iSAM2-based SLAM updates for autonomous vehicle landmark mapping using cone observations.
+ */
+
 #include "isam2.hpp"
 
-
+/**
+ * @namespace slam
+ * @brief Namespace encapsulating SLAM logic for cone-based track mapping and localization
+ */
 namespace slam {
     /**
      * @brief Initializes the noise models for the SLAM model
      * 
-     * @param yaml_noise_inputs An optional NoiseInputs struct containing
-     * information from the config yaml file, if one was provided. 
+     * @param yaml_noise_inputs An optional NoiseInputs struct containing information from the config yaml file, if one was provided. 
      */
     void slamISAM::init_noise_models(const std::optional<yaml_params::NoiseInputs> &yaml_noise_inputs) {
         LandmarkNoiseModel = gtsam::Vector(2);
@@ -81,8 +88,7 @@ namespace slam {
     /**
      * @brief Initializes the tunable parameters for the SLAM model
      * 
-     * @param yaml_noise_inputs An optional NoiseInputs struct containing
-     * information from the config yaml file, if one was provided. 
+     * @param yaml_noise_inputs An optional NoiseInputs struct containing information from the config yaml file, if one was provided. 
      */
     void slamISAM::init_tunable_constants(const std::optional<yaml_params::NoiseInputs> &yaml_noise_inputs) {
         if  (yaml_noise_inputs.has_value() ) {
@@ -127,10 +133,9 @@ namespace slam {
     }
 
     /**
-     * @brief A helper function for the constructor to initialize the parameters
-     * Also calls the init_noise_models and init_tunable_params functions
+     * @brief A helper function for the constructor to initialize the parameters. Also calls the init_noise_models and init_tunable_params functions
      * 
-     * @param yaml_noise_inputs 
+     * @param yaml_noise_inputs An optional NoiseInputs struct containing information from the config yaml file, if one was provided. 
      */
     void slamISAM::init_params(std::optional<rclcpp::Logger> input_logger) {
 
@@ -160,9 +165,16 @@ namespace slam {
 
     }
 
-    
-
-
+    /**
+     * @brief Constructor for the slamISAM class
+     * 
+     * Initializes noise models, tunable constants, and internal parameters required 
+     * for iSAM2 SLAM operation. It also sets up the noise models used for different 
+     * factor types (landmark, odometry, prior, and unary).
+     *
+     * @param input_logger Optional ROS 2 logger for debug output
+     * @param yaml_noise_inputs Optional struct containing SLAM tuning parameters
+     */
     slamISAM::slamISAM(std::optional<rclcpp::Logger> input_logger, std::optional<yaml_params::NoiseInputs> &yaml_noise_inputs) {
 
         /* Initializing SLAM Parameters */
@@ -181,10 +193,9 @@ namespace slam {
     }
 
     /**
-     * @brief Helper function to create a symbol representing the 
-     * robot pose in the factor graph of the iSAM2 SLAM model.
+     * @brief Helper function to create a symbol representing the robot pose in the factor graph of the iSAM2 SLAM model.
      * 
-     * @param robot_pose_id 
+     * @param robot_pose_id  
      * @return gtsam::Symbol 
      */
     gtsam::Symbol slamISAM::X(int robot_pose_id) {
@@ -192,10 +203,9 @@ namespace slam {
     }
 
     /**
-     * @brief Helper function to create a symbol representing the 
-     * blue landmark estimate in the factor graph of the iSAM2 SLAM model.
+     * @brief Helper function to create a symbol representing the blue landmark estimate in the factor graph of the iSAM2 SLAM model.
      * 
-     * @param cone_id
+     * @param cone_id 
      * @return gtsam::Symbol 
      */
     gtsam::Symbol slamISAM::BLUE_L(int cone_id) {
@@ -203,8 +213,7 @@ namespace slam {
     }
 
     /**
-     * @brief Helper function to create a symbol representing the 
-     * yellow landmark estimate in the factor graph of the iSAM2 SLAM model.
+     * @brief Helper function to create a symbol representing the yellow landmark estimate in the factor graph of the iSAM2 SLAM model.
      * 
      * @param cone_id
      * @return gtsam::Symbol 
@@ -214,8 +223,7 @@ namespace slam {
     }
 
     /**
-     * @brief Sanity check function for logging the parameters and constants that
-     * are in use and whether the yaml file is being used.
+     * @brief Sanity check function for logging the parameters and constants that are in use and whether the yaml file is being used.
      * 
      * @param yaml_has_value Boolean indicating whether or not the yaml file exists.
      */
@@ -240,8 +248,7 @@ namespace slam {
 
 
     /**
-     * @brief Updates the poses in the SLAM model. During the first pose, the estimate is not returned
-     * for stability.
+     * @brief Updates the poses in the SLAM model. During the first pose, the estimate is not returned for stability.
      * 
      * @param gps_position: An optional GPS position of the car
      * @param yaw: the heading of the car
@@ -325,25 +332,19 @@ namespace slam {
             return first_pose;
         }
         return isam2->calculateEstimate(X(pose_num)).cast<gtsam::Pose2>();
-        
-
     }
 
 
 
     /**
-     * @brief Updates the landmarks in the SLAM model. This function
-     * is used to update the landmarks for a given cone color at a time.
-     * This function will update the SLAM model accordingly using the 
-     * cone information stored in old_cones and new_cones.
-     * This function will also update the slam_est_and_mcov object.
+     * @brief Updates the landmarks in the SLAM model
+     *
+     * This function is used to update the landmarks for a given cone color at a time. This function will update the SLAM model accordingly using the cone information stored in old_cones and new_cones. This function will also update the slam_est_and_mcov object.
      * 
-     * @param old_cones: the old cones
-     * @param new_cones: the new cones
-     * @param cur_pose: the current pose of the car
-     * @param slam_est_and_mcov
-     * 
-     * @return: returns the new number of landmarks 
+     * @param old_cones A vector of previously seen cones with known associations 
+     * @param new_cones A vector of newly detected cones with no prior association
+     * @param cur_pose The current pose of the robot in the global frame 
+     * @param slam_est_and_mcov Reference to the object managing landmark estimates and marginal covariances
      */
     void slamISAM::update_landmarks(
         const std::vector<data_association_utils::OldConeInfo> &old_cones,
@@ -421,14 +422,21 @@ namespace slam {
         }
 
         slam_est_and_mcov.update_with_new_cones(new_cones.size());
-
-
-
-
     }
 
 
-     
+    /**
+     * @brief Retrieves the most recent SLAM landmark estimates 
+     * 
+     * This function extracts the latest estimated landmark positions for both blue and yellow cones from the SLAM state. It returns a fixed number of the most recent cones (or all of them if fewer than the threshold exist), transformed into ROS geometry messages in the car's reference frame.
+     * 
+     * @param cur_pose The current global pose of the car
+     * 
+     * @return A tuple containing:
+     * - A vector of geometry_msgs::msg::Point for blue cone landmarks.
+     * - A vector of geometry_msgs::msg::Point for yellow cone landmarks.
+     * - A geometry_msgs::msg::Point representing the current vehicle position.
+     */
     slam_output_t slamISAM::get_recent_SLAM_estimates (gtsam::Pose2 cur_pose) {
 
         std::vector<geometry_msgs::msg::Point> geometry_points_blue = {};
@@ -462,19 +470,22 @@ namespace slam {
     }
 
     /**
-     * @brief Processes odometry information and cone information 
-     * to perform an update step on the SLAM model. 
+     * @brief Performs a full SLAM update step using odometry and observed cone landmarks
      * 
-     * @param gps_opt: the GPS position of the car
-     * @param yaw: the heading of the car
-     * @param cone_obs: the observed cones
-     * @param cone_obs_blue: the observed blue cones
-     * @param cone_obs_yellow: the observed yellow cones
-     * @param orange_ref_cones: the orange reference cones
-     * @param velocity: the velocity of the car
-     * @param dt: the change in time
+     * This function updates the SLAM factor graph using new motion data and cone observations. It includes steps such as pose prediction, data association, graph updates with both existing and new landmarks, and optional loop closure detection. 
      * 
-     * @return: std::tuple<std::vector<Point2>, std::vector<Point2>, Pose2>
+     * @param gps_opt Optional GPS position of the car
+     * @param yaw The heading of the car in radians
+     * @param cone_obs_blue The observed blue cones in the local frame
+     * @param cone_obs_yellow The observed yellow cones in the local frame
+     * @param orange_ref_cones The orange reference cones
+     * @param velocity The car's motion since the last step as a relative Pose2
+     * @param dt Time elapsed since the last SLAM step 
+     * 
+     * @return A tuple containing:
+     * - A vector of the most recent estimated blue cone positions as Points
+     * - A vector of the most recent estimated yellow cone positions as Points
+     * - A Point representing the current pose of the car
      */
     slam_output_t slamISAM::step(
         std::optional<gtsam::Point2> gps_opt, 
@@ -591,10 +602,6 @@ namespace slam {
             logging_utils::log_string(logger, fmt::format("\tUpdate_landmarks time: {}", dur_update_landmarks.count()), DEBUG_STEP);
         }
 
-        
-
-
-
         /* Logging estimates for visualization */
         auto start_vis_setup = std::chrono::high_resolution_clock::now();
         print_estimates();
@@ -605,8 +612,6 @@ namespace slam {
 
         end = std::chrono::high_resolution_clock::now();
         
-
-
         auto dur_step_call = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         logging_utils::log_string(logger, fmt::format("\tSLAM run step | Step call time: {}\n", dur_step_call.count()), DEBUG_STEP);
 
@@ -619,7 +624,11 @@ namespace slam {
     }
 
 
-
+    /**
+     * @brief Logs the current SLAM estimates to a file for visualization or debugging
+     * 
+     * This is useful for offline inspection or visualization tools
+     */
     void slamISAM::print_estimates() {
         std::ofstream ofs;
         
