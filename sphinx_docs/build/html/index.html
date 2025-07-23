@@ -45,7 +45,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="explainers.html">Explainers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extraneous.html">Extraneous</a></li>
 <li class="toctree-l1"><a class="reference internal" href="isam2.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
 </ul>
@@ -76,13 +75,17 @@
              
   <section id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
-<section id="what-is-path-planning-in-charge-of">
-<h2>What is Path Planning in charge of?<a class="headerlink" href="#what-is-path-planning-in-charge-of" title="Link to this heading"></a></h2>
+<section id="what-is-path-planning">
+<h2>What is Path Planning?<a class="headerlink" href="#what-is-path-planning" title="Link to this heading"></a></h2>
 <p>Path planning is responsible for determining the route the car should follow to navigate the track. It has two main responsibilities:</p>
 <ol class="arabic simple">
 <li><p><strong>Midline Calculation</strong></p></li>
+</ol>
+<p>This refers to the process of generating a route between the blue and yellow cones observed at the current time step. The midline is necessary when the car is competing its first lap around the track because without knowledge of the track’s layout, the car is forced to naively navigate the track.</p>
+<ol class="arabic simple" start="2">
 <li><p><a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> <strong>(Simultaneous Localization and Mapping)</strong></p></li>
 </ol>
+<p>As the car completes its first lap, a <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> algorithm is employed to refine its position in the track and the position of previously seen cones (localization) based on newly observed cones while also mapping out the racetrack (mapping).</p>
 </section>
 <section id="what-data-does-it-receive">
 <h2>What data does it receive?<a class="headerlink" href="#what-data-does-it-receive" title="Link to this heading"></a></h2>
@@ -106,6 +109,7 @@
 <li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="implementation.html#slam-nodes"><span class="xref std std-term">SLAM</span> Nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="implementation.html#execution-and-data-flow">Execution and Data flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation.html#extra-thoughts">Extra Thoughts</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="explainers.html">Explainers</a><ul>
@@ -113,10 +117,6 @@
 <li class="toctree-l2"><a class="reference internal" href="explainers.html#why-isam2">Why <span class="xref std std-term">iSAM2</span>?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="explainers.html#what-is-isam2-and-factor-graph-slam">What is <span class="xref std std-term">iSAM2</span> and <span class="xref std std-term">Factor Graph</span> <span class="xref std std-term">SLAM</span>?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="explainers.html#the-factor-graph">The <span class="xref std std-term">Factor Graph</span></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="extraneous.html">Extraneous</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="extraneous.html#extra-thoughts">Extra Thoughts</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="isam2.html">API Reference</a><ul>

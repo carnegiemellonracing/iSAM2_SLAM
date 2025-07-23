@@ -1,12 +1,17 @@
 Overview
 =========
 
-What is Path Planning in charge of?
+What is Path Planning?
 -----------------------------------
 Path planning is responsible for determining the route the car should follow to navigate the track. It has two main responsibilities:
 
 1. **Midline Calculation**
+
+This refers to the process of generating a route between the blue and yellow cones observed at the current time step. The midline is necessary when the car is competing its first lap around the track because without knowledge of the track's layout, the car is forced to naively navigate the track. 
+
 2. :term:`SLAM` **(Simultaneous Localization and Mapping)**
+
+As the car completes its first lap, a :term:`SLAM` algorithm is employed to refine its position in the track and the position of previously seen cones (localization) based on newly observed cones while also mapping out the racetrack (mapping).
 
 What data does it receive?
 ---------------------------
@@ -29,6 +34,5 @@ The output is a set of path waypoints (from midline calculation) and a :term:`SL
 
    implementation
    explainers
-   extraneous
    isam2
    glossary

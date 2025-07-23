@@ -47,10 +47,10 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Implementation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#slam-nodes"><span class="xref std std-term">SLAM</span> Nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#execution-and-data-flow">Execution and Data flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extra-thoughts">Extra Thoughts</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="explainers.html">Explainers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extraneous.html">Extraneous</a></li>
 <li class="toctree-l1"><a class="reference internal" href="isam2.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
 </ul>
@@ -96,6 +96,7 @@
 <p><strong>Where does</strong> <a class="reference internal" href="glossary.html#term-iSAM2"><span class="xref std std-term">iSAM2</span></a> <strong>run (CPU/GPU)?</strong></p>
 <p>The <a class="reference internal" href="glossary.html#term-iSAM2"><span class="xref std std-term">iSAM2</span></a> <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> implementation runs entirely on the CPU. It is written in C++ and uses <a class="reference internal" href="glossary.html#term-GTSAM"><span class="xref std std-term">GTSAM</span></a>, a CPU-optimized factor graph library. No GPU acceleration is used, as <a class="reference internal" href="glossary.html#term-iSAM2"><span class="xref std std-term">iSAM2</span></a> is designed for incremental updates that are efficient enough for real time execution on modern multi-core CPUs. Our <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> nodes run within a <a class="reference internal" href="glossary.html#term-ROS-2-Node"><span class="xref std std-term">ROS 2 Node</span></a> written in C++ and leverage threading when available (through <a class="reference internal" href="glossary.html#term-TBB"><span class="xref std std-term">TBB</span></a>), although much of the computation remains serial due to the incremental nature of the updates.</p>
 <p><strong>What is the data flow?</strong></p>
+<img alt="_images/slam_data_flow.png" class="align-center" src="_images/slam_data_flow.png" />
 <ol class="arabic simple">
 <li><p>Input:</p></li>
 </ol>
@@ -120,6 +121,17 @@
 <li><p>Estimated vehicle <a class="reference internal" href="glossary.html#term-Pose"><span class="xref std std-term">pose</span></a> (2D position and orientation) at each time step</p></li>
 <li><p>Updated cone map as global positions of all <a class="reference internal" href="glossary.html#term-Landmark"><span class="xref std std-term">landmark</span></a>s (cones)</p></li>
 </ul>
+</section>
+<section id="extra-thoughts">
+<h2>Extra Thoughts<a class="headerlink" href="#extra-thoughts" title="Link to this heading"></a></h2>
+<p>While the current <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> and path planning system is designed to be efficient and robust, several challenges may arise in practice:</p>
+<blockquote>
+<div><p>Sensor Noise and Drift: <a class="reference internal" href="glossary.html#term-GPS"><span class="xref std std-term">GPS</span></a> and <a class="reference internal" href="glossary.html#term-IMU"><span class="xref std std-term">IMU</span></a> measurements can be noisy or suffer from drift. This can lead to inaccurate localization or erroneous map updates.</p>
+<p><a class="reference internal" href="glossary.html#term-Data-Association"><span class="xref std std-term">Data Association</span></a> Ambiguity: Identifying whether a newly observed cone corresponds to a previously seen cone (<a class="reference internal" href="glossary.html#term-Data-Association"><span class="xref std std-term">data association</span></a>) is challenging in cluttered environments. Misassociations can degrade map quality and cause localization accuracy.</p>
+<p>Tuning Sensitivity: <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> performance heavily depends on parameters such as the <a class="reference internal" href="glossary.html#term-Mahalanobis-Distance"><span class="xref std std-term">Mahalanobis distance</span></a> threshold and noise models. Poorly tuned parameters can result in either missed associations or false positives.</p>
+<p>Failure Recovery: If the system becomes mislocalized or the <a class="reference internal" href="glossary.html#term-Factor-Graph"><span class="xref std std-term">factor graph</span></a> diverges due to accumulated error, recovering gracefully is non-trivial and may require additional loop closure strategies or reinitialization.</p>
+<p>Real World Edge Cases: Lighting conditions, partial occlusions, or uneven terrain can cause discrepancies between perception and ground truth, which affect downstream <a class="reference internal" href="glossary.html#term-SLAM"><span class="xref std std-term">SLAM</span></a> and planning modules.</p>
+</div></blockquote>
 </section>
 </section>
 
