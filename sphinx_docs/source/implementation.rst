@@ -51,8 +51,8 @@ The :term:`iSAM2` :term:`SLAM` implementation runs entirely on the CPU. It is wr
 
 - Updated cone map as global positions of all :term:`landmark`\ s (cones)
 
-Extra Thoughts
------------------
+Additional Considerations
+--------------------------
 While the current :term:`SLAM` and path planning system is designed to be efficient and robust, several challenges may arise in practice:
 
     Sensor Noise and Drift: :term:`GPS` and :term:`IMU` measurements can be noisy or suffer from drift. This can lead to inaccurate localization or erroneous map updates.
