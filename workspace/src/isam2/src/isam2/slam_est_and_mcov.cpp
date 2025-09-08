@@ -74,20 +74,20 @@ namespace slam {
      * @brief Recalculates all of the slam estimates and the marginal covariance matrices
      */       
     void SLAMEstAndMCov::update_and_recalculate_all() {
-        assert(check_lengths());
-
         for (std::size_t i = 0; i < update_iterations_n; i++) {
             isam2->update();
         }
 
         for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
             gtsam::Symbol cone_key = cone_key_fn(i);
-
             gtsam::Point2 estimate = isam2->calculateEstimate(cone_key).cast<gtsam::Point2>();
-            Eigen::MatrixXd mcov = isam2->marginalCovariance(cone_key);
+            slam_est.at(i) = estimate; 
+        }
 
+        for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
+            gtsam::Symbol cone_key = cone_key_fn(i);
+            Eigen::MatrixXd mcov = isam2->marginalCovariance(cone_key);
             slam_mcov.at(i) = mcov;
-            slam_est.at(i) = estimate;
         }
     }
 
@@ -242,14 +242,14 @@ namespace slam {
             diff << global_obs_cone.x() - slam_est.at(i).x(),
                     global_obs_cone.y() - slam_est.at(i).y();
 
-            mdist.at(i) = (diff * slam_mcov.at(i).inverse() * diff.transpose())(0, 0);
+            mdist.at(i) = (diff * slam_mcov.at(i) * diff.transpose())(0, 0);
 
         }
 
+
         bool correct = true;
         for (std::size_t i = 0; i < n_landmarks; i++) {
-            double eps = 1e-9;
-            if (std::abs(mdist.at(i) - mdist_to_check.at(i)) > eps) {
+            if (!correct || (mdist.at(i) != mdist_to_check.at(i))) {
                 correct = false;
                 break;
             }
@@ -265,82 +265,60 @@ namespace slam {
      * @return A vector of Mahalanobis distances to each tracked landmark 
      */
     std::vector<double> SLAMEstAndMCov::calculate_mdist (gtsam::Point2 global_obs_cone) {
-
         assert(check_lengths()); 
 
+        /* 1.) (2*i) and (2*i +1) column be (x,y) difference vector between slam_est.at(i) and global_obs_cone */
+        Eigen::MatrixXd diff_dupe(2, 2 * n_landmarks);
+        for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
+            Eigen::MatrixXd cur_diff(2, 1);
+            cur_diff << slam_est.at(i).x() - global_obs_cone.x(),
+                        slam_est.at(i).y() - global_obs_cone.y();
+
+            diff_dupe.block(0, 2*i, 2, 1) = cur_diff;
+            diff_dupe.block(0, 2*i + 1, 2, 1) = cur_diff;
+        }
+
+        /* 2.) ith 2x2 block row-wise should be the marginal covariance matrix */
+        // TODO: Should it really be the inverse of the covariance matrix?
+        // Experiment with the inverse of the covariance matrix
+        Eigen::MatrixXd sigma(2, 2 * n_landmarks);
+        for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
+            sigma.block(0, 2 * i, 2, 2) = slam_mcov.at(i);
+        }
+        
+
+        /* 3.) Perform element-wise multiplication with covariance matrices. (Matmul but no adding)*/
+        Eigen::MatrixXd diff_with_sigma_half_matmul = diff_dupe.array() * sigma.array();
+        /* Note: the ith diff vector matmul with ith covariance matrix is stored as 1x2 row vectors */
+        Eigen::MatrixXd pre_diff_matmul_sigma = diff_with_sigma_half_matmul.row(0) + diff_with_sigma_half_matmul.row(1);
+
+
+        /** 4.) Reorganize the matrix so that the ith column represents the product between 
+         * the ith diff vector with the ith covariance matrix 
+         */
+        Eigen::MatrixXd diff_matmul_sigma(2, n_landmarks);
+        for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
+            diff_matmul_sigma.block(0, i, 2, 1) = (pre_diff_matmul_sigma.block(0, 2*i, 1, 2)).transpose();
+        }
+        /* 5.) ith column represents the diff between slam_est.at(i) and cone_obs*/
+        Eigen::MatrixXd diff = Eigen::MatrixXd::Zero(2, n_landmarks);
+        for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
+            diff.block(0, i, 2, 1) << slam_est.at(i).x() - global_obs_cone.x(),
+                                    slam_est.at(i).y() - global_obs_cone.y();
+        }
+
+        /* 6.) Complete the mahalanobis distance calculation */
+        Eigen::MatrixXd mdist_half_matmul = diff_matmul_sigma.array() * diff.array();
+        Eigen::MatrixXd mdist_eigen = mdist_half_matmul.row(0) + mdist_half_matmul.row(1);
+
         std::vector<double> mdist(n_landmarks);
-        for (std::size_t i = 0; i < n_landmarks; i++) {
-            // diff = x - mu
-            Eigen::Vector2d diff;
-            diff << slam_est.at(i).x() - global_obs_cone.x(),
-                    slam_est.at(i).y() - global_obs_cone.y();
-
-            // Inverse covariance
-            Eigen::Matrix2d sigma_inv = slam_mcov.at(i).inverse();
-
-            // Mahalanobis distance squared
-            double d2 = diff.transpose() * sigma_inv * diff;
-
-            mdist.at(i) = d2;
+        for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
+            mdist.at(i) = mdist_eigen(0, i);
         }
 
         assert(check_mdist_correctness(global_obs_cone, mdist));
+
         return mdist;
-
-        // assert(check_lengths()); 
-
-        // /* 1.) (2*i) and (2*i +1) column be (x,y) difference vector between slam_est.at(i) and global_obs_cone */
-        // Eigen::MatrixXd diff_dupe(2, 2 * n_landmarks);
-        // for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-        //     Eigen::MatrixXd cur_diff(2, 1);
-        //     cur_diff << slam_est.at(i).x() - global_obs_cone.x(),
-        //                 slam_est.at(i).y() - global_obs_cone.y();
-
-        //     diff_dupe.block(0, 2*i, 2, 1) = cur_diff;
-        //     diff_dupe.block(0, 2*i + 1, 2, 1) = cur_diff;
-        // }
-
-        // /* 2.) ith 2x2 block row-wise should be the marginal covariance matrix */
-        // // TODO: Should it really be the inverse of the covariance matrix?
-        // // Experiment with the inverse of the covariance matrix
-        // Eigen::MatrixXd sigma(2, 2 * n_landmarks);
-        // for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-        //     sigma.block(0, 2 * i, 2, 2) = slam_mcov.at(i);
-        // }
-        
-
-        // /* 3.) Perform element-wise multiplication with covariance matrices. (Matmul but no adding)*/
-        // Eigen::MatrixXd diff_with_sigma_half_matmul = diff_dupe.array() * sigma.array();
-        // /* Note: the ith diff vector matmul with ith covariance matrix is stored as 1x2 row vectors */
-        // Eigen::MatrixXd pre_diff_matmul_sigma = diff_with_sigma_half_matmul.row(0) + diff_with_sigma_half_matmul.row(1);
-
-
-        // /** 4.) Reorganize the matrix so that the ith column represents the product between 
-        //  * the ith diff vector with the ith covariance matrix 
-        //  */
-        // Eigen::MatrixXd diff_matmul_sigma(2, n_landmarks);
-        // for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-        //     diff_matmul_sigma.block(0, i, 2, 1) = (pre_diff_matmul_sigma.block(0, 2*i, 1, 2)).transpose();
-        // }
-        // /* 5.) ith column represents the diff between slam_est.at(i) and cone_obs*/
-        // Eigen::MatrixXd diff = Eigen::MatrixXd::Zero(2, n_landmarks);
-        // for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-        //     diff.block(0, i, 2, 1) << slam_est.at(i).x() - global_obs_cone.x(),
-        //                             slam_est.at(i).y() - global_obs_cone.y();
-        // }
-
-        // /* 6.) Complete the mahalanobis distance calculation */
-        // Eigen::MatrixXd mdist_half_matmul = diff_matmul_sigma.array() * diff.array();
-        // Eigen::MatrixXd mdist_eigen = mdist_half_matmul.row(0) + mdist_half_matmul.row(1);
-
-        // std::vector<double> mdist(n_landmarks);
-        // for (std::size_t i = static_cast<std::size_t>(0); i < n_landmarks; i++) {
-        //     mdist.at(i) = mdist_eigen(0, i);
-        // }
-
-        // assert(check_mdist_correctness(global_obs_cone, mdist));
-
-        // return mdist;
     }
 
     /**

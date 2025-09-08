@@ -265,10 +265,7 @@ namespace slam {
         double dt, 
         std::optional<rclcpp::Logger> logger
     ) {
-        auto start_update_poses = std::chrono::high_resolution_clock::now();
         logging_utils::log_string(logger, "--------update_poses--------\n", DEBUG_POSES);
-        graph.resize(0);
-        values.clear();
         /* Adding poses to the SLAM factor graph */
         gtsam::Point2 offset_xy = motion_modeling::calc_offset_imu_to_car_center(yaw);
         double offset_x = offset_xy.x();
@@ -322,7 +319,6 @@ namespace slam {
         }
 
         isam2->update(graph, values);
-
         graph.resize(0);
         values.clear();
 
@@ -330,10 +326,6 @@ namespace slam {
             //update the graph
             isam2->update();
         }
-
-        auto end_update_poses = std::chrono::high_resolution_clock::now();
-        auto dur_update_poses = std::chrono::duration_cast<std::chrono::milliseconds>(end_update_poses - start_update_poses);
-        logging_utils::log_string(logger, fmt::format("\tUpdate_poses time: {}", dur_update_poses.count()) , true);
 
         if (pose_num == 0)
         {
@@ -360,6 +352,7 @@ namespace slam {
         gtsam::Pose2 cur_pose, 
         SLAMEstAndMCov &slam_est_and_mcov)
     {
+
         /* Bearing range factor will need
         * Types for car pose to landmark node (Pose2, Point2)
         * Bearing of type Rot2 (Rot2 fromAngle)
@@ -370,8 +363,6 @@ namespace slam {
         * insert Point2 for the cones and their actual location
         *
         */
-        graph.resize(0);
-        values.clear();
         for (std::size_t o = 0; o < old_cones.size(); o++)
         {
             gtsam::Point2 cone_pos_car_frame = old_cones.at(o).local_cone_pos;
@@ -389,11 +380,6 @@ namespace slam {
 
         isam2->update(graph, values);
         graph.resize(0);
-        values.clear();
-        for (std::size_t i = 0; i < update_iterations_n; i++) {
-            //update the graph
-            isam2->update();
-        }
         // values should be empty
         std::size_t cur_n_landmarks = slam_est_and_mcov.get_n_landmarks();
 
@@ -416,18 +402,13 @@ namespace slam {
         }
 
         /* NOTE: All values in graph must be in values parameter */
-        // values.insert(X(pose_num), cur_pose);
-        // gtsam::Values optimized_val = gtsam::LevenbergMarquardtOptimizer(graph, values).optimize();
-        // optimized_val.erase(X(pose_num));
-        isam2->update(graph, values);
-    
+        values.insert(X(pose_num), cur_pose);
+        gtsam::Values optimized_val = gtsam::LevenbergMarquardtOptimizer(graph, values).optimize();
+        optimized_val.erase(X(pose_num));
+        isam2->update(graph, optimized_val);
+
         graph.resize(0); // Not resizing your graph will result in long update times
         values.clear();
-
-        for (std::size_t i = 0; i < update_iterations_n; i++) {
-            //update the graph
-            isam2->update();
-        }
 
         /* Update and recalculate estimates in slam_est_and_mcov after updating the iSAM2 model */
         if (old_cones.size() > static_cast<std::size_t>(min_cones_update_all)) {
@@ -530,6 +511,7 @@ namespace slam {
         logging_utils::log_string(logger, "--------Start of SLAM Step--------", DEBUG_STEP);
 
         
+
         std::pair<bool, bool> movement_info = motion_modeling::determine_movement(velocity);
         bool is_moving = movement_info.first;
         bool is_turning = movement_info.second;
@@ -540,11 +522,17 @@ namespace slam {
             return get_recent_SLAM_estimates(cur_pose);
         }
 
-        /**** Update Car Pose ****/
+        /**** Update the car pose ****/
+        auto start_update_poses = std::chrono::high_resolution_clock::now();
         gtsam::Pose2 cur_pose = update_poses(gps_opt, yaw, velocity, dt, logger);
-        /**** End Car Pose Update */
+        auto end_update_poses = std::chrono::high_resolution_clock::now();
+        auto dur_update_poses = std::chrono::duration_cast<std::chrono::milliseconds>(end_update_poses - start_update_poses);
+        logging_utils::log_string(logger, fmt::format("\tUpdate_poses time: {}", dur_update_poses.count()) , true);
         
-        /**** Perform Loop Closure ****/
+
+
+        /**** Perform loop closure ****/
+        auto start_loop_closure = std::chrono::high_resolution_clock::now();
         bool prev_new_lap_value = new_lap;
         new_lap = loop_closure_utils::detect_loop_closure(dist_from_start_loop_closure_th, cur_pose, first_pose, pose_num, logger);
 
@@ -559,30 +547,38 @@ namespace slam {
         if (completed_new_lap) {
             lap_count++;
         }
-        
+
+        auto end_loop_closure = std::chrono::high_resolution_clock::now();
+        auto dur_loop_closure = std::chrono::duration_cast<std::chrono::milliseconds>(end_loop_closure - start_loop_closure);
+        logging_utils::log_string(logger, fmt::format("\tLoop closure time: {}", dur_loop_closure.count()), DEBUG_STEP);
+
         if (loop_closure) {
             logging_utils::log_string(logger, "\tLoop closure detected. No longer updating", DEBUG_STEP);
         }
 
-        /**** End Loop Closure ****/
-
         /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
         if (!loop_closure) {
 
-            /**** Start Data Association ****/
+            /**** Data association ****/
             auto start_DA = std::chrono::high_resolution_clock::now();
-
-            blue_slam_est_and_mcov.update_and_recalculate_all();
-            yellow_slam_est_and_mcov.update_and_recalculate_all();
+            /* For numerical stability, update all estimates and marginal covariances when few cones seen */
+            bool has_seen_cones = old_blue_n_landmarks > 0 || old_yellow_n_landmarks > 0; 
+            if (has_seen_cones && !(old_blue_n_landmarks > static_cast<std::size_t>(min_cones_update_all) && old_yellow_n_landmarks > static_cast<std::size_t>(min_cones_update_all))) {
+                for (std::size_t i = 0; i < update_iterations_n; i++) {
+                    isam2->update();
+                }
+                blue_slam_est_and_mcov.update_and_recalculate_all();
+                yellow_slam_est_and_mcov.update_and_recalculate_all();
+            } 
 
             double m_dist_th_to_use = is_turning ? turning_m_dist_th : m_dist_th;
             double cone_dist_th_to_use = is_turning ? turning_max_cone_range : max_cone_range;
             
             auto blue_data_association_info = data_association_utils::perform_data_association(cur_pose, cone_obs_blue, logger, blue_slam_est_and_mcov, m_dist_th_to_use, cone_dist_th_to_use);
-            auto yellow_data_association_info = data_association_utils::perform_data_association(cur_pose, cone_obs_yellow, logger, yellow_slam_est_and_mcov, m_dist_th_to_use, cone_dist_th_to_use);
-            
             std::vector<data_association_utils::OldConeInfo> blue_old_cones = blue_data_association_info.first;
             std::vector<data_association_utils::NewConeInfo> blue_new_cones = blue_data_association_info.second;
+
+            auto yellow_data_association_info = data_association_utils::perform_data_association(cur_pose, cone_obs_yellow, logger, yellow_slam_est_and_mcov, m_dist_th_to_use, cone_dist_th_to_use);
             std::vector<data_association_utils::OldConeInfo> yellow_old_cones = yellow_data_association_info.first;
             std::vector<data_association_utils::NewConeInfo> yellow_new_cones = yellow_data_association_info.second;
             
@@ -595,9 +591,7 @@ namespace slam {
 
             logging_utils::log_string(logger, fmt::format("\t\tStarted updating isam2 model with new and old cones"), DEBUG_STEP);
 
-            logging_utils::log_string(logger, fmt::format("Update Blue"), DEBUG_STEP);
             update_landmarks(blue_old_cones, blue_new_cones, cur_pose, blue_slam_est_and_mcov);
-            logging_utils::log_string(logger, fmt::format("Update Yellow"), DEBUG_STEP);
             update_landmarks(yellow_old_cones, yellow_new_cones, cur_pose, yellow_slam_est_and_mcov);
             
             logging_utils::log_string(logger, fmt::format("\t\tFinished updating isam2 model with new and old cones"), DEBUG_STEP);

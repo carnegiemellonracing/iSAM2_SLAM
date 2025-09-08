@@ -34,6 +34,6 @@ slam_node:
     yaml_dist_from_start_loop_closure_th: 5.0
 
     # Mahalanobis distance thresholds for cone updates
-    yaml_m_dist_th: 0.1
-    yaml_turning_m_dist_th: 0.1
+    yaml_m_dist_th: 0.0015
+    yaml_turning_m_dist_th: 0.0015
     yaml_update_iterations_n: 10

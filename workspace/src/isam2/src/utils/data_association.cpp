@@ -94,12 +94,12 @@ namespace data_association_utils {
         double m_dist_th, 
         double cone_dist_th
     ) {
+
         std::vector<double> m_dist = {};
 
-        // Remove cones that are too far
         std::vector< gtsam::Point2> relevant_cone_obs = cone_utils::remove_far_cones(cone_obs, cone_dist_th);
+        /* From this point onward, only use relevant_cone_obs in place of cone_obs */
 
-        // Translate from local to global frame
         std::vector<gtsam::Point2> global_cone_obs = cone_utils::local_to_global_frame(relevant_cone_obs, cur_pose);
         
         /* A vector where the ith element represents the distances associated with the ith obs cone*/
