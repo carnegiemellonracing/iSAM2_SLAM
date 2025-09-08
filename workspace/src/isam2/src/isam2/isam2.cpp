@@ -348,7 +348,15 @@ namespace slam {
      * @brief Updates the landmarks in the SLAM model
      *
      * This function is used to update the landmarks for a given cone color at a time. This function will update the SLAM model accordingly using the cone information stored in old_cones and new_cones. This function will also update the slam_est_and_mcov object.
-     * 
+     * Bearing range factor will need
+     * Types for car pose to landmark node (Pose2, Point2)
+     * Bearing of type Rot2 (Rot2 fromAngle)
+     * Range of type double
+     * Look at PlanarSLAM example in gtsam
+     *
+     * When adding values:
+     * insert Point2 for the cones and their actual location
+     *
      * @param old_cones A vector of previously seen cones with known associations 
      * @param new_cones A vector of newly detected cones with no prior association
      * @param cur_pose The current pose of the robot in the global frame 
@@ -360,18 +368,10 @@ namespace slam {
         gtsam::Pose2 cur_pose, 
         SLAMEstAndMCov &slam_est_and_mcov)
     {
-        /* Bearing range factor will need
-        * Types for car pose to landmark node (Pose2, Point2)
-        * Bearing of type Rot2 (Rot2 fromAngle)
-        * Range of type double
-        * Look at PlanarSLAM example in gtsam
-        *
-        * When adding values:
-        * insert Point2 for the cones and their actual location
-        *
-        */
-        graph.resize(0);
-        values.clear();
+        if (!isam2->valueExists(X(pose_num))) {
+            values.insert(X(pose_num), cur_pose);
+        }
+        // Insert Bearing Range Factors for Old Cones
         for (std::size_t o = 0; o < old_cones.size(); o++)
         {
             gtsam::Point2 cone_pos_car_frame = old_cones.at(o).local_cone_pos;
@@ -379,24 +379,16 @@ namespace slam {
             gtsam::Rot2 b = gtsam::Rot2::fromAngle((old_cones.at(o)).bearing);
             double r = gtsam::norm2(cone_pos_car_frame);
 
-
             gtsam::Symbol landmark_symbol = slam_est_and_mcov.get_landmark_symbol(min_id);
-            graph.add(gtsam::BearingRangeFactor<gtsam::Pose2, gtsam::Point2>(X(pose_num), landmark_symbol,
-                                                        b,
-                                                        r,
-                                                        landmark_model));
+            graph.add(gtsam::BearingRangeFactor<gtsam::Pose2, gtsam::Point2>(X(pose_num), landmark_symbol, b, r, landmark_model));
         }
-
+        // Update ISAM2 Model and Clear Graph/Values
         isam2->update(graph, values);
         graph.resize(0);
         values.clear();
-        for (std::size_t i = 0; i < update_iterations_n; i++) {
-            //update the graph
-            isam2->update();
-        }
-        // values should be empty
-        std::size_t cur_n_landmarks = slam_est_and_mcov.get_n_landmarks();
 
+        // Insert Bearing Range Factors and Initial Guesses for New Cones
+        std::size_t cur_n_landmarks = slam_est_and_mcov.get_n_landmarks();
         for (std::size_t n = 0; n < new_cones.size(); n++)
         {
             gtsam::Point2 cone_pos_car_frame = (new_cones.at(n).local_cone_pos);
@@ -406,30 +398,18 @@ namespace slam {
             gtsam::Point2 cone_global_frame = (new_cones.at(n).global_cone_pos);
 
             gtsam::Symbol landmark_symbol = slam_est_and_mcov.get_landmark_symbol(cur_n_landmarks);
-            graph.add(gtsam::BearingRangeFactor<gtsam::Pose2, gtsam::Point2>(X(pose_num), landmark_symbol,
-                                                        b,
-                                                        r,
-                                                        landmark_model));
+            graph.add(gtsam::BearingRangeFactor<gtsam::Pose2, gtsam::Point2>(X(pose_num), landmark_symbol, b, r, landmark_model));
 
             values.insert(landmark_symbol, cone_global_frame);
             cur_n_landmarks++;
         }
 
-        /* NOTE: All values in graph must be in values parameter */
-        // values.insert(X(pose_num), cur_pose);
-        // gtsam::Values optimized_val = gtsam::LevenbergMarquardtOptimizer(graph, values).optimize();
-        // optimized_val.erase(X(pose_num));
+        // Update ISAM2 Model and Clear Graph/Values
         isam2->update(graph, values);
-    
-        graph.resize(0); // Not resizing your graph will result in long update times
+        graph.resize(0);
         values.clear();
 
-        for (std::size_t i = 0; i < update_iterations_n; i++) {
-            //update the graph
-            isam2->update();
-        }
-
-        /* Update and recalculate estimates in slam_est_and_mcov after updating the iSAM2 model */
+        // Update Estimates in slam_est_and_mcov
         if (old_cones.size() > static_cast<std::size_t>(min_cones_update_all)) {
             std::vector<std::size_t> old_cone_ids(old_cones.size());
             for (std::size_t i = 0; i < old_cones.size(); i++) {
@@ -589,7 +569,6 @@ namespace slam {
             auto end_DA = std::chrono::high_resolution_clock::now();
             auto dur_DA = std::chrono::duration_cast<std::chrono::milliseconds>(end_DA - start_DA);
             logging_utils::log_string(logger, fmt::format("\tData association time: {}", dur_DA.count()), DEBUG_STEP);
-
 
             auto start_update_landmarks = std::chrono::high_resolution_clock::now();
 

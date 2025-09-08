@@ -268,6 +268,15 @@ namespace slam {
 
         assert(check_lengths()); 
 
+        std::vector<double> edist(n_landmarks);
+        for (std::size_t i = 0; i < n_landmarks; i++) {
+            double dx = slam_est.at(i).x() - global_obs_cone.x();
+            double dy = slam_est.at(i).y() - global_obs_cone.y();
+            edist.at(i) = std::sqrt(dx * dx + dy * dy);
+        }
+
+        return edist;
+
         std::vector<double> mdist(n_landmarks);
         for (std::size_t i = 0; i < n_landmarks; i++) {
             // diff = x - mu
