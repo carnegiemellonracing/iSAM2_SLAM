@@ -493,21 +493,29 @@ namespace cone_utils {
      * @param cur_pose Current vehicle pose.
      * @return std::vector<gtsam::Point2> Vector of cone points in global frame.
      */
-    std::vector<gtsam::Point2> local_to_global_frame( std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose) {
-
-        Eigen::MatrixXd bearing = calc_cone_bearing_from_car(cone_obs);
-        Eigen::MatrixXd range = calc_cone_range_from_car(cone_obs);
-        
+    std::vector<gtsam::Point2> local_to_global_frame(std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose) {       
+        // Compute lidar offset 
         gtsam::Point2 lidar_offset = motion_modeling::calc_offset_lidar_to_car_center(cur_pose.theta());
         double lidar_offset_x = lidar_offset.x();       
         double lidar_offset_y = lidar_offset.y();
+        
+        // Apply lidar offset in local frame
+        for (gtsam::Point2& cone : cone_obs) {
+            cone = gtsam::Point2(cone.x() + lidar_offset_x, cone.y() + lidar_offset_y);
+        }
 
+        // Compute bearing range relative to car center
+        Eigen::MatrixXd bearing = calc_cone_bearing_from_car(cone_obs);
+        Eigen::MatrixXd range = calc_cone_range_from_car(cone_obs);
+
+        // Rotate into global frame
         Eigen::MatrixXd global_heading = bearing.array() + cur_pose.theta();
-        Eigen::MatrixXd global_cone_x = cur_pose.x() + range.array()*global_heading.array().cos();
-        global_cone_x = global_cone_x.array() + lidar_offset_x;
-        Eigen::MatrixXd global_cone_y = cur_pose.y() + range.array()*global_heading.array().sin();
-        global_cone_y = global_cone_y.array() + lidar_offset_y;
 
+        // Translate into global frame
+        Eigen::MatrixXd global_cone_x = cur_pose.x() + range.array()*global_heading.array().cos();
+        Eigen::MatrixXd global_cone_y = cur_pose.y() + range.array()*global_heading.array().sin();
+
+        // Return new cones
         std::vector<gtsam::Point2> global_cone_obs = {};
         for (std::size_t i = 0; i < cone_obs.size(); i++) {
             global_cone_obs.emplace_back(global_cone_x(i, 0), global_cone_y(i,0));

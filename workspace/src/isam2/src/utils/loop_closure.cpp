@@ -92,30 +92,16 @@ namespace loop_closure_utils {
     * @return true if a loop closure condition is satisfied
     */
     bool detect_loop_closure(double dist_from_start_loop_closure_th, gtsam::Pose2 &cur_pose, gtsam::Pose2 &first_pose, int pose_num, std::optional<rclcpp::Logger> logger) {
-
-        bool moved_away_from_start = pose_num > 10;  //! TODO: add this as a constant
+        auto start_loop_closure = std::chrono::high_resolution_clock::now();
+        
+        bool moved_away_from_start = pose_num > 100;  //! TODO: add this as a constant
         bool approaching_first_pose = start_pose_in_front(cur_pose, first_pose, logger);
         bool close_to_start = gtsam::norm2(gtsam::Point2(cur_pose.x(), cur_pose.y())) < dist_from_start_loop_closure_th;
         bool heading_like_start = std::abs(first_pose.theta() - cur_pose.theta()) < (motion_modeling::degrees_to_radians(90));
 
-        // ! TODO: Use the log_string function 
-        /*if (logger.has_value()) {
-        RCLCPP_INFO(logger.value(), "\nLoop closure detection results: ");
-        
-            if (close_to_start) {
-            RCLCPP_INFO(logger.value(), "close_to_start: true");
-                } else {
-            RCLCPP_INFO(logger.value(), "close_to_start: false");
-                }
-            
-            if (heading_like_start) {
-            RCLCPP_INFO(logger.value(), "heading_like_start: true | cur_heading: %f, start_heading %f",
-                cur_pose.theta(), first_pose.theta());
-                                            } else {
-            RCLCPP_INFO(logger.value(), "heading_like_start: false | cur_heading: %f, start_heading %f",
-                cur_pose.theta(), first_pose.theta());
-                                            }
-            }*/
+        auto end_loop_closure = std::chrono::high_resolution_clock::now();
+        auto dur_loop_closure = std::chrono::duration_cast<std::chrono::milliseconds>(end_loop_closure - start_loop_closure);
+        logging_utils::log_string(logger, fmt::format("\tLoop closure time: {}", dur_loop_closure.count()), DEBUG_STEP);
 
         return (moved_away_from_start && approaching_first_pose && close_to_start && heading_like_start);
     }
