@@ -274,18 +274,6 @@ namespace motion_modeling {
     }
 
     /**
-     * @brief Calculates the offset vector from LIDAR sensor to car center in global frame.
-     * 
-     * @param yaw Current yaw angle.
-     * @return gtsam::Point2 Offset vector from LIDAR to car center.
-     */
-    gtsam::Point2 calc_offset_lidar_to_car_center(double yaw) {
-        double offset_x = LIDAR_OFFSET * std::cos(yaw);
-        double offset_y = LIDAR_OFFSET * std::sin(yaw);
-        return gtsam::Point2(offset_x, offset_y);
-    }
-
-    /**
      * @brief Applies GPS motion model to compute new pose and odometry with IMU offset correction.
      * 
      * @param prev_pose Previous pose of the vehicle.
@@ -493,11 +481,10 @@ namespace cone_utils {
      * @param cur_pose Current vehicle pose.
      * @return std::vector<gtsam::Point2> Vector of cone points in global frame.
      */
-    std::vector<gtsam::Point2> local_to_global_frame(std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose) {       
+    std::vector<gtsam::Point2> local_to_global_frame(std::vector<gtsam::Point2> cone_obs, gtsam::Pose2 cur_pose) {     
         // Compute lidar offset 
-        gtsam::Point2 lidar_offset = motion_modeling::calc_offset_lidar_to_car_center(cur_pose.theta());
-        double lidar_offset_x = lidar_offset.x();       
-        double lidar_offset_y = lidar_offset.y();
+        double lidar_offset_x = 0;       
+        double lidar_offset_y = LIDAR_OFFSET;
         
         // Apply lidar offset in local frame
         for (gtsam::Point2& cone : cone_obs) {
@@ -512,11 +499,12 @@ namespace cone_utils {
         Eigen::MatrixXd global_heading = bearing.array() + cur_pose.theta();
 
         // Translate into global frame
-        Eigen::MatrixXd global_cone_x = cur_pose.x() + range.array()*global_heading.array().cos();
-        Eigen::MatrixXd global_cone_y = cur_pose.y() + range.array()*global_heading.array().sin();
+        Eigen::MatrixXd global_cone_x = cur_pose.x() + range.array() * global_heading.array().cos();
+        Eigen::MatrixXd global_cone_y = cur_pose.y() + range.array() * global_heading.array().sin();
 
         // Return new cones
-        std::vector<gtsam::Point2> global_cone_obs = {};
+        std::vector<gtsam::Point2> global_cone_obs;
+        global_cone_obs.reserve(cone_obs.size());
         for (std::size_t i = 0; i < cone_obs.size(); i++) {
             global_cone_obs.emplace_back(global_cone_x(i, 0), global_cone_y(i,0));
         }

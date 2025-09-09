@@ -68,7 +68,6 @@ namespace motion_modeling {
     std::pair<gtsam::Pose2, gtsam::Pose2> velocity_motion_model(gtsam::Pose2 velocity, double dt,gtsam::Pose2 prev_pose, double yaw);
 
     gtsam::Point2 calc_offset_imu_to_car_center(double yaw);
-    gtsam::Point2 calc_offset_lidar_to_car_center(double yaw);
 
     /**
      * @brief 

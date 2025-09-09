@@ -109,7 +109,5 @@ namespace data_association_utils {
         }
         return get_old_new_cones(global_cone_obs, relevant_cone_obs, distances, m_dist_th, logger);
     }
-
-
 }
 

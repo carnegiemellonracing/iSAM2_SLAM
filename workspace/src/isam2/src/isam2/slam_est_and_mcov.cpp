@@ -242,7 +242,7 @@ namespace slam {
             diff << global_obs_cone.x() - slam_est.at(i).x(),
                     global_obs_cone.y() - slam_est.at(i).y();
 
-            mdist.at(i) = (diff * slam_mcov.at(i).inverse() * diff.transpose())(0, 0);
+            mdist.at(i) = std::sqrt((diff * slam_mcov.at(i).inverse() * diff.transpose())(0, 0));
 
         }
 
@@ -268,15 +268,6 @@ namespace slam {
 
         assert(check_lengths()); 
 
-        std::vector<double> edist(n_landmarks);
-        for (std::size_t i = 0; i < n_landmarks; i++) {
-            double dx = slam_est.at(i).x() - global_obs_cone.x();
-            double dy = slam_est.at(i).y() - global_obs_cone.y();
-            edist.at(i) = std::sqrt(dx * dx + dy * dy);
-        }
-
-        return edist;
-
         std::vector<double> mdist(n_landmarks);
         for (std::size_t i = 0; i < n_landmarks; i++) {
             // diff = x - mu
@@ -290,11 +281,20 @@ namespace slam {
             // Mahalanobis distance squared
             double d2 = diff.transpose() * sigma_inv * diff;
 
-            mdist.at(i) = d2;
+            mdist.at(i) = std::sqrt(d2);
         }
 
         assert(check_mdist_correctness(global_obs_cone, mdist));
         return mdist;
+
+        // std::vector<double> edist(n_landmarks);
+        // for (std::size_t i = 0; i < n_landmarks; i++) {
+        //     double dx = slam_est.at(i).x() - global_obs_cone.x();
+        //     double dy = slam_est.at(i).y() - global_obs_cone.y();
+        //     edist.at(i) = std::sqrt(dx * dx + dy * dy);
+        // }
+
+        // return edist;
 
         // assert(check_lengths()); 
 

@@ -92,6 +92,7 @@ namespace loop_closure_utils {
     * @return true if a loop closure condition is satisfied
     */
     bool detect_loop_closure(double dist_from_start_loop_closure_th, gtsam::Pose2 &cur_pose, gtsam::Pose2 &first_pose, int pose_num, std::optional<rclcpp::Logger> logger) {
+        return false;
         auto start_loop_closure = std::chrono::high_resolution_clock::now();
         
         bool moved_away_from_start = pose_num > 100;  //! TODO: add this as a constant

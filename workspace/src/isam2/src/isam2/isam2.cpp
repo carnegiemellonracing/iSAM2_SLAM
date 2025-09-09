@@ -267,12 +267,14 @@ namespace slam {
     ) {
         auto start_update_poses = std::chrono::high_resolution_clock::now();
         logging_utils::log_string(logger, "--------update_poses--------\n", DEBUG_POSES);
-        graph.resize(0);
-        values.clear();
+
         /* Adding poses to the SLAM factor graph */
         gtsam::Point2 offset_xy = motion_modeling::calc_offset_imu_to_car_center(yaw);
         double offset_x = offset_xy.x();
         double offset_y = offset_xy.y(); 
+
+        gtsam::Symbol pose_sym = X(pose_num);
+        gtsam::Pose2 new_pose;
 
         if (pose_num == 0)
         {
@@ -281,17 +283,14 @@ namespace slam {
                             gtsam::Pose2(gps_position.value().x() -offset_x, gps_position.value().y() -offset_y, yaw) :
                             gtsam::Pose2(-offset_x, -offset_y, yaw);
 
+            if (!values.exists(pose_sym)) {
+                values.insert(pose_sym, first_pose);
+            }
 
-            gtsam::PriorFactor<gtsam::Pose2> prior_factor = gtsam::PriorFactor<gtsam::Pose2>(X(0), first_pose, prior_model);
+            gtsam::PriorFactor<gtsam::Pose2> prior_factor = gtsam::PriorFactor<gtsam::Pose2>(pose_sym, first_pose, prior_model);
             graph.add(prior_factor);
-
-            values.insert(X(0), first_pose);
-
             first_pose_added = true;
 
-            //ASSUMES THAT YOU SEE ORANGE CONES ON YOUR FIRST MEASUREMENT OF LANDMARKS
-            //Add orange cone left and right
-            //hopefully it's only 2 cones
             logging_utils::log_string(logger, "Finished processing first pose", DEBUG_POSES);
         }
         else
@@ -306,28 +305,24 @@ namespace slam {
                                                 new_pose_and_odom.first.theta());
             gtsam::Pose2 odometry = new_pose_and_odom.second;
 
-            gtsam::BetweenFactor<gtsam::Pose2> odom_factor = gtsam::BetweenFactor<gtsam::Pose2>(X(pose_num - 1),
-                                                                            X(pose_num),
-                                                                            odometry,
-                                                                            odom_model);
-
+            gtsam::BetweenFactor<gtsam::Pose2> odom_factor = gtsam::BetweenFactor<gtsam::Pose2>(X(pose_num - 1), pose_sym, odometry, odom_model);
             graph.add(odom_factor);
             
+            if (!values.exists(pose_sym)) {
+                values.insert(pose_sym, new_pose);
+            }
+
             if (gps_position.has_value()) {
                 gtsam::Pose2 imu_offset_gps_position = gtsam::Pose2(gps_position.value().x() - offset_x, gps_position.value().y() - offset_y, yaw);
-                graph.emplace_shared<UnaryFactor>(X(pose_num), imu_offset_gps_position, unary_model);
+                graph.emplace_shared<UnaryFactor>(pose_sym, imu_offset_gps_position, unary_model);
             }
-            
-            values.insert(X(pose_num), new_pose);
         }
 
         isam2->update(graph, values);
-
         graph.resize(0);
         values.clear();
 
         for (std::size_t i = 0; i < update_iterations_n; i++) {
-            //update the graph
             isam2->update();
         }
 
@@ -335,10 +330,7 @@ namespace slam {
         auto dur_update_poses = std::chrono::duration_cast<std::chrono::milliseconds>(end_update_poses - start_update_poses);
         logging_utils::log_string(logger, fmt::format("\tUpdate_poses time: {}", dur_update_poses.count()) , true);
 
-        if (pose_num == 0)
-        {
-            return first_pose;
-        }
+        if (pose_num == 0) return first_pose;
         return isam2->calculateEstimate(X(pose_num)).cast<gtsam::Pose2>();
     }
 
@@ -368,9 +360,8 @@ namespace slam {
         gtsam::Pose2 cur_pose, 
         SLAMEstAndMCov &slam_est_and_mcov)
     {
-        if (!isam2->valueExists(X(pose_num))) {
-            values.insert(X(pose_num), cur_pose);
-        }
+        gtsam::Symbol pose_sym = X(pose_num);
+
         // Insert Bearing Range Factors for Old Cones
         for (std::size_t o = 0; o < old_cones.size(); o++)
         {
@@ -509,17 +500,6 @@ namespace slam {
         
         logging_utils::log_string(logger, "--------Start of SLAM Step--------", DEBUG_STEP);
 
-        
-        std::pair<bool, bool> movement_info = motion_modeling::determine_movement(velocity);
-        bool is_moving = movement_info.first;
-        bool is_turning = movement_info.second;
-
-        /*Quit the update step if the car is not moving*/ 
-        if (!is_moving && pose_num > 0) {
-            gtsam::Pose2 cur_pose = isam2->calculateEstimate(X(pose_num - 1)).cast<gtsam::Pose2>();
-            return get_recent_SLAM_estimates(cur_pose);
-        }
-
         /**** Update Car Pose ****/
         gtsam::Pose2 cur_pose = update_poses(gps_opt, yaw, velocity, dt, logger);
         /**** End Car Pose Update */
@@ -530,9 +510,6 @@ namespace slam {
 
         if (!loop_closure && new_lap) {
             loop_closure = true;
-            for (std::size_t i = 0; i < update_iterations_n; i++) {
-                isam2->update();
-            }
         }
 
         bool completed_new_lap = prev_new_lap_value && !new_lap && !loop_closure_utils::start_pose_in_front(cur_pose, first_pose, logger);
@@ -548,18 +525,14 @@ namespace slam {
 
         /**** Retrieve the old cones SLAM estimates & marginal covariance matrices ****/
         if (!loop_closure) {
-
             /**** Start Data Association ****/
             auto start_DA = std::chrono::high_resolution_clock::now();
 
             blue_slam_est_and_mcov.update_and_recalculate_all();
             yellow_slam_est_and_mcov.update_and_recalculate_all();
-
-            double m_dist_th_to_use = is_turning ? turning_m_dist_th : m_dist_th;
-            double cone_dist_th_to_use = is_turning ? turning_max_cone_range : max_cone_range;
             
-            auto blue_data_association_info = data_association_utils::perform_data_association(cur_pose, cone_obs_blue, logger, blue_slam_est_and_mcov, m_dist_th_to_use, cone_dist_th_to_use);
-            auto yellow_data_association_info = data_association_utils::perform_data_association(cur_pose, cone_obs_yellow, logger, yellow_slam_est_and_mcov, m_dist_th_to_use, cone_dist_th_to_use);
+            auto blue_data_association_info = data_association_utils::perform_data_association(cur_pose, cone_obs_blue, logger, blue_slam_est_and_mcov, m_dist_th, max_cone_range);
+            auto yellow_data_association_info = data_association_utils::perform_data_association(cur_pose, cone_obs_yellow, logger, yellow_slam_est_and_mcov, m_dist_th, max_cone_range);
             
             std::vector<data_association_utils::OldConeInfo> blue_old_cones = blue_data_association_info.first;
             std::vector<data_association_utils::NewConeInfo> blue_new_cones = blue_data_association_info.second;
