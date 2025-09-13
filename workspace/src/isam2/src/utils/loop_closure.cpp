@@ -95,7 +95,7 @@ namespace loop_closure_utils {
         return false;
         auto start_loop_closure = std::chrono::high_resolution_clock::now();
         
-        bool moved_away_from_start = pose_num > 100;  //! TODO: add this as a constant
+        bool moved_away_from_start = pose_num > 300;  //! TODO: add this as a constant
         bool approaching_first_pose = start_pose_in_front(cur_pose, first_pose, logger);
         bool close_to_start = gtsam::norm2(gtsam::Point2(cur_pose.x(), cur_pose.y())) < dist_from_start_loop_closure_th;
         bool heading_like_start = std::abs(first_pose.theta() - cur_pose.theta()) < (motion_modeling::degrees_to_radians(90));

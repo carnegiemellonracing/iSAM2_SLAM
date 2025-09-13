@@ -360,6 +360,8 @@ namespace slam {
         gtsam::Pose2 cur_pose, 
         SLAMEstAndMCov &slam_est_and_mcov)
     {
+        auto start_update_landmarks = std::chrono::high_resolution_clock::now();
+        logging_utils::log_string(logger, "--------update_landmarks--------\n", DEBUG_POSES);
         gtsam::Symbol pose_sym = X(pose_num);
 
         // Insert Bearing Range Factors for Old Cones
@@ -412,6 +414,10 @@ namespace slam {
         }
 
         slam_est_and_mcov.update_with_new_cones(new_cones.size());
+
+        auto end_update_landmarks = std::chrono::high_resolution_clock::now();
+        auto dur_update_landmarks = std::chrono::duration_cast<std::chrono::milliseconds>(end_update_landmarks - start_update_landmarks);
+        logging_utils::log_string(logger, fmt::format("\tUpdate_landmarks time: {}", dur_update_landmarks.count()), true);
     }
 
 
@@ -547,9 +553,7 @@ namespace slam {
 
             logging_utils::log_string(logger, fmt::format("\t\tStarted updating isam2 model with new and old cones"), DEBUG_STEP);
 
-            logging_utils::log_string(logger, fmt::format("Update Blue"), DEBUG_STEP);
             update_landmarks(blue_old_cones, blue_new_cones, cur_pose, blue_slam_est_and_mcov);
-            logging_utils::log_string(logger, fmt::format("Update Yellow"), DEBUG_STEP);
             update_landmarks(yellow_old_cones, yellow_new_cones, cur_pose, yellow_slam_est_and_mcov);
             
             logging_utils::log_string(logger, fmt::format("\t\tFinished updating isam2 model with new and old cones"), DEBUG_STEP);

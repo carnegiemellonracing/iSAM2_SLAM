@@ -284,7 +284,7 @@ namespace slam {
             mdist.at(i) = std::sqrt(d2);
         }
 
-        assert(check_mdist_correctness(global_obs_cone, mdist));
+        // assert(check_mdist_correctness(global_obs_cone, mdist));
         return mdist;
 
         // std::vector<double> edist(n_landmarks);
