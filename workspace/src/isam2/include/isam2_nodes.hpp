@@ -30,7 +30,7 @@ namespace nodes {
         std::chrono::high_resolution_clock::time_point cur_sync_callback_time;
         std::optional<std::chrono::high_resolution_clock::time_point> prev_sync_callback_time;
 
-        // rclcpp::Publisher<interfaces::msg::SLAMData>::SharedPtr slam_publisher_; 
+        rclcpp::Publisher<interfaces::msg::SLAMData>::SharedPtr slam_publisher; 
         rclcpp::Publisher<interfaces::msg::SLAMPose>::SharedPtr slam_pose_publisher; 
         rclcpp::Publisher<interfaces::msg::SLAMChunk>::SharedPtr slam_chunk_publisher; 
         rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr slam_marker_publisher;

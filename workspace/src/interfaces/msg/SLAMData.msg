@@ -7,4 +7,4 @@ geometry_msgs/Point[] orange_cones
 geometry_msgs/Point[] big_orange_cones
 geometry_msgs/Point[] unknown_color_cones
 
-geometry_msgs/Vector3 curr_pose
+geometry_msgs/Point curr_pose
