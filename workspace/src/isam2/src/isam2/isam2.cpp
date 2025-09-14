@@ -445,6 +445,8 @@ namespace slam {
         std::vector<gtsam::Point2> blue_slam_est = blue_slam_est_and_mcov.get_all_est();
         std::vector<gtsam::Point2> yellow_slam_est = yellow_slam_est_and_mcov.get_all_est();
 
+        visualization_msgs::msg::MarkerArray markers = ros_msg_conversions::slam_est_to_markers(blue_slam_est, yellow_slam_est);
+
         // If there is less than N cones, take the entire vector
         // Otherwise, take N most recent (from back)
         if (blue_slam_est.size() < return_n_cones) {
@@ -466,7 +468,7 @@ namespace slam {
         final_pose.y = cur_pose.y();
         final_pose.z = 0.0;
 
-        return std::make_tuple(geometry_points_blue, geometry_points_yellow, final_pose);
+        return std::make_tuple(geometry_points_blue, geometry_points_yellow, final_pose, markers);
     }
 
     /**

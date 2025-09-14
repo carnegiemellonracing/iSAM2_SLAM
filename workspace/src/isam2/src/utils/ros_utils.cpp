@@ -193,6 +193,47 @@ namespace ros_msg_conversions {
         
         return points;
     }
+
+    visualization_msgs::msg::MarkerArray slam_est_to_markers (std::vector<gtsam::Point2> blue_cones, std::vector<gtsam::Point2> yellow_cones) {
+        visualization_msgs::msg::MarkerArray markers = visualization_msgs::msg::MarkerArray();
+        std::vector<visualization_msgs::msg::Marker> marker_vector = {};
+        int current_blue_id = 0;
+        int current_yellow_id = 1000; // Start yellow IDs from 1000 to avoid overlap
+        for (gtsam::Point2 blue_cone : blue_cones) {
+            visualization_msgs::msg::Marker marker = visualization_msgs::msg::Marker();
+            marker.header.frame_id = "map";
+            marker.id = current_blue_id;
+            current_blue_id += 1;
+            marker.type = visualization_msgs::msg::Marker::SPHERE;
+            marker.pose.position = point2_to_geometry_msg(blue_cone);
+            marker.color.a = 1.0;
+            marker.color.r = 0.0;
+            marker.color.g = 0.0;
+            marker.color.b = 1.0;
+            marker.scale.x = 0.2;
+            marker.scale.y = 0.2;
+            marker.scale.z = 0.2;
+            marker_vector.push_back(marker);
+        }
+        for (gtsam::Point2 yellow_cone : yellow_cones) {
+            visualization_msgs::msg::Marker marker = visualization_msgs::msg::Marker();
+            marker.header.frame_id = "map";
+            marker.id = current_yellow_id;
+            current_yellow_id += 1;
+            marker.type = visualization_msgs::msg::Marker::SPHERE;
+            marker.pose.position = point2_to_geometry_msg(yellow_cone);
+            marker.color.a = 1.0;
+            marker.color.r = 1.0;
+            marker.color.g = 1.0;
+            marker.color.b = 0.0;
+            marker.scale.x = 0.2;
+            marker.scale.y = 0.2;
+            marker.scale.z = 0.2;
+            marker_vector.push_back(marker);
+        }
+        markers.set__markers(marker_vector);
+        return markers;
+    }
 }
 
 /** 

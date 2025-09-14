@@ -21,6 +21,7 @@
 #include "geometry_msgs/msg/twist_with_covariance.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/point.hpp"
+#include "visualization_msgs/msg/marker_array.hpp"
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
 #include "std_msgs/msg/string.hpp"
 
@@ -59,6 +60,7 @@ namespace ros_msg_conversions {
 
     geometry_msgs::msg::Point point2_to_geometry_msg (gtsam::Point2 gtsam_point);
     std::vector<geometry_msgs::msg::Point> slam_est_to_points (std::vector<gtsam::Point2> gtsam_points, gtsam::Pose2 pose);
+    visualization_msgs::msg::MarkerArray slam_est_to_markers (std::vector<gtsam::Point2> blue_cones, std::vector<gtsam::Point2> yellow_cones);
 }
 
 namespace motion_modeling {

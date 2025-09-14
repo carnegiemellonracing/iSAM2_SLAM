@@ -33,6 +33,7 @@ namespace nodes {
         // rclcpp::Publisher<interfaces::msg::SLAMData>::SharedPtr slam_publisher_; 
         rclcpp::Publisher<interfaces::msg::SLAMPose>::SharedPtr slam_pose_publisher; 
         rclcpp::Publisher<interfaces::msg::SLAMChunk>::SharedPtr slam_chunk_publisher; 
+        rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr slam_marker_publisher;
         gtsam::Pose2 velocity;
 
         std::optional<gtsam::Point2> init_lon_lat; // local variable to load odom into SLAM instance when msg in lon lat

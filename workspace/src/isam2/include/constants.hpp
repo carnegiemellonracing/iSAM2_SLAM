@@ -107,6 +107,7 @@ const std::string VEHICLE_ANGLE_TOPIC = "/filter/quaternion";
 const std::string VEHICLE_VEL_TOPIC = "/filter/twist";
 const std::string SLAM_POSE_TOPIC = "/slam_pose";
 const std::string SLAM_CHUNK_TOPIC = "/slam_chunk";
+const std::string SLAM_MARKERS_TOPIC = "/slam_markers";
 // const std::string SLAM_TOPIC = "/slam_data";
 
 constexpr std::size_t LOOK_RADIUS = 20;

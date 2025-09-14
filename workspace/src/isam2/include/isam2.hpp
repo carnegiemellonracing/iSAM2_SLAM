@@ -37,9 +37,10 @@
 #include "loop_closure.hpp"
 
 namespace slam {
-    using slam_output_t = std::tuple<std::vector<geometry_msgs::msg::Point>, 
-                                std::vector<geometry_msgs::msg::Point>, 
-                                geometry_msgs::msg::Point>;
+    using slam_output_t = std::tuple<std::vector<geometry_msgs::msg::Point>, // Blue cones
+                                std::vector<geometry_msgs::msg::Point>, // Yellow cones
+                                geometry_msgs::msg::Point, // Pose
+                                visualization_msgs::msg::MarkerArray>; // Markers for rviz2
     
     enum class RunSettings {
         Real,

@@ -26,6 +26,7 @@ endif()
 
 # find dependencies
 find_package(geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 find_package(interfaces REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ament_cmake REQUIRED)
@@ -76,9 +77,9 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 
 # Linking with ROS dependencies
-ament_target_dependencies(real_data_slam_node_gps PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
-ament_target_dependencies(real_data_slam_node_no_gps PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
-ament_target_dependencies(controls_sim_slam_node PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
+ament_target_dependencies(real_data_slam_node_gps PUBLIC rclcpp message_filters interfaces geometry_msgs visualization_msgs sensor_msgs)
+ament_target_dependencies(real_data_slam_node_no_gps PUBLIC rclcpp message_filters interfaces geometry_msgs visualization_msgs sensor_msgs)
+ament_target_dependencies(controls_sim_slam_node PUBLIC rclcpp message_filters interfaces geometry_msgs visualization_msgs sensor_msgs)
 
 # including dependencies
 target_include_directories(real_data_slam_node_gps PUBLIC include ${GTSAM_INCLUDE_DIR} )
@@ -99,7 +100,7 @@ endif()
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
   target_link_libraries(isam2_lib PUBLIC libtbb.so libgtsam.so Eigen3::Eigen libfmt.so)
 endif()
-ament_target_dependencies(isam2_lib PUBLIC rclcpp message_filters interfaces geometry_msgs sensor_msgs)
+ament_target_dependencies(isam2_lib PUBLIC rclcpp message_filters interfaces geometry_msgs visualization_msgs sensor_msgs)
 target_include_directories(isam2_lib PUBLIC include ${GTSAM_INCLUDE_DIR})
 ament_export_include_directories(include)
 ament_package()

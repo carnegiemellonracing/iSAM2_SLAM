@@ -8,6 +8,7 @@ namespace nodes {
         // slam_publisher_ = this->create_publisher<interfaces::msg::SLAMData>(SLAM_TOPIC, 10);
         slam_pose_publisher = this->create_publisher<interfaces::msg::SLAMPose>(SLAM_POSE_TOPIC, 10);
         slam_chunk_publisher = this->create_publisher<interfaces::msg::SLAMChunk>(SLAM_CHUNK_TOPIC, 10);
+        slam_marker_publisher = this->create_publisher<visualization_msgs::msg::MarkerArray>(SLAM_MARKERS_TOPIC, 10);
 
         declare_yaml_params();
 
@@ -39,8 +40,18 @@ namespace nodes {
         chunk_msg.chunk_id.data = 0;
         chunk_msg.yellow_cones = std::get<1>(slam_data);
 
+        visualization_msgs::msg::MarkerArray markers = std::get<3>(slam_data);
+
+        // Clear previous markers
+        // visualization_msgs::msg::MarkerArray clear_marker_array;
+        // visualization_msgs::msg::Marker clear_marker;
+        // clear_marker.action = visualization_msgs::msg::Marker::DELETEALL;
+        // clear_marker_array.markers.push_back(clear_marker);
+        // slam_marker_publisher->publish(clear_marker_array);
+
         slam_pose_publisher->publish(pose_msg);
         slam_chunk_publisher->publish(chunk_msg);
+        slam_marker_publisher->publish(markers);
     }
 
     
